@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>회원 탈퇴</title>
+  <meta charset="UTF-8">
+  <style>
+    /* 기존 CSS 그대로 유지 */
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 30px;
+    }
+    .form-container { background-color: #fff; border-radius: 15px; box-shadow: 0 4px 8px rgba(0,0,0,0.05); padding: 30px; width: 500px; }
+    .form-group { margin-bottom: 20px; }
+    h2 { text-align: center; margin-bottom: 10px; }
+    p.sub { text-align: center; color: gray; margin-bottom: 30px; }
+    .section { margin-bottom: 40px; }
+    .section-title { font-weight: bold; margin-bottom: 10px; }
+    .reasons label { display: inline-block; width: 280px; margin-bottom: 8px; }
+    textarea { width: 100%; height: 80px; resize: none; }
+    .confirm input { width: 300px; padding: 8px; margin-bottom: 10px; display: block; }
+    .confirm label { font-weight: bold; }
+    .btns { text-align: center; margin-top: 30px; }
+    .btns button { padding: 10px 30px; margin: 0 10px; border: none; border-radius: 5px; font-size: 16px; cursor: pointer; }
+    .btn-confirm { background-color: #4a69bd; color: white; }
+    .btn-cancel { background-color: #ccc; }
+    .notice { font-size: 12px; color: #888; margin-top: 20px; line-height: 1.5; }
+  </style>
+</head>
+<body>
+<div class="form-container">
+  <h2>그동안 저희 서비스를 이용해 주셔서 감사합니다.</h2>
+  <p class="sub">더 나은 학습 환경을 위해 노력하겠습니다.</p>
+
+  <form th:action="@{/mypage/withdraw}" method="post">
+    <div class="section">
+      <div class="section-title">📌 탈퇴 사유 선택</div>
+      <div class="reasons">
+        <label><input type="radio" name="reason" value="학습 동기 저하"> 외국어 학습에 대한 흥미 감소</label>
+        <label><input type="radio" name="reason" value="진행 어려움"> 강의 수강 진행이 어려움</label>
+        <label><input type="radio" name="reason" value="콘텐츠 불만"> 강의 콘텐츠 품질 불만족</label>
+        <label><input type="radio" name="reason" value="기술적 문제"> 사이트 오류 / 느림 등 기술 문제</label>
+        <label><input type="radio" name="reason" value="개인 사정"> 개인 사정(시간 부족 등)</label>
+        <label><input type="radio" name="reason" value="기타"> 기타</label>
+      </div>
+    </div>
+
+    <div class="section confirm">
+      <div class="section-title">✅ 본인 확인</div>
+      <label>아이디</label>
+      <input type="text" name="id" th:value="${session.userId}" readonly>
+      <label>비밀번호</label>
+      <input type="password" name="password" required>
+    </div>
+
+    <div class="btns">
+      <button type="submit" class="btn-confirm">회원 탈퇴</button>
+      <button type="button" class="btn-cancel" onclick="history.back()">취소</button>
+    </div>
+
+    <div class="notice">
+      ※ 탈퇴 시 회원 정보 및 학습 이력은 모두 삭제되며 복구되지 않습니다.<br>
+      ※ 수강 중인 강의 및 후원 내역도 모두 초기화됩니다.<br>
+      ※ 탈퇴 후 같은 이메일로 재가입은 가능하나, 기존 정보는 복원되지 않습니다.
+    </div>
+  </form>
+</div>
+</body>
+</html>
