@@ -1,0 +1,61 @@
+<!-- sidebar_mypage.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>MyPage Sidebar</title>
+  <style>
+    .sidebar {
+      width: 150px;
+      background: linear-gradient(to bottom, #a3bffa, #7f9cf5);
+      color: white;
+      font-family: 'Segoe UI', sans-serif;
+      border-radius: 10px;
+      padding: 15px;
+    }
+
+    .sidebar-header {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+      padding-bottom: 10px;
+    }
+
+    .sidebar-menu {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    .sidebar-menu li {
+      margin: 10px 0;
+    }
+
+    .sidebar-menu a {
+      text-decoration: none;
+      color: white;
+      display: block;
+      padding: 8px;
+      border-radius: 8px;
+      transition: background 0.2s;
+    }
+
+    .sidebar-menu a:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+  </style>
+</head>
+<body>
+<div class="sidebar">
+  <div class="sidebar-header">👤 MyPage</div>
+  <ul class="sidebar-menu">
+    <li><a href="#">🎢 대시보드</a></li>
+    <li><a href="#">📚 수강 내역</a></li>
+    <li><a href="#">🤩 구독 목록</a></li>
+    <li><a href="#">📝 내 정보</a></li>
+    <li><a href="#">💰 내 후원</a></li>
+    <li><a href="#">💳 계좌 연동</a></li>
+  </ul>
+</div>
+</body>
+</html>

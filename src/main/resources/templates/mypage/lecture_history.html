@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>수강 내역</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f7f9fc;
+      margin: 0;
+      padding: 20px;
+    }
+    .page-title {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+    .lecture-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    .lecture-card {
+      background-color: #ffffff;
+      border-radius: 15px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+      padding: 20px;
+      width: 300px;
+      transition: transform 0.2s;
+    }
+    .lecture-card:hover {
+      transform: translateY(-4px);
+    }
+    .lecture-title {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    .progress-bar {
+      background-color: #e4e9f2;
+      border-radius: 10px;
+      height: 10px;
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+    .progress-fill {
+      height: 100%;
+      background-color: #7f9cf5;
+      width: 60%;
+    }
+    .lecture-info {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 15px;
+    }
+    .donate-btn {
+      display: inline-block;
+      padding: 8px 12px;
+      background-color: #7f9cf5;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .donate-btn:hover {
+      background-color: #5a7be0;
+    }
+  </style>
+</head>
+<body>
+
+<div class="page-title">📚 수강 내역</div>
+
+<div class="lecture-list">
+
+  <div class="lecture-card">
+    <div class="lecture-title">[초급] 일본어 인트로 강의</div>
+    <div class="progress-bar">
+      <div class="progress-fill" style="width: 45%;"></div>
+    </div>
+    <div class="lecture-info">진행률: 45%</div>
+    <button class="donate-btn">💰 후원하기</button>
+  </div>
+
+  <div class="lecture-card">
+    <div class="lecture-title">[중급] 일상 회화 완전정복</div>
+    <div class="progress-bar">
+      <div class="progress-fill" style="width: 80%;"></div>
+    </div>
+    <div class="lecture-info">진행률: 80%</div>
+    <button class="donate-btn">💰 후원하기</button>
+  </div>
+
+</div>
+</body>
+</html>
