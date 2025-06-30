@@ -1,4 +1,4 @@
-package kr.co.sist.main;
+package kr.co.sist.e_learning.main;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
