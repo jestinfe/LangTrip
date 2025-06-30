@@ -8,7 +8,7 @@
 		<version>3.5.3</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>kr.co.sist</groupId>
+	<groupId>kr.co.sist.e_learning</groupId>
 	<artifactId>e_learning_prj</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>e_learning_prj</name>
