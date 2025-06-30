@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mapper namespace="adminAuth">
+  <select id="selectAdminByIdPw" parameterType="map" resultType="kr.co.sist.e_learning.admin.auth.AdminAuthDTO">
+    SELECT admin_id AS adminId, admin_name AS adminName, role, status
+    FROM admin
+    WHERE admin_id = #{id}
+      AND admin_pw = #{pw}
+      AND status = 'Y'
+  </select>
+</mapper>
