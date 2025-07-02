@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>관리자 대시보드</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      display: flex;
+      height: 100vh;
+    }
+    .sidebar {
+      width: 220px;
+      background-color: #2c3e50;
+      color: white;
+      padding: 20px;
+    }
+    .sidebar h2 {
+      font-size: 20px;
+      margin-bottom: 20px;
+      border-bottom: 1px solid #7f8c8d;
+      padding-bottom: 10px;
+    }
+    .sidebar a {
+      display: block;
+      color: white;
+      text-decoration: none;
+      margin: 10px 0;
+      font-size: 14px;
+    }
+    .sidebar a:hover {
+      text-decoration: underline;
+    }
+    .main {
+      flex: 1;
+      padding: 30px;
+    }
+  </style>
+</head>
+<body>
+  <div th:replace="fragments/admin_sidebar :: sidebar"></div>
+
+  <div class="main">
+    <h1>관리자 대시보드</h1>
+    <p>여기는 관리자 대시보드입니다. 실제 콘텐츠는 이후 구현됩니다.</p>
+  </div>
+</body>
+</html>

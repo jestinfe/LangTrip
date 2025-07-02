@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.co.sist.e_learning.admin.auth.AdminSignupDAO">
+
+  <insert id="insertVerificationCode" parameterType="EmailVerificationDTO">
+    INSERT INTO EMAIL_VERIFICATION_ADMIN (
+      VERIFICATION_SEQ, ADMIN_ID, EMAIL, CODE, STATUS, CREATED_AT, EXPIRES_AT
+    ) VALUES (
+      #{verificationSeq, jdbcType=VARCHAR},
+      #{adminId, jdbcType=VARCHAR},
+      #{email, jdbcType=VARCHAR},
+      #{code, jdbcType=VARCHAR},
+      'SENT',
+      SYSTIMESTAMP,
+      #{expiresAt, jdbcType=TIMESTAMP}
+    )
+  </insert>
+
+  <select id="selectValidVerification" resultType="EmailVerificationDTO">
+    SELECT * FROM EMAIL_VERIFICATION_ADMIN
+    WHERE EMAIL = #{email, jdbcType=VARCHAR}
+      AND CODE = #{code, jdbcType=VARCHAR}
+      AND STATUS = 'SENT'
+      AND EXPIRES_AT > SYSTIMESTAMP
+  </select>
+
+  <update id="markCodeVerified">
+    UPDATE EMAIL_VERIFICATION_ADMIN
+    SET STATUS = 'VERIFIED'
+    WHERE VERIFICATION_SEQ = #{verificationSeq, jdbcType=VARCHAR}
+  </update>
+
+  <insert id="insertAdmin" parameterType="AdminSignupDTO">
+    INSERT INTO ADMINS (
+      ADMIN_ID, PASSWORD, ADMIN_NAME, EXTENSION, EMAIL, PHONE, STATUS, REG_DATE
+    ) VALUES (
+      #{id}, #{password}, #{name}, #{extension}, #{email}, #{phone}, 'Y', SYSDATE
+    )
+  </insert>
+
+  <insert id="insertPermission" parameterType="map">
+  INSERT INTO ADMIN_ROLE (ADMIN_ID, ROLE_CODE)
+  VALUES (#{adminId}, #{permissionCode})
+</insert>
+
+</mapper>
