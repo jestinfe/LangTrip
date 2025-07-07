@@ -3,47 +3,67 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="kr.co.sist.e_learning.admin.auth.AdminSignupDAO">
+<mapper namespace="kr.co.sist.e_learning.admin.signup.AdminSignupDAO">
 
+  <!-- 이메일 인증 코드 저장 -->
   <insert id="insertVerificationCode" parameterType="EmailVerificationDTO">
     INSERT INTO EMAIL_VERIFICATION_ADMIN (
       VERIFICATION_SEQ, ADMIN_ID, EMAIL, CODE, STATUS, CREATED_AT, EXPIRES_AT
     ) VALUES (
-      #{verificationSeq, jdbcType=VARCHAR},
-      #{adminId, jdbcType=VARCHAR},
-      #{email, jdbcType=VARCHAR},
-      #{code, jdbcType=VARCHAR},
-      'SENT',
-      SYSTIMESTAMP,
-      #{expiresAt, jdbcType=TIMESTAMP}
+      #{verificationSeq}, NULL, #{email}, #{code}, #{status}, #{createdAt}, #{expiresAt}
     )
   </insert>
 
-  <select id="selectValidVerification" resultType="EmailVerificationDTO">
+  <!-- 인증 유효성 검사 -->
+  <select id="selectValidVerification" parameterType="map" resultType="EmailVerificationDTO">
     SELECT * FROM EMAIL_VERIFICATION_ADMIN
-    WHERE EMAIL = #{email, jdbcType=VARCHAR}
-      AND CODE = #{code, jdbcType=VARCHAR}
+    WHERE EMAIL = #{email}
+      AND CODE = #{code}
       AND STATUS = 'SENT'
       AND EXPIRES_AT > SYSTIMESTAMP
   </select>
 
-  <update id="markCodeVerified">
-    UPDATE EMAIL_VERIFICATION_ADMIN
-    SET STATUS = 'VERIFIED'
-    WHERE VERIFICATION_SEQ = #{verificationSeq, jdbcType=VARCHAR}
-  </update>
+  <!-- 인증 상태 업데이트 -->
+<update id="markCodeVerified" parameterType="java.lang.String">
+  UPDATE EMAIL_VERIFICATION_ADMIN
+  SET STATUS = 'VERIFIED'
+  WHERE VERIFICATION_SEQ = #{verificationSeq, jdbcType=VARCHAR}
+</update>
 
-  <insert id="insertAdmin" parameterType="AdminSignupDTO">
-    INSERT INTO ADMINS (
-      ADMIN_ID, PASSWORD, ADMIN_NAME, EXTENSION, EMAIL, PHONE, STATUS, REG_DATE
+
+  <!-- 회원가입 요청 저장 -->
+ <insert id="insertSignupRequest" parameterType="AdminSignupDTO">
+  INSERT INTO ADMIN_SIGNUP_REQUEST (
+    REQUEST_ID, ADMIN_ID, ADMIN_NAME, EMAIL, PHONE, PASSWORD_HASH, DEPT, STATUS, REQUEST_DATE
+  ) VALUES (
+    #{requestId, jdbcType=VARCHAR},
+    #{adminId, jdbcType=VARCHAR},
+    #{name, jdbcType=VARCHAR},
+    #{email, jdbcType=VARCHAR},
+    #{phone, jdbcType=VARCHAR},
+    #{password, jdbcType=VARCHAR},
+    #{dept, jdbcType=VARCHAR},
+    'PENDING',
+    SYSTIMESTAMP
+  )
+</insert>
+
+
+  <!-- 요청 권한 저장 -->
+  <insert id="insertSignupPermission" parameterType="map">
+    INSERT INTO ADMIN_SIGNUP_ROLE (
+      REQUEST_ID, ROLE_CODE
     ) VALUES (
-      #{id}, #{password}, #{name}, #{extension}, #{email}, #{phone}, 'Y', SYSDATE
+      #{requestId}, #{roleCode}
     )
   </insert>
 
-  <insert id="insertPermission" parameterType="map">
-  INSERT INTO ADMIN_ROLE (ADMIN_ID, ROLE_CODE)
-  VALUES (#{adminId}, #{permissionCode})
-</insert>
-
+  <!-- 이메일 중복 체크 -->
+<select id="checkEmailDuplication" parameterType="String" resultType="Integer">
+  SELECT 
+    (SELECT COUNT(*) FROM ADMIN_SIGNUP_REQUEST WHERE EMAIL = #{email})
+    +
+    (SELECT COUNT(*) FROM ADMINS WHERE EMAIL = #{email}) AS dup_count
+  FROM DUAL
+</select>
 </mapper>

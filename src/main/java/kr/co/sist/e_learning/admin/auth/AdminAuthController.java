@@ -26,7 +26,7 @@ public class AdminAuthController {
 
     @GetMapping("/login")
     public String loginForm() {
-        return "admin/login";
+        return "admin/login/login";
     }
 
     @PostMapping("/login")
@@ -38,7 +38,7 @@ public class AdminAuthController {
 
         if (!verifyRecaptcha(recaptchaResponse)) {
             model.addAttribute("error", "자동 로그인 방지를 확인해주세요.");
-            return "admin/login";
+            return "admin/login/login";
         }
 
         AdminAuthDTO admin = adminAuthService.login(adminId, adminPw);
@@ -48,7 +48,7 @@ public class AdminAuthController {
             return "admin/dashboard";
         } else {
             model.addAttribute("error", "아이디 또는 비밀번호가 틀렸습니다.");
-            return "admin/login";
+            return "admin/login/login";
         }
     }
     

@@ -6,16 +6,18 @@
 <mapper namespace="kr.co.sist.e_learning.admin.auth.AdminAuthDAO">
 
   <!-- 로그인 -->
-  <select id="selectAdminByIdPw" parameterType="map" resultType="kr.co.sist.e_learning.admin.auth.AdminAuthDTO">
-    SELECT 
-        ADMIN_ID,
-        PASSWORD,
-        ADMIN_NAME,
-        STATUS
-    FROM ADMINS
-    WHERE ADMIN_ID = #{id}
-      AND PASSWORD = #{pw}
-  </select>
+  <resultMap id="adminAuthMap" type="kr.co.sist.e_learning.admin.auth.AdminAuthDTO">
+  <id property="adminId" column="ADMIN_ID"/>
+  <result property="adminPw" column="PASSWORD"/>
+  <result property="adminName" column="ADMIN_NAME"/>
+  <result property="status" column="STATUS"/>
+</resultMap>
+
+<select id="loginSelectAdminById" parameterType="String" resultMap="adminAuthMap">
+  SELECT ADMIN_ID, PASSWORD, ADMIN_NAME, STATUS
+  FROM ADMINS
+  WHERE ADMIN_ID = #{id}
+</select>
 
   <!-- 관리자 회원가입 -->
   <insert id="insertAdmin" parameterType="AdminSignupDTO">

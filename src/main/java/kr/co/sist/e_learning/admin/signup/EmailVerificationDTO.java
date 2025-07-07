@@ -1,4 +1,4 @@
-package kr.co.sist.e_learning.admin.auth;
+package kr.co.sist.e_learning.admin.signup;
 
 import java.sql.Timestamp;
 

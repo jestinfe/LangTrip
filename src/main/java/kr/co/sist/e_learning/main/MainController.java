@@ -12,4 +12,10 @@ public class MainController {
 		model.addAttribute("loggedIn", false); // or true if authenticated
 		return "ksh/main";
 	}
+	
+	@GetMapping("/course_list")
+	public String course_list(Model model) {
+		model.addAttribute("loggedIn", false); // or true if authenticated
+		return "ksh/course_list";
+	}
 }
