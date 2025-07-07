@@ -1,9 +1,12 @@
 package kr.co.sist.e_learning;
 
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
+@ComponentScan("kr.co.sist.e_learning")
 public class ELearningPrjApplication {
 
 	public static void main(String[] args) {

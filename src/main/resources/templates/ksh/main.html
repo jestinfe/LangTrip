@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<<<<<<< HEAD
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
@@ -76,6 +77,530 @@
             <ul class="nav-menu">
                 <li><a href="/courses">강의</a></li>
                 <li><a href="/community">커뮤니티</a></li>
+=======
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LangTrip - 당신의 언어 여행</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; 
+            line-height: 1.6; 
+            color: #1e293b; 
+            background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 50%, #7dd3fc 100%);
+            min-height: 100vh;
+        }
+        
+        .header { 
+            background: rgba(255, 255, 255, 0.95); 
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+            position: sticky; 
+            top: 0; 
+            z-index: 100;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        .nav-container { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 0 20px; 
+            height: 70px; 
+        }
+        
+        .logo { 
+            font-size: 28px; 
+            font-weight: 700; 
+            color: #0369a1; 
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo::before {
+            content: '🦜';
+            font-size: 32px;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
+        }
+        
+        .nav-menu { 
+            display: flex; 
+            list-style: none; 
+            gap: 40px; 
+        }
+        
+        .nav-menu a { 
+            text-decoration: none; 
+            color: #475569; 
+            font-weight: 500; 
+            font-size: 16px; 
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .nav-menu a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #0369a1;
+            transition: width 0.3s ease;
+        }
+        
+        .nav-menu a:hover { 
+            color: #0369a1; 
+        }
+        
+        .nav-menu a:hover::after {
+            width: 100%;
+        }
+        
+        .nav-actions { 
+            display: flex; 
+            align-items: center; 
+            gap: 20px; 
+        }
+        
+        .nav-actions a { 
+            text-decoration: none; 
+            color: #64748b; 
+            font-weight: 500; 
+            transition: color 0.3s ease; 
+        }
+        
+        .nav-actions a:hover { 
+            color: #0369a1; 
+        }
+        
+        .hero { 
+            background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 50%, #0369a1 100%);
+            padding: 100px 20px; 
+            text-align: center; 
+            color: white; 
+            position: relative; 
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="1" fill="rgba(255,255,255,0.1)" opacity="0.6"/><circle cx="80" cy="40" r="1.5" fill="rgba(255,255,255,0.1)" opacity="0.4"/><circle cx="40" cy="80" r="1" fill="rgba(255,255,255,0.1)" opacity="0.8"/><circle cx="60" cy="10" r="0.5" fill="rgba(255,255,255,0.1)" opacity="0.5"/><circle cx="10" cy="60" r="1.2" fill="rgba(255,255,255,0.1)" opacity="0.3"/></svg>');
+            animation: float-bg 20s ease-in-out infinite;
+        }
+        
+        @keyframes float-bg {
+            0%, 100% { transform: translateX(0px) translateY(0px); }
+            25% { transform: translateX(10px) translateY(-10px); }
+            50% { transform: translateX(-5px) translateY(-20px); }
+            75% { transform: translateX(-10px) translateY(10px); }
+        }
+        
+        .hero-content { 
+            max-width: 800px; 
+            margin: 0 auto; 
+            position: relative; 
+            z-index: 1; 
+        }
+        
+        .hero h1 { 
+            font-size: 48px; 
+            font-weight: 700; 
+            margin-bottom: 20px; 
+            line-height: 1.2;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .hero p { 
+            font-size: 20px; 
+            margin-bottom: 30px; 
+            opacity: 0.95;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        
+        .cta-buttons { 
+            display: flex; 
+            gap: 20px; 
+            justify-content: center; 
+            flex-wrap: wrap; 
+        }
+        
+        .btn-primary, .btn-secondary { 
+            padding: 14px 32px; 
+            border-radius: 12px; 
+            text-decoration: none; 
+            font-weight: 600; 
+            font-size: 16px; 
+            transition: all 0.3s ease; 
+            border: 2px solid transparent;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-primary { 
+            background: #ffffff; 
+            color: #0369a1; 
+        }
+        
+        .btn-primary:hover { 
+            background: #f8fafc; 
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px -5px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn-secondary { 
+            background: rgba(255,255,255,0.1); 
+            color: white; 
+            border-color: rgba(255,255,255,0.3);
+            backdrop-filter: blur(10px);
+        }
+        
+        .btn-secondary:hover { 
+            background: rgba(255,255,255,0.2); 
+            border-color: white;
+            transform: translateY(-2px);
+        }
+        
+        .main-content { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            padding: 60px 20px; 
+        }
+        
+        .section { 
+            margin-bottom: 60px; 
+        }
+        
+        .section-header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 30px; 
+        }
+        
+        .section-title { 
+            font-size: 32px; 
+            font-weight: 700; 
+            color: #1e293b;
+            position: relative;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, #0ea5e9, #0284c7);
+            border-radius: 2px;
+        }
+        
+        .view-all { 
+            color: #0369a1; 
+            text-decoration: none; 
+            font-weight: 500; 
+            font-size: 16px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .view-all:hover { 
+            color: #0284c7;
+            transform: translateX(5px);
+        }
+        
+        .view-all::after {
+            content: '→';
+            margin-left: 5px;
+            transition: transform 0.3s ease;
+        }
+        
+        .view-all:hover::after {
+            transform: translateX(3px);
+        }
+        
+        .course-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
+            gap: 30px; 
+        }
+        
+        .course-card { 
+            background: rgba(255, 255, 255, 0.9); 
+            border-radius: 16px; 
+            overflow: hidden; 
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); 
+            transition: all 0.3s ease; 
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            backdrop-filter: blur(10px);
+        }
+        
+        .course-card:hover { 
+            transform: translateY(-8px); 
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15);
+        }
+        
+        .course-thumbnail { 
+            width: 100%; 
+            height: 200px; 
+            background: linear-gradient(45deg, #e0f2fe, #bae6fd); 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 48px; 
+            position: relative;
+        }
+        
+        .course-thumbnail::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .course-info { 
+            padding: 20px; 
+        }
+        
+        .course-category { 
+            display: inline-block; 
+            background: linear-gradient(45deg, #dbeafe, #bfdbfe); 
+            color: #1e40af; 
+            padding: 4px 12px; 
+            border-radius: 20px; 
+            font-size: 12px; 
+            font-weight: 500; 
+            margin-bottom: 10px;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+        
+        .course-title { 
+            font-size: 18px; 
+            font-weight: 600; 
+            margin-bottom: 8px; 
+            color: #1e293b; 
+        }
+        
+        .course-instructor { 
+            color: #64748b; 
+            font-size: 14px; 
+            margin-bottom: 10px; 
+        }
+        
+        .course-meta { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+        }
+        
+        .course-rating { 
+            display: flex; 
+            align-items: center; 
+            gap: 4px; 
+            color: #f59e0b; 
+            font-size: 14px; 
+        }
+        
+        .subscribed-section { 
+            background: rgba(255, 255, 255, 0.8); 
+            backdrop-filter: blur(20px);
+            padding: 40px; 
+            border-radius: 20px; 
+            margin-bottom: 60px;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        .instructor-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
+            gap: 20px; 
+        }
+        
+        .instructor-card { 
+            background: rgba(255, 255, 255, 0.9); 
+            backdrop-filter: blur(10px);
+            padding: 20px; 
+            border-radius: 16px; 
+            text-align: center; 
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .instructor-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .instructor-avatar { 
+            width: 60px; 
+            height: 60px; 
+            border-radius: 50%; 
+            background: linear-gradient(135deg, #0ea5e9, #0284c7); 
+            margin: 0 auto 15px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            color: white; 
+            font-weight: 600; 
+            font-size: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        .instructor-name { 
+            font-weight: 600; 
+            margin-bottom: 5px; 
+            color: #1e293b;
+        }
+        
+        .instructor-subject { 
+            color: #64748b; 
+            font-size: 14px; 
+            margin-bottom: 10px; 
+        }
+        
+        .new-video-count { 
+            background: linear-gradient(45deg, #ef4444, #dc2626); 
+            color: white;
+            padding: 4px 12px; 
+            border-radius: 20px; 
+            font-size: 12px; 
+            font-weight: 500;
+            box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        .stats-section { 
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%); 
+            color: white; 
+            padding: 60px 20px; 
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stats-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M20,60 Q30,40 40,60 T60,60 T80,60" stroke="rgba(255,255,255,0.1)" stroke-width="1" fill="none"/><path d="M10,80 Q20,70 30,80 T50,80 T70,80" stroke="rgba(255,255,255,0.1)" stroke-width="1" fill="none"/></svg>');
+            opacity: 0.3;
+        }
+        
+        .stats-grid { 
+            max-width: 800px; 
+            margin: 0 auto; 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); 
+            gap: 40px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .stat-item { 
+            text-align: center; 
+        }
+        
+        .stat-number { 
+            font-size: 36px; 
+            font-weight: 700; 
+            color: #7dd3fc; 
+            margin-bottom: 8px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .stat-label { 
+            color: #cbd5e1; 
+            font-size: 16px; 
+        }
+        
+        .footer { 
+            background: rgba(15, 23, 42, 0.9); 
+            backdrop-filter: blur(20px);
+            padding: 30px 20px; 
+            text-align: center; 
+            color: #94a3b8; 
+            font-size: 14px;
+            border-top: 1px solid rgba(148, 163, 184, 0.2);
+        }
+        
+        .user-state { 
+            display: none; 
+        }
+        
+        .logged-in .user-state { 
+            display: block; 
+        }
+        
+        .logged-out .guest-state { 
+            display: block; 
+        }
+        
+        .logged-out .user-state { 
+            display: none; 
+        }
+        
+        @media (max-width: 768px) { 
+            .nav-menu { 
+                display: none; 
+            } 
+            .hero h1 { 
+                font-size: 36px; 
+            } 
+            .hero p { 
+                font-size: 18px; 
+            } 
+            .cta-buttons { 
+                flex-direction: column; 
+                align-items: center; 
+            } 
+            .section-header { 
+                flex-direction: column; 
+                align-items: flex-start; 
+                gap: 15px; 
+            } 
+            .course-grid { 
+                grid-template-columns: 1fr; 
+            }
+        }
+    </style>
+</head>
+<body class="logged-in">
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav-container">
+            <a href="/" class="logo">LangTrip</a>
+            <ul class="nav-menu">
+                <li><a href="/course_list">강의</a></li>
+                <li><a href="csj/community">커뮤니티</a></li>
+>>>>>>> 221c41c125989c82ed87d555b428529084e52bf1
                 <li><a href="/support">지원센터</a></li>
             </ul>
             <div class="nav-actions">
@@ -86,6 +611,7 @@
     </header>
 
     <!-- Hero Banner -->
+<<<<<<< HEAD
     <section class="hero">
         <div class="hero-content">
             <h1>전문가와 함께하는 온라인 학습 혁명</h1>
@@ -104,10 +630,51 @@
             <div class="subscribed-section">
                 <div class="section-header">
                     <h2 class="section-title">구독한 강사의 새 영상</h2>
+=======
+    <!-- <section class="hero">
+        <div class="hero-content">
+            <h1>누구나 만드는 외국어 강의,<br> 함께 배우는 즐거움</h1>
+            <p>강의를 올리고, 응원받고, 자유롭게 배우는 오픈 e러닝 플랫폼</p>
+            <div class="cta-buttons">
+                <a href="/courses" class="btn-secondary">강의 둘러보기</a>
+            </div>
+        </div>
+    </section> -->
+
+<!--     Stats Section
+    <section class="stats-section">
+        <div class="stats-grid">
+            <div class="stat-item">
+                <div class="stat-number">65,123,345</div>
+                <div class="stat-label">전체 회원</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">222,345</div>
+                <div class="stat-label">강의</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">657,231</div>
+                <div class="stat-label">강사 회원</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">97%</div>
+                <div class="stat-label">만족도</div>
+            </div>
+        </div>
+    </section>
+ -->
+    <main class="main-content">
+        <!-- 구독한 강사 영상 -->
+        <section class="section">
+            <div class="subscribed-section">
+                <div class="section-header">
+                    <h2 class="section-title">내가 좋아한 크리에이터의 새 영상</h2>
+>>>>>>> 221c41c125989c82ed87d555b428529084e52bf1
                     <a href="/instructors" class="view-all">전체 보기</a>
                 </div>
                 <div class="instructor-grid">
                     <div class="instructor-card">
+<<<<<<< HEAD
                         <div class="instructor-avatar">J</div>
                         <div class="instructor-name">정교수</div>
                         <div class="instructor-subject">웹 개발</div>
@@ -117,6 +684,17 @@
                         <div class="instructor-avatar">K</div>
                         <div class="instructor-name">김강사</div>
                         <div class="instructor-subject">데이터 분석</div>
+=======
+                        <div class="instructor-avatar">🦜</div>
+                        <div class="instructor-name">후지코</div>
+                        <div class="instructor-subject">일본어 속어</div>
+                        <span class="new-video-count">새 영상 2개</span>
+                    </div>
+                    <div class="instructor-card">
+                        <div class="instructor-avatar">🦜</div>
+                        <div class="instructor-name">Chirpy</div>
+                        <div class="instructor-subject">영국식 영어</div>
+>>>>>>> 221c41c125989c82ed87d555b428529084e52bf1
                         <span class="new-video-count">새 영상 1개</span>
                     </div>
                 </div>
@@ -126,11 +704,16 @@
         <!-- 인기 강의 -->
         <section class="section">
             <div class="section-header">
+<<<<<<< HEAD
                 <h2 class="section-title">인기 강의</h2>
+=======
+                <h2 class="section-title">지금 인기 폭발! 외국어 강의</h2>
+>>>>>>> 221c41c125989c82ed87d555b428529084e52bf1
                 <a href="/courses/popular" class="view-all">전체 보기</a>
             </div>
             <div class="course-grid">
                 <div class="course-card">
+<<<<<<< HEAD
                     <div class="course-thumbnail">📚</div>
                     <div class="course-info">
                         <span class="course-category">프로그래밍</span>
@@ -139,10 +722,20 @@
                         <div class="course-meta">
                             <div class="course-rating">⭐ 4.8 (132)</div>
                             <div class="course-price">₩39,000</div>
+=======
+                    <div class="course-thumbnail">🇯🇵</div>
+                    <div class="course-info">
+                        <span class="course-category">일본어</span>
+                        <h3 class="course-title">애니로 배우는 진짜 일본어 표현</h3>
+                        <p class="course-instructor">타카하시 유미</p>
+                        <div class="course-meta">
+                            <div class="course-rating">⭐ 4.9 (183)</div>
+>>>>>>> 221c41c125989c82ed87d555b428529084e52bf1
                         </div>
                     </div>
                 </div>
                 <div class="course-card">
+<<<<<<< HEAD
                     <div class="course-thumbnail">📊</div>
                     <div class="course-info">
                         <span class="course-category">데이터 사이언스</span>
@@ -151,20 +744,37 @@
                         <div class="course-meta">
                             <div class="course-rating">⭐ 4.9 (210)</div>
                             <div class="course-price">₩45,000</div>
+=======
+                    <div class="course-thumbnail">🇪🇸</div>
+                    <div class="course-info">
+                        <span class="course-category">스페인어</span>
+                        <h3 class="course-title">라틴팝 가사로 배우는 스페인어</h3>
+                        <p class="course-instructor">Carlos Beats</p>
+                        <div class="course-meta">
+                            <div class="course-rating">⭐ 4.8 (152)</div>
+>>>>>>> 221c41c125989c82ed87d555b428529084e52bf1
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
+<<<<<<< HEAD
         <!-- 최신 강의 -->
         <section class="section">
             <div class="section-header">
                 <h2 class="section-title">최신 강의</h2>
+=======
+        <!-- 최신 업로드 -->
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title">따끈따끈한 새 강의</h2>
+>>>>>>> 221c41c125989c82ed87d555b428529084e52bf1
                 <a href="/courses/latest" class="view-all">전체 보기</a>
             </div>
             <div class="course-grid">
                 <div class="course-card">
+<<<<<<< HEAD
                     <div class="course-thumbnail">🎥</div>
                     <div class="course-info">
                         <span class="course-category">UI/UX 디자인</span>
@@ -173,10 +783,20 @@
                         <div class="course-meta">
                             <div class="course-rating">⭐ 4.7 (85)</div>
                             <div class="course-price">₩32,000</div>
+=======
+                    <div class="course-thumbnail">🇫🇷</div>
+                    <div class="course-info">
+                        <span class="course-category">프랑스어</span>
+                        <h3 class="course-title">카페 주문으로 배우는 프랑스어 회화</h3>
+                        <p class="course-instructor">루이즈 파리지앵</p>
+                        <div class="course-meta">
+                            <div class="course-rating">⭐ 4.6 (74)</div>
+>>>>>>> 221c41c125989c82ed87d555b428529084e52bf1
                         </div>
                     </div>
                 </div>
                 <div class="course-card">
+<<<<<<< HEAD
                     <div class="course-thumbnail">💻</div>
                     <div class="course-info">
                         <span class="course-category">백엔드</span>
@@ -185,6 +805,15 @@
                         <div class="course-meta">
                             <div class="course-rating">⭐ 5.0 (40)</div>
                             <div class="course-price">₩55,000</div>
+=======
+                    <div class="course-thumbnail">🇻🇳</div>
+                    <div class="course-info">
+                        <span class="course-category">베트남어</span>
+                        <h3 class="course-title">현지에서 통하는 생존 베트남어</h3>
+                        <p class="course-instructor">Nguyen Linh</p>
+                        <div class="course-meta">
+                            <div class="course-rating">⭐ 4.7 (61)</div>
+>>>>>>> 221c41c125989c82ed87d555b428529084e52bf1
                         </div>
                     </div>
                 </div>
@@ -192,6 +821,7 @@
         </section>
     </main>
 
+<<<<<<< HEAD
     <!-- Stats Section -->
     <section class="stats-section">
         <div class="stats-grid">
@@ -215,3 +845,11 @@
     </section>
 </body>
 </html>
+=======
+    <!-- Footer -->
+    <footer class="footer">
+        © 2025 LangTrip. All rights reserved.
+    </footer>
+</body>
+</html>
+>>>>>>> 221c41c125989c82ed87d555b428529084e52bf1

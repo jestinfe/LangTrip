@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
@@ -11,3 +12,67 @@
       AND status = 'Y'
   </select>
 </mapper>
+=======
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.co.sist.e_learning.admin.auth.AdminAuthDAO">
+
+  <!-- 로그인 -->
+  <resultMap id="adminAuthMap" type="kr.co.sist.e_learning.admin.auth.AdminAuthDTO">
+  <id property="adminId" column="ADMIN_ID"/>
+  <result property="adminPw" column="PASSWORD"/>
+  <result property="adminName" column="ADMIN_NAME"/>
+  <result property="status" column="STATUS"/>
+</resultMap>
+
+<select id="loginSelectAdminById" parameterType="String" resultMap="adminAuthMap">
+  SELECT ADMIN_ID, PASSWORD, ADMIN_NAME, STATUS
+  FROM ADMINS
+  WHERE ADMIN_ID = #{id}
+</select>
+
+  <!-- 관리자 회원가입 -->
+  <insert id="insertAdmin" parameterType="AdminSignupDTO">
+    INSERT INTO ADMINS (
+      ADMIN_ID, PASSWORD, ADMIN_NAME, EXTENSION, EMAIL, PHONE, STATUS, REG_DATE
+    ) VALUES (
+      #{id}, #{password}, #{name}, #{extension}, #{email}, #{phone}, 'Y', SYSDATE
+    )
+  </insert>
+
+  <!-- 권한 저장 -->
+  <insert id="insertPermission" parameterType="map">
+    INSERT INTO ADMIN_ROLE (ADMIN_ID, ROLE_CODE)
+    VALUES (#{adminId}, #{permissionCode})
+  </insert>
+
+  <!-- 이메일 인증 코드 저장 -->
+  <insert id="insertVerificationCode" parameterType="EmailVerificationDTO">
+    INSERT INTO EMAIL_VERIFICATION_ADMIN (
+      VERIFICATION_SEQ, ADMIN_ID, EMAIL, CODE, STATUS, CREATED_AT, EXPIRES_AT
+    ) VALUES (
+      #{verificationSeq}, #{adminId}, #{email}, #{code}, 'SENT', SYSTIMESTAMP, #{expiresAt}
+    )
+  </insert>
+
+  <!-- 이메일 인증 코드 확인 -->
+  <select id="selectValidVerification" resultType="EmailVerificationDTO">
+    SELECT * FROM EMAIL_VERIFICATION_ADMIN
+     WHERE EMAIL = #{email}
+       AND CODE = #{code}
+       AND STATUS = 'SENT'
+       AND EXPIRES_AT > SYSTIMESTAMP
+  </select>
+
+  <!-- 이메일 인증 코드 상태 변경 -->
+  <update id="markCodeVerified">
+    UPDATE EMAIL_VERIFICATION_ADMIN
+       SET STATUS = 'VERIFIED'
+     WHERE VERIFICATION_SEQ = #{verificationSeq}
+  </update>
+
+</mapper>
+>>>>>>> 221c41c125989c82ed87d555b428529084e52bf1
