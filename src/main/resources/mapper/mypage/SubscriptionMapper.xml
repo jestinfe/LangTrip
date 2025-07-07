@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.co.sist.e_learning.mypage.SubscriptionMapper">
+
+<!-- 구독 목록 조회 -->
+<select id="selectSubscriptions" parameterType="string" resultType="kr.co.sist.e_learning.mypage.SubscriptionDTO">
+  SELECT
+    uf.followee_id AS instructorId,
+    u.nickname AS instructorName,
+    (SELECT COUNT(*) FROM course c WHERE c.user_seq = uf.followee_id) AS courseCount,
+    '' AS subscribedAt
+  FROM user_follow uf
+  JOIN users u ON uf.followee_id = u.user_seq
+  WHERE uf.follower_id = #{userSeq}
+</select>
+
+
+
+
+<!-- 구독 취소 -->
+<delete id="deleteSubscription" parameterType="map">
+  DELETE FROM user_follow
+  WHERE follower_id = #{userSeq}
+    AND followee_id = #{instructorId}
+</delete>
+
+</mapper>

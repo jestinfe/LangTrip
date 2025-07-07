@@ -1,28 +1,4 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-<meta charset="UTF-8">
-<title>계좌 연동</title>
-<style>
-body { font-family: 'Segoe UI', sans-serif; background-color: #f7f9fc; margin: 0; padding: 20px; }
-.page-title { font-size: 24px; font-weight: bold; margin-bottom: 20px; }
-.form-box { background-color: #ffffff; border-radius: 15px; box-shadow: 0 4px 8px rgba(0,0,0,0.05); padding: 30px; width: 500px; }
-.form-group { margin-bottom: 20px; }
-label { display: block; font-weight: bold; margin-bottom: 6px; color: #333; }
-select, input[type="text"] { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; font-size: 14px; }
-.link-btn, .unlink-btn { padding: 12px 20px; background-color: #7f9cf5; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; transition: background 0.2s; }
-.link-btn:hover { background-color: #5a7be0; }
-.unlink-btn { background-color: #f66; margin-top: 10px; }
-.unlink-btn:hover { background-color: #d44; }
-.account-info-box { background-color: #eef4ff; padding: 15px; border-radius: 10px; margin-bottom: 20px; color: #333; }
-</style>
-</head>
-<body>
-
-<div class="page-title">💳 계좌 연동</div>
-
-<div class="form-box">
-
+<div th:fragment="link_account">
   <div th:if="${linked}" class="account-info-box">
     <div><strong>은행명:</strong> <span th:text="${bank}">국민은행</span></div>
     <div><strong>계좌번호:</strong> <span th:text="${maskedAccount}">211-****-****</span></div>
@@ -61,6 +37,3 @@ select, input[type="text"] { width: 100%; padding: 10px; border: 1px solid #ccc;
     <button class="link-btn" type="submit">계좌 연동하기</button>
   </form>
 </div>
-
-</body>
-</html>

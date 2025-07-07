@@ -3,10 +3,11 @@ package kr.co.sist.e_learning;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.ComponentScan;
+//import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
-@ComponentScan("kr.co.sist.e_learning")
+//@ComponentScan("kr.co.sist.e_learning")
+@MapperScan("kr.co.sist.e_learning.mypage.mapper")
 public class ELearningPrjApplication {
 
 	public static void main(String[] args) {

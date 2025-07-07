@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="dashboard" class="dashboard-container">
+
+  <h2 class="title">🎢 마이페이지 요약 정보</h2>
+
+  <div class="info-box">
+    <p><strong>사용자 ID:</strong> <span th:text="${myData.userSeq}">testUser</span></p>
+    <p><strong>이름:</strong> <span th:text="${myData.nickname}">홍길동</span></p>
+    <p><strong>이메일:</strong> <span th:text="${myData.email}">hong@example.com</span></p>
+  </div>
+
+  <hr>
+
+  <div class="summary-section">
+    <div class="summary-item">
+      <p class="label">✅ 완료한 강좌 수</p>
+      <p class="value" th:text="${myData.completedCourses}">0</p>
+    </div>
+
+    <div class="summary-item">
+      <p class="label">⏱️ 총 학습 시간</p>
+      <p class="value" th:text="${myData.totalStudyTime}">0</p><span>시간</span>
+    </div>
+
+	<div class="summary-item">
+	  <p class="label">📊 퀴즈 정답률</p>
+	  <p class="value" th:text="${myData.quizAccuracy + '%'}">0%</p>
+	</div>
+
+    <div class="summary-item">
+      <h3>총 후원 구름</h3>
+      <p th:text="${myData.totalDonation} + '개'"></p>
+      <p class="label">🎖️ 후원 등급</p>
+      <p class="value" th:text="${myData.donationLevel}">Bronze</p>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

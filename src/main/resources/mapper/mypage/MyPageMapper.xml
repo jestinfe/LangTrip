@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.co.sist.e_learning.mypage.MyPageMapper">
+
+<!-- 통계자료 -->
+<select id="selectMyPageSummary"
+            parameterType="string"
+            resultType="kr.co.sist.e_learning.mypage.MyPageDTO">
+        SELECT
+            u.user_seq AS userSeq,
+            u.nickname AS nickname,
+            u.email,
+            u.social_id AS socialId,
+            -- 실제 통계 쿼리로 대체 가능
+            3 AS completedCourses,
+            120 AS totalStudyTime,
+            95.5 AS quizAccuracy,
+            '실버' AS donationLevel,
+            (
+                SELECT NVL(SUM(d.donation_amount), 0)
+                FROM donations d
+                JOIN cloud_wallet cw ON d.wallet_seq = cw.wallet_seq
+                WHERE cw.user_seq = u.user_seq
+            ) AS totalDonation
+        FROM users u
+        WHERE u.user_seq = #{userSeq}
+    </select>
+
+<!-- 내 정보 조회 -->
+<select id="selectUserInfo" parameterType="string" resultType="kr.co.sist.e_learning.mypage.MyPageDTO">
+    SELECT 
+        user_seq AS userSeq,
+        email,
+        password,
+        nickname,
+        status,
+        profile,
+        social_id AS socialId,
+        social_provider AS socialProvider
+    FROM users
+    WHERE user_seq = #{userSeq}
+</select>
+
+
+<!-- 총 후원액 합계 -->
+<select id="selectTotalDonationByUserSeq" resultType="int" parameterType="string">
+    SELECT NVL(SUM(d.donation_amount), 0)
+    FROM donations d
+    JOIN cloud_wallet w ON d.wallet_seq = w.wallet_seq
+    WHERE w.user_seq = #{userSeq}
+</select>
+
+
+
+</mapper>

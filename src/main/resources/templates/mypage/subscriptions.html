@@ -1,0 +1,39 @@
+<div>
+  <h2 style="margin-bottom: 20px;">👥 구독 목록</h2>
+
+  <table style="width: 100%; border-collapse: collapse; text-align: center;">
+    <thead>
+      <tr style="background-color: #f0f4ff;">
+        <th style="padding: 10px;">강사 ID</th>
+        <th style="padding: 10px;">강사명</th>
+        <th style="padding: 10px;">강의 수</th>
+        <th style="padding: 10px;">구독일</th>
+        <th style="padding: 10px;">취소</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr th:each="s : ${subscriptionList}" style="border-bottom: 1px solid #ddd;">
+        <td th:text="${s.instructorId}" style="padding: 10px;">instructor1</td>
+        <td th:text="${s.instructorName}" style="padding: 10px;">홍길동</td>
+        <td th:text="${s.courseCount}" style="padding: 10px;">3</td>
+        <td th:text="${s.subscribedAt}" style="padding: 10px;">2025-07-01</td>
+        <td style="padding: 10px;">
+          <button th:attr="data-id=${s.instructorId}" onclick="cancelSubscription(this)">취소</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<script>
+function cancelSubscription(btn) {
+  const instructorId = btn.getAttribute("data-id");
+  if (confirm("정말로 구독을 취소하시겠습니까?")) {
+    fetch('/mypage/cancel_subscription?instructorId=' + instructorId, {
+      method: 'DELETE'
+    })
+    .then(() => loadContent('/mypage/subscriptions'))
+    .catch(err => alert("구독 취소 실패: " + err));
+  }
+}
+</script>
