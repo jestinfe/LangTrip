@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>로그인</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f5f5f5;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: #666;
+            font-size: 14px;
+        }
+
+       
+      
+
+        .login-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 60px 40px;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .login-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 40px;
+        }
+
+        .form-group {
+    margin-bottom: 20px;
+    text-align: left;
+    position: relative;
+}
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #1DA1F2;
+            box-shadow: 0 0 0 3px rgba(29, 161, 242, 0.1);
+        }
+
+        .password-group {
+            position: relative;
+        }
+
+       .forgot-username {
+    position: absolute;
+    top: -5px;
+    right: 0;
+    color: #999;
+    font-size: 12px;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+        .forgot-username:hover {
+    color: #1DA1F2;
+}
+
+        .forgot-password {
+            position: absolute;
+            top: -5px;
+            right: 0;
+            color: #999;
+            font-size: 12px;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .forgot-password:hover {
+            color: #1DA1F2;
+        }
+
+        .login-button {
+            width: 100%;
+            padding: 15px;
+            background: #1DA1F2;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .login-button:hover {
+            background: #1991DB;
+        }
+
+        .signup-button {
+            width: 100%;
+            padding: 15px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .signup-button:hover {
+            background: #218838;
+        }
+
+        .divider {
+            position: relative;
+            margin: 30px 0;
+            text-align: center;
+            color: #999;
+            font-size: 14px;
+        }
+
+        .divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: #e1e1e1;
+            z-index: 1;
+        }
+
+        .divider span {
+            background: white;
+            padding: 0 15px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .social-login {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .social-button {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: white;
+            color: #333;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .social-button:hover {
+            background: #f8f9fa;
+            border-color: #ccc;
+        }
+
+        .google-button {
+            color: #4285f4;
+        }
+
+        .kakao-button {
+            background: #fee500;
+            border-color: #fee500;
+            color: #3c1e1e;
+        }
+
+        .kakao-button:hover {
+            background: #fdd835;
+            border-color: #fdd835;
+        }
+
+        .error-message {
+            color: #dc3545;
+            font-size: 14px;
+            margin-top: 10px;
+            padding: 10px;
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            border-radius: 4px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 40px 20px;
+                margin: 20px;
+            }
+            
+            .social-login {
+                flex-direction: column;
+            }
+            
+            .forgot-username {
+                right: 100px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        로그인 화면
+    </div>
+    
+
+
+    <div class="login-container">
+        <h1 class="login-title">로그인</h1>
+        
+        <form id="loginForm">
+            <div class="form-group">
+    <label for="username">닉네임</label>
+    <input 
+        type="text" 
+        id="username" 
+        name="username"
+        class="form-control" 
+        placeholder="닉네임을 입력하세요"
+        required
+    >
+    <a href="#" class="forgot-username">닉네임을 잊어버리셨습니까?</a>
+</div>
+            
+            <div class="form-group password-group">
+                <label for="password">비밀번호</label>
+                <a href="#" class="forgot-password">비밀번호를 잊으셨나요?</a>
+                <input 
+                    type="password" 
+                    id="password" 
+                    name="password"
+                    class="form-control" 
+                    placeholder="비밀번호를 입력하세요"
+                    required
+                >
+            </div>
+            
+            <div class="error-message" id="errorMessage">
+                로그인에 실패했습니다.
+            </div>
+            
+            <button type="submit" class="login-button">로그인하기</button>
+        </form>
+        
+        <button type="button" class="signup-button" onclick="goToSignup()">회원가입</button>
+        
+        <div class="divider">
+            <span>또는</span>
+        </div>
+        
+        <div class="social-login">
+            <a href="#" class="social-button google-button" onclick="loginWithGoogle()">
+                <svg width="18" height="18" viewBox="0 0 24 24">
+                    <path fill="#4285f4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                    <path fill="#34a853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                    <path fill="#fbbc05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                    <path fill="#ea4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                </svg>
+                GOOGLE
+            </a>
+            <a href="#" class="social-button kakao-button" onclick="loginWithKakao()">
+                💬 카카오톡으로 로그인
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // 폼 유효성 검사
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if (!username || !password) {
+                showError('닉네임과 비밀번호를 모두 입력해주세요.');
+            } else {
+                alert('로그인 처리 중...');
+            }
+        });
+        
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.classList.add('show');
+            
+            setTimeout(() => {
+                errorDiv.classList.remove('show');
+            }, 5000);
+        }
+        
+        // 입력 필드 포커스 시 에러 메시지 숨기기
+        document.querySelectorAll('.form-control').forEach(input => {
+            input.addEventListener('focus', function() {
+                document.getElementById('errorMessage').classList.remove('show');
+            });
+        });
+
+        function goToSignup() {
+            alert('회원가입 페이지로 이동');
+        }
+
+        function loginWithGoogle() {
+            alert('구글 로그인 처리');
+        }
+
+        function loginWithKakao() {
+            alert('카카오 로그인 처리');
+        }
+    </script>
+</body>
+</html>

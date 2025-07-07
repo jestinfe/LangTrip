@@ -149,39 +149,39 @@
       <label>권한 선택</label>
       <div class="permission-grid">
         <div class="permission-item">
-          <input type="checkbox" id="permSuper" value="super">
+          <input type="checkbox" id="permSuper" value="ROLE_SUPER">
           <label for="permSuper">슈퍼 관리자</label>
         </div>
         <div class="permission-item">
-          <input type="checkbox" id="permAccount" value="account">
+          <input type="checkbox" id="permAccount" value="ROLE_ACCOUNT">
           <label for="permAccount">관리자 계정 관리</label>
         </div>
         <div class="permission-item">
-          <input type="checkbox" id="permMember" value="member">
+          <input type="checkbox" id="permMember" value="ROLE_MEMBER">
           <label for="permMember">회원 관리</label>
         </div>
         <div class="permission-item">
-          <input type="checkbox" id="permLecture" value="lecture">
+          <input type="checkbox" id="permLecture" value="ROLE_COURSE">
           <label for="permLecture">강의 관리</label>
         </div>
         <div class="permission-item">
-          <input type="checkbox" id="permSubscribe" value="subscribe">
+          <input type="checkbox" id="permSubscribe" value="ROLE_SUBSCRIBE">
           <label for="permSubscribe">구독 관리</label>
         </div>
         <div class="permission-item">
-          <input type="checkbox" id="permLPayment" value="payment">
+          <input type="checkbox" id="permLPayment" value="ROLE_PAYMENT">
           <label for="permLPayment">후원 관리</label>
         </div>
         <div class="permission-item">
-          <input type="checkbox" id="permCommunity" value="community">
+          <input type="checkbox" id="permCommunity" value="ROLE_COMMUNITY">
           <label for="permCommunity">커뮤니티 관리</label>
         </div>
         <div class="permission-item">
-          <input type="checkbox" id="permReport" value="report">
+          <input type="checkbox" id="permReport" value="ROLE_REPORT">
           <label for="permReport">신고 관리</label>
         </div>
         <div class="permission-item">
-          <input type="checkbox" id="permSupport" value="support">
+          <input type="checkbox" id="permSupport" value="ROLE_SUPPORT">
           <label for="permSupport">지원센터 관리</label>
         </div>
       </div>
@@ -223,7 +223,7 @@ function handleSignup(event) {
 
   // 입력 값 수집
   const data = {
-    id: $("#signupId").val(),  // ← 관리자 로그인용 ID (ADMIN_ID)
+    adminId: $("#signupId").val(),  // ← 관리자 로그인용 ID (ADMIN_ID)
     name: $("#signupName").val(),
     extension: $("#signupExtension").val(),
     email: $("#signupEmail").val(),

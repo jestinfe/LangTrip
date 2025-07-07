@@ -3,68 +3,605 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>EduPro - 강의 목록</title>
+    <title>LangTrip - 강의 목록</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
     <style>
-        /* (기존 CSS 그대로 유지) */
-        * { margin:0; padding:0; box-sizing:border-box; }
-        body { font-family:'Inter', -apple-system, BlinkMacSystemFont, sans-serif; line-height:1.6; color:#1a1a1a; background-color:#f8fafc; }
-        .header { background:#fff; border-bottom:1px solid #e5e7eb; position:sticky; top:0; z-index:100; backdrop-filter:blur(10px); }
-        .nav-container { max-width:1200px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; padding:0 20px; height:70px; }
-        .logo { font-size:28px; font-weight:700; color:#2563eb; text-decoration:none; }
-        .nav-menu { display:flex; list-style:none; gap:40px; }
-        .nav-menu a { text-decoration:none; color:#374151; font-weight:500; font-size:16px; transition:color .2s; }
-        .nav-menu a:hover, .nav-menu a.active { color:#2563eb; }
-        .nav-actions { display:flex; align-items:center; gap:20px; }
-        .nav-actions a { text-decoration:none; color:#6b7280; font-weight:500; transition:color .2s; }
-        .nav-actions a:hover { color:#2563eb; }
-        .login-btn { background:#2563eb; color:#fff!important; padding:10px 24px; border-radius:8px; transition:background .2s; }
-        .login-btn:hover { background:#1d4ed8; }
-        .create-course-btn { background:#059669; color:#fff!important; padding:10px 24px; border-radius:8px; transition:background .2s; font-weight:600; }
-        .create-course-btn:hover { background:#047857; }
-        .main-container { max-width:1200px; margin:0 auto; padding:40px 20px; }
-        .page-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:30px; }
-        .page-title { font-size:32px; font-weight:700; color:#1f2937; }
-        .results-count { color:#6b7280; font-size:16px; margin-top:5px; }
-        .search-filter-section { background:#fff; padding:30px; border-radius:16px; box-shadow:0 1px 3px rgba(0,0,0,0.1); margin-bottom:30px; }
-        .search-container { position:relative; margin-bottom:25px; }
-        .search-input { width:100%; padding:14px 50px 14px 20px; border:2px solid #e5e7eb; border-radius:12px; font-size:16px; transition:border-color .2s; }
-        .search-input:focus { outline:none; border-color:#2563eb; }
-        .search-icon { position:absolute; right:18px; top:50%; transform:translateY(-50%); color:#6b7280; font-size:20px; }
-        /* … 그 외 모든 CSS 생략 없이 그대로 복사 … */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background-color: #f8fafc;
+        }
+
+        /* Header */
+        .header {
+            background: #ffffff;
+            border-bottom: 1px solid #e5e7eb;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            height: 70px;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            color: #2563eb;
+            text-decoration: none;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 40px;
+        }
+
+        .nav-menu a {
+            text-decoration: none;
+            color: #374151;
+            font-weight: 500;
+            font-size: 16px;
+            transition: color 0.2s;
+        }
+
+        .nav-menu a:hover,
+        .nav-menu a.active {
+            color: #2563eb;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .nav-actions a {
+            text-decoration: none;
+            color: #6b7280;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-actions a:hover {
+            color: #2563eb;
+        }
+
+        .login-btn {
+            background: #2563eb;
+            color: white !important;
+            padding: 10px 24px;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+
+        .login-btn:hover {
+            background: #1d4ed8;
+            color: white !important;
+        }
+
+        .create-course-btn {
+            background: #059669;
+            color: white !important;
+            padding: 10px 24px;
+            border-radius: 8px;
+            transition: background 0.2s;
+            font-weight: 600;
+        }
+
+        .create-course-btn:hover {
+            background: #047857;
+            color: white !important;
+        }
+
+        /* Main Container */
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* Page Header */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .page-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .results-count {
+            color: #6b7280;
+            font-size: 16px;
+            margin-top: 5px;
+        }
+
+        /* Search & Filter Section */
+        .search-filter-section {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .search-container {
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 14px 50px 14px 20px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: border-color 0.2s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6b7280;
+            font-size: 20px;
+        }
+
+        .filter-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            align-items: end;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filter-label {
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .filter-select {
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+            background: white;
+            transition: border-color 0.2s;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .filter-btn {
+            padding: 12px 20px;
+            border: 2px solid #e5e7eb;
+            background: white;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-btn:hover {
+            border-color: #2563eb;
+            color: #2563eb;
+        }
+
+        .filter-btn.active {
+            background: #2563eb;
+            color: white;
+            border-color: #2563eb;
+        }
+
+        .clear-filters {
+            background: #f3f4f6;
+            color: #6b7280;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .clear-filters:hover {
+            background: #e5e7eb;
+        }
+
+        /* Active Filters */
+        .active-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .filter-tag {
+            background: #eff6ff;
+            color: #2563eb;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filter-tag .remove {
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        /* Course Grid */
+        .course-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+        }
+
+        .course-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s;
+            border: 1px solid #f3f4f6;
+            position: relative;
+        }
+
+        .course-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+        }
+
+        .course-thumbnail {
+            width: 100%;
+            height: 220px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            color: white;
+            position: relative;
+        }
+
+        .course-level {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #374151;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .course-duration {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .course-info {
+            padding: 25px;
+        }
+
+        .course-category {
+            display: inline-block;
+            background: #f0f9ff;
+            color: #0369a1;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .course-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #1f2937;
+            line-height: 1.4;
+            height: 50px;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        .course-instructor {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .instructor-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .instructor-name {
+            color: #6b7280;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .course-stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .course-rating {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #fbbf24;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .course-students {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .course-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .course-price {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .original-price {
+            color: #9ca3af;
+            font-size: 14px;
+            text-decoration: line-through;
+        }
+
+        .current-price {
+            font-weight: 700;
+            color: #059669;
+            font-size: 18px;
+        }
+
+        .enroll-btn {
+            background: #2563eb;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .enroll-btn:hover {
+            background: #1d4ed8;
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 40px;
+        }
+
+        .pagination button {
+            padding: 10px 16px;
+            border: 2px solid #e5e7eb;
+            background: white;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .pagination button:hover {
+            border-color: #2563eb;
+            color: #2563eb;
+        }
+
+        .pagination button.active {
+            background: #2563eb;
+            color: white;
+            border-color: #2563eb;
+        }
+
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Loading State */
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #e5e7eb;
+            border-top: 4px solid #2563eb;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6b7280;
+        }
+
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-menu {
+                display: none;
+            }
+
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .filter-row {
+                grid-template-columns: 1fr;
+            }
+
+            .filter-buttons {
+                flex-wrap: wrap;
+            }
+
+            .course-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .main-container {
+                padding: 20px 15px;
+            }
+
+            .search-filter-section {
+                padding: 20px;
+            }
+        }
+
+        /* User State Management */
+        .user-state {
+            display: none;
+        }
+
+        .logged-in .user-state {
+            display: block;
+        }
+
+        .logged-out .guest-state {
+            display: block;
+        }
+
+        .logged-out .user-state {
+            display: none;
+        }
     </style>
 </head>
 <body class="logged-out">
+    <!-- Header -->
     <header class="header">
-        <nav class="nav-container">
-            <a th:href="@{/}" class="logo">EduPro</a>
-            <ul class="nav-menu">
-                <li><a th:href="@{/courses}" class="active">강의</a></li>
-                <li><a th:href="@{/community}">커뮤니티</a></li>
-                <li><a th:href="@{/support}">지원센터</a></li>
-            </ul>
-            <div class="nav-actions">
-                <a href="#" class="guest-state">마이페이지</a>
-                <a href="#" class="login-btn guest-state" onclick="toggleLogin()">로그인</a>
-                <a href="#" class="user-state" th:text="${user.name}" style="display:none;"></a>
-                <a href="#" class="create-course-btn user-state" style="display:none;">강의 개설</a>
-                <a href="#" class="user-state" onclick="toggleLogin()" style="display:none;">로그아웃</a>
-            </div>
-        </nav>
-    </header>
-    <main class="main-container">
-        <div class="page-header">
-            <div>
-                <h1 class="page-title">전체 강의</h1>
-                <p class="results-count" th:text="'총 ' + ${#lists.size(courses)} + '개의 강의'">총 1,247개의 강의</p>
-            </div>
+    <nav class="nav-container">
+        <a th:href="@{/}" class="logo">LangTrip</a>
+        <ul class="nav-menu">
+            <li><a th:href="@{/courses}" class="active">강의</a></li>
+            <li><a th:href="@{/community}">커뮤니티</a></li>
+            <li><a th:href="@{/support}">지원센터</a></li>
+        </ul>
+        <div class="nav-actions">
+            <a href="#" class="guest-state">마이페이지</a>
+            <a href="#" class="login-btn guest-state" onclick="toggleLogin()">로그인</a>
+           <a href="#" class="guest-state" th:if="${user == null}">비로그인 사용자</a>
+<a href="#" class="user-state" th:if="${user != null}" th:text="${user.name}"></a>
+            <a href="#" class="create-course-btn user-state" style="display:none;">강의 개설</a>
+            <a href="#" class="user-state" onclick="toggleLogin()" style="display:none;">로그아웃</a>
         </div>
-        <!-- Search & Filter Section (JS 활용 그대로 유지) -->
-        <div class="search-filter-section">
-            <div class="search-container">
-                <input type="text" class="search-input" placeholder="원하는 강의를 검색해보세요..." id="searchInput">
-                <span class="search-icon">🔍</span>
-            </div>
+    </nav>
+</header>
+
+    <main class="main-container">
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">전체 강의</h1>
+<p class="results-count" th:if="${courses != null}" th:text="'총 ' + ${#lists.size(courses)} + '개의 강의'"></p>
+<p class="results-count" th:unless="${courses != null}">총 0개의 강의</p>        </div>
+    </div>
+
+    <div class="search-filter-section">
+        <div class="search-container">
+            <input type="text" class="search-input" placeholder="원하는 강의를 검색해보세요..." id="searchInput" />
+            <span class="search-icon">🔍</span>
+        </div>
             
             <div class="filter-row">
                 <div class="filter-group">
@@ -124,501 +661,520 @@
                 <!-- Active filter tags will be inserted here -->
             </div>
         </div>
-        <!-- Course Grid -->
-        <div class="course-grid">
-            <div class="course-card" th:each="course : ${courses}">
-                <div class="course-thumbnail">
-                    <div class="course-level" th:text="${course.level}">중급</div>
-                    <div class="course-duration" th:text="${course.duration}">12시간</div>
-                    <span th:text="${course.thumbnail}">🎯</span>
+
+         <!-- 강의 목록 -->
+    <div class="course-grid" id="courseGrid">
+        <div class="course-card" th:each="course : ${courses}">
+            <div class="course-thumbnail">
+                <div class="course-level" th:text="${course.level}">중급</div>
+                <div class="course-duration" th:text="${course.duration}">12시간</div>
+                <span th:text="${course.thumbnail}">🎯</span>
+            </div>
+            <div class="course-info">
+                <span class="course-category" th:text="${course.category}">개발</span>
+                <h3 class="course-title" th:text="${course.title}">React 완벽 마스터</h3>
+                <div class="course-instructor">
+                    <div class="instructor-avatar" th:text="${course.instructor.substring(0,1)}">김</div>
+                    <span class="instructor-name" th:text="${course.instructor}">김개발</span>
                 </div>
-                <div class="course-info">
-                    <span class="course-category" th:text="${course.category}">개발</span>
-                    <h3 class="course-title" th:text="${course.title}">React 완벽 마스터</h3>
-                    <div class="course-instructor">
-                        <div class="instructor-avatar" th:text="${course.instructor.substring(0,1)}">김</div>
-                        <span class="instructor-name" th:text="${course.instructor}">김개발</span>
+                <div class="course-stats">
+                    <div class="course-rating">⭐ <span th:text="${course.rating}">4.9</span> (<span th:text="${course.students}">1234</span>)</div>
+                    <div class="course-students" th:text="${course.students} + '명 수강'">1234명 수강</div>
+                </div>
+                <div class="course-footer">
+                    <div class="course-price">
+                        <span class="original-price" th:if="${course.originalPrice != course.currentPrice}" th:text="'\u20A9' + ${#numbers.formatInteger(course.originalPrice, 0)}">₩129,000</span>
+                        <span class="current-price" th:text="'\u20A9' + ${#numbers.formatInteger(course.currentPrice, 0)}">₩89,000</span>
                     </div>
-                    <div class="course-stats">
-                        <div class="course-rating">⭐ <span th:text="${course.rating}">4.9</span> (<span th:text="${course.students}">1234</span>)</div>
-                        <div class="course-students" th:text="${course.students} + '명 수강'">1234명 수강</div>
-                    </div>
-                    <div class="course-footer">
-                        <div class="course-price">
-                            <span class="original-price" th:if="${course.originalPrice != course.currentPrice}" th:text="'₩' + ${#numbers.formatInteger(course.originalPrice,0)}">₩129,000</span>
-                            <span class="current-price" th:text="'₩' + ${#numbers.formatInteger(course.currentPrice,0)}">₩89,000</span>
-                        </div>
-                        <a th:href="@{/courses/enroll/{id}(id=${course.id})}" class="enroll-btn">수강신청</a>
-                    </div>
+                    <a th:href="@{/courses/enroll/{id}(id=${course.id})}" class="enroll-btn">수강신청</a>
                 </div>
             </div>
         </div>
-        <!-- Pagination (Thymeleaf 로직 적용 예시) -->
-        <div class="pagination">
-            <button th:disabled="${page.first}" th:onclick="|window.location='@{/courses(page=${page.number-1})}'|">이전</button>
-            <button th:each="i : ${#numbers.sequence(0, page.totalPages-1)}"
-                    th:classappend="${i == page.number} ? 'active'"
-                    th:onclick="|window.location='@{/courses(page=${i})}'|"
-                    th:text="${i+1}">1</button>
-            <button th:disabled="${page.last}" th:onclick="|window.location='@{/courses(page=${page.number+1})}'|">다음</button>
+    </div>
+
+
+        <!-- Loading State -->
+        <div class="loading" id="loadingState" style="display: none;">
+            <div class="loading-spinner"></div>
+            <p>강의를 불러오는 중...</p>
+        </div>
+
+        <!-- Empty State -->
+        <div class="empty-state" id="emptyState" style="display: none;">
+            <div class="empty-icon">📚</div>
+            <h3>검색 결과가 없습니다</h3>
+            <p>다른 검색어나 필터 조건을 시도해보세요.</p>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination" id="pagination">
+            <button onclick="changePage(-1)" id="prevBtn">이전</button>
+            <button class="active" onclick="goToPage(1)">1</button>
+            <button onclick="goToPage(2)">2</button>
+            <button onclick="goToPage(3)">3</button>
+            <button onclick="goToPage(4)">4</button>
+            <button onclick="goToPage(5)">5</button>
+            <button onclick="changePage(1)" id="nextBtn">다음</button>
         </div>
     </main>
+    
+
     <script>
- // Sample course data
-    const sampleCourses = [
-        {
-            id: 1,
-            title: "React 완벽 마스터 - 실무 프로젝트로 배우기",
-            category: "개발",
-            categoryValue: "development",
-            instructor: "김개발",
-            rating: 4.9,
-            students: 1234,
-            originalPrice: 129000,
-            currentPrice: 89000,
-            level: "중급",
-            levelValue: "intermediate",
-            duration: "12시간",
-            thumbnail: "🎯"
-        },
-        {
-            id: 2,
-            title: "Figma로 시작하는 UI/UX 디자인 기초부터 심화까지",
-            category: "디자인",
-            categoryValue: "design",
-            instructor: "이디자인",
-            rating: 4.8,
-            students: 892,
-            originalPrice: 99000,
-            currentPrice: 79000,
-            level: "초급",
-            levelValue: "beginner",
-            duration: "8시간",
-            thumbnail: "🎨"
-        },
-        {
-            id: 3,
-            title: "데이터 기반 디지털 마케팅 전략 수립",
-            category: "마케팅",
-            categoryValue: "marketing",
-            instructor: "박마케팅",
-            rating: 4.9,
-            students: 567,
-            originalPrice: 119000,
-            currentPrice: 99000,
-            level: "중급",
-            levelValue: "intermediate",
-            duration: "10시간",
-            thumbnail: "📊"
-        },
-        {
-            id: 4,
-            title: "ChatGPT API 활용한 AI 애플리케이션 개발",
-            category: "AI/ML",
-            categoryValue: "ai-ml",
-            instructor: "최AI",
-            rating: 4.7,
-            students: 123,
-            originalPrice: 149000,
-            currentPrice: 129000,
-            level: "고급",
-            levelValue: "advanced",
-            duration: "15시간",
-            thumbnail: "🤖"
-        },
-        {
-            id: 5,
-            title: "Flutter로 크로스플랫폼 앱 개발하기",
-            category: "모바일",
-            categoryValue: "mobile",
-            instructor: "정모바일",
-            rating: 4.8,
-            students: 89,
-            originalPrice: 129000,
-            currentPrice: 109000,
-            level: "중급",
-            levelValue: "intermediate",
-            duration: "14시간",
-            thumbnail: "📱"
-        },
-        {
-            id: 6,
-            title: "AWS 실무 운영과 DevOps 자동화",
-            category: "클라우드",
-            categoryValue: "cloud",
-            instructor: "강클라우드",
-            rating: 4.9,
-            students: 234,
-            originalPrice: 139000,
-            currentPrice: 119000,
-            level: "고급",
-            levelValue: "advanced",
-            duration: "18시간",
-            thumbnail: "☁️"
-        }
-    ];
-
-    let currentCourses = [...sampleCourses];
-    let currentPage = 1;
-    const coursesPerPage = 6;
-
-    function toggleLogin() {
-        const body = document.body;
-        if (body.classList.contains('logged-out')) {
-            body.classList.remove('logged-out');
-            body.classList.add('logged-in');
-        } else {
-            body.classList.remove('logged-in');
-            body.classList.add('logged-out');
-        }
-    }
-
-    function renderCourses(courses) {
-        const courseGrid = document.getElementById('courseGrid');
-        const startIndex = (currentPage - 1) * coursesPerPage;
-        const endIndex = startIndex + coursesPerPage;
-        const coursesToShow = courses.slice(startIndex, endIndex);
-
-        if (coursesToShow.length === 0) {
-            document.getElementById('emptyState').style.display = 'block';
-            courseGrid.style.display = 'none';
-            document.getElementById('pagination').style.display = 'none';
-            return;
-        } else {
-            document.getElementById('emptyState').style.display = 'none';
-            courseGrid.style.display = 'grid';
-            document.getElementById('pagination').style.display = 'flex';
-        }
-
-        courseGrid.innerHTML = coursesToShow.map(course => `
-            <div class="course-card">
-                <div class="course-thumbnail">
-                    <div class="course-level">${course.level}</div>
-                    <div class="course-duration">${course.duration}</div>
-                    ${course.thumbnail}
-                </div>
-                <div class="course-info">
-                    <span class="course-category">${course.category}</span>
-                    <h3 class="course-title">${course.title}</h3>
-                    <div class="course-instructor">
-                        <div class="instructor-avatar">${course.instructor[0]}</div>
-                        <span class="instructor-name">${course.instructor}</span>
-                    </div>
-                    <div class="course-stats">
-                        <div class="course-rating">
-                            ⭐ ${course.rating} (${course.students})
-                        </div>
-                        <div class="course-students">${course.students}명 수강</div>
-                    </div>
-                    <div class="course-footer">
-                        <div class="course-price">
-                            ${course.originalPrice !== course.currentPrice ? `<span class="original-price">₩${course.originalPrice.toLocaleString()}</span>` : ''}
-                            <span class="current-price">₩${course.currentPrice.toLocaleString()}</span>
-                        </div>
-                        <button class="enroll-btn">수강신청</button>
-                    </div>
-                </div>
-            </div>
-        `).join('');
-
-        updateResultsCount(courses.length);
-        updatePagination(courses.length);
-    }
-
-    function updateResultsCount(total) {
-        document.getElementById('resultsCount').textContent = `총 ${total}개의 강의`;
-    }
-
-    function updatePagination(totalCourses) {
-        const totalPages = Math.ceil(totalCourses / coursesPerPage);
-        const pagination = document.getElementById('pagination');
-        
-        let paginationHTML = `<button onclick="changePage(-1)" id="prevBtn" ${currentPage === 1 ? 'disabled' : ''}>이전</button>`;
-        
-        for (let i = 1; i <= Math.min(totalPages, 5); i++) {
-            paginationHTML += `<button onclick="goToPage(${i})" ${i === currentPage ? 'class="active"' : ''}>${i}</button>`;
-        }
-        
-        paginationHTML += `<button onclick="changePage(1)" id="nextBtn" ${currentPage === totalPages ? 'disabled' : ''}>다음</button>`;
-        
-        pagination.innerHTML = paginationHTML;
-    }
-
-    function changePage(direction) {
-        const totalPages = Math.ceil(currentCourses.length / coursesPerPage);
-        const newPage = currentPage + direction;
-        
-        if (newPage >= 1 && newPage <= totalPages) {
-            currentPage = newPage;
-            renderCourses(currentCourses);
-        }
-    }
-
-    function goToPage(page) {
-        currentPage = page;
-        renderCourses(currentCourses);
-    }
-
-    function applyFilters() {
-        showLoading();
-        
-        setTimeout(() => {
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            const category = document.getElementById('categoryFilter').value;
-            const level = document.getElementById('levelFilter').value;
-            const price = document.getElementById('priceFilter').value;
-            const sort = document.getElementById('sortFilter').value;
-
-            let filteredCourses = sampleCourses.filter(course => {
-                const matchesSearch = !searchTerm || 
-                    course.title.toLowerCase().includes(searchTerm) || 
-                    course.instructor.toLowerCase().includes(searchTerm);
-                const matchesCategory = !category || course.categoryValue === category;
-                const matchesLevel = !level || course.levelValue === level;
-                const matchesPrice = !price || checkPriceRange(course.currentPrice, price);
-                
-                return matchesSearch && matchesCategory && matchesLevel && matchesPrice;
-            });
-
-            // Apply sorting
-            filteredCourses = sortCourses(filteredCourses, sort);
-            
-            currentCourses = filteredCourses;
-            currentPage = 1;
-            hideLoading();
-            renderCourses(currentCourses);
-            updateActiveFilters();
-        }, 800);
-    }
-
-    function checkPriceRange(price, range) {
-        switch(range) {
-            case 'free': return price === 0;
-            case '0-50000': return price > 0 && price <= 50000;
-            case '50000-100000': return price > 50000 && price <= 100000;
-            case '100000+': return price > 100000;
-            default: return true;
-        }
-    }
-
-    function sortCourses(courses, sortType) {
-        const sorted = [...courses];
-        
-        switch(sortType) {
-            case 'newest':
-                return sorted.reverse(); // Assume newer courses have higher IDs
-            case 'rating':
-                return sorted.sort((a, b) => b.rating - a.rating);
-            case 'price-low':
-                return sorted.sort((a, b) => a.currentPrice - b.currentPrice);
-            case 'price-high':
-                return sorted.sort((a, b) => b.currentPrice - a.currentPrice);
-            case 'popular':
-            default:
-                return sorted.sort((a, b) => b.students - a.students);
-        }
-    }
-
-    function updateActiveFilters() {
-        const activeFiltersContainer = document.getElementById('activeFilters');
-        const searchTerm = document.getElementById('searchInput').value;
-        const category = document.getElementById('categoryFilter').value;
-        const level = document.getElementById('levelFilter').value;
-        const price = document.getElementById('priceFilter').value;
-        
-        const filters = [];
-        
-        if (searchTerm) {
-            filters.push({ type: 'search', value: searchTerm, label: `검색: ${searchTerm}` });
-        }
-        if (category) {
-            const categoryText = document.getElementById('categoryFilter').selectedOptions[0].text;
-            filters.push({ type: 'category', value: category, label: `카테고리: ${categoryText}` });
-        }
-        if (level) {
-            const levelText = document.getElementById('levelFilter').selectedOptions[0].text;
-            filters.push({ type: 'level', value: level, label: `난이도: ${levelText}` });
-        }
-        if (price) {
-            const priceText = document.getElementById('priceFilter').selectedOptions[0].text;
-            filters.push({ type: 'price', value: price, label: `가격: ${priceText}` });
-        }
-        
-        if (filters.length > 0) {
-            activeFiltersContainer.style.display = 'flex';
-            activeFiltersContainer.innerHTML = filters.map(filter => `
-                <div class="filter-tag">
-                    ${filter.label}
-                    <span class="remove" onclick="removeFilter('${filter.type}')">&times;</span>
-                </div>
-            `).join('');
-        } else {
-            activeFiltersContainer.style.display = 'none';
-        }
-    }
-
-    function removeFilter(filterType) {
-        switch(filterType) {
-            case 'search':
-                document.getElementById('searchInput').value = '';
-                break;
-            case 'category':
-                document.getElementById('categoryFilter').value = '';
-                break;
-            case 'level':
-                document.getElementById('levelFilter').value = '';
-                break;
-            case 'price':
-                document.getElementById('priceFilter').value = '';
-                break;
-        }
-        applyFilters();
-    }
-
-    function clearFilters() {
-        document.getElementById('searchInput').value = '';
-        document.getElementById('categoryFilter').value = '';
-        document.getElementById('levelFilter').value = '';
-        document.getElementById('priceFilter').value = '';
-        document.getElementById('sortFilter').value = 'popular';
-        
-        currentCourses = [...sampleCourses];
-        currentPage = 1;
-        renderCourses(currentCourses);
-        updateActiveFilters();
-    }
-
-    function showLoading() {
-        document.getElementById('loadingState').style.display = 'block';
-        document.getElementById('courseGrid').style.display = 'none';
-        document.getElementById('emptyState').style.display = 'none';
-        document.getElementById('pagination').style.display = 'none';
-    }
-
-    function hideLoading() {
-        document.getElementById('loadingState').style.display = 'none';
-    }
-
-    // Search input event listener
-    document.getElementById('searchInput').addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            applyFilters();
-        }
-    });
-
-    // Filter change event listeners
-    document.getElementById('categoryFilter').addEventListener('change', applyFilters);
-    document.getElementById('levelFilter').addEventListener('change', applyFilters);
-    document.getElementById('priceFilter').addEventListener('change', applyFilters);
-    document.getElementById('sortFilter').addEventListener('change', applyFilters);
-
-    // Initialize page
-    document.addEventListener('DOMContentLoaded', function() {
-        renderCourses(currentCourses);
-    });
-
-    // Sample data expansion for demonstration
-    function generateMoreCourses() {
-        const additionalCourses = [
+        // Sample course data
+        const sampleCourses = [
             {
-                id: 7,
-                title: "Python 데이터 분석 완벽 가이드",
-                category: "데이터 분석",
-                categoryValue: "data",
-                instructor: "데이터김",
+                id: 1,
+                title: "React 완벽 마스터 - 실무 프로젝트로 배우기",
+                category: "개발",
+                categoryValue: "development",
+                instructor: "김개발",
+                rating: 4.9,
+                students: 1234,
+                originalPrice: 129000,
+                currentPrice: 89000,
+                level: "중급",
+                levelValue: "intermediate",
+                duration: "12시간",
+                thumbnail: "🎯"
+            },
+            {
+                id: 2,
+                title: "Figma로 시작하는 UI/UX 디자인 기초부터 심화까지",
+                category: "디자인",
+                categoryValue: "design",
+                instructor: "이디자인",
                 rating: 4.8,
-                students: 456,
+                students: 892,
                 originalPrice: 99000,
                 currentPrice: 79000,
                 level: "초급",
                 levelValue: "beginner",
-                duration: "16시간",
-                thumbnail: "📈"
+                duration: "8시간",
+                thumbnail: "🎨"
             },
             {
-                id: 8,
-                title: "스타트업 비즈니스 모델 설계",
-                category: "비즈니스",
-                categoryValue: "business",
-                instructor: "비즈박",
-                rating: 4.6,
-                students: 678,
-                originalPrice: 89000,
-                currentPrice: 69000,
-                level: "중급",
-                levelValue: "intermediate",
-                duration: "9시간",
-                thumbnail: "💼"
-            },
-            {
-                id: 9,
-                title: "Vue.js 3 실전 프로젝트",
-                category: "개발",
-                categoryValue: "development",
-                instructor: "뷰개발",
-                rating: 4.7,
-                students: 345,
-                originalPrice: 109000,
-                currentPrice: 89000,
-                level: "중급",
-                levelValue: "intermediate",
-                duration: "11시간",
-                thumbnail: "💚"
-            },
-            {
-                id: 10,
-                title: "블록체인 개발 입문",
-                category: "개발",
-                categoryValue: "development",
-                instructor: "블록이",
-                rating: 4.5,
-                students: 123,
-                originalPrice: 159000,
-                currentPrice: 139000,
-                level: "고급",
-                levelValue: "advanced",
-                duration: "20시간",
-                thumbnail: "⛓️"
-            },
-            {
-                id: 11,
-                title: "모션 그래픽 디자인 마스터",
-                category: "디자인",
-                categoryValue: "design",
-                instructor: "모션최",
+                id: 3,
+                title: "데이터 기반 디지털 마케팅 전략 수립",
+                category: "마케팅",
+                categoryValue: "marketing",
+                instructor: "박마케팅",
                 rating: 4.9,
-                students: 234,
+                students: 567,
                 originalPrice: 119000,
                 currentPrice: 99000,
                 level: "중급",
                 levelValue: "intermediate",
-                duration: "13시간",
-                thumbnail: "🎬"
+                duration: "10시간",
+                thumbnail: "📊"
             },
             {
-                id: 12,
-                title: "인플루언서 마케팅 전략",
-                category: "마케팅",
-                categoryValue: "marketing",
-                instructor: "인플정",
-                rating: 4.4,
-                students: 567,
-                originalPrice: 79000,
-                currentPrice: 59000,
-                level: "초급",
-                levelValue: "beginner",
-                duration: "7시간",
-                thumbnail: "📸"
+                id: 4,
+                title: "ChatGPT API 활용한 AI 애플리케이션 개발",
+                category: "AI/ML",
+                categoryValue: "ai-ml",
+                instructor: "최AI",
+                rating: 4.7,
+                students: 123,
+                originalPrice: 149000,
+                currentPrice: 129000,
+                level: "고급",
+                levelValue: "advanced",
+                duration: "15시간",
+                thumbnail: "🤖"
+            },
+            {
+                id: 5,
+                title: "Flutter로 크로스플랫폼 앱 개발하기",
+                category: "모바일",
+                categoryValue: "mobile",
+                instructor: "정모바일",
+                rating: 4.8,
+                students: 89,
+                originalPrice: 129000,
+                currentPrice: 109000,
+                level: "중급",
+                levelValue: "intermediate",
+                duration: "14시간",
+                thumbnail: "📱"
+            },
+            {
+                id: 6,
+                title: "AWS 실무 운영과 DevOps 자동화",
+                category: "클라우드",
+                categoryValue: "cloud",
+                instructor: "강클라우드",
+                rating: 4.9,
+                students: 234,
+                originalPrice: 139000,
+                currentPrice: 119000,
+                level: "고급",
+                levelValue: "advanced",
+                duration: "18시간",
+                thumbnail: "☁️"
             }
         ];
 
-        sampleCourses.push(...additionalCourses);
-        currentCourses = [...sampleCourses];
-        renderCourses(currentCourses);
-    }
+        let currentCourses = [...sampleCourses];
+        let currentPage = 1;
+        const coursesPerPage = 6;
 
-    // Add more courses after 2 seconds for demonstration
-    setTimeout(generateMoreCourses, 2000);
+        function toggleLogin() {
+            const body = document.body;
+            if (body.classList.contains('logged-out')) {
+                body.classList.remove('logged-out');
+                body.classList.add('logged-in');
+            } else {
+                body.classList.remove('logged-in');
+                body.classList.add('logged-out');
+            }
+        }
+
+        function renderCourses(courses) {
+            const courseGrid = document.getElementById('courseGrid');
+            const startIndex = (currentPage - 1) * coursesPerPage;
+            const endIndex = startIndex + coursesPerPage;
+            const coursesToShow = courses.slice(startIndex, endIndex);
+
+            if (coursesToShow.length === 0) {
+                document.getElementById('emptyState').style.display = 'block';
+                courseGrid.style.display = 'none';
+                document.getElementById('pagination').style.display = 'none';
+                return;
+            } else {
+                document.getElementById('emptyState').style.display = 'none';
+                courseGrid.style.display = 'grid';
+                document.getElementById('pagination').style.display = 'flex';
+            }
+
+            courseGrid.innerHTML = coursesToShow.map(course => `
+                <div class="course-card">
+                    <div class="course-thumbnail">
+                        <div class="course-level">${course.level}</div>
+                        <div class="course-duration">${course.duration}</div>
+                        ${course.thumbnail}
+                    </div>
+                    <div class="course-info">
+                        <span class="course-category">${course.category}</span>
+                        <h3 class="course-title">${course.title}</h3>
+                        <div class="course-instructor">
+                            <div class="instructor-avatar">${course.instructor[0]}</div>
+                            <span class="instructor-name">${course.instructor}</span>
+                        </div>
+                        <div class="course-stats">
+                            <div class="course-rating">
+                                ⭐ ${course.rating} (${course.students})
+                            </div>
+                            <div class="course-students">${course.students}명 수강</div>
+                        </div>
+                        <div class="course-footer">
+                            <div class="course-price">
+                                ${course.originalPrice !== course.currentPrice ? `<span class="original-price">₩${course.originalPrice.toLocaleString()}</span>` : ''}
+                                <span class="current-price">₩${course.currentPrice.toLocaleString()}</span>
+                            </div>
+                            <button class="enroll-btn">수강신청</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            updateResultsCount(courses.length);
+            updatePagination(courses.length);
+        }
+
+        function updateResultsCount(total) {
+            document.getElementById('resultsCount').textContent = `총 ${total}개의 강의`;
+        }
+
+        function updatePagination(totalCourses) {
+            const totalPages = Math.ceil(totalCourses / coursesPerPage);
+            const pagination = document.getElementById('pagination');
+            
+            let paginationHTML = `<button onclick="changePage(-1)" id="prevBtn" ${currentPage === 1 ? 'disabled' : ''}>이전</button>`;
+            
+            for (let i = 1; i <= Math.min(totalPages, 5); i++) {
+                paginationHTML += `<button onclick="goToPage(${i})" ${i === currentPage ? 'class="active"' : ''}>${i}</button>`;
+            }
+            
+            paginationHTML += `<button onclick="changePage(1)" id="nextBtn" ${currentPage === totalPages ? 'disabled' : ''}>다음</button>`;
+            
+            pagination.innerHTML = paginationHTML;
+        }
+
+        function changePage(direction) {
+            const totalPages = Math.ceil(currentCourses.length / coursesPerPage);
+            const newPage = currentPage + direction;
+            
+            if (newPage >= 1 && newPage <= totalPages) {
+                currentPage = newPage;
+                renderCourses(currentCourses);
+            }
+        }
+
+        function goToPage(page) {
+            currentPage = page;
+            renderCourses(currentCourses);
+        }
+
+        function applyFilters() {
+            showLoading();
+            
+            setTimeout(() => {
+                const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+                const category = document.getElementById('categoryFilter').value;
+                const level = document.getElementById('levelFilter').value;
+                const price = document.getElementById('priceFilter').value;
+                const sort = document.getElementById('sortFilter').value;
+
+                let filteredCourses = sampleCourses.filter(course => {
+                    const matchesSearch = !searchTerm || 
+                        course.title.toLowerCase().includes(searchTerm) || 
+                        course.instructor.toLowerCase().includes(searchTerm);
+                    const matchesCategory = !category || course.categoryValue === category;
+                    const matchesLevel = !level || course.levelValue === level;
+                    const matchesPrice = !price || checkPriceRange(course.currentPrice, price);
+                    
+                    return matchesSearch && matchesCategory && matchesLevel && matchesPrice;
+                });
+
+                // Apply sorting
+                filteredCourses = sortCourses(filteredCourses, sort);
+                
+                currentCourses = filteredCourses;
+                currentPage = 1;
+                hideLoading();
+                renderCourses(currentCourses);
+                updateActiveFilters();
+            }, 800);
+        }
+
+        function checkPriceRange(price, range) {
+            switch(range) {
+                case 'free': return price === 0;
+                case '0-50000': return price > 0 && price <= 50000;
+                case '50000-100000': return price > 50000 && price <= 100000;
+                case '100000+': return price > 100000;
+                default: return true;
+            }
+        }
+
+        function sortCourses(courses, sortType) {
+            const sorted = [...courses];
+            
+            switch(sortType) {
+                case 'newest':
+                    return sorted.reverse(); // Assume newer courses have higher IDs
+                case 'rating':
+                    return sorted.sort((a, b) => b.rating - a.rating);
+                case 'price-low':
+                    return sorted.sort((a, b) => a.currentPrice - b.currentPrice);
+                case 'price-high':
+                    return sorted.sort((a, b) => b.currentPrice - a.currentPrice);
+                case 'popular':
+                default:
+                    return sorted.sort((a, b) => b.students - a.students);
+            }
+        }
+
+        function updateActiveFilters() {
+            const activeFiltersContainer = document.getElementById('activeFilters');
+            const searchTerm = document.getElementById('searchInput').value;
+            const category = document.getElementById('categoryFilter').value;
+            const level = document.getElementById('levelFilter').value;
+            const price = document.getElementById('priceFilter').value;
+            
+            const filters = [];
+            
+            if (searchTerm) {
+                filters.push({ type: 'search', value: searchTerm, label: `검색: ${searchTerm}` });
+            }
+            if (category) {
+                const categoryText = document.getElementById('categoryFilter').selectedOptions[0].text;
+                filters.push({ type: 'category', value: category, label: `카테고리: ${categoryText}` });
+            }
+            if (level) {
+                const levelText = document.getElementById('levelFilter').selectedOptions[0].text;
+                filters.push({ type: 'level', value: level, label: `난이도: ${levelText}` });
+            }
+            if (price) {
+                const priceText = document.getElementById('priceFilter').selectedOptions[0].text;
+                filters.push({ type: 'price', value: price, label: `가격: ${priceText}` });
+            }
+            
+            if (filters.length > 0) {
+                activeFiltersContainer.style.display = 'flex';
+                activeFiltersContainer.innerHTML = filters.map(filter => `
+                    <div class="filter-tag">
+                        ${filter.label}
+                        <span class="remove" onclick="removeFilter('${filter.type}')">&times;</span>
+                    </div>
+                `).join('');
+            } else {
+                activeFiltersContainer.style.display = 'none';
+            }
+        }
+
+        function removeFilter(filterType) {
+            switch(filterType) {
+                case 'search':
+                    document.getElementById('searchInput').value = '';
+                    break;
+                case 'category':
+                    document.getElementById('categoryFilter').value = '';
+                    break;
+                case 'level':
+                    document.getElementById('levelFilter').value = '';
+                    break;
+                case 'price':
+                    document.getElementById('priceFilter').value = '';
+                    break;
+            }
+            applyFilters();
+        }
+
+        function clearFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('categoryFilter').value = '';
+            document.getElementById('levelFilter').value = '';
+            document.getElementById('priceFilter').value = '';
+            document.getElementById('sortFilter').value = 'popular';
+            
+            currentCourses = [...sampleCourses];
+            currentPage = 1;
+            renderCourses(currentCourses);
+            updateActiveFilters();
+        }
+
+        function showLoading() {
+            document.getElementById('loadingState').style.display = 'block';
+            document.getElementById('courseGrid').style.display = 'none';
+            document.getElementById('emptyState').style.display = 'none';
+            document.getElementById('pagination').style.display = 'none';
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingState').style.display = 'none';
+        }
+
+        // Search input event listener
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                applyFilters();
+            }
+        });
+
+        // Filter change event listeners
+        document.getElementById('categoryFilter').addEventListener('change', applyFilters);
+        document.getElementById('levelFilter').addEventListener('change', applyFilters);
+        document.getElementById('priceFilter').addEventListener('change', applyFilters);
+        document.getElementById('sortFilter').addEventListener('change', applyFilters);
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            renderCourses(currentCourses);
+        });
+
+        // Sample data expansion for demonstration
+        function generateMoreCourses() {
+            const additionalCourses = [
+                {
+                    id: 7,
+                    title: "Python 데이터 분석 완벽 가이드",
+                    category: "데이터 분석",
+                    categoryValue: "data",
+                    instructor: "데이터김",
+                    rating: 4.8,
+                    students: 456,
+                    originalPrice: 99000,
+                    currentPrice: 79000,
+                    level: "초급",
+                    levelValue: "beginner",
+                    duration: "16시간",
+                    thumbnail: "📈"
+                },
+                {
+                    id: 8,
+                    title: "스타트업 비즈니스 모델 설계",
+                    category: "비즈니스",
+                    categoryValue: "business",
+                    instructor: "비즈박",
+                    rating: 4.6,
+                    students: 678,
+                    originalPrice: 89000,
+                    currentPrice: 69000,
+                    level: "중급",
+                    levelValue: "intermediate",
+                    duration: "9시간",
+                    thumbnail: "💼"
+                },
+                {
+                    id: 9,
+                    title: "Vue.js 3 실전 프로젝트",
+                    category: "개발",
+                    categoryValue: "development",
+                    instructor: "뷰개발",
+                    rating: 4.7,
+                    students: 345,
+                    originalPrice: 109000,
+                    currentPrice: 89000,
+                    level: "중급",
+                    levelValue: "intermediate",
+                    duration: "11시간",
+                    thumbnail: "💚"
+                },
+                {
+                    id: 10,
+                    title: "블록체인 개발 입문",
+                    category: "개발",
+                    categoryValue: "development",
+                    instructor: "블록이",
+                    rating: 4.5,
+                    students: 123,
+                    originalPrice: 159000,
+                    currentPrice: 139000,
+                    level: "고급",
+                    levelValue: "advanced",
+                    duration: "20시간",
+                    thumbnail: "⛓️"
+                },
+                {
+                    id: 11,
+                    title: "모션 그래픽 디자인 마스터",
+                    category: "디자인",
+                    categoryValue: "design",
+                    instructor: "모션최",
+                    rating: 4.9,
+                    students: 234,
+                    originalPrice: 119000,
+                    currentPrice: 99000,
+                    level: "중급",
+                    levelValue: "intermediate",
+                    duration: "13시간",
+                    thumbnail: "🎬"
+                },
+                {
+                    id: 12,
+                    title: "인플루언서 마케팅 전략",
+                    category: "마케팅",
+                    categoryValue: "marketing",
+                    instructor: "인플정",
+                    rating: 4.4,
+                    students: 567,
+                    originalPrice: 79000,
+                    currentPrice: 59000,
+                    level: "초급",
+                    levelValue: "beginner",
+                    duration: "7시간",
+                    thumbnail: "📸"
+                }
+            ];
+
+            sampleCourses.push(...additionalCourses);
+            currentCourses = [...sampleCourses];
+            renderCourses(currentCourses);
+        }
+
+        // Add more courses after 2 seconds for demonstration
+        setTimeout(generateMoreCourses, 2000);
     </script>
 </body>
 </html>

@@ -6,10 +6,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
 public class MainController {
-//ㅇㅇㅇ
-	@GetMapping("/")
-	public String main(Model model) {
+
+	
+	@GetMapping("/course_list")
+	public String course_list(Model model) {
 		model.addAttribute("loggedIn", false); // or true if authenticated
-		return "ksh/main";
+		return "ksh/course_list";
 	}
 }

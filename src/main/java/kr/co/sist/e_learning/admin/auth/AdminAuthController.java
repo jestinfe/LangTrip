@@ -1,5 +1,6 @@
 package kr.co.sist.e_learning.admin.auth;
 
+
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+
 import jakarta.servlet.http.HttpSession;
 
 @Controller
@@ -22,33 +24,38 @@ public class AdminAuthController {
     @Autowired
     private AdminAuthService adminAuthService;
 
+
     private static final String SECRET_KEY = "6LeYf3IrAAAAABPv4BNZ64w7TDtHeFuHXvlG1mRQ"; // 🔐 여기에 구글에서 받은 시크릿 키 삽입
 
     @GetMapping("/login")
     public String loginForm() {
-        return "admin/login";
+        return "admin/login/login";
+
     }
 
     @PostMapping("/login")
     public String loginProcess(@RequestParam String adminId,
                                @RequestParam String adminPw,
+
                                @RequestParam(name = "g-recaptcha-response") String recaptchaResponse,
                                HttpSession session,
                                Model model) {
 
         if (!verifyRecaptcha(recaptchaResponse)) {
             model.addAttribute("error", "자동 로그인 방지를 확인해주세요.");
-            return "admin/login";
+            return "admin/login/login";
         }
+
 
         AdminAuthDTO admin = adminAuthService.login(adminId, adminPw);
 
         if (admin != null) {
             session.setAttribute("admin", admin);
+
             return "admin/dashboard";
         } else {
             model.addAttribute("error", "아이디 또는 비밀번호가 틀렸습니다.");
-            return "admin/login";
+            return "admin/login/login";
         }
     }
     
@@ -79,3 +86,4 @@ public class AdminAuthController {
         }
     }
 }
+

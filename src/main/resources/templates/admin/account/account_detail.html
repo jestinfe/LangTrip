@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>관리자 계정 상세</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @charset "UTF-8";
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            display: flex;
+        }
+
+        .sidebar {
+            width: 280px;
+            height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 2rem 0;
+            box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            left: 0;
+            top: 0;
+            overflow-y: auto;
+        }
+
+        .sidebar h2 {
+            color: white;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            padding: 0 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .sidebar h2 i {
+            font-size: 1.8rem;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.5rem;
+            border-radius: 12px;
+        }
+
+        .sidebar a {
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            margin: 0.2rem 1rem;
+            border-radius: 12px;
+            font-weight: 500;
+        }
+
+        .sidebar a:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .sidebar a.active {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .sidebar a i {
+            font-size: 1.2rem;
+            margin-right: 1rem;
+            width: 24px;
+            text-align: center;
+        }
+
+        .main-content {
+            margin-left: 280px;
+            padding: 2rem;
+            flex: 1;
+            min-height: 100vh;
+            background-color: #f8f9fa;
+        }
+
+        .breadcrumb {
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .breadcrumb a {
+            color: #667eea;
+            text-decoration: none;
+            margin-right: 0.5rem;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .breadcrumb span {
+            color: #666;
+            margin: 0 0.5rem;
+        }
+
+        .page-header {
+            background: white;
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .page-header h1 {
+            color: #333;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-header .admin-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .admin-info .status-badge {
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-inactive {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .detail-section {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        .section-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem 2rem;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .section-header i {
+            margin-right: 0.5rem;
+        }
+
+        .section-content {
+            padding: 2rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #333;
+            font-size: 0.9rem;
+        }
+
+        .form-group input, .form-group select {
+            padding: 0.8rem 1rem;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-group input:disabled {
+            background: #f8f9fa;
+            color: #666;
+            cursor: not-allowed;
+        }
+
+        .permission-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .permission-item {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 1rem;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .permission-item:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+
+        .permission-item.active {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .permission-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: #667eea;
+        }
+
+        .permission-item label {
+            font-weight: 500;
+            color: #333;
+            cursor: pointer;
+            margin: 0;
+        }
+
+        .permission-item .permission-desc {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 0.2rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .btn {
+            padding: 0.8rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #667eea;
+            color: #667eea;
+        }
+
+        .btn-outline:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border: 1px solid transparent;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            border-color: #ffeaa7;
+            color: #856404;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            border-color: #bee5eb;
+            color: #0c5460;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+        }
+
+        .alert i {
+            margin-right: 0.5rem;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.3s ease;
+        }
+
+        .notification.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            background: #28a745;
+        }
+
+        .notification.info {
+            background: #17a2b8;
+        }
+
+        .notification.warning {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        .audit-log {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 1rem;
+            background: #f8f9fa;
+        }
+
+        .audit-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .audit-item:last-child {
+            border-bottom: none;
+        }
+
+        .audit-action {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .audit-time {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .permission-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 사이드바 -->
+    <div class="sidebar">
+        <h2><i class="fas fa-chart-line"></i> Dashboard</h2>
+        <a href="/admin/accounts" class="active"><i class="fas fa-users-cog"></i> Admin Accounts</a>
+        <a href="/admin/signup/requests"><i class="fas fa-user-plus"></i> Signup Requests</a>
+        <a href="#"><i class="fas fa-user"></i> Members</a>
+        <a href="#"><i class="fas fa-graduation-cap"></i> Courses</a>
+        <a href="#"><i class="fas fa-bell"></i> Subscriptions</a>
+        <a href="#"><i class="fas fa-credit-card"></i> Payments</a>
+        <a href="#"><i class="fas fa-comments"></i> Community</a>
+        <a href="#"><i class="fas fa-exclamation-triangle"></i> Reports</a>
+        <a href="#"><i class="fas fa-headset"></i> Support</a>
+    </div>
+
+    <!-- 메인 콘텐츠 -->
+    <div class="main-content">
+        <!-- 브레드크럼 -->
+        <div class="breadcrumb">
+            <a href="/admin/dashboard"><i class="fas fa-home"></i> Dashboard</a>
+            <span>/</span>
+            <a href="/admin/accounts">관리자 계정 관리</a>
+            <span>/</span>
+            <span>상세조회</span>
+        </div>
+
+        <!-- 페이지 헤더 -->
+        <div class="page-header">
+            <h1><i class="fas fa-user-edit"></i> 관리자 계정 상세</h1>
+            <div class="admin-info">
+                <span>계정 ID: <strong th:text="${admin.adminId}">admin001</strong></span>
+                <span class="status-badge status-active" th:class="'status-badge status-' + ${admin.status.name().toLowerCase()}" th:text="${admin.status.displayName}">활성</span>
+                <span>가입일: <strong th:text="${#temporals.format(admin.createdAt, 'yyyy-MM-dd HH:mm')}">2024-01-15 10:30</strong></span>
+            </div>
+        </div>
+
+        <!-- 기본 정보 섹션 -->
+        <div class="detail-section">
+            <div class="section-header">
+                <i class="fas fa-user"></i> 기본 정보
+            </div>
+            <div class="section-content">
+                <form id="adminForm" th:action="@{/admin/accounts/{id}(id=${admin.id})}" method="post">
+                    <input type="hidden" name="_method" value="PUT">
+                    <input type="hidden" name="originalEmail" th:value="${admin.email}">
+                    <input type="hidden" name="originalPermissions" th:value="${#strings.setJoin(admin.permissions, ',')}">
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="name">이름 <span style="color: red;">*</span></label>
+                            <input type="text" id="name" name="name" th:value="${admin.name}" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="phone">휴대폰 번호 <span style="color: red;">*</span></label>
+                            <input type="tel" id="phone" name="phone" th:value="${admin.phone}" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="email">이메일 <span style="color: red;">*</span></label>
+                            <input type="email" id="email" name="email" th:value="${admin.email}" required>
+                            <div class="alert alert-warning" style="margin-top: 0.5rem; display: none;" id="emailWarning">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                이메일을 변경하면 새로운 이메일로 인증이 필요합니다.
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="extension">내선번호</label>
+                            <input type="text" id="extension" name="extension" th:value="${admin.extension}" placeholder="예: 1001">
+                        </div>
+                    </div>
+
+                    <!-- 권한 섹션 -->
+                    <div style="margin-top: 2rem;">
+                        <label style="font-weight: 600; color: #333; margin-bottom: 1rem; display: block;">권한 설정</label>
+                        <div class="alert alert-info" style="display: none;" id="permissionWarning">
+                            <i class="fas fa-info-circle"></i>
+                            권한을 변경하면 관리자 승인이 필요합니다.
+                        </div>
+                        
+                        <div class="permission-grid">
+                            <div class="permission-item">
+                                <input type="checkbox" id="perm1" name="permissions" value="ACCOUNT_MANAGEMENT" 
+                                       th:checked="${admin.permissions.contains(T(com.example.enums.AdminPermission).ACCOUNT_MANAGEMENT)}">
+                                <div>
+                                    <label for="perm1">계정 관리</label>
+                                    <div class="permission-desc">관리자 계정 생성, 수정, 삭제</div>
+                                </div>
+                            </div>
+                            
+                            <div class="permission-item">
+                                <input type="checkbox" id="perm2" name="permissions" value="COURSE_MANAGEMENT"
+                                       th:checked="${admin.permissions.contains(T(com.example.enums.AdminPermission).COURSE_MANAGEMENT)}">
+                                <div>
+                                    <label for="perm2">강의 관리</label>
+                                    <div class="permission-desc">강의 등록, 수정, 관리</div>
+                                </div>
+                            </div>
+                            
+                            <div class="permission-item">
+                                <input type="checkbox" id="perm3" name="permissions" value="PAYMENT_MANAGEMENT"
+                                       th:checked="${admin.permissions.contains(T(com.example.enums.AdminPermission).PAYMENT_MANAGEMENT)}">
+                                <div>
+                                    <label for="perm3">결제 관리</label>
+                                    <div class="permission-desc">결제 내역 조회, 환불 처리</div>
+                                </div>
+                            </div>
+                            
+                            <div class="permission-item">
+                                <input type="checkbox" id="perm4" name="permissions" value="SUPPORT_MANAGEMENT"
+                                       th:checked="${admin.permissions.contains(T(com.example.enums.AdminPermission).SUPPORT_MANAGEMENT)}">
+                                <div>
+                                    <label for="perm4">지원 관리</label>
+                                    <div class="permission-desc">고객 지원, 문의 처리</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 액션 버튼 -->
+                    <div class="action-buttons">
+                        <a href="/admin/accounts" class="btn btn-outline">
+                            <i class="fas fa-arrow-left"></i> 목록으로
+                        </a>
+                        <button type="button" class="btn btn-secondary" onclick="resetForm()">
+                            <i class="fas fa-undo"></i> 초기화
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> 저장
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- 변경 이력 섹션 -->
+        <div class="detail-section">
+            <div class="section-header">
+                <i class="fas fa-history"></i> 변경 이력
+            </div>
+            <div class="section-content">
+                <div class="audit-log">
+                    <div class="audit-item" th:each="log : ${auditLogs}">
+                        <div class="audit-action" th:text="${log.action}">이메일 변경</div>
+                        <div class="audit-time" th:text="${#temporals.format(log.createdAt, 'yyyy-MM-dd HH:mm')}">2024-01-15 14:30</div>
+                    </div>
+                    <div class="audit-item" th:if="${#lists.isEmpty(auditLogs)}">
+                        <div class="audit-action" style="color: #666;">변경 이력이 없습니다.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 알림 -->
+    <div id="notification" class="notification"></div>
+
+    <script>
+        // 원본 데이터 저장
+        const originalData = {
+            email: document.getElementById('email').value,
+            permissions: Array.from(document.querySelectorAll('input[name="permissions"]:checked')).map(cb => cb.value)
+        };
+
+        // 이메일 변경 감지
+        document.getElementById('email').addEventListener('input', function() {
+            const emailWarning = document.getElementById('emailWarning');
+            if (this.value !== originalData.email) {
+                emailWarning.style.display = 'block';
+            } else {
+                emailWarning.style.display = 'none';
+            }
+        });
+
+        // 권한 변경 감지
+        document.querySelectorAll('input[name="permissions"]').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const currentPermissions = Array.from(document.querySelectorAll('input[name="permissions"]:checked')).map(cb => cb.value);
+                const permissionWarning = document.getElementById('permissionWarning');
+                
+                if (JSON.stringify(currentPermissions.sort()) !== JSON.stringify(originalData.permissions.sort())) {
+                    permissionWarning.style.display = 'block';
+                } else {
+                    permissionWarning.style.display = 'none';
+                }
+                
+                // 체크박스 상태에 따라 부모 요소 스타일 변경
+                const parentItem = this.closest('.permission-item');
+                if (this.checked) {
+                    parentItem.classList.add('active');
+                } else {
+                    parentItem.classList.remove('active');
+                }
+            });
+        });
+
+        // 페이지 로드 시 초기 상태 설정
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('input[name="permissions"]:checked').forEach(checkbox => {
+                checkbox.closest('.permission-item').classList.add('active');
+            });
+        });
+
+        // 폼 초기화
+        function resetForm() {
+            document.getElementById('email').value = originalData.email;
+            
+            // 권한 초기화
+            document.querySelectorAll('input[name="permissions"]').forEach(checkbox => {
+                checkbox.checked = originalData.permissions.includes(checkbox.value);
+                const parentItem = checkbox.closest('.permission-item');
+                if (checkbox.checked) {
+                    parentItem.classList.add('active');
+                } else {
+                    parentItem.classList.remove('active');
+                }
+            });
+            
+            // 경고 메시지 숨기기
+            document.getElementById('emailWarning').style.display = 'none';
+            document.getElementById('permissionWarning').style.display = 'none';
+        }
+
+        // 폼 제출 처리
+        document.getElementById('adminForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const currentEmail = formData.get('email');
+            const currentPermissions = formData.getAll('permissions');
+            
+            let messages = [];
+            
+            // 이메일 변경 확인
+            if (currentEmail !== originalData.email) {
+                messages.push('이메일 변경이 요청되었습니다. 새로운 이메일로 인증 링크를 발송합니다.');
+            }
+            
+            // 권한 변경 확인
+            if (JSON.stringify(currentPermissions.sort()) !== JSON.stringify(originalData.permissions.sort())) {
+                messages.push('권한 수정이 신청되었습니다. 관리자 승인 후 적용됩니다.');
+            }
+            
+            if (messages.length > 0) {
+                messages.forEach((message, index) => {
+                    setTimeout(() => {
+                        showNotification(message, 'info');
+                    }, index * 1000);
+                });
+            }
+            
+            // 기본 정보 저장
+            showNotification('기본 정보가 저장되었습니다.', 'success');
+            
+            // 실제 환경에서는 서버로 전송
+            // this.submit();
+        });
+
+        // 알림 표시
+        function showNotification(message, type) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 4000);
+        }
+    </script>
+</body>
+</html>

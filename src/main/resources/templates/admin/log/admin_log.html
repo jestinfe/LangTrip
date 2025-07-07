@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>관리자 로그 관리</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    @charset "UTF-8";
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background:#f5f7fa; display:flex; }
+
+    .sidebar { width:280px; height:100vh; background:linear-gradient(135deg,#667eea,#764ba2); padding:2rem 0; box-shadow:4px 0 15px rgba(0,0,0,0.1); position:fixed; top:0; left:0; overflow-y:auto; }
+    .sidebar h2 { color:#fff; text-align:center; font-size:1.5rem; font-weight:600; margin-bottom:2rem; display:flex; align-items:center; justify-content:center; gap:.5rem; }
+    .sidebar h2 i { font-size:1.8rem; background:rgba(255,255,255,0.2); padding:.5rem; border-radius:12px; backdrop-filter:blur(10px); }
+    .sidebar a { display:flex; align-items:center; padding:1rem 1.5rem; color:rgba(255,255,255,.9); text-decoration:none; margin:.2rem 1rem; border-radius:12px; font-weight:500; position:relative; overflow:hidden; transition:all .3s; }
+    .sidebar a::before { content:''; position:absolute; top:0; left:-100%; width:100%; height:100%; background:linear-gradient(90deg,transparent,rgba(255,255,255,.1),transparent); transition:left .5s; }
+    .sidebar a:hover::before { left:100%; }
+    .sidebar a:hover { background:rgba(255,255,255,.15); color:#fff; transform:translateX(5px); backdrop-filter:blur(10px); }
+    .sidebar a.active { background:rgba(255,255,255,.2); color:#fff; backdrop-filter:blur(10px); }
+    .sidebar a i { font-size:1.2rem; margin-right:1rem; width:24px; text-align:center; transition:transform .3s; }
+    .sidebar a:hover i { transform:scale(1.1); }
+
+    .main-content { margin-left:280px; padding:2rem; flex:1; min-height:100vh; background:#f8f9fa; }
+    .page-header { background:#fff; padding:2rem; border-radius:16px; box-shadow:0 8px 32px rgba(0,0,0,.1); margin-bottom:2rem; }
+    .page-header h1 { color:#333; font-size:2rem; margin-bottom:.5rem; }
+    .page-header p { color:#666; font-size:1.1rem; }
+
+    .detail-tabs { display:flex; gap:1rem; margin-bottom:2rem; }
+    .detail-tab { flex:1; padding:.75rem; background:#fff; border-radius:8px; text-align:center; cursor:pointer; box-shadow:0 2px 4px rgba(0,0,0,.1); }
+    .detail-tab.active { background:#667eea; color:#fff; }
+
+    .search-section { background:#fff; padding:2rem; border-radius:16px; box-shadow:0 8px 32px rgba(0,0,0,.1); margin-bottom:2rem; }
+    .search-form { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:1.5rem; align-items:end; }
+    .form-group { display:flex; flex-direction:column; }
+    .form-group label { margin-bottom:.5rem; font-weight:600; color:#333; }
+    .form-group input, .form-group select { padding:.8rem; border:2px solid #e9ecef; border-radius:8px; font-size:1rem; transition:border-color .3s; }
+    .form-group input:focus, .form-group select:focus { outline:none; border-color:#667eea }
+    .form-group.checkbox { flex-direction:row; align-items:center; gap:.5rem; }
+    .search-buttons { display:flex; gap:1rem; }
+    .btn { padding:.8rem 1.5rem; border:none; border-radius:8px; font-size:1rem; cursor:pointer; display:inline-flex; align-items:center; gap:.5rem; transition:all .3s; }
+    .btn-primary { background:linear-gradient(135deg,#667eea,#764ba2); color:#fff; }
+    .btn-primary:hover { transform:translateY(-2px); box-shadow:0 4px 20px rgba(102,126,234,.4); }
+    .btn-secondary { background:#6c757d; color:#fff; }
+    .btn-secondary:hover { background:#5a6268; }
+
+    .table-section { background:#fff; border-radius:16px; box-shadow:0 8px 32px rgba(0,0,0,.1); overflow:hidden; }
+    .table-header { padding:1.5rem 2rem; background:linear-gradient(135deg,#667eea,#764ba2); color:#fff; display:flex; justify-content:space-between; align-items:center; }
+    .table-header h3 { margin:0; font-size:1.3rem; }
+    .table-stats { font-size:.9rem; opacity:.9; }
+    .table-container { overflow-x:auto; }
+    .admin-table { width:100%; border-collapse:collapse; }
+    .admin-table th, .admin-table td { padding:1rem; text-align:left; border-bottom:1px solid #e9ecef; }
+    .admin-table th { background:#f8f9fa; font-weight:600; color:#333; cursor:pointer; transition:background-color .3s; }
+    .admin-table th:hover { background:#e9ecef; }
+    .sort-icon { margin-left:.5rem; font-size:.8rem; }
+
+    @media(max-width:768px){
+      .sidebar{position:relative;width:100%;height:auto;}
+      .main-content{margin-left:0;}
+      .search-form{grid-template-columns:1fr;}
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <h2><i class="fas fa-chart-line"></i> Dashboard</h2>
+    <a href="/admin/accounts"><i class="fas fa-users-cog"></i> Admin Accounts</a>
+    <a href="/admin/signup/requests"><i class="fas fa-user-plus"></i> Signup Requests</a>
+    <a href="/admin/members"><i class="fas fa-user"></i> Members</a>
+    <a href="/admin/courses"><i class="fas fa-graduation-cap"></i> Courses</a>
+    <a href="/admin/logs" class="active"><i class="fas fa-file-alt"></i> Logs</a>
+    <a href="/admin/reports"><i class="fas fa-exclamation-triangle"></i> Reports</a>
+    <a href="/admin/settings"><i class="fas fa-cog"></i> Settings</a>
+  </div>
+
+  <div class="main-content">
+    <!-- Page Header -->
+    <div class="page-header">
+      <h1><i class="fas fa-file-alt"></i> 로그 관리</h1>
+      <p>관리자 활동 로그 및 사용자 결제 로그를 조회합니다.</p>
+    </div>
+
+    <!-- Tabs -->
+    <div class="detail-tabs">
+      <div class="detail-tab active" data-tab="adminLogs">관리자 로그</div>
+      <div class="detail-tab" data-tab="paymentLogs">결제 로그</div>
+    </div>
+
+    <!-- Admin Logs -->
+    <div id="adminLogs">
+      <div class="search-section">
+        <form class="search-form" th:action="@{/admin/logs/admin}" method="get">
+          <div class="form-group">
+            <label for="adminId">관리자 ID</label>
+            <input type="text" id="adminId" name="adminId" th:value="${adminId}" placeholder="관리자 ID">
+          </div>
+          <div class="form-group">
+            <label for="actionType">액션 유형</label>
+            <select id="actionType" name="actionType" th:value="${actionType}">
+              <option value="">전체</option>
+              <option value="LOGIN">로그인</option>
+              <option value="CREATE">생성</option>
+              <option value="UPDATE">수정</option>
+              <option value="DELETE">삭제</option>
+              <option value="CLICK">클릭</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="fromDate">시작일자</label>
+            <input type="date" id="fromDate" name="fromDate" th:value="${fromDate}">
+          </div>
+          <div class="form-group">
+            <label for="toDate">종료일자</label>
+            <input type="date" id="toDate" name="toDate" th:value="${toDate}">
+          </div>
+          <div class="search-buttons">
+            <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> 검색</button>
+            <button type="button" class="btn btn-secondary" onclick="clearAdminSearch()"><i class="fas fa-redo"></i> 초기화</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="table-section">
+        <div class="table-header">
+          <h3>관리자 로그</h3>
+          <div class="table-stats">총 <span th:text="${adminCount}">0</span>건</div>
+        </div>
+        <div class="table-container">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>순번</th>
+                <th>관리자 ID</th>
+                <th>액션</th>
+                <th>설명</th>
+                <th>IP 주소</th>
+                <th>일시</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr th:each="log, stat : ${adminLogs}">
+                <td th:text="${stat.index+1}">1</td>
+                <td th:text="${log.adminId}">admin001</td>
+                <td th:text="${log.actionType}">LOGIN</td>
+                <td th:text="${log.description}">로그인 성공</td>
+                <td th:text="${log.ipAddress}">192.168.0.1</td>
+                <td th:text="${#temporals.format(log.timestamp,'yyyy-MM-dd HH:mm:ss')}">2025-02-01 10:23:45</td>
+              </tr>
+              <tr th:if="${#lists.isEmpty(adminLogs)}">
+                <td colspan="6" style="text-align:center; padding:2rem; color:#666;">로그가 없습니다.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Payment Logs -->
+    <div id="paymentLogs" style="display:none;">
+      <div class="search-section">
+        <form class="search-form" th:action="@{/admin/logs/payment}" method="get">
+          <div class="form-group">
+            <label for="userId">사용자 ID</label>
+            <input type="text" id="userId" name="userId" th:value="${userId}" placeholder="사용자 ID">
+          </div>
+          <div class="form-group">
+            <label for="status">결제 상태</label>
+            <select id="status" name="status" th:value="${status}">
+              <option value="">전체</option>
+              <option value="SUCCESS">성공</option>
+              <option value="FAILED">실패</option>
+              <option value="CANCELLED">취소</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="payFrom">시작일자</label>
+            <input type="date" id="payFrom" name="payFrom" th:value="${payFrom}">
+          </div>
+          <div class="form-group">
+            <label for="payTo">종료일자</label>
+            <input type="date" id="payTo" name="payTo" th:value="${payTo}">
+          </div>
+          <div class="search-buttons">
+            <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> 검색</button>
+            <button type="button" class="btn btn-secondary" onclick="clearPaymentSearch()"><i class="fas fa-redo"></i> 초기화</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="table-section">
+        <div class="table-header">
+          <h3>결제 로그</h3>
+          <div class="table-stats">총 <span th:text="${paymentCount}">0</span>건</div>
+        </div>
+        <div class="table-container">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>순번</th>
+                <th>사용자 ID</th>
+                <th>결제 ID</th>
+                <th>금액</th>
+                <th>상태</th>
+                <th>일시</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr th:each="p, stat : ${paymentLogs}">
+                <td th:text="${stat.index+1}">1</td>
+                <td th:text="${p.userId}">user123</td>
+                <td th:text="${p.paymentId}">pay_0001</td>
+                <td th:text="${p.amount}">₩12,000</td>
+                <td th:text="${p.status}">SUCCESS</td>
+                <td th:text="${#temporals.format(p.timestamp,'yyyy-MM-dd HH:mm:ss')}">2025-02-01 11:45:00</td>
+              </tr>
+              <tr th:if="${#lists.isEmpty(paymentLogs)}">
+                <td colspan="6" style="text-align:center; padding:2rem; color:#666;">로그가 없습니다.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // 탭 전환
+    document.querySelectorAll('.detail-tab').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.detail-tab').forEach(t => t.classList.remove('active'));
+        document.getElementById('adminLogs').style.display = 'none';
+        document.getElementById('paymentLogs').style.display = 'none';
+        btn.classList.add('active');
+        document.getElementById(btn.dataset.tab).style.display = 'block';
+      });
+    });
+
+    // 초기화 함수
+    function clearAdminSearch() {
+      ['adminId','actionType','fromDate','toDate'].forEach(id => document.getElementById(id).value = '');
+    }
+    function clearPaymentSearch() {
+      ['userId','status','payFrom','payTo'].forEach(id => document.getElementById(id).value = '');
+    }
+  </script>
+</body>
+</html>

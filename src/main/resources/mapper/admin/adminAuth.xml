@@ -1,3 +1,18 @@
+<<<<<<< HEAD
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="adminAuth">
+  <select id="selectAdminByIdPw" parameterType="map" resultType="kr.co.sist.e_learning.admin.auth.AdminAuthDTO">
+    SELECT admin_id AS adminId, admin_name AS adminName, role, status
+    FROM admin
+    WHERE admin_id = #{id}
+      AND admin_pw = #{pw}
+      AND status = 'Y'
+  </select>
+</mapper>
+=======
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
@@ -6,16 +21,18 @@
 <mapper namespace="kr.co.sist.e_learning.admin.auth.AdminAuthDAO">
 
   <!-- 로그인 -->
-  <select id="selectAdminByIdPw" parameterType="map" resultType="kr.co.sist.e_learning.admin.auth.AdminAuthDTO">
-    SELECT 
-        ADMIN_ID,
-        PASSWORD,
-        ADMIN_NAME,
-        STATUS
-    FROM ADMINS
-    WHERE ADMIN_ID = #{id}
-      AND PASSWORD = #{pw}
-  </select>
+  <resultMap id="adminAuthMap" type="kr.co.sist.e_learning.admin.auth.AdminAuthDTO">
+  <id property="adminId" column="ADMIN_ID"/>
+  <result property="adminPw" column="PASSWORD"/>
+  <result property="adminName" column="ADMIN_NAME"/>
+  <result property="status" column="STATUS"/>
+</resultMap>
+
+<select id="loginSelectAdminById" parameterType="String" resultMap="adminAuthMap">
+  SELECT ADMIN_ID, PASSWORD, ADMIN_NAME, STATUS
+  FROM ADMINS
+  WHERE ADMIN_ID = #{id}
+</select>
 
   <!-- 관리자 회원가입 -->
   <insert id="insertAdmin" parameterType="AdminSignupDTO">
@@ -58,3 +75,4 @@
   </update>
 
 </mapper>
+>>>>>>> 221c41c125989c82ed87d555b428529084e52bf1
