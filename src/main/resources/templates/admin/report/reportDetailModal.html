@@ -1,0 +1,197 @@
+<!--
+	정제균.
+	
+	반응형 완.
+	
+	TODO :
+	신고관리쪽은 아이디만 검색 가능하게?
+	기타 선택하고 텍스트 입력 안 하면 기타는 취소!
+	
+-->
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Insert title here</title>
+<!-- bootstrap CSS CDN -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"
+	integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+<style type="text/css">
+.modal-dialog {
+  animation: none !important;
+  transform: none !important;
+}
+</style>
+</head>
+<body>
+<!-- 신고 상세 모달 트리거 -->
+<button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#reportDetailModal">
+  신고 상세 보기
+</button>
+
+<!-- 신고 상세 모달 -->
+<div class="modal fade" id="reportDetailModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="reportDetailModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg modal-fullscreen-sm-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="reportDetailModalLabel">신고 상세 정보</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="닫기"></button>
+      </div>
+      <div class="modal-body">
+        <div class="container-fluid">
+
+		  <!-- 상세 정보 테이블 -->
+          <table class="table table-bordered">
+            <tbody>
+              <tr><th>신고 사유</th><td>욕설, 기타(직접입력한내용)</td></tr>
+              <tr><th>콘텐츠 유형</th><td>강의</td></tr>
+              <tr><th>제목</th><td><a href="#" class="text-decoration-underline">풀스택</a></td></tr>
+              <tr><th>신고일</th><td>2025-06-21</td></tr>
+              <tr><th>신고인 ID</th><td>홍길동</td></tr>
+              <tr><th>피신고인 ID</th><td>Content</td></tr>
+              <tr><th>처리상태</th><td>미처리</td></tr>
+              <tr><th>피신고인 계정 상태</th><td>정상</td></tr>
+            </tbody>
+          </table>
+
+          <!-- 피신고인 조치 -->
+          <h6 class="fw-bold mb-3">피신고인 조치</h6>
+
+          <!-- 제재 여부 -->
+          <div class="mb-3">
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="penaltyType" id="noPenalty" value="무제재">
+              <label class="form-check-label" for="noPenalty">무제재</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="penaltyType" id="penalty" value="제재" checked>
+              <label class="form-check-label" for="penalty">제재</label>
+            </div>
+          </div>
+
+		  <hr>
+
+          <!-- 계정 상태 -->
+          <div class="mb-3">
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="accountStatus" id="status-normal" value="정상">
+              <label class="form-check-label" for="status-normal">정상</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="accountStatus" id="status-auto" value="자동차단">
+              <label class="form-check-label" for="status-auto">자동차단</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="accountStatus" id="status-warning" value="경고">
+              <label class="form-check-label" for="status-warning">경고</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="accountStatus" id="status-ban" value="영구정지">
+              <label class="form-check-label" for="status-ban">영구정지</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="accountStatus" id="status-leave" value="탈퇴">
+              <label class="form-check-label" for="status-leave">탈퇴</label>
+            </div>
+          </div>
+
+          <!-- 사유 -->
+          <div class="mb-3">
+            <label class="form-label fw-bold">관리자 지정 사유</label><br>
+            <div class="form-check form-check-inline">
+              <input type="checkbox" class="form-check-input" id="reason1">
+              <label class="form-check-label" for="reason1">욕설</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input type="checkbox" class="form-check-input" id="reason2">
+              <label class="form-check-label" for="reason2">음란물</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input type="checkbox" class="form-check-input" id="reason3">
+              <label class="form-check-label" for="reason3">허위</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input type="checkbox" class="form-check-input" id="reason4">
+              <label class="form-check-label" for="reason4">기타</label>
+            </div>
+            <input type="text" id="customReason" class="form-control mt-2" maxlength="20" placeholder="직접 입력(최대 20자)" disabled>
+          </div>
+
+          <!-- 적용 버튼 -->
+          <div class="text-end">
+            <button type="button" class="btn btn-primary" id="applyBtn">적용</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ✅ 의사 재확인 모달 -->
+<div class="modal fade" id="confirmModal"
+     data-bs-backdrop="static" data-bs-keyboard="false"
+     tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="confirmModalLabel">계정 상태 적용</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="닫기"></button>
+      </div>
+      <div class="modal-body">
+        정말 계정 상태를 적용하시겠습니까?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+        <button type="button" class="btn btn-primary" id="confirmApplyBtn">확인</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 스크립트 -->
+<script>
+// 기타 체크박스 제어 로직
+const reasonEtc = document.getElementById("reason4");
+const customReasonInput = document.getElementById("customReason");
+reasonEtc.addEventListener("change", () => {
+  if (reasonEtc.checked) {
+    customReasonInput.disabled = false;
+    customReasonInput.focus();
+  } else {
+    customReasonInput.disabled = true;
+    customReasonInput.value = "";
+  }
+});
+// 적용 버튼 클릭 시 기타 선택만 있고 입력 없으면 자동 해제
+document.getElementById("applyBtn").addEventListener("click", () => {
+  if (reasonEtc.checked && customReasonInput.value.trim() === "") {
+    reasonEtc.checked = false;
+    customReasonInput.disabled = true;
+    customReasonInput.value = "";
+  }
+
+  const confirmModal = new bootstrap.Modal(document.getElementById('confirmModal'), {
+    backdrop: false,
+    keyboard: false,
+  });
+  confirmModal.show();
+});
+
+document.getElementById("confirmApplyBtn").addEventListener("click", () => {
+  const modal1 = bootstrap.Modal.getInstance(document.getElementById('reportDetailModal'));
+  const modal2 = bootstrap.Modal.getInstance(document.getElementById('confirmModal'));
+
+  modal2.hide();
+  modal1.hide();
+
+  // TODO: 여기에 서버 처리 로직 또는 AJAX 요청 작성 가능
+  console.log("신고 처리 적용됨");
+});
+</script>
+<!-- bootstrap bundle CDN -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
+</body>
+</html>
