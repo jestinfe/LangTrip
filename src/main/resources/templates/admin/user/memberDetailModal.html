@@ -1,11 +1,10 @@
 <!--
 	정제균.
 	
-	반응형 완.
+	회원상세정보를 제공하는 모달.
 	
 	TODO :
-	회원관리쪽은 핸드폰으로 구현 안 할 것. 굳이 한다면 아이디 검색?
-	기타 선택하고 텍스트 입력 안 하면 기타는 취소!
+	
 -->
 
 <!DOCTYPE html>
@@ -13,7 +12,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Insert title here</title>
+<title>회원 상세 정보</title>
 <!-- bootstrap CSS CDN -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"
 	integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
@@ -100,7 +99,7 @@
 	                <label class="form-check-label" for="status1">정상</label>
 	              </div>
 	              <div class="form-check form-check-inline">
-	                <input type="radio" class="form-check-input" name="accountStatus" id="status2" value="자동차단">
+	                <input type="radio" class="form-check-input" name="accountStatus" id="status2" value="자동차단" disabled>
 	                <label class="form-check-label" for="status2">자동차단</label>
 	              </div>
 	              <div class="form-check form-check-inline">
@@ -112,7 +111,7 @@
 	                <label class="form-check-label" for="status4">영구정지</label>
 	              </div>
 	              <div class="form-check form-check-inline">
-	                <input type="radio" class="form-check-input" name="accountStatus" id="status5" value="탈퇴">
+	                <input type="radio" class="form-check-input" name="accountStatus" id="status5" value="탈퇴" disabled>
 	                <label class="form-check-label" for="status5">탈퇴</label>
 	              </div>
 	            </div>
