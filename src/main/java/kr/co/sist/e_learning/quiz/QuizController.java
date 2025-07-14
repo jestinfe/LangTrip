@@ -11,11 +11,6 @@ public class QuizController {
 //	@Autowired
 //	private QuizService qService;
 	
-	@GetMapping("/")
-	public String index() {
-		return "index";
-	}
-	
 	@GetMapping("/addImageQuiz")
 	public String showImageQuizAdd() {
 		return "/addImageQuizForm";

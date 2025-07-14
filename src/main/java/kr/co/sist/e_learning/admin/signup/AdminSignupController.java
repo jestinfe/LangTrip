@@ -42,4 +42,12 @@ public class AdminSignupController {
     public String signup() {
     	return "admin/signup/signup";
     }
+    
+    @GetMapping("/check-id")
+    @ResponseBody
+    public String checkAdminId(@RequestParam("adminId") String adminId) {
+        boolean exists = signupService.isDuplicateId(adminId);
+        return exists ? "exists" : "ok";
+    }
+    
 }

@@ -3,7 +3,6 @@ package kr.co.sist.e_learning.mypage;
 import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 
-@Mapper
 public interface MyPageDAO {
     MyPageDTO getMyPageSummary(String userSeq);  // 대시보드 요약
     MyPageDTO selectUserInfo(String userSeq);    // 내 정보

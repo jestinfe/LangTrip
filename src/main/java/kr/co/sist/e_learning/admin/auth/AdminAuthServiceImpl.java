@@ -5,15 +5,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import kr.co.sist.e_learning.common.aop.Loggable;
+
 @Service
 public class AdminAuthServiceImpl implements AdminAuthService {
 
-//	  Mapper 충돌 때문에 임시 주석
-//    @Autowired
-//    private AdminAuthDAO adminAuthDAO;
+    @Autowired
+    private AdminAuthDAO adminAuthDAO;
 
 	
     @Override
+    @Loggable(actionType = "ADMIN_LOGIN")
     public AdminAuthDTO login(String id, String pw) {
 
 

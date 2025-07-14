@@ -3,6 +3,9 @@ package kr.co.sist.e_learning.admin.signup;
 import java.security.SecureRandom;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,33 +75,36 @@ public class AdminSignupServiceImpl implements AdminSignupService {
 
     @Override
     public void registerAdmin(AdminSignupDTO dto) {
-    	    System.out.println("중복 확인 결과: " + signupDAO.isEmailDuplicated(dto.getEmail())); // ← 로그 찍어봐
-        // 중복 체크
-        if (signupDAO.isEmailDuplicated(dto.getEmail())> 0) {
-            throw new IllegalStateException("이미 사용 중인 이메일입니다.");
-        }
         dto.setRequestId(UUID.randomUUID().toString());
-        
-        System.out.println("A"+dto.getAdminId());
-        dto.setAdminId(dto.getAdminId());
 
-        // 비밀번호 암호화
         String hash = passwordEncoder.encode(dto.getPassword());
         dto.setPassword(hash);
 
-
-        System.out.println("1. insertSignupRequest 시작");
         signupDAO.insertSignupRequest(dto);
-        System.out.println("2. insertSignupRequest 완료");
 
-        System.out.println("3. insertSignupPermissions 시작");
-        signupDAO.insertSignupPermissions(dto.getRequestId(), dto.getPermissions());
-        System.out.println("4. insertSignupPermissions 완료");
+        // ✅ DB에서 부서별 권한 조회
+        List<String> roleCodes = signupDAO.selectRoleCodesByDept(dto.getDept());
+
+        // ✅ 각 권한 insert
+        for (String roleCode : roleCodes) {
+            Map<String, String> param = new HashMap<String, String>();
+            param.put("requestId", dto.getRequestId());
+            param.put("roleCode", roleCode);
+            signupDAO.insertSignupPermission(param);
+        }
     }
+
 
     private String generateRandomCode() {
         SecureRandom rand = new SecureRandom();
         int code = 100000 + rand.nextInt(900000);
         return String.valueOf(code);
     }
+    
+
+    @Override
+    public boolean isDuplicateId(String adminId) {
+        return signupDAO.isDuplicateId(adminId);
+    }
+
 }

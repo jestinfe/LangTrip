@@ -3,11 +3,12 @@ package kr.co.sist.e_learning;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-//import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 @SpringBootApplication
-//@ComponentScan("kr.co.sist.e_learning")
-@MapperScan("kr.co.sist.e_learning.mypage.mapper")
+@EnableAsync
+@ComponentScan("kr.co.sist.e_learning")
 public class ELearningPrjApplication {
 
 	public static void main(String[] args) {

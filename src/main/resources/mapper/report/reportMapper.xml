@@ -4,7 +4,7 @@
     "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="kr.co.sist.e_learning.report.ReportMapper">
-<resultMap id="ReportResultMap" type="report.ReportDTO">
+<resultMap id="ReportResultMap" type="kr.co.sist.e_learning.report.ReportDTO">
     <id property="reportId" column="report_id"/>
     <result property="reportedAt" column="reported_at"/>
     <result property="contentType" column="content_type"/>
@@ -28,7 +28,7 @@
                 select="selectAdminReasons"/>
 </resultMap>
 
-<select id="selectReports" parameterType="pagination.PageRequestDTO" resultType="ReportResultMap">
+<select id="selectReports" parameterType="kr.co.sist.e_learning.pagination.PageRequestDTO" resultMap="ReportResultMap">
 <![CDATA[
 SELECT * FROM (
 	SELECT ROWNUM rnum, A.* FROM (
@@ -71,7 +71,7 @@ WHERE rnum >= #{startRow}
 	WHERE report_id = #{report_id}
 </select>
 
-<select id="countReports" parameterType="pagination.PageRequestDTO" resultType="Integer">
+<select id="countReports" parameterType="kr.co.sist.e_learning.pagination.PageRequestDTO" resultType="Integer">
 SELECT COUNT(*) FROM report
 <where>
 <if test="reporterId != null and reporterId != ''">
