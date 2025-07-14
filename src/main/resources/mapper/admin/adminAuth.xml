@@ -34,29 +34,5 @@
     VALUES (#{adminId}, #{permissionCode})
   </insert>
 
-  <!-- 이메일 인증 코드 저장 -->
-  <insert id="insertVerificationCode" parameterType="EmailVerificationDTO">
-    INSERT INTO EMAIL_VERIFICATION_ADMIN (
-      VERIFICATION_SEQ, ADMIN_ID, EMAIL, CODE, STATUS, CREATED_AT, EXPIRES_AT
-    ) VALUES (
-      #{verificationSeq}, #{adminId}, #{email}, #{code}, 'SENT', SYSTIMESTAMP, #{expiresAt}
-    )
-  </insert>
-
-  <!-- 이메일 인증 코드 확인 -->
-  <select id="selectValidVerification" resultType="EmailVerificationDTO">
-    SELECT * FROM EMAIL_VERIFICATION_ADMIN
-     WHERE EMAIL = #{email}
-       AND CODE = #{code}
-       AND STATUS = 'SENT'
-       AND EXPIRES_AT > SYSTIMESTAMP
-  </select>
-
-  <!-- 이메일 인증 코드 상태 변경 -->
-  <update id="markCodeVerified">
-    UPDATE EMAIL_VERIFICATION_ADMIN
-       SET STATUS = 'VERIFIED'
-     WHERE VERIFICATION_SEQ = #{verificationSeq}
-  </update>
 
 </mapper>

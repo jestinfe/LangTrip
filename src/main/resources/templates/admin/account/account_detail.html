@@ -150,6 +150,11 @@
             background: #f8d7da;
             color: #721c24;
         }
+        
+        .status-pending {
+             background: #fff3cd;
+             color: #856404;
+        }
 
         .detail-section {
             background: white;
@@ -208,7 +213,7 @@
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
 
-        .form-group input:disabled {
+        .form-group input:disabled, .form-group select:disabled {
             background: #f8f9fa;
             color: #666;
             cursor: not-allowed;
@@ -312,394 +317,183 @@
             background: #667eea;
             color: white;
         }
-
-        .alert {
-            padding: 1rem 1.5rem;
-            border-radius: 8px;
-            margin-bottom: 1rem;
-            border: 1px solid transparent;
-        }
-
-        .alert-warning {
-            background: #fff3cd;
-            border-color: #ffeaa7;
-            color: #856404;
-        }
-
-        .alert-info {
-            background: #d1ecf1;
-            border-color: #bee5eb;
-            color: #0c5460;
-        }
-
-        .alert-success {
-            background: #d4edda;
-            border-color: #c3e6cb;
-            color: #155724;
-        }
-
-        .alert i {
-            margin-right: 0.5rem;
-        }
-
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 1rem 1.5rem;
-            border-radius: 8px;
-            color: white;
-            font-weight: 500;
-            z-index: 1000;
-            opacity: 0;
-            transform: translateX(100%);
-            transition: all 0.3s ease;
-        }
-
-        .notification.show {
-            opacity: 1;
-            transform: translateX(0);
-        }
-
-        .notification.success {
-            background: #28a745;
-        }
-
-        .notification.info {
-            background: #17a2b8;
-        }
-
-        .notification.warning {
-            background: #ffc107;
-            color: #212529;
-        }
-
-        .audit-log {
-            max-height: 300px;
-            overflow-y: auto;
-            border: 1px solid #e9ecef;
-            border-radius: 8px;
-            padding: 1rem;
-            background: #f8f9fa;
-        }
-
-        .audit-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.5rem 0;
-            border-bottom: 1px solid #e9ecef;
-        }
-
-        .audit-item:last-child {
-            border-bottom: none;
-        }
-
-        .audit-action {
-            font-weight: 500;
-            color: #333;
-        }
-
-        .audit-time {
-            font-size: 0.85rem;
-            color: #666;
-        }
-
-        @media (max-width: 768px) {
-            .sidebar {
-                width: 100%;
-                height: auto;
-                position: relative;
-            }
-
-            .main-content {
-                margin-left: 0;
-            }
-
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .permission-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .action-buttons {
-                flex-direction: column;
-            }
-        }
     </style>
 </head>
 <body>
-    <!-- 사이드바 -->
-    <div class="sidebar">
-        <h2><i class="fas fa-chart-line"></i> Dashboard</h2>
-        <a href="/admin/accounts" class="active"><i class="fas fa-users-cog"></i> Admin Accounts</a>
-        <a href="/admin/signup/requests"><i class="fas fa-user-plus"></i> Signup Requests</a>
-        <a href="#"><i class="fas fa-user"></i> Members</a>
-        <a href="#"><i class="fas fa-graduation-cap"></i> Courses</a>
-        <a href="#"><i class="fas fa-bell"></i> Subscriptions</a>
-        <a href="#"><i class="fas fa-credit-card"></i> Payments</a>
-        <a href="#"><i class="fas fa-comments"></i> Community</a>
-        <a href="#"><i class="fas fa-exclamation-triangle"></i> Reports</a>
-        <a href="#"><i class="fas fa-headset"></i> Support</a>
+<div th:replace="layout/admin_sidebar :: sidebar"></div>
+
+<!-- 메인 콘텐츠 -->
+<div class="main-content">
+  <div class="breadcrumb">
+    <a href="/admin/dashboard"><i class="fas fa-home"></i> Dashboard</a>
+    <span>/</span>
+    <a href="/admin/accounts">관리자 계정 관리</a>
+    <span>/</span>
+    <span>상세조회</span>
+  </div>
+
+  <div class="page-header">
+    <h1><i class="fas fa-user-edit"></i> 관리자 계정 상세</h1>
+    <div class="admin-info">
+      <span>계정 ID: <strong th:text="${admin.adminId}">admin001</strong></span>
+      <span class="status-badge"
+            th:classappend="${admin.status == 'Y' ? 'status-active' : (admin.status == 'N' ? 'status-inactive' : 'status-pending')}"
+            th:text="${admin.status == 'Y' ? '활성' : (admin.status == 'N' ? '비활성' : '승인대기')}">
+        상태
+      </span>
+      <span>가입일: <strong th:text="${#temporals.format(admin.createdAt, 'yyyy-MM-dd HH:mm')}">2024-01-15 10:30</strong></span>
     </div>
+  </div>
 
-    <!-- 메인 콘텐츠 -->
-    <div class="main-content">
-        <!-- 브레드크럼 -->
-        <div class="breadcrumb">
-            <a href="/admin/dashboard"><i class="fas fa-home"></i> Dashboard</a>
-            <span>/</span>
-            <a href="/admin/accounts">관리자 계정 관리</a>
-            <span>/</span>
-            <span>상세조회</span>
-        </div>
-
-        <!-- 페이지 헤더 -->
-        <div class="page-header">
-            <h1><i class="fas fa-user-edit"></i> 관리자 계정 상세</h1>
-            <div class="admin-info">
-                <span>계정 ID: <strong th:text="${admin.adminId}">admin001</strong></span>
-                <span class="status-badge status-active" th:class="'status-badge status-' + ${admin.status.name().toLowerCase()}" th:text="${admin.status.displayName}">활성</span>
-                <span>가입일: <strong th:text="${#temporals.format(admin.createdAt, 'yyyy-MM-dd HH:mm')}">2024-01-15 10:30</strong></span>
-            </div>
-        </div>
-
-        <!-- 기본 정보 섹션 -->
-        <div class="detail-section">
-            <div class="section-header">
-                <i class="fas fa-user"></i> 기본 정보
-            </div>
-            <div class="section-content">
-                <form id="adminForm" th:action="@{/admin/accounts/{id}(id=${admin.id})}" method="post">
-                    <input type="hidden" name="_method" value="PUT">
-                    <input type="hidden" name="originalEmail" th:value="${admin.email}">
-                    <input type="hidden" name="originalPermissions" th:value="${#strings.setJoin(admin.permissions, ',')}">
-                    
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="name">이름 <span style="color: red;">*</span></label>
-                            <input type="text" id="name" name="name" th:value="${admin.name}" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="phone">휴대폰 번호 <span style="color: red;">*</span></label>
-                            <input type="tel" id="phone" name="phone" th:value="${admin.phone}" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="email">이메일 <span style="color: red;">*</span></label>
-                            <input type="email" id="email" name="email" th:value="${admin.email}" required>
-                            <div class="alert alert-warning" style="margin-top: 0.5rem; display: none;" id="emailWarning">
-                                <i class="fas fa-exclamation-triangle"></i>
-                                이메일을 변경하면 새로운 이메일로 인증이 필요합니다.
-                            </div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="extension">내선번호</label>
-                            <input type="text" id="extension" name="extension" th:value="${admin.extension}" placeholder="예: 1001">
-                        </div>
-                    </div>
-
-                    <!-- 권한 섹션 -->
-                    <div style="margin-top: 2rem;">
-                        <label style="font-weight: 600; color: #333; margin-bottom: 1rem; display: block;">권한 설정</label>
-                        <div class="alert alert-info" style="display: none;" id="permissionWarning">
-                            <i class="fas fa-info-circle"></i>
-                            권한을 변경하면 관리자 승인이 필요합니다.
-                        </div>
-                        
-                        <div class="permission-grid">
-                            <div class="permission-item">
-                                <input type="checkbox" id="perm1" name="permissions" value="ACCOUNT_MANAGEMENT" 
-                                       th:checked="${admin.permissions.contains(T(com.example.enums.AdminPermission).ACCOUNT_MANAGEMENT)}">
-                                <div>
-                                    <label for="perm1">계정 관리</label>
-                                    <div class="permission-desc">관리자 계정 생성, 수정, 삭제</div>
-                                </div>
-                            </div>
-                            
-                            <div class="permission-item">
-                                <input type="checkbox" id="perm2" name="permissions" value="COURSE_MANAGEMENT"
-                                       th:checked="${admin.permissions.contains(T(com.example.enums.AdminPermission).COURSE_MANAGEMENT)}">
-                                <div>
-                                    <label for="perm2">강의 관리</label>
-                                    <div class="permission-desc">강의 등록, 수정, 관리</div>
-                                </div>
-                            </div>
-                            
-                            <div class="permission-item">
-                                <input type="checkbox" id="perm3" name="permissions" value="PAYMENT_MANAGEMENT"
-                                       th:checked="${admin.permissions.contains(T(com.example.enums.AdminPermission).PAYMENT_MANAGEMENT)}">
-                                <div>
-                                    <label for="perm3">결제 관리</label>
-                                    <div class="permission-desc">결제 내역 조회, 환불 처리</div>
-                                </div>
-                            </div>
-                            
-                            <div class="permission-item">
-                                <input type="checkbox" id="perm4" name="permissions" value="SUPPORT_MANAGEMENT"
-                                       th:checked="${admin.permissions.contains(T(com.example.enums.AdminPermission).SUPPORT_MANAGEMENT)}">
-                                <div>
-                                    <label for="perm4">지원 관리</label>
-                                    <div class="permission-desc">고객 지원, 문의 처리</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 액션 버튼 -->
-                    <div class="action-buttons">
-                        <a href="/admin/accounts" class="btn btn-outline">
-                            <i class="fas fa-arrow-left"></i> 목록으로
-                        </a>
-                        <button type="button" class="btn btn-secondary" onclick="resetForm()">
-                            <i class="fas fa-undo"></i> 초기화
-                        </button>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save"></i> 저장
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <!-- 변경 이력 섹션 -->
-        <div class="detail-section">
-            <div class="section-header">
-                <i class="fas fa-history"></i> 변경 이력
-            </div>
-            <div class="section-content">
-                <div class="audit-log">
-                    <div class="audit-item" th:each="log : ${auditLogs}">
-                        <div class="audit-action" th:text="${log.action}">이메일 변경</div>
-                        <div class="audit-time" th:text="${#temporals.format(log.createdAt, 'yyyy-MM-dd HH:mm')}">2024-01-15 14:30</div>
-                    </div>
-                    <div class="audit-item" th:if="${#lists.isEmpty(auditLogs)}">
-                        <div class="audit-action" style="color: #666;">변경 이력이 없습니다.</div>
-                    </div>
-                </div>
-            </div>
-        </div>
+  <!-- 상세 폼 -->
+  <div class="detail-section">
+    <div class="section-header">
+      <i class="fas fa-user"></i> 기본 정보
     </div>
+    <div class="section-content">
+      <form id="adminForm" th:action="@{/admin/accounts/{id}(id=${admin.adminId})}" method="post">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="name">이름 *</label>
+            <input type="text" id="name" name="adminName" th:value="${admin.adminName}" disabled required>
+          </div>
 
-    <!-- 알림 -->
-    <div id="notification" class="notification"></div>
+          <div class="form-group">
+            <label for="phone">휴대폰 번호 *</label>
+            <input type="tel" id="phone" name="phone" th:value="${admin.phone}" disabled required>
+          </div>
 
-    <script>
-        // 원본 데이터 저장
-        const originalData = {
-            email: document.getElementById('email').value,
-            permissions: Array.from(document.querySelectorAll('input[name="permissions"]:checked')).map(cb => cb.value)
-        };
+          <div class="form-group">
+            <label for="email">이메일 *</label>
+            <input type="email" id="email" name="email" th:value="${admin.email}" disabled required>
+          </div>
 
-        // 이메일 변경 감지
-        document.getElementById('email').addEventListener('input', function() {
-            const emailWarning = document.getElementById('emailWarning');
-            if (this.value !== originalData.email) {
-                emailWarning.style.display = 'block';
-            } else {
-                emailWarning.style.display = 'none';
-            }
-        });
+          <div class="form-group">
+            <label for="dept">부서</label>
+            <select id="dept" name="dept" class="form-control" disabled>
+                <option value="">부서 선택</option>
+                <option th:each="d : ${depts}"
+                        th:value="${d}"
+                        th:text="${d}"
+                        th:selected="${d == admin.dept}"></option>
+            </select>
+          </div>
 
-        // 권한 변경 감지
-        document.querySelectorAll('input[name="permissions"]').forEach(checkbox => {
-            checkbox.addEventListener('change', function() {
-                const currentPermissions = Array.from(document.querySelectorAll('input[name="permissions"]:checked')).map(cb => cb.value);
-                const permissionWarning = document.getElementById('permissionWarning');
-                
-                if (JSON.stringify(currentPermissions.sort()) !== JSON.stringify(originalData.permissions.sort())) {
-                    permissionWarning.style.display = 'block';
-                } else {
-                    permissionWarning.style.display = 'none';
-                }
-                
-                // 체크박스 상태에 따라 부모 요소 스타일 변경
-                const parentItem = this.closest('.permission-item');
-                if (this.checked) {
-                    parentItem.classList.add('active');
-                } else {
-                    parentItem.classList.remove('active');
-                }
-            });
-        });
+          <div class="form-group">
+            <label for="inline">내선번호</label>
+            <input type="text" id="inline" name="inline" th:value="${admin.inline}" disabled>
+          </div>
 
-        // 페이지 로드 시 초기 상태 설정
-        document.addEventListener('DOMContentLoaded', function() {
-            document.querySelectorAll('input[name="permissions"]:checked').forEach(checkbox => {
-                checkbox.closest('.permission-item').classList.add('active');
-            });
-        });
+          <div class="form-group">
+            <label>계정 상태 *</label>
+            <div>
+              <label style="margin-right: 1rem;">
+                <input type="radio" name="status" value="Y" th:checked="${admin.status == 'Y'}" disabled> 활성
+              </label>
+              <label>
+                <input type="radio" name="status" value="N" th:checked="${admin.status == 'N'}" disabled> 비활성
+              </label>
+            </div>
+          </div>
+        </div>
 
-        // 폼 초기화
-        function resetForm() {
-            document.getElementById('email').value = originalData.email;
-            
-            // 권한 초기화
-            document.querySelectorAll('input[name="permissions"]').forEach(checkbox => {
-                checkbox.checked = originalData.permissions.includes(checkbox.value);
-                const parentItem = checkbox.closest('.permission-item');
-                if (checkbox.checked) {
-                    parentItem.classList.add('active');
-                } else {
-                    parentItem.classList.remove('active');
+        <div style="margin-top: 2rem;">
+          <label style="font-weight: 600; color: #333; margin-bottom: 1rem; display: block;">권한 설정</label>
+          <div class="permission-grid">
+            <div th:each="entry : ${roleNameMap}">
+              <div class="permission-item">
+                <input type="checkbox"
+                       th:id="'perm_' + ${entry.key.toLowerCase().replace('ROLE_', '')}"
+                       name="roleCodes" th:value="${entry.key}"
+                       th:checked="${admin.roleCodes != null and admin.roleCodes.contains(entry.key)}"
+                       disabled>
+                <label th:for="'perm_' + ${entry.key.toLowerCase().replace('ROLE_', '')}" th:text="${entry.value}">권한명</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="action-buttons">
+          <a href="/admin/accounts" class="btn btn-outline"><i class="fas fa-arrow-left"></i> 목록으로</a>
+
+          <!-- 가입신청 상세 보기 모드 -->
+          <div th:if="${mode == 'signup'}">
+            <form th:action="@{/admin/accounts/{id}/status(id=${admin.requestId})}" method="post" style="display: inline;">
+                <input type="hidden" name="status" value="APPROVED">
+                <button type="submit" class="btn btn-primary"><i class="fas fa-check"></i> 승인</button>
+            </form>
+            <button type="button" class="btn btn-secondary" id="showRejectReasonBtn"><i class="fas fa-times"></i> 거절</button>
+          </div>
+
+          <!-- 기존 관리자 상세 보기 모드 -->
+          <div th:if="${mode == 'account'}">
+            <button type="button" id="editBtn" class="btn btn-secondary"><i class="fas fa-edit"></i> 수정하기</button>
+            <button type="reset" id="cancelBtn" class="btn btn-outline" style="display: none;"><i class="fas fa-times"></i> 취소</button>
+            <button type="submit" id="saveBtn" class="btn btn-primary" style="display: none;"><i class="fas fa-save"></i> 저장</button>
+          </div>
+        </div>
+      </form>
+      
+      <!-- 거절 사유 입력 폼 (가입신청 모드에서만 사용) -->
+      <div th:if="${mode == 'signup'}" id="rejectReasonBox" style="display: none; margin-top: 1rem;">
+        <form id="rejectForm" method="post" th:action="@{/admin/accounts/{id}/status(id=${admin.requestId})}">
+            <input type="hidden" name="status" value="REJECTED">
+            <label for="rejectReason" style="font-weight: 600; color: #333;">거절 사유 입력</label>
+            <textarea name="reason" id="rejectReason" rows="4" style="width:100%;padding:10px;border-radius:8px;border:1px solid #ccc;" required></textarea>
+            <div style="margin-top: 0.5rem; text-align: right;">
+                <button type="submit" class="btn btn-secondary"><i class="fas fa-paper-plane"></i> 제출</button>
+            </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script th:inline="javascript">
+document.addEventListener('DOMContentLoaded', function () {
+    const mode = /*[[${mode}]]*/ 'account';
+
+    if (mode === 'account') {
+        const editBtn = document.getElementById('editBtn');
+        const saveBtn = document.getElementById('saveBtn');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const adminForm = document.getElementById('adminForm');
+
+        editBtn.addEventListener('click', function () {
+            // Enable all form fields for editing
+            adminForm.querySelectorAll('input, select').forEach(el => {
+                if (el.type !== 'hidden') {
+                    el.disabled = false;
                 }
             });
             
-            // 경고 메시지 숨기기
-            document.getElementById('emailWarning').style.display = 'none';
-            document.getElementById('permissionWarning').style.display = 'none';
-        }
+            adminForm.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                checkbox.disabled = false;
+            });
 
-        // 폼 제출 처리
-        document.getElementById('adminForm').addEventListener('submit', function(e) {
+            // Show/hide buttons
+            editBtn.style.display = 'none';
+            saveBtn.style.display = 'inline-block';
+            cancelBtn.style.display = 'inline-block';
+        });
+
+        cancelBtn.addEventListener('click', function (e) {
             e.preventDefault();
-            
-            const formData = new FormData(this);
-            const currentEmail = formData.get('email');
-            const currentPermissions = formData.getAll('permissions');
-            
-            let messages = [];
-            
-            // 이메일 변경 확인
-            if (currentEmail !== originalData.email) {
-                messages.push('이메일 변경이 요청되었습니다. 새로운 이메일로 인증 링크를 발송합니다.');
-            }
-            
-            // 권한 변경 확인
-            if (JSON.stringify(currentPermissions.sort()) !== JSON.stringify(originalData.permissions.sort())) {
-                messages.push('권한 수정이 신청되었습니다. 관리자 승인 후 적용됩니다.');
-            }
-            
-            if (messages.length > 0) {
-                messages.forEach((message, index) => {
-                    setTimeout(() => {
-                        showNotification(message, 'info');
-                    }, index * 1000);
-                });
-            }
-            
-            // 기본 정보 저장
-            showNotification('기본 정보가 저장되었습니다.', 'success');
-            
-            // 실제 환경에서는 서버로 전송
-            // this.submit();
+            location.reload();
         });
 
-        // 알림 표시
-        function showNotification(message, type) {
-            const notification = document.getElementById('notification');
-            notification.textContent = message;
-            notification.className = `notification ${type}`;
-            notification.classList.add('show');
-            
-            setTimeout(() => {
-                notification.classList.remove('show');
-            }, 4000);
+    } else if (mode === 'signup') {
+        const showRejectReasonBtn = document.getElementById('showRejectReasonBtn');
+        const rejectReasonBox = document.getElementById('rejectReasonBox');
+
+        if (showRejectReasonBtn) {
+            showRejectReasonBtn.addEventListener('click', function () {
+                rejectReasonBox.style.display = 'block';
+            });
         }
-    </script>
+    }
+});
+</script>
+
 </body>
 </html>

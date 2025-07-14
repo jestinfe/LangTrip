@@ -1,6 +1,7 @@
 package kr.co.sist.e_learning.admin.signup;
 
 import java.util.List;
+import java.util.Map;
 
 
 public interface AdminSignupDAO {
@@ -8,7 +9,9 @@ public interface AdminSignupDAO {
     EmailVerificationDTO selectValidVerification(String email, String code);
     void markCodeVerified(String verificationSeq);
     void insertSignupRequest(AdminSignupDTO dto);
-    void insertSignupPermissions(String requestId, List<String> roles);
-    int isEmailDuplicated(String email);
+    boolean isDuplicateId(String adminId);
+    List<String> selectRoleCodesByDept(String dept);
+    void insertSignupPermission(Map<String, String> param);
+
     
 }

@@ -100,15 +100,7 @@
                         <option value="프랑스어">프랑스어</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <label for="sort">정렬 기준</label>
-                    <select id="sort" name="sort" th:value="${sort}">
-                        <option value="createdAt,asc">등록일자 ↑</option>
-                        <option value="createdAt,desc">등록일자 ↓</option>
-                        <option value="updatedAt,asc">업데이트일자 ↑</option>
-                        <option value="updatedAt,desc">업데이트일자 ↓</option>
-                    </select>
-                </div>
+         
                 <div class="form-group checkbox">
                     <input type="checkbox" id="includeInactive" name="includeInactive" th:checked="${includeInactive}">
                     <label for="includeInactive">비활성 강의 포함</label>
@@ -123,6 +115,15 @@
                 </div>
             </form>
         </div>
+        <div class="sort-bar" style="margin: -1rem 0 1.5rem 0; display: flex; justify-content: flex-end; padding: 0 1rem;">
+		  <label for="sort" style="font-weight: bold; margin-right: 10px;">정렬 기준</label>
+		  <select id="sort" name="sort" onchange="applySort()" style="padding: 0.5rem 1rem; border-radius: 8px; border: 2px solid #e0e0e0; font-size: 1rem;">
+		      <option value="createdAt,desc" th:selected="${sort == 'createdAt,desc'}">등록일자 ↓</option>
+		      <option value="createdAt,asc" th:selected="${sort == 'createdAt,asc'}">등록일자 ↑</option>
+		      <option value="updatedAt,desc" th:selected="${sort == 'updatedAt,desc'}">업데이트일자 ↓</option>
+		      <option value="updatedAt,asc" th:selected="${sort == 'updatedAt,asc'}">업데이트일자 ↑</option>
+		  </select>
+		</div>
 
         <!-- 테이블 섹션 -->
         <div class="table-section">
@@ -166,6 +167,12 @@
     </div>
 
     <script>
+    function applySort() {
+        const sort = document.getElementById("sort").value;
+        const url = new URL(window.location.href);
+        url.searchParams.set("sort", sort);
+        window.location.href = url.toString();
+    }
         function clearSearch() {
             document.getElementById('title').value = '';
             document.getElementById('language').value = '';

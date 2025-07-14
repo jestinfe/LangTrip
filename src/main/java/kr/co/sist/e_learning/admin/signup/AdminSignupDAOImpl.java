@@ -40,20 +40,21 @@ public class AdminSignupDAOImpl implements AdminSignupDAO {
         sqlSession.insert(NS + "insertSignupRequest", dto);
     }
 
-    @Override
-    public void insertSignupPermissions(String requestId, List<String> roleCodes) {
-        for (String roleCode : roleCodes) {
-            Map<String, String> param = new HashMap<>();
-            System.out.println("requestID : "+requestId+", rolecode : "+roleCode);
-            param.put("requestId", requestId);
-            param.put("roleCode", roleCode);
-            sqlSession.insert(NS + "insertSignupPermission", param);
-        }
-    }
 
     @Override
-    public int isEmailDuplicated(String email) {
-        int count = sqlSession.selectOne(NS + "checkEmailDuplication", email);
-        return count;
+    public void insertSignupPermission(Map<String, String> param) {
+        sqlSession.insert(NS + "insertSignupPermission", param);
     }
+
+
+    @Override
+    public boolean isDuplicateId(String adminId) {
+        int count = sqlSession.selectOne("kr.co.sist.e_learning.admin.signup.AdminSignupDAO.isDuplicateId", adminId);
+        return count > 0;
+    }
+    @Override
+    public List<String> selectRoleCodesByDept(String dept) {
+        return sqlSession.selectList(NS + "selectRoleCodesByDept", dept);
+    }
+
 }

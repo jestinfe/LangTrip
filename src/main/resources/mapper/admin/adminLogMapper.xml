@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.sist.e_learning.admin.log.AdminLogDAO">
+  <insert id="insertLog" parameterType="kr.co.sist.e_learning.admin.log.AdminLogDTO">
+    INSERT INTO ADMIN_LOG (log_id, admin_id, action_type, target_id, details)
+    VALUES (admin_log_seq.nextval, #{adminId}, #{actionType}, #{targetId}, #{details})
+  </insert>
+
+  <select id="selectAllLogs" resultType="kr.co.sist.e_learning.admin.log.AdminLogDTO">
+    SELECT log_id, admin_id, action_type, target_id, log_time, details
+    FROM ADMIN_LOG
+    ORDER BY log_time DESC
+  </select>
+</mapper>

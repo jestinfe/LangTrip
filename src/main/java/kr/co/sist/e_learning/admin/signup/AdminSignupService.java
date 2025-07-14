@@ -11,4 +11,8 @@ public interface AdminSignupService {
 
     // 회원가입 요청 저장
     void registerAdmin(AdminSignupDTO dto);
+    
+    boolean isDuplicateId(String adminId);
+
+
 }
