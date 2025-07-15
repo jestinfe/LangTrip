@@ -147,6 +147,8 @@ function vote(postId, voteType) {
   
 </head>
 <body class="container mt-5">
+<div th:replace="layout/header :: header"></div>
+
 	<h3 class="board-title"><strong>강의 추천 게시판</strong></h3>
   <div class="post-title" th:text="${post.title}">제목</div>
 
@@ -224,6 +226,9 @@ function vote(postId, voteType) {
   <div class="text-end mt-3">
     <a href="/csj/community" class="btn btn-secondary btn-sm">목록으로</a>
   </div>
+  <!-- Footer -->
+      <div th:replace="layout/footer :: footer"></div>
+  
 </body>
 <script>
 function submitComment() {
