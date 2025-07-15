@@ -1,13 +1,37 @@
-<div>
-  <h2>🙋 내 정보</h2>
-  <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+<div class="info-section">
+  <h2 class="info-title">🙋 내 정보</h2>
+
+  <table class="info-table">
+    <tr>
+      <th>프로필</th>
+      <td>
+        <img th:src="@{${myData.profile}}" alt="프로필 이미지"
+             class="info-profile-img" id="profilePreview"/>
+        <input type="file" id="profileFile" accept="image/*" style="display: none;" onchange="uploadProfile()"/>
+        <button type="button" class="info-button" onclick="document.getElementById('profileFile').click();">
+          프로필 수정
+        </button>
+      </td>
+    </tr>
     <tr><th>유저 번호</th><td th:text="${myData.userSeq}">user001</td></tr>
     <tr><th>이메일</th><td th:text="${myData.email}">user@example.com</td></tr>
-    <tr><th>비밀번호</th><td th:text="${myData.password}">****</td></tr>
+    <tr>
+      <th>비밀번호</th>
+      <td class="info-flex">
+        <span th:text="${myData.maskedPassword}">****</span>
+        <button type="button" class="info-button info-password-button" onclick="location.href='/mypage/reset_password'">
+          비밀번호 변경
+        </button>
+      </td>
+    </tr>
     <tr><th>닉네임</th><td th:text="${myData.nickname}">홍길동</td></tr>
     <tr><th>상태</th><td th:text="${myData.status}">ACTIVE</td></tr>
     <tr><th>소셜 ID</th><td th:text="${myData.socialId}">abc123</td></tr>
     <tr><th>소셜 제공자</th><td th:text="${myData.socialProvider}">KAKAO</td></tr>
-    <tr><th>프로필</th><td th:text="${myData.profile}">/images/profile.jpg</td></tr>
   </table>
 </div>
+
+<button type="button" class="info-leave-button"
+        onclick="if(confirm('정말로 탈퇴하시겠습니까?')) location.href='/mypage/leave';">
+  💥 회원 탈퇴
+</button>

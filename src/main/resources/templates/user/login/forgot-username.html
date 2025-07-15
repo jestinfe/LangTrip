@@ -246,11 +246,11 @@
                     <span>닉네임을 찾고 있습니다...</span>
                 </div>
                 
-                <div class="error-message" id="error-message">
+                <div class="error-message message" id="error-message">
                     이메일 주소를 확인해주세요.
                 </div>
                 
-                <div class="success-message" id="success-message">
+                <div class="success-message message" id="success-message">
                     닉네임을 찾았습니다!
                 </div>
             </form>
@@ -273,128 +273,125 @@
     </div>
 
     <script>
-        // 샘플 데이터 (실제 환경에서는 서버에서 가져와야 합니다)
-        const userDatabase = {
-            'user1@example.com': 'user123',
-            'john@gmail.com': 'john_doe',
-            'test@test.com': 'testuser',
-            'sample@email.com': 'sample_nick'
-        };
-        
-        // 폼 제출 처리
-        document.getElementById('usernameForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const email = document.getElementById('email').value;
-            const submitBtn = document.getElementById('submit-btn');
-            const loading = document.getElementById('loading');
-            
-            if (!email) {
-                showError('이메일 주소를 입력해주세요.');
-                return;
-            }
-            
-            if (!isValidEmail(email)) {
-                showError('올바른 이메일 주소를 입력해주세요.');
-                return;
-            }
-            
-            // 로딩 상태 표시
-            submitBtn.disabled = true;
-            loading.classList.add('show');
-            hideMessages();
-            hideUsernameResult();
-            
-            // 닉네임 찾기 시뮬레이션
-            setTimeout(() => {
-                submitBtn.disabled = false;
-                loading.classList.remove('show');
-                
-                // 데이터베이스에서 닉네임 찾기
-                const username = userDatabase[email];
-                
-                if (username) {
-                    showUsernameResult(username);
-                    showSuccess('닉네임을 찾았습니다!');
-                } else {
-                    showError('입력하신 이메일 주소로 등록된 계정을 찾을 수 없습니다.');
-                }
-            }, 2000);
-        });
-        
-        // 이메일 유효성 검사
-        function isValidEmail(email) {
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            return emailRegex.test(email);
+    // 폼 제출 처리
+    document.getElementById('usernameForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const email = document.getElementById('email').value;
+        const submitBtn = document.getElementById('submit-btn');
+        const loading = document.getElementById('loading');
+
+        if (!email) {
+            showError('이메일 주소를 입력해주세요.');
+            return;
         }
-        
-        // 닉네임 결과 표시
-        function showUsernameResult(username) {
-            const usernameDisplay = document.getElementById('username-display');
-            const usernameResult = document.getElementById('username-result');
-            
-            usernameDisplay.textContent = username;
-            usernameResult.classList.add('show');
+
+        if (!isValidEmail(email)) {
+            showError('올바른 이메일 주소를 입력해주세요.');
+            return;
         }
-        
-        // 닉네임 결과 숨기기
-        function hideUsernameResult() {
-            document.getElementById('username-result').classList.remove('show');
-        }
-        
-        // 에러 메시지 표시
-        function showError(message) {
-            const errorDiv = document.getElementById('error-message');
-            errorDiv.textContent = message;
-            errorDiv.classList.add('show');
-            hideSuccess();
-        }
-        
-        // 성공 메시지 표시
-        function showSuccess(message) {
-            const successDiv = document.getElementById('success-message');
-            successDiv.textContent = message;
-            successDiv.classList.add('show');
-            hideError();
-        }
-        
-        // 메시지 숨기기
-        function hideMessages() {
-            document.getElementById('error-message').classList.remove('show');
-            document.getElementById('success-message').classList.remove('show');
-        }
-        
-        function hideError() {
-            document.getElementById('error-message').classList.remove('show');
-        }
-        
-        function hideSuccess() {
-            document.getElementById('success-message').classList.remove('show');
-        }
-        
-        // 로그인 페이지로 이동
-        function goToLogin() {
-            alert('로그인 페이지로 이동합니다.');
-        }
-        
-        // 입력 필드 포커스 시 메시지 숨기기
-        document.getElementById('email').addEventListener('focus', function() {
-            hideMessages();
-        });
-        
-        // 입력 필드 실시간 유효성 검사
-        document.getElementById('email').addEventListener('input', function() {
-            const email = this.value;
-            if (email && !isValidEmail(email)) {
-                this.style.borderColor = '#dc3545';
+
+        // 로딩 상태 표시
+        submitBtn.disabled = true;
+        loading.classList.add('show');
+        hideMessages();
+        hideUsernameResult();
+
+        // 닉네임 찾기 요청
+        fetch("/api/auth/nickname/find", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ email })
+        })
+        .then(response => response.json().then(data => ({ ok: response.ok, data })))
+        .then(({ ok, data }) => {
+            submitBtn.disabled = false;
+            loading.classList.remove('show');
+
+            if (ok && data.success) {
+                showUsernameResult(data.data);
+                showSuccess(data.message || "닉네임을 찾았습니다!");
             } else {
-                this.style.borderColor = '#ddd';
+                showError(data.message || "닉네임 찾기에 실패했습니다.");
+              
             }
-            
-            // 이메일이 변경되면 이전 결과 숨기기
-            hideUsernameResult();
-            hideMessages();
+        })
+        .catch(error => {
+            submitBtn.disabled = false;
+            loading.classList.remove('show');
+            showError("요청 중 오류가 발생했습니다. 네트워크 연결을 확인해주세요.");
+            console.error('Fetch Error:', error);
         });
-    </script>
+    });
+
+    // 이메일 유효성 검사
+    function isValidEmail(email) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    }
+
+    // 닉네임 결과 표시
+    function showUsernameResult(username) {
+        const usernameDisplay = document.getElementById('username-display');
+        const usernameResult = document.getElementById('username-result');
+
+        usernameDisplay.textContent = username;
+        usernameResult.classList.add('show');
+    }
+
+    function hideUsernameResult() {
+        document.getElementById('username-result').classList.remove('show');
+    }
+
+    function showError(message) {
+        const errorDiv = document.getElementById('error-message');
+        errorDiv.textContent = message;
+        errorDiv.classList.add('show');
+        hideSuccess();
+    }
+
+    function showSuccess(message) {
+        const successDiv = document.getElementById('success-message');
+        successDiv.textContent = message;
+        successDiv.classList.add('show');
+        hideError();
+    }
+
+    function hideMessages() {
+        document.getElementById('error-message').classList.remove('show');
+        document.getElementById('success-message').classList.remove('show');
+    }
+
+    function hideError() {
+        document.getElementById('error-message').classList.remove('show');
+    }
+
+    function hideSuccess() {
+        document.getElementById('success-message').classList.remove('show');
+    }
+
+    function goToLogin() {
+        location.href = "user/login";
+    }
+
+    document.getElementById('email').addEventListener('focus', function() {
+        hideMessages();
+    });
+
+    document.getElementById('email').addEventListener('input', function() {
+        const email = this.value;
+        if (email && !isValidEmail(email)) {
+            this.style.borderColor = '#dc3545';
+        } else {
+            this.style.borderColor = '#ddd';
+        }
+
+        hideUsernameResult();
+        hideMessages();
+    });
+</script>
+    
 </body>
 </html>

@@ -17,26 +17,43 @@ public class MyPageDAOImpl implements MyPageDAO {
     @Autowired
     private SqlSessionTemplate sst;
     
+    private final String NAMESPACE = "kr.co.sist.e_learning.mypage.MyPageMapper";
+    
     @Override
-    public MyPageDTO getMyPageSummary(String userId) {
-        return session.selectOne("kr.co.sist.e_learning.mypage.MyPageMapper.selectMyPageSummary", userId);
+    public MyPageDTO getMyPageSummary(long userSeq) {
+        return session.selectOne(NAMESPACE + ".selectMyPageSummary", userSeq);
     }
 
     @Override
-    public MyPageDTO selectUserInfo(String userSeq) {
-        return sst.selectOne("kr.co.sist.e_learning.mypage.MyPageMapper.selectUserInfo", userSeq);
+    public MyPageDTO selectUserInfo(long userSeq) {
+        return sst.selectOne(NAMESPACE + ".selectUserInfo", userSeq);
+    }
+    
+    
+    @Override
+    public String selectProfilePath(long userSeq) {
+        return session.selectOne(NAMESPACE + ".selectProfilePath", userSeq);
     }
     
     @Override
-    public List<SubscriptionDTO> getSubscriptions(String userId) {
-        return session.selectList("kr.co.sist.e_learning.mypage.MyPageMapper.selectSubscriptions", userId);
+    public void updateProfile(long userSeq, String profile) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("userSeq", userSeq);
+        map.put("profile", profile);
+        session.update(NAMESPACE + ".updateProfile", map);
+    }
+
+    
+    @Override
+    public List<SubscriptionDTO> getSubscriptions(long userSeq) {
+        return session.selectList(NAMESPACE + ".selectSubscriptions", userSeq);
     }
 
     @Override
-    public void unsubscribe(String userId, String instructorId) {
-        Map<String, String> map = new HashMap<>();
-        map.put("userId", userId);
+    public void unsubscribe(long userSeq, String instructorId) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("userSeq", userSeq);
         map.put("instructorId", instructorId);
-        session.delete("kr.co.sist.e_learning.mypage.MyPageMapper.deleteSubscription", map);
+        session.delete(NAMESPACE + ".deleteSubscription", map);
     }
 }

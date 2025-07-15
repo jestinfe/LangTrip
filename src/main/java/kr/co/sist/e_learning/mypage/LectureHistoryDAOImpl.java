@@ -13,7 +13,7 @@ public class LectureHistoryDAOImpl implements LectureHistoryDAO {
     private SqlSession sqlSession;
 
     @Override
-    public List<LectureHistoryDTO> getLectureHistory(String userSeq) {
+    public List<LectureHistoryDTO> getLectureHistory(long userSeq) {
         return sqlSession.selectList("kr.co.sist.e_learning.mypage.LectureHistoryMapper.selectLectureHistory", userSeq);
     }
 }

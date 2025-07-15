@@ -1,22 +1,26 @@
 <div th:fragment="lecture_history">
   <h2 class="title">📚 수강 내역</h2>
 
-  <table>
-    <thead>
-      <tr>
-        <th>강의 제목</th>
-        <th>영상 제목</th>
-        <th>수료일</th>
-        <th>완료 여부</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr th:each="lecture : ${lectureList}">
-        <td th:text="${lecture.courseTitle}">강의 제목</td>
-        <td th:text="${lecture.videoTitle}">영상 제목</td>
-        <td th:text="${lecture.uploadDate}">2025-07-01</td>
-        <td th:text="${lecture.completedYn == 'Y' ? '완료' : '미완료'}">완료 여부</td>
-      </tr>
-    </tbody>
-  </table>
+  <div class="lecture-grid">
+    <div class="lecture-card" th:each="lecture : ${lectureList}">
+      <div class="lecture-title" th:text="${lecture.courseTitle}">강의 제목</div>
+      <div class="video-title" th:text="${lecture.videoTitle}">영상 제목</div>
+
+      <div class="progress-bar">
+        <div class="progress" th:style="'width:' + ${lecture.courseRate} + '%'"></div>
+      </div>
+      <div class="progress-text" th:text="'진행률: ' + ${lecture.courseRate} + '%'">진행률</div>
+
+      <!-- ✅ 완료 표시 -->
+      <div class="complete-text" th:if="${lecture.completedYn == 'Y'}">
+        ✅ 완료
+      </div>
+
+      <!-- 🔗 바로가기 버튼 -->
+      <a class="go-button" th:if="${lecture.completedYn != 'Y'}"
+         th:href="@{/watch(course_seq=${lecture.courseSeq})}">
+        바로가기
+      </a>
+    </div>
+  </div>
 </div>

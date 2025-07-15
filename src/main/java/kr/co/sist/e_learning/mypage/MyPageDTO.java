@@ -14,9 +14,17 @@ import lombok.Setter;
 public class MyPageDTO {
 
 	//회원정보
-    private String userSeq;
+    private long userSeq;
     private String email;
+    
     private String password;
+    public String getMaskedPassword() {
+        if (password == null || password.length() <= 2) {
+            return "***";
+        }
+        int maskLength = password.length() - 2;
+        return password.substring(0, 2) + "*".repeat(maskLength);
+    }
     private String nickname;
     private String status;
     private String profile;

@@ -1,15 +1,142 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>마이페이지 대시보드</title>
+  
+	<!-- Chart.js (UMD 버전 - 브라우저 호환 가능) -->
+	<script src="/js/chart.umd.js"></script>
+	
+	<!-- chart를 사용하는 JS -->
+	<script src="/js/dashboardCharts.js"></script>
+
+<style>
+  .dashboard-container {
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(to bottom, #f8faff, #ffffff);
+    padding: 30px;
+    color: #333;
+  }
+
+  .profile-card {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background: linear-gradient(135deg, #709dff, #a0d2ff);
+    padding: 20px;
+    border-radius: 16px;
+    color: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    margin-bottom: 30px;
+  }
+
+  .profile-card img {
+    height: 80px;
+    width: 80px;
+    border-radius: 50%;
+    border: 3px solid #fff;
+    object-fit: cover;
+  }
+
+  .profile-info h2 {
+    margin: 0 0 6px;
+    font-size: 22px;
+  }
+
+  .profile-info p {
+    margin: 0;
+    font-size: 14px;
+    opacity: 0.95;
+  }
+
+  .summary-section {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-bottom: 40px;
+  }
+
+  .summary-item {
+    flex: 1 1 200px;
+    background: #fff;
+    border-radius: 16px;
+    padding: 20px 25px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    transition: transform 0.2s ease;
+    border-left: 6px solid #a0c4ff;
+  }
+
+  .summary-item:hover {
+    transform: translateY(-5px);
+  }
+
+  .summary-item .label {
+    font-size: 13px;
+    color: #777;
+    margin-bottom: 6px;
+  }
+
+  .summary-item .value {
+    font-size: 22px;
+    font-weight: 700;
+    color: #333;
+  }
+
+  .summary-item .value.silver {
+    color: #a7a7a7;
+  }
+
+  .charts-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+	  align-items: stretch; 
+	  width: 100%;       
+  }
+
+  .chart-container {
+    background: #fff;
+    padding: 25px;
+    border-radius: 16px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.04);
+	  width: 48% !important;
+	  display: flex;
+	  flex-direction: column;
+  }
+
+  .chart-container h3 {
+    margin-bottom: 20px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #3f51b5;
+  }
+
+  .chart-container canvas {
+    width: 100% !important;
+    height: 300px !important;
+  }
+
+  hr {
+    margin: 40px 0;
+    border: none;
+    border-top: 1px solid #e0e0e0;
+  }
+</style>
+
+
+  <link rel="icon" href="/images/favicon.png">
+</head>
 <body>
+<div class="dashboard-container">
+  <h2>📊 마이페이지 요약 정보</h2>
 
-<div th:fragment="dashboard" class="dashboard-container">
-
-  <h2 class="title">🎢 마이페이지 요약 정보</h2>
-
-  <div class="info-box">
-    <p><strong>사용자 ID:</strong> <span th:text="${myData.userSeq}">testUser</span></p>
-    <p><strong>이름:</strong> <span th:text="${myData.nickname}">홍길동</span></p>
-    <p><strong>이메일:</strong> <span th:text="${myData.email}">hong@example.com</span></p>
+  <div class="profile-card">
+    <img th:src="@{${myData.profile}}" alt="프로필 이미지"/>
+    <div>
+      <p><strong>사용자 ID:</strong> <span th:text="${myData.userSeq}">user001</span></p>
+      <p><strong>이름:</strong> <span th:text="${myData.nickname}">닉네임1</span></p>
+      <p><strong>이메일:</strong> <span th:text="${myData.email}">user1@example.com</span></p>
+    </div>
   </div>
 
   <hr>
@@ -17,28 +144,88 @@
   <div class="summary-section">
     <div class="summary-item">
       <p class="label">✅ 완료한 강좌 수</p>
-      <p class="value" th:text="${myData.completedCourses}">0</p>
+      <p class="value" th:text="${myData.completedCourses}">3</p>
     </div>
-
     <div class="summary-item">
       <p class="label">⏱️ 총 학습 시간</p>
-      <p class="value" th:text="${myData.totalStudyTime}">0</p><span>시간</span>
+      <p class="value" th:text="${myData.totalStudyTime}">250</p>분
     </div>
-
-	<div class="summary-item">
-	  <p class="label">📊 퀴즈 정답률</p>
-	  <p class="value" th:text="${myData.quizAccuracy + '%'}">0%</p>
-	</div>
-
     <div class="summary-item">
-      <h3>총 후원 구름</h3>
-      <p th:text="${myData.totalDonation} + '개'"></p>
+      <p class="label">📊 퀴즈 정답률</p>
+      <p class="value" th:text="${myData.quizAccuracy + '%'}">95.5%</p>
+    </div>
+    <div class="summary-item">
       <p class="label">🎖️ 후원 등급</p>
-      <p class="value" th:text="${myData.donationLevel}">Bronze</p>
+      <p class="value silver" th:text="${myData.donationLevel}">실버</p>
     </div>
   </div>
 
+<div class="charts-row">
+  <div class="chart-container">
+    <h3>📈 날짜별 학습 시간 (분)</h3>
+    <canvas id="studyChart"></canvas>
+  </div>
+
+  <div class="chart-container">
+    <h3>📊 퀴즈 정답률</h3>
+    <canvas id="quizChart"></canvas>
+  </div>
 </div>
 
+<script>
+console.log(Chart)
+
+function drawCharts() {
+  const studyCtx = document.getElementById('studyChart');
+  if (studyCtx) {
+    new Chart(studyCtx, {
+      type: 'line',
+      data: {
+        labels: ['07-01', '07-02', '07-03', '07-04'],
+        datasets: [{
+          label: '학습 시간 (분)',
+          data: [30, 60, 45, 75],
+          borderColor: '#3f51b5',
+          backgroundColor: 'rgba(63, 81, 181, 0.2)',
+          tension: 0.4
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false }
+        }
+      }
+    });
+  }
+
+  const quizCtx = document.getElementById('quizChart');
+  if (quizCtx) {
+    new Chart(quizCtx, {
+      type: 'doughnut',
+      data: {
+        labels: ['정답', '오답'],
+        datasets: [{
+          data: [95.5, 4.5],
+          backgroundColor: ['#4caf50', '#f44336']
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { position: 'bottom' }
+        }
+      }
+    });
+  }
+}
+
+// ⚠️ AJAX 로드되는 구조라면 drawCharts를 명시적으로 호출해야 함
+window.addEventListener('load', () => {
+  if (typeof drawCharts === 'function') {
+    drawCharts();
+  }
+});
+</script>
 </body>
 </html>

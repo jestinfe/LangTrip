@@ -5,16 +5,20 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class LectureHistoryDTO {
-    private String videoTitle;
+	private String courseSeq; 
     private String courseTitle;
+    private String videoTitle;
     private String instructorName;
     private String uploadDate;
+    private double courseRate;
     private String completedYn;
 }
