@@ -1,15 +1,272 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
   <title>게시글 상세</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+  
+  <style>
+    body {
+      background-color: #fff;
+      font-family: 'Malgun Gothic', sans-serif;
+    }
+    .post-title {
+      font-size: 20px;
+      font-weight: bold;
+      padding-bottom: 10px;
+      margin-bottom: 15px;
+    }
+    .post-meta {
+      font-size: 13px;
+      color: #777;
+      text-align: left;
+      margin-bottom: 20px;
+    }
+   .post-content {
+  padding: 20px;
+  border: 1px solid #ddd;
+  margin-bottom: 30px;
+  white-space: pre-line;
+  overflow-wrap: break-word;
+  min-height: 400px; 
+}
+.vote-container {
+  width: 250px;
+  border: 1px solid #ddd;
+  padding: 10px;
+  margin: 30px auto; 
+  text-align: center;
+}
+
+.vote-buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.vote-button {
+  width: 50px;
+  height: 50px;
+  border-radius: 25px;
+  border: none;
+  font-size: 14px;
+  background-color: #ccc;
+  color: white;
+  font-weight: bold;
+}
+
+.vote-button.active {
+  background-color: #263c96;
+}
+
+.vote-count {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.action-buttons .action-btn {
+  flex: 1;
+  padding: 5px 10px;
+  border: 1px solid #ccc;
+  background-color: white;
+  font-size: 14px;
+  color: #333;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  justify-content: center;
+}
+
+.action-buttons .action-btn:hover {
+  background-color: #f8f9fa;
+}
+
+    .comment-box {
+      margin-top: 40px;
+    }
+    .comment-box textarea {
+      resize: none;
+    }
+    .comment-list {
+      margin-top: 20px;
+      border-top: 1px solid #ccc;
+    }
+    .comment-item {
+      padding: 10px 0;
+      border-bottom: 1px solid #eee;
+    }
+    .comment-meta {
+      font-size: 12px;
+      color: #666;
+    }
+    .board-title {
+    color: #263c96;
+    border-bottom: 2px solid #444;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+  }
+    
+  </style>
+  
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+function vote(postId, voteType) {
+
+	  $.ajax({
+	    type: 'POST',
+	    url: '/csj/vote',
+	    contentType: 'application/json',
+	    data: JSON.stringify({ postId: postId, voteType: voteType }),
+	    success: function(res) {
+	      $('#upVoteCount').text(res.up);
+	      $('#downVoteCount').text(res.down);
+	      alert("추추~ 완료");
+	    },
+	    error: function(xhr) {
+	      if (xhr.status === 409) {
+	        alert("하루에 한 번만 추천할 수 있습니다.");
+	      } else if (xhr.status === 401) {
+	        alert("로그인이 필요합니다.");
+	      } else {
+	        alert("추천 중 오류 발생");
+	      }
+	    }
+	  });
+	}
+
+
+	
+	
+
+</script>
+  
+  
+  
 </head>
-<body class="container mt-4">
-  <h3 th:text="${post.title}">제목</h3>
-  <p><strong>작성자:</strong> <span th:text="${post.userId}">user</span></p>
-  <p><strong>작성일:</strong> <span th:text="${#dates.format(post.createdAt, 'yyyy-MM-dd HH:mm')}"></span></p>
-  <p><strong>조회수:</strong> <span th:text="${post.views}"></span></p>
-  <hr>
-  <div th:utext="${post.content}">내용</div>
+<body class="container mt-5">
+	<h3 class="board-title"><strong>강의 추천 게시판</strong></h3>
+  <div class="post-title" th:text="${post.title}">제목</div>
+
+
+<div class="text-end">
+
+	<div th:if="${post != null and session.loginUser != null and session.loginUser.userSeq != null and post.userId != null and session.loginUser.userSeq == post.userId}">
+		
+    <a th:href="@{/csj/community/delete(postId=${post.postId})}"
+       onclick="return confirm('정말 삭제하시겠습니까?');"
+       class="btn btn-outline-danger btn-sm">글 삭제</a>
+  </div>
+</div>
+
+
+
+  <div class="post-meta">
+    작성자: <span th:text="${post.userId}">user</span> |
+    작성일: <span th:text="${#dates.format(post.createdAt, 'yyyy-MM-dd HH:mm')}">날짜</span> |
+    조회수: <span th:text="${post.views}">0</span>
+  </div>
+
+  <div class="post-content" th:utext="${post.content}">
+    게시글 본문 내용
+  </div>
+<div class="vote-container text-center">
+  
+  <div class="vote-buttons mb-2">
+	<span id="upVoteCount" class="vote-count text-danger" th:text="${upCount}">0</span>
+    
+   <button class="vote-button" th:onclick="vote([[${post.postId}]], 'UP')">
+  <i class="bi bi-star-fill"></i><br>개념
+</button>
+
+<button class="vote-button" th:onclick="vote([[${post.postId}]], 'DOWN')">
+  <i class="bi bi-arrow-down-circle"></i><br>비추
+</button>
+
+    
+<span id="downVoteCount" class="vote-count text-secondary" th:text="${downCount}">0</span>
+  </div>
+
+  <div class="action-buttons d-flex justify-content-center gap-2">
+    <button class="action-btn"><i class="bi bi-share"></i> 공유</button>
+    <button class="action-btn"><i class="bi bi-exclamation-triangle"  data-bs-toggle="modal" data-bs-target="#userReportModal"></i> 신고</button>
+  </div>
+</div>
+
+  <div class="comment-box">
+  <input type="hidden" id="postId" th:value="${post.postId}" />
+  
+  <div class="mb-3">
+    <textarea class="form-control" id="commentContent" rows="3" placeholder="댓글을 입력하세요..."></textarea>
+  </div>
+
+  <div class="text-end">
+    <button type="button" class="btn btn-outline-primary btn-sm" onclick="submitComment()">댓글 작성</button>
+  </div>
+</div>
+
+  <div class="comment-list">
+    <div class="comment-item" th:each="comment : ${commentList}">
+      <div>
+        <strong th:text="${comment.nickname}">닉네임</strong>
+        <span class="comment-meta">
+          (<span th:text="${#dates.format(comment.createdAt, 'yyyy-MM-dd HH:mm')}">2025-07-08</span>)
+        </span>
+      </div>
+      <div th:text="${comment.content}">
+        댓글 내용입니다.
+      </div>
+    </div>
+  </div>
+
+  <div class="text-end mt-3">
+    <a href="/csj/community" class="btn btn-secondary btn-sm">목록으로</a>
+  </div>
 </body>
+<script>
+function submitComment() {
+	  const postId = $('#postId').val();
+	  const content = $('#commentContent').val();
+
+	  if (!content.trim()) {
+	    alert("댓글 내용을 입력해주세요.");
+	    return;
+	  }
+
+	  $.ajax({
+	    type: 'POST',
+	    url: '/csj/comment/write',
+	    contentType: 'application/json',
+	    data: JSON.stringify({ postId2: postId, content: content }),
+	    success: function(comment) {
+
+	      // 날짜 포맷 처리
+	      const createdAt = new Date(comment.createdAt).toLocaleString();
+
+	      // 댓글 HTML 구성
+	      const html = `
+	        <div class="comment-item">
+	          <div>
+	            <strong>${comment.nickname}</strong>
+	            <span class="comment-meta">(${createdAt})</span>
+	          </div>
+	          <div>${comment.content}</div>
+	        </div>
+	      `;
+
+	      // 맨 위에 댓글 추가
+	      $(".comment-list").prepend(html);
+
+	      // 입력창 비우기
+	      $("#commentContent").val("");
+	    },
+	    error: function(xhr) {
+	      alert("댓글 작성 중 오류 발생");
+	    }
+	  });
+	}
+</script>
+
 </html>
