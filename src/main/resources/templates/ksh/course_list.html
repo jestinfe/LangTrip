@@ -91,16 +91,16 @@
     <div class="course-grid" id="courseGrid">
         <div class="course-card" th:each="course : ${courses}">
             <div class="course-thumbnail">
-                <div class="course-level" th:text="${course.level}">중급</div>
+                <div class="course-level" th:text="${course.difficulty}">중급</div>
                 <div class="course-duration" th:text="${course.duration}">12시간</div>
-                <span th:text="${course.thumbnail}">🎯</span>
+                <img th:src="@{/images/quiz/{thumbnailName}(thumbnailName=${course.thumbnailName})}" th:alt="${course.title}" style="width:100%; height:auto;"/>
             </div>
             <div class="course-info">
                 <span class="course-category" th:text="${course.category}">개발</span>
                 <h3 class="course-title" th:text="${course.title}">React 완벽 마스터</h3>
                 <div class="course-instructor">
-                    <div class="instructor-avatar" th:text="${course.instructor.substring(0,1)}">김</div>
-                    <span class="instructor-name" th:text="${course.instructor}">김개발</span>
+                    <div class="instructor-avatar" th:text="${course.instructorNickname != null ? course.instructorNickname.substring(0,1) : ''}">김</div>
+                    <span class="instructor-name" th:text="${course.instructorNickname}">김개발</span>
                 </div>
                 <div class="course-stats">
                     <div class="course-rating">⭐ <span th:text="${course.rating}">4.9</span> (<span th:text="${course.students}">1234</span>)</div>
@@ -108,38 +108,23 @@
                 </div>
                 <div class="course-footer">
                     <div class="course-price">
-                        <span class="original-price" th:if="${course.originalPrice != course.currentPrice}" th:text="'\u20A9' + ${#numbers.formatInteger(course.originalPrice, 0)}">₩129,000</span>
-                        <span class="current-price" th:text="'\u20A9' + ${#numbers.formatInteger(course.currentPrice, 0)}">₩89,000</span>
+                        <span class="original-price" th:if="${course.originalPrice != course.currentPrice}" th:text="'₩' + ${#numbers.formatInteger(course.originalPrice, 0)}">₩129,000</span>
+                        <span class="current-price" th:text="'₩' + ${#numbers.formatInteger(course.currentPrice, 0)}">₩89,000</span>
                     </div>
-                    <a th:href="@{/courses/enroll/{id}(id=${course.id})}" class="enroll-btn">수강신청</a>
+                    <a th:href="@{/courses/enroll/{courseSeq}(courseSeq=${course.courseSeq})}" class="enroll-btn">수강신청</a>
                 </div>
             </div>
         </div>
     </div>
 
 
-        <!-- Loading State -->
-        <div class="loading" id="loadingState" style="display: none;">
-            <div class="loading-spinner"></div>
-            <p>강의를 불러오는 중...</p>
-        </div>
-
-        <!-- Empty State -->
-        <div class="empty-state" id="emptyState" style="display: none;">
-            <div class="empty-icon">📚</div>
-            <h3>검색 결과가 없습니다</h3>
-            <p>다른 검색어나 필터 조건을 시도해보세요.</p>
-        </div>
-
         <!-- Pagination -->
         <div class="pagination" id="pagination">
-            <button onclick="changePage(-1)" id="prevBtn">이전</button>
-            <button class="active" onclick="goToPage(1)">1</button>
-            <button onclick="goToPage(2)">2</button>
-            <button onclick="goToPage(3)">3</button>
-            <button onclick="goToPage(4)">4</button>
-            <button onclick="goToPage(5)">5</button>
-            <button onclick="changePage(1)" id="nextBtn">다음</button>
+            <button th:if="${pageResponseDTO.prev}" th:onclick="'goToPage(' + ${pageResponseDTO.startPage - 1} + ')'" id="prevBtn">이전</button>
+            <th:block th:each="i : ${#numbers.sequence(pageResponseDTO.startPage, pageResponseDTO.endPage)}">
+                <button th:onclick="'goToPage(' + ${i} + ')'" th:classappend="${i == pageResponseDTO.page ? 'active' : ''}">[[${i}]]</button>
+            </th:block>
+            <button th:if="${pageResponseDTO.next}" th:onclick="'goToPage(' + ${pageResponseDTO.endPage + 1} + ')'" id="nextBtn">다음</button>
         </div>
           <div th:replace="layout/footer :: footer"></div>
         
@@ -147,339 +132,43 @@
     
 
     <script>
-        // Sample course data
-        const sampleCourses = [
-            {
-                id: 1,
-                title: "React 완벽 마스터 - 실무 프로젝트로 배우기",
-                category: "개발",
-                categoryValue: "development",
-                instructor: "김개발",
-                rating: 4.9,
-                students: 1234,
-                originalPrice: 129000,
-                currentPrice: 89000,
-                level: "중급",
-                levelValue: "intermediate",
-                duration: "12시간",
-                thumbnail: "🎯"
-            },
-            {
-                id: 2,
-                title: "Figma로 시작하는 UI/UX 디자인 기초부터 심화까지",
-                category: "디자인",
-                categoryValue: "design",
-                instructor: "이디자인",
-                rating: 4.8,
-                students: 892,
-                originalPrice: 99000,
-                currentPrice: 79000,
-                level: "초급",
-                levelValue: "beginner",
-                duration: "8시간",
-                thumbnail: "🎨"
-            },
-            {
-                id: 3,
-                title: "데이터 기반 디지털 마케팅 전략 수립",
-                category: "마케팅",
-                categoryValue: "marketing",
-                instructor: "박마케팅",
-                rating: 4.9,
-                students: 567,
-                originalPrice: 119000,
-                currentPrice: 99000,
-                level: "중급",
-                levelValue: "intermediate",
-                duration: "10시간",
-                thumbnail: "📊"
-            },
-            {
-                id: 4,
-                title: "ChatGPT API 활용한 AI 애플리케이션 개발",
-                category: "AI/ML",
-                categoryValue: "ai-ml",
-                instructor: "최AI",
-                rating: 4.7,
-                students: 123,
-                originalPrice: 149000,
-                currentPrice: 129000,
-                level: "고급",
-                levelValue: "advanced",
-                duration: "15시간",
-                thumbnail: "🤖"
-            },
-            {
-                id: 5,
-                title: "Flutter로 크로스플랫폼 앱 개발하기",
-                category: "모바일",
-                categoryValue: "mobile",
-                instructor: "정모바일",
-                rating: 4.8,
-                students: 89,
-                originalPrice: 129000,
-                currentPrice: 109000,
-                level: "중급",
-                levelValue: "intermediate",
-                duration: "14시간",
-                thumbnail: "📱"
-            },
-            {
-                id: 6,
-                title: "AWS 실무 운영과 DevOps 자동화",
-                category: "클라우드",
-                categoryValue: "cloud",
-                instructor: "강클라우드",
-                rating: 4.9,
-                students: 234,
-                originalPrice: 139000,
-                currentPrice: 119000,
-                level: "고급",
-                levelValue: "advanced",
-                duration: "18시간",
-                thumbnail: "☁️"
-            }
-        ];
-
-        let currentCourses = [...sampleCourses];
-        let currentPage = 1;
-        const coursesPerPage = 6;
-
-        function toggleLogin() {
-            const body = document.body;
-            if (body.classList.contains('logged-out')) {
-                body.classList.remove('logged-out');
-                body.classList.add('logged-in');
-            } else {
-                body.classList.remove('logged-in');
-                body.classList.add('logged-out');
-            }
-        }
-
-        function renderCourses(courses) {
-            const courseGrid = document.getElementById('courseGrid');
-            const startIndex = (currentPage - 1) * coursesPerPage;
-            const endIndex = startIndex + coursesPerPage;
-            const coursesToShow = courses.slice(startIndex, endIndex);
-
-            if (coursesToShow.length === 0) {
-                document.getElementById('emptyState').style.display = 'block';
-                courseGrid.style.display = 'none';
-                document.getElementById('pagination').style.display = 'none';
-                return;
-            } else {
-                document.getElementById('emptyState').style.display = 'none';
-                courseGrid.style.display = 'grid';
-                document.getElementById('pagination').style.display = 'flex';
-            }
-
-            courseGrid.innerHTML = coursesToShow.map(course => `
-                <div class="course-card">
-                    <div class="course-thumbnail">
-                        <div class="course-level">${course.level}</div>
-                        <div class="course-duration">${course.duration}</div>
-                        ${course.thumbnail}
-                    </div>
-                    <div class="course-info">
-                        <span class="course-category">${course.category}</span>
-                        <h3 class="course-title">${course.title}</h3>
-                        <div class="course-instructor">
-                            <div class="instructor-avatar">${course.instructor[0]}</div>
-                            <span class="instructor-name">${course.instructor}</span>
-                        </div>
-                        <div class="course-stats">
-                            <div class="course-rating">
-                                ⭐ ${course.rating} (${course.students})
-                            </div>
-                            <div class="course-students">${course.students}명 수강</div>
-                        </div>
-                        <div class="course-footer">
-                            <div class="course-price">
-                                ${course.originalPrice !== course.currentPrice ? `<span class="original-price">₩${course.originalPrice.toLocaleString()}</span>` : ''}
-                                <span class="current-price">₩${course.currentPrice.toLocaleString()}</span>
-                            </div>
-                            <button class="enroll-btn">수강신청</button>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-
-            updateResultsCount(courses.length);
-            updatePagination(courses.length);
-        }
-
-        function updateResultsCount(total) {
-            document.getElementById('resultsCount').textContent = `총 ${total}개의 강의`;
-        }
-
-        function updatePagination(totalCourses) {
-            const totalPages = Math.ceil(totalCourses / coursesPerPage);
-            const pagination = document.getElementById('pagination');
-            
-            let paginationHTML = `<button onclick="changePage(-1)" id="prevBtn" ${currentPage === 1 ? 'disabled' : ''}>이전</button>`;
-            
-            for (let i = 1; i <= Math.min(totalPages, 5); i++) {
-                paginationHTML += `<button onclick="goToPage(${i})" ${i === currentPage ? 'class="active"' : ''}>${i}</button>`;
-            }
-            
-            paginationHTML += `<button onclick="changePage(1)" id="nextBtn" ${currentPage === totalPages ? 'disabled' : ''}>다음</button>`;
-            
-            pagination.innerHTML = paginationHTML;
-        }
-
-        function changePage(direction) {
-            const totalPages = Math.ceil(currentCourses.length / coursesPerPage);
-            const newPage = currentPage + direction;
-            
-            if (newPage >= 1 && newPage <= totalPages) {
-                currentPage = newPage;
-                renderCourses(currentCourses);
-            }
-        }
-
         function goToPage(page) {
-            currentPage = page;
-            renderCourses(currentCourses);
+            const url = new URL(window.location.href);
+            url.searchParams.set("page", page);
+            window.location.href = url.toString();
         }
 
         function applyFilters() {
-            showLoading();
-            
-            setTimeout(() => {
-                const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-                const category = document.getElementById('categoryFilter').value;
-                const level = document.getElementById('levelFilter').value;
-                const price = document.getElementById('priceFilter').value;
-                const sort = document.getElementById('sortFilter').value;
-
-                let filteredCourses = sampleCourses.filter(course => {
-                    const matchesSearch = !searchTerm || 
-                        course.title.toLowerCase().includes(searchTerm) || 
-                        course.instructor.toLowerCase().includes(searchTerm);
-                    const matchesCategory = !category || course.categoryValue === category;
-                    const matchesLevel = !level || course.levelValue === level;
-                    const matchesPrice = !price || checkPriceRange(course.currentPrice, price);
-                    
-                    return matchesSearch && matchesCategory && matchesLevel && matchesPrice;
-                });
-
-                // Apply sorting
-                filteredCourses = sortCourses(filteredCourses, sort);
-                
-                currentCourses = filteredCourses;
-                currentPage = 1;
-                hideLoading();
-                renderCourses(currentCourses);
-                updateActiveFilters();
-            }, 800);
-        }
-
-        function checkPriceRange(price, range) {
-            switch(range) {
-                case 'free': return price === 0;
-                case '0-50000': return price > 0 && price <= 50000;
-                case '50000-100000': return price > 50000 && price <= 100000;
-                case '100000+': return price > 100000;
-                default: return true;
-            }
-        }
-
-        function sortCourses(courses, sortType) {
-            const sorted = [...courses];
-            
-            switch(sortType) {
-                case 'newest':
-                    return sorted.reverse(); // Assume newer courses have higher IDs
-                case 'rating':
-                    return sorted.sort((a, b) => b.rating - a.rating);
-                case 'price-low':
-                    return sorted.sort((a, b) => a.currentPrice - b.currentPrice);
-                case 'price-high':
-                    return sorted.sort((a, b) => b.currentPrice - a.currentPrice);
-                case 'popular':
-                default:
-                    return sorted.sort((a, b) => b.students - a.students);
-            }
-        }
-
-        function updateActiveFilters() {
-            const activeFiltersContainer = document.getElementById('activeFilters');
             const searchTerm = document.getElementById('searchInput').value;
             const category = document.getElementById('categoryFilter').value;
-            const level = document.getElementById('levelFilter').value;
-            const price = document.getElementById('priceFilter').value;
-            
-            const filters = [];
-            
-            if (searchTerm) {
-                filters.push({ type: 'search', value: searchTerm, label: `검색: ${searchTerm}` });
-            }
-            if (category) {
-                const categoryText = document.getElementById('categoryFilter').selectedOptions[0].text;
-                filters.push({ type: 'category', value: category, label: `카테고리: ${categoryText}` });
-            }
-            if (level) {
-                const levelText = document.getElementById('levelFilter').selectedOptions[0].text;
-                filters.push({ type: 'level', value: level, label: `난이도: ${levelText}` });
-            }
-            if (price) {
-                const priceText = document.getElementById('priceFilter').selectedOptions[0].text;
-                filters.push({ type: 'price', value: price, label: `가격: ${priceText}` });
-            }
-            
-            if (filters.length > 0) {
-                activeFiltersContainer.style.display = 'flex';
-                activeFiltersContainer.innerHTML = filters.map(filter => `
-                    <div class="filter-tag">
-                        ${filter.label}
-                        <span class="remove" onclick="removeFilter('${filter.type}')">&times;</span>
-                    </div>
-                `).join('');
-            } else {
-                activeFiltersContainer.style.display = 'none';
-            }
-        }
+            const difficulty = document.getElementById('levelFilter').value;
+            const priceRange = document.getElementById('priceFilter').value;
+            const sort = document.getElementById('sortFilter').value;
 
-        function removeFilter(filterType) {
-            switch(filterType) {
-                case 'search':
-                    document.getElementById('searchInput').value = '';
-                    break;
-                case 'category':
-                    document.getElementById('categoryFilter').value = '';
-                    break;
-                case 'level':
-                    document.getElementById('levelFilter').value = '';
-                    break;
-                case 'price':
-                    document.getElementById('priceFilter').value = '';
-                    break;
-            }
-            applyFilters();
+            const url = new URL(window.location.href);
+            url.searchParams.set("searchTerm", searchTerm);
+            url.searchParams.set("category", category);
+            url.searchParams.set("difficulty", difficulty);
+            url.searchParams.set("priceRange", priceRange);
+
+            const [orderBy, order] = sort.split(",");
+            url.searchParams.set("orderBy", orderBy);
+            url.searchParams.set("sort", order);
+            url.searchParams.set("page", 1); // Reset to first page on filter change
+
+            window.location.href = url.toString();
         }
 
         function clearFilters() {
-            document.getElementById('searchInput').value = '';
-            document.getElementById('categoryFilter').value = '';
-            document.getElementById('levelFilter').value = '';
-            document.getElementById('priceFilter').value = '';
-            document.getElementById('sortFilter').value = 'popular';
-            
-            currentCourses = [...sampleCourses];
-            currentPage = 1;
-            renderCourses(currentCourses);
-            updateActiveFilters();
-        }
-
-        function showLoading() {
-            document.getElementById('loadingState').style.display = 'block';
-            document.getElementById('courseGrid').style.display = 'none';
-            document.getElementById('emptyState').style.display = 'none';
-            document.getElementById('pagination').style.display = 'none';
-        }
-
-        function hideLoading() {
-            document.getElementById('loadingState').style.display = 'none';
+            const url = new URL(window.location.href);
+            url.searchParams.delete('searchTerm');
+            url.searchParams.delete('category');
+            url.searchParams.delete('difficulty');
+            url.searchParams.delete('priceRange');
+            url.searchParams.delete('orderBy');
+            url.searchParams.delete('sort');
+            url.searchParams.set('page', 1);
+            window.location.href = url.toString();
         }
 
         // Search input event listener
@@ -495,113 +184,18 @@
         document.getElementById('priceFilter').addEventListener('change', applyFilters);
         document.getElementById('sortFilter').addEventListener('change', applyFilters);
 
-        // Initialize page
+        // Initialize filter values from URL parameters
         document.addEventListener('DOMContentLoaded', function() {
-            renderCourses(currentCourses);
+            const urlParams = new URLSearchParams(window.location.search);
+            document.getElementById('searchInput').value = urlParams.get('searchTerm') || '';
+            document.getElementById('categoryFilter').value = urlParams.get('category') || '';
+            document.getElementById('levelFilter').value = urlParams.get('difficulty') || '';
+            document.getElementById('priceFilter').value = urlParams.get('priceRange') || '';
+
+            const orderBy = urlParams.get('orderBy') || 'popular';
+            const sortOrder = urlParams.get('sort') || '';
+            document.getElementById('sortFilter').value = `${orderBy},${sortOrder}`;
         });
-
-        // Sample data expansion for demonstration
-        function generateMoreCourses() {
-            const additionalCourses = [
-                {
-                    id: 7,
-                    title: "Python 데이터 분석 완벽 가이드",
-                    category: "데이터 분석",
-                    categoryValue: "data",
-                    instructor: "데이터김",
-                    rating: 4.8,
-                    students: 456,
-                    originalPrice: 99000,
-                    currentPrice: 79000,
-                    level: "초급",
-                    levelValue: "beginner",
-                    duration: "16시간",
-                    thumbnail: "📈"
-                },
-                {
-                    id: 8,
-                    title: "스타트업 비즈니스 모델 설계",
-                    category: "비즈니스",
-                    categoryValue: "business",
-                    instructor: "비즈박",
-                    rating: 4.6,
-                    students: 678,
-                    originalPrice: 89000,
-                    currentPrice: 69000,
-                    level: "중급",
-                    levelValue: "intermediate",
-                    duration: "9시간",
-                    thumbnail: "💼"
-                },
-                {
-                    id: 9,
-                    title: "Vue.js 3 실전 프로젝트",
-                    category: "개발",
-                    categoryValue: "development",
-                    instructor: "뷰개발",
-                    rating: 4.7,
-                    students: 345,
-                    originalPrice: 109000,
-                    currentPrice: 89000,
-                    level: "중급",
-                    levelValue: "intermediate",
-                    duration: "11시간",
-                    thumbnail: "💚"
-                },
-                {
-                    id: 10,
-                    title: "블록체인 개발 입문",
-                    category: "개발",
-                    categoryValue: "development",
-                    instructor: "블록이",
-                    rating: 4.5,
-                    students: 123,
-                    originalPrice: 159000,
-                    currentPrice: 139000,
-                    level: "고급",
-                    levelValue: "advanced",
-                    duration: "20시간",
-                    thumbnail: "⛓️"
-                },
-                {
-                    id: 11,
-                    title: "모션 그래픽 디자인 마스터",
-                    category: "디자인",
-                    categoryValue: "design",
-                    instructor: "모션최",
-                    rating: 4.9,
-                    students: 234,
-                    originalPrice: 119000,
-                    currentPrice: 99000,
-                    level: "중급",
-                    levelValue: "intermediate",
-                    duration: "13시간",
-                    thumbnail: "🎬"
-                },
-                {
-                    id: 12,
-                    title: "인플루언서 마케팅 전략",
-                    category: "마케팅",
-                    categoryValue: "marketing",
-                    instructor: "인플정",
-                    rating: 4.4,
-                    students: 567,
-                    originalPrice: 79000,
-                    currentPrice: 59000,
-                    level: "초급",
-                    levelValue: "beginner",
-                    duration: "7시간",
-                    thumbnail: "📸"
-                }
-            ];
-
-            sampleCourses.push(...additionalCourses);
-            currentCourses = [...sampleCourses];
-            renderCourses(currentCourses);
-        }
-
-        // Add more courses after 2 seconds for demonstration
-        setTimeout(generateMoreCourses, 2000);
     </script>
 </body>
 </html>

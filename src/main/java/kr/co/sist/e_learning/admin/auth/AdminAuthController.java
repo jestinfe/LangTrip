@@ -33,6 +33,14 @@ public class AdminAuthController {
 
     }
 
+
+    @GetMapping("/logout")
+    public String logout(HttpSession session) {
+        session.invalidate(); // 로그인 세션 제거
+        return "redirect:/admin/login"; // 로그인 페이지로 리다이렉트
+    }
+    
+
     @PostMapping("/login")
     public String loginProcess(@RequestParam String adminId,
                                @RequestParam String adminPw,
@@ -52,7 +60,7 @@ public class AdminAuthController {
         if (admin != null) {
             session.setAttribute("admin", admin);
 
-            return "admin/dashboard";
+            return "redirect:/admin/dashboard";
         } else {
             model.addAttribute("error", "아이디 또는 비밀번호가 틀렸습니다.");
             return "admin/login/login";
@@ -60,6 +68,10 @@ public class AdminAuthController {
     }
     
 
+    @GetMapping("/dashboard")
+    public String dashboard() {
+    	return "admin/dashboard";
+    }
     
 
     // ✅ reCAPTCHA 검증 메서드
