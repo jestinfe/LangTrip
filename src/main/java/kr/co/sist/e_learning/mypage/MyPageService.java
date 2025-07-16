@@ -11,5 +11,7 @@ public interface MyPageService {
     List<LectureHistoryDTO> getLectureHistory(long userSeq);
     List<SubscriptionDTO> getSubscriptions(long userSeq);
     int cancelSubscription(long followerId, String followeeId);
+
+    
 }
 

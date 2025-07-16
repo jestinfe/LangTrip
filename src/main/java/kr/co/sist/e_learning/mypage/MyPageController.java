@@ -68,24 +68,9 @@ public class MyPageController {
         model.addAttribute("currentTab", tab);
         return "mypage/mypage_main";
     }
+    
 
-    /** 대시보드 단독 접근용 (직접 경로 접근시) */
-    @GetMapping("/dashboard")
-    public String dashboard(HttpSession session, Model model) {
-    	long userSeq = getOrInitUserSeq(session);
-        model.addAttribute("myData", mps.getMyPageData(userSeq));
-        return "mypage/dashboard";
-    }
-
-    /** 수강 내역 */
-    @GetMapping("/lecture_history")
-    public String lectureHistory(HttpSession session, Model model) {
-    	long userSeq = getOrInitUserSeq(session);
-        model.addAttribute("lectureList", mps.getLectureHistory(userSeq));
-        return "mypage/lecture_history";
-    }
-
-    /** 구독 목록 */
+	/** 구독 목록 */
     @GetMapping("/subscriptions")
     public String subscriptions(@SessionAttribute("user_seq") long userSeq, Model model) {
         List<SubscriptionDTO> subs = mps.getSubscriptions(userSeq);
@@ -114,8 +99,25 @@ public class MyPageController {
         mps.cancelSubscription(userSeq, instructorId);
         return ResponseEntity.ok().build();
     }
+    
 
+    /** 대시보드 단독 접근용 (직접 경로 접근시) */
+    @GetMapping("/dashboard")
+    public String dashboard(HttpSession session, Model model) {
+    	long userSeq = getOrInitUserSeq(session);
+        model.addAttribute("myData", mps.getMyPageData(userSeq));
+        return "mypage/dashboard";
+    }
 
+    /** 수강 내역 */
+    @GetMapping("/lecture_history")
+    public String lectureHistory(HttpSession session, Model model) {
+    	long userSeq = getOrInitUserSeq(session);
+        model.addAttribute("lectureList", mps.getLectureHistory(userSeq));
+        return "mypage/lecture_history";
+    }
+
+    
     /** 내 정보 */
     @GetMapping("/my_info")
     public String myInfo(HttpSession session, Model model) {
