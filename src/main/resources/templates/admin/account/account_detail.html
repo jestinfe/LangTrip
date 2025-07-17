@@ -402,16 +402,6 @@
 
         <div class="action-buttons">
           <a href="/admin/accounts" class="btn btn-outline"><i class="fas fa-arrow-left"></i> 목록으로</a>
-
-          <!-- 가입신청 상세 보기 모드 -->
-          <div th:if="${mode == 'signup'}">
-            <form th:action="@{/admin/accounts/{id}/status(id=${admin.requestId})}" method="post" style="display: inline;">
-                <input type="hidden" name="status" value="APPROVED">
-                <button type="submit" class="btn btn-primary"><i class="fas fa-check"></i> 승인</button>
-            </form>
-            <button type="button" class="btn btn-secondary" id="showRejectReasonBtn"><i class="fas fa-times"></i> 거절</button>
-          </div>
-
           <!-- 기존 관리자 상세 보기 모드 -->
           <div th:if="${mode == 'account'}">
             <button type="button" id="editBtn" class="btn btn-secondary"><i class="fas fa-edit"></i> 수정하기</button>
@@ -421,6 +411,15 @@
         </div>
       </form>
       
+      <!-- 가입신청 상세 보기 모드 (승인/거절 버튼) -->
+      <div th:if="${mode == 'signup'}" class="action-buttons" style="margin-top: 1rem;">
+        <form th:action="@{/admin/accounts/{id}/status(id=${admin.requestId})}" method="post" style="display: inline;">
+            <input type="hidden" name="status" value="APPROVED">
+            <button type="submit" class="btn btn-primary"><i class="fas fa-check"></i> 승인</button>
+        </form>
+        <button type="button" class="btn btn-secondary" id="showRejectReasonBtn"><i class="fas fa-times"></i> 거절</button>
+      </div>
+
       <!-- 거절 사유 입력 폼 (가입신청 모드에서만 사용) -->
       <div th:if="${mode == 'signup'}" id="rejectReasonBox" style="display: none; margin-top: 1rem;">
         <form id="rejectForm" method="post" th:action="@{/admin/accounts/{id}/status(id=${admin.requestId})}">

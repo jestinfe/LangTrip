@@ -96,15 +96,15 @@
       <section class="detail-header">
         <h1 th:text="${course.title}">스마트폰으로 배우는 일상 영어</h1>
         <div class="detail-meta">
-          강사: <span th:text="${course.instructorId}">kimEng</span> |
+          강사: <span th:text="${course.instructorNickname}">kimEng</span> |
           카테고리: <span th:text="${course.category}">일상 회화</span> |
-          등록일: <span th:text="${#temporals.format(course.createdAt,'yyyy-MM-dd')}">2024-01-15</span>
+          등록일: <span th:text="${#temporals.format(course.uploadDate,'yyyy-MM-dd')}">2024-01-15</span>
         </div>
       </section>
 
       <!-- Description -->
       <section class="detail-desc">
-        <p th:text="${course.description}">
+        <p th:text="${course.introduction}">
           일상생활에서 자주 사용하는 영어 표현들을 스마트폰 앱과 함께 학습합니다. 단계별 로드맵을 따라 영상과 퀴즈를 순차적으로 완료해 보세요.
         </p>
       </section>
@@ -166,10 +166,9 @@
       <p>삭제된 강의는 복구할 수 없습니다.</p>
       <div class="modal-actions">
         <button class="modal-btn cancel" id="modalCancel">취소</button>
-        <button
-          class="modal-btn confirm"
-          th:onclick="'location.href=\'' + @{/admin/courses/delete/{id}(id=${course.id})} + '\';'"
-        >삭제</button>
+        <form th:action="@{/admin/courses/delete/{courseSeq}(courseSeq=${course.courseSeq})}" method="post" style="display:inline;">
+            <button type="submit" class="modal-btn confirm">삭제</button>
+        </form>
       </div>
     </div>
   </div>
