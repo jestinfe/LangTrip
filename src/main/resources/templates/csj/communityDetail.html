@@ -131,7 +131,7 @@ function vote(postId, voteType) {
 	      } else if (xhr.status === 401) {
 	        alert("로그인이 필요합니다.");
 	      } else {
-	        alert("추천 중 오류 발생");
+	        alert("본인 글은 안돼요~!");
 	      }
 	    }
 	  });
@@ -192,14 +192,13 @@ function vote(postId, voteType) {
   </div>
 
   <div class="action-buttons d-flex justify-content-center gap-2">
-    <button class="action-btn"><i class="bi bi-share"></i> 공유</button>
     <button class="action-btn"><i class="bi bi-exclamation-triangle"  data-bs-toggle="modal" data-bs-target="#userReportModal"></i> 신고</button>
   </div>
 </div>
 
   <div class="comment-box">
   <input type="hidden" id="postId" th:value="${post.postId}" />
-  
+
   <div class="mb-3">
     <textarea class="form-control" id="commentContent" rows="3" placeholder="댓글을 입력하세요..."></textarea>
   </div>
@@ -209,19 +208,50 @@ function vote(postId, voteType) {
   </div>
 </div>
 
-  <div class="comment-list">
-    <div class="comment-item" th:each="comment : ${commentList}">
-      <div>
-        <strong th:text="${comment.nickname}">닉네임</strong>
-        <span class="comment-meta">
-          (<span th:text="${#dates.format(comment.createdAt, 'yyyy-MM-dd HH:mm')}">2025-07-08</span>)
-        </span>
+<div class="comment-list mt-4">
+  <div th:each="comment : ${commentList}">
+    <!-- 일반 댓글만 -->
+    <div th:if="${comment.parentId == null}" class="comment-item mb-2 border-bottom pb-2">
+
+      <!-- 댓글 본문 -->
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <strong th:text="${comment.nickname}">닉네임</strong>
+          <span class="comment-meta" th:text="${#dates.format(comment.createdAt, 'yyyy-MM-dd HH:mm')}">2025-07-16</span>
+        </div>
+        <div>
+		<button class="btn btn-sm btn-light" type="button"
+        th:onclick="'showReplyForm(' + ${comment.commentId} + ')'">
+  <i class="bi bi-chat-dots"></i>
+</button>
+		
+        </div>
       </div>
-      <div th:text="${comment.content}">
-        댓글 내용입니다.
+      <div th:text="${comment.content}">댓글 내용</div>
+
+      <!-- 대댓글 목록 렌더링 -->
+      <div class="ps-4 mt-2" th:each="reply : ${commentList}" th:if="${reply.parentId == comment.commentId}">
+        <div class="comment-item border-start ps-3 mb-2">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <strong th:text="${reply.nickname}">닉네임</strong>
+              <span class="comment-meta" th:text="${#dates.format(reply.createdAt, 'yyyy-MM-dd HH:mm')}">대댓글 시간</span>
+            </div>
+          </div>
+          <div th:text="${reply.content}">대댓글 내용</div>
+        </div>
       </div>
+
+      <!-- 대댓글 입력 폼 (숨김) -->
+      <div class="reply-form d-none mt-2" th:id="'replyForm-' + ${comment.commentId}">
+        <textarea class="form-control mb-1" rows="2" th:id="'replyContent-' + ${comment.commentId}" placeholder="답글을 입력하세요..."></textarea>
+        <button class="btn btn-primary btn-sm" th:onclick="'submitReply(' + ${comment.commentId} + ')'">등록</button>
+      </div>
+
     </div>
   </div>
+</div>
+
 
   <div class="text-end mt-3">
     <a href="/csj/community" class="btn btn-secondary btn-sm">목록으로</a>
@@ -247,24 +277,31 @@ function submitComment() {
 	    data: JSON.stringify({ postId2: postId, content: content }),
 	    success: function(comment) {
 
-	      // 날짜 포맷 처리
 	      const createdAt = new Date(comment.createdAt).toLocaleString();
 
-	      // 댓글 HTML 구성
-	      const html = `
-	        <div class="comment-item">
-	          <div>
-	            <strong>${comment.nickname}</strong>
-	            <span class="comment-meta">(${createdAt})</span>
-	          </div>
-	          <div>${comment.content}</div>
-	        </div>
-	      `;
+	      // 새 댓글 HTML (수정/삭제 드롭다운 포함)
+	     const html = `
+  <div class="comment-item mb-2 border-bottom pb-2">
+    <div class="d-flex justify-content-between align-items-center">
+      <div>
+        <strong>${comment.nickname}</strong>
+        <span class="comment-meta">(${createdAt})</span>
+      </div>
+      <div>
+        <button class="btn btn-sm btn-light" type="button"
+                onclick="showReplyForm(${comment.commentId})">
+          <i class="bi bi-chat-dots"></i>
+        </button>
+      </div>
+    </div>
+    <div>${comment.content}</div>
+  </div>
+`;
 
-	      // 맨 위에 댓글 추가
+	      // 댓글 추가
 	      $(".comment-list").prepend(html);
 
-	      // 입력창 비우기
+	      // 입력창 초기화
 	      $("#commentContent").val("");
 	    },
 	    error: function(xhr) {
@@ -272,6 +309,46 @@ function submitComment() {
 	    }
 	  });
 	}
+
+	
+	
+	
+	
+</script>
+<script>
+function showReplyForm(commentId) {
+  // 모든 replyForm 숨기고 선택된 것만 보여줌
+  document.querySelectorAll('.reply-form').forEach(form => form.classList.add('d-none'));
+  document.getElementById(`replyForm-${commentId}`).classList.remove('d-none');
+}
+
+function submitReply(parentId) {
+  const postId = $('#postId').val();
+  const content = $(`#replyContent-${parentId}`).val();
+
+  if (!content.trim()) {
+    alert("답글 내용을 입력해주세요.");
+    return;
+  }
+
+  $.ajax({
+    type: 'POST',
+    url: '/csj/comment/write',
+    contentType: 'application/json',
+    data: JSON.stringify({
+      postId2: postId,
+      parentId: parentId,
+      content: content
+    }),
+    success: function(reply) {
+      location.reload(); // 또는 새로 append
+    },
+    error: function() {
+      alert("답글 등록 중 오류 발생");
+    }
+  });
+}
 </script>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"></script>
 </html>
