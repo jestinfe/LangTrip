@@ -12,6 +12,7 @@ import jakarta.mail.internet.MimeMessage;
 import kr.co.sist.e_learning.common.aop.Loggable;
 
 import java.util.*;
+import kr.co.sist.e_learning.common.service.EmailService;
 
 @Service
 public class AdminAccountServiceImpl implements AdminAccountService {
@@ -21,6 +22,9 @@ public class AdminAccountServiceImpl implements AdminAccountService {
     
     @Autowired
     private JavaMailSender mailSender;
+
+    @Autowired
+    private EmailService emailService;
 
     @Override
     public List<AdminAccountUnifiedDTO> getUnifiedAdminList(Map<String, Object> params) {
@@ -122,7 +126,7 @@ public class AdminAccountServiceImpl implements AdminAccountService {
             <p>이제 시스템에 로그인하실 수 있습니다.</p>
         """.formatted(dto.getAdminId(), dto.getAdminName());
 
-        sendEmail(dto.getEmail(), "[SIST] 관리자 가입 승인 안내", html);
+        emailService.sendEmail(dto.getEmail(), "[SIST] 관리자 가입 승인 안내", html);
     }
 
     @Override
@@ -140,7 +144,7 @@ public class AdminAccountServiceImpl implements AdminAccountService {
             <p>문의가 있으시면 관리자에게 연락 주세요.</p>
         """.formatted(reason);
 
-        sendEmail(email, "[SIST] 관리자 가입 요청 거절 안내", html);
+        emailService.sendEmail(email, "[SIST] 관리자 가입 요청 거절 안내", html);
     }
     
     @Override
@@ -148,18 +152,6 @@ public class AdminAccountServiceImpl implements AdminAccountService {
         return dao.selectDistinctDepts();
     }
     
-    @Async
-    public void sendEmail(String to, String subject, String html) {
-        try {
-            MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-            helper.setTo(to);
-            helper.setSubject(subject);
-            helper.setText(html, true);
-            mailSender.send(message);
-        } catch (MessagingException e) {
-            throw new IllegalStateException("이메일 전송 실패", e);
-        }
-    }
+    
 
 }

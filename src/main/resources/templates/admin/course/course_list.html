@@ -91,13 +91,12 @@
                     <input type="text" id="title" name="title" th:value="${title}" placeholder="강의 제목 검색">
                 </div>
                 <div class="form-group">
-                    <label for="language">언어</label>
-                    <select id="language" name="language" th:value="${language}">
+                    <label for="category">카테고리</label>
+                    <select id="category" name="category" th:value="${category}">
                         <option value="">전체</option>
-                        <option value="영어">영어</option>
-                        <option value="일본어">일본어</option>
-                        <option value="스페인어">스페인어</option>
-                        <option value="프랑스어">프랑스어</option>
+                        <option value="영어" th:selected="${category == '영어'}">영어</option>
+                        <option value="일본어" th:selected="${category == '일본어'}">일본어</option>
+                        <option value="중국어" th:selected="${category == '중국어'}">중국어</option>
                     </select>
                 </div>
          
@@ -118,10 +117,8 @@
         <div class="sort-bar" style="margin: -1rem 0 1.5rem 0; display: flex; justify-content: flex-end; padding: 0 1rem;">
 		  <label for="sort" style="font-weight: bold; margin-right: 10px;">정렬 기준</label>
 		  <select id="sort" name="sort" onchange="applySort()" style="padding: 0.5rem 1rem; border-radius: 8px; border: 2px solid #e0e0e0; font-size: 1rem;">
-		      <option value="createdAt,desc" th:selected="${sort == 'createdAt,desc'}">등록일자 ↓</option>
-		      <option value="createdAt,asc" th:selected="${sort == 'createdAt,asc'}">등록일자 ↑</option>
-		      <option value="updatedAt,desc" th:selected="${sort == 'updatedAt,desc'}">업데이트일자 ↓</option>
-		      <option value="updatedAt,asc" th:selected="${sort == 'updatedAt,asc'}">업데이트일자 ↑</option>
+		      <option value="upload_date,desc" th:selected="${pageRequestDTO.orderBy == 'upload_date' and pageRequestDTO.sort == 'desc'}">등록일자 ↓</option>
+		      <option value="upload_date,asc" th:selected="${pageRequestDTO.orderBy == 'upload_date' and pageRequestDTO.sort == 'asc'}">등록일자 ↑</option>
 		  </select>
 		</div>
 
@@ -139,28 +136,46 @@
                         <tr>
                             <th>순번</th>
                             <th>강의 제목</th>
-                            <th>강사 ID</th>
-                            <th>언어</th>
+                            <th>강사명</th>
+                            <th>카테고리</th>
                             <th>등록일자</th>
-                            <th>업데이트일자</th>
+                            <th>공개 여부</th>
+                            <th>상태</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr th:each="course, stat : ${courseList}">
-                            <td th:text="${stat.index + 1}">1</td>
-                            <td th:text="${course.title}">애니로 배우는 진짜 일본어 표현</td>
-                            <td th:text="${course.instructorId}">takahashi</td>
-                            <td th:text="${course.language}">일본어</td>
-                            <td th:text="${#temporals.format(course.createdAt,'yyyy-MM-dd')}">2025-01-10</td>
-                            <td th:text="${#temporals.format(course.updatedAt,'yyyy-MM-dd')}">2025-06-15</td>
+                            <td th:text="${pageResponseDTO.startRow + stat.index}">1</td>
+                            <td><a th:href="@{/admin/courses/{courseSeq}(courseSeq=${course.courseSeq})}" th:text="${course.title}">애니로 배우는 진짜 일본어 표현</a></td>
+                            <td th:text="${course.instructorNickname}">takahashi</td>
+                            <td th:text="${course.category}">일본어</td>
+                            <td th:text="${#temporals.format(course.uploadDate,'yyyy-MM-dd')}">2025-01-10</td>
+                            <td>
+                                <form th:action="@{/admin/course/toggle}" method="post" style="display:inline;">
+                                    <input type="hidden" name="courseSeq" th:value="${course.courseSeq}" />
+                                    <input type="hidden" name="isPublic" th:value="${course.isPublic == 'Y' ? 'N' : 'Y'}" />
+                                    <button type="submit" th:classappend="${course.isPublic == 'Y' ? 'btn-public' : 'btn-private'}" style="border:none; padding: 5px 10px; border-radius: 5px; cursor:pointer;">
+                                        <span th:text="${course.isPublic == 'Y' ? '공개' : '비공개'}"></span>
+                                    </button>
+                                </form>
+                            </td>
+                            <td th:text="${course.status}">ACTIVE</td>
                         </tr>
                         <tr th:if="${#lists.isEmpty(courseList)}">
-                            <td colspan="6" style="text-align:center; padding:2rem; color:#666;">
+                            <td colspan="7" style="text-align:center; padding:2rem; color:#666;">
                                 검색 결과가 없습니다.
                             </td>
                         </tr>
                     </tbody>
                 </table>
+            </div>
+            <!-- Pagination -->
+            <div class="pagination" style="display: flex; justify-content: center; padding: 1.5rem 0;">
+                <button th:if="${pageResponseDTO.prev}" th:onclick="'goToPage(' + ${pageResponseDTO.startPage - 1} + ')'" class="btn btn-secondary">이전</button>
+                <th:block th:each="i : ${#numbers.sequence(pageResponseDTO.startPage, pageResponseDTO.endPage)}">
+                    <button th:onclick="'goToPage(' + ${i} + ')'" th:classappend="${i == pageResponseDTO.page ? 'btn-primary' : 'btn-secondary'}" style="margin: 0 5px;">[[${i}]]</button>
+                </th:block>
+                <button th:if="${pageResponseDTO.next}" th:onclick="'goToPage(' + ${pageResponseDTO.endPage + 1} + ')'" class="btn btn-secondary">다음</button>
             </div>
         </div>
 
@@ -168,19 +183,35 @@
 
     <script>
     function applySort() {
-        const sort = document.getElementById("sort").value;
+        const sortValue = document.getElementById("sort").value;
+        const [orderBy, sort] = sortValue.split(",");
         const url = new URL(window.location.href);
+        url.searchParams.set("orderBy", orderBy);
         url.searchParams.set("sort", sort);
+        url.searchParams.set("page", 1); // Reset to first page on sort change
         window.location.href = url.toString();
     }
-        function clearSearch() {
-            document.getElementById('title').value = '';
-            document.getElementById('language').value = '';
-            document.getElementById('createdFrom').value = '';
-            document.getElementById('updatedFrom').value = '';
-            document.getElementById('sort').value = '';
-            document.getElementById('includeInactive').checked = false;
-        }
+
+    function goToPage(page) {
+        const url = new URL(window.location.href);
+        url.searchParams.set("page", page);
+        window.location.href = url.toString();
+    }
+
+    function clearSearch() {
+        document.getElementById('title').value = '';
+        document.getElementById('category').value = '';
+        document.getElementById('includeInactive').checked = false;
+        // Reset sort to default if needed, or let applySort handle it
+        const url = new URL(window.location.href);
+        url.searchParams.delete('title');
+        url.searchParams.delete('category');
+        url.searchParams.delete('includeInactive');
+        url.searchParams.delete('orderBy');
+        url.searchParams.delete('sort');
+        url.searchParams.set('page', 1);
+        window.location.href = url.toString();
+    }
     </script>
 </body>
 </html>
