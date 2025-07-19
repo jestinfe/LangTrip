@@ -1,201 +1,87 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>LangTrip - 강의 목록</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" th:href="@{/css/common.css}">
-    <link rel="stylesheet" th:href="@{/css/course_list.css}">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>강의 목록</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f4f4; }
+        .container { width: 80%; margin: 20px auto; background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); }
+        h1 { text-align: center; color: #333; }
+        .search-sort-filter { display: flex; justify-content: space-between; margin-bottom: 20px; }
+        .search-sort-filter div { display: flex; align-items: center; }
+        .search-sort-filter label { margin-right: 10px; }
+        .search-sort-filter input, .search-sort-filter select { padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
+        .course-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+        .course-card { border: 1px solid #ddd; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); }
+        .course-card img { width: 100%; height: 180px; object-fit: cover; }
+        .course-card-content { padding: 15px; }
+        .course-card-content h3 { margin-top: 0; color: #333; }
+        .course-card-content p { color: #666; font-size: 0.9em; }
+        .course-card-content .instructor { font-weight: bold; margin-top: 10px; }
+        .pagination { display: flex; justify-content: center; margin-top: 20px; }
+        .pagination a, .pagination span { padding: 8px 12px; margin: 0 5px; border: 1px solid #ddd; text-decoration: none; color: #333; border-radius: 4px; }
+        .pagination a.active { background-color: #007bff; color: white; border-color: #007bff; }
+        .pagination a:hover:not(.active) { background-color: #eee; }
+    </style>
 </head>
-<body class="">
-    <!-- Header -->
-      <div th:replace="layout/header :: header"></div>
+<body>
+    <div class="container">
+        <h1>강의 목록</h1>
 
-
-    <main class="main-container">
-    <div class="page-header">
-        <div>
-            <h1 class="page-title">전체 강의</h1>
-<p class="results-count" th:if="${courses != null}" th:text="'총 ' + ${#lists.size(courses)} + '개의 강의'"></p>
-<p class="results-count" th:unless="${courses != null}">총 0개의 강의</p>        </div>
-    </div>
-
-    <div class="search-filter-section">
-        <div class="search-container">
-            <input type="text" class="search-input" placeholder="원하는 강의를 검색해보세요..." id="searchInput" />
-            <span class="search-icon">🔍</span>
+        <div class="search-sort-filter">
+            <form id="searchForm" action="/courses" method="get">
+                <div>
+                    <label for="searchType">검색:</label>
+                    <select id="searchType" name="searchType">
+                        <option value="title" th:selected="${searchType == 'title'}">제목</option>
+                        <option value="userName" th:selected="${searchType == 'userName'}">강사</option>
+                    </select>
+                    <input type="text" id="searchKeyword" name="searchKeyword" th:value="${searchKeyword}" placeholder="검색어 입력">
+                    <button type="submit">검색</button>
+                </div>
+                <div>
+                    <label for="sort">정렬:</label>
+                    <select id="sort" name="sort" onchange="document.getElementById('searchForm').submit();">
+                        <option value="uploadDate,desc" th:selected="${sort == 'uploadDate,desc'}">최신순</option>
+                        <option value="uploadDate,asc" th:selected="${sort == 'uploadDate,asc'}">오래된순</option>
+                        <option value="title,asc" th:selected="${sort == 'title,asc'}">제목 오름차순</option>
+                        <option value="title,desc" th:selected="${sort == 'title,desc'}">제목 내림차순</option>
+                    </select>
+                    <label for="pageSize">항목 수:</label>
+                    <select id="pageSize" name="pageSize" onchange="document.getElementById('searchForm').submit();">
+                        <option value="5" th:selected="${pageSize == 5}">5</option>
+                        <option value="10" th:selected="${pageSize == 10}">10</option>
+                        <option value="20" th:selected="${pageSize == 20}">20</option>
+                    </select>
+                </div>
+            </form>
         </div>
-            
-            <div class="filter-row">
-                <div class="filter-group">
-                    <label class="filter-label">카테고리</label>
-                    <select class="filter-select" id="categoryFilter">
-                        <option value="">전체 카테고리</option>
-                        <option value="development">개발</option>
-                        <option value="design">디자인</option>
-                        <option value="marketing">마케팅</option>
-                        <option value="ai-ml">AI/ML</option>
-                        <option value="mobile">모바일</option>
-                        <option value="cloud">클라우드</option>
-                        <option value="data">데이터 분석</option>
-                        <option value="business">비즈니스</option>
-                    </select>
-                </div>
-                
-                <div class="filter-group">
-                    <label class="filter-label">난이도</label>
-                    <select class="filter-select" id="levelFilter">
-                        <option value="">전체 난이도</option>
-                        <option value="beginner">초급</option>
-                        <option value="intermediate">중급</option>
-                        <option value="advanced">고급</option>
-                    </select>
-                </div>
-                
-                <div class="filter-group">
-                    <label class="filter-label">가격</label>
-                    <select class="filter-select" id="priceFilter">
-                        <option value="">전체 가격</option>
-                        <option value="free">무료</option>
-                        <option value="0-50000">5만원 이하</option>
-                        <option value="50000-100000">5만원~10만원</option>
-                        <option value="100000+">10만원 이상</option>
-                    </select>
-                </div>
-                
-                <div class="filter-group">
-                    <label class="filter-label">정렬</label>
-                    <select class="filter-select" id="sortFilter">
-                        <option value="popular">인기순</option>
-                        <option value="newest">최신순</option>
-                        <option value="rating">평점순</option>
-                        <option value="price-low">가격 낮은순</option>
-                        <option value="price-high">가격 높은순</option>
-                    </select>
-                </div>
-                
-                <div class="filter-buttons">
-                    <button class="filter-btn" onclick="applyFilters()">검색</button>
-                    <button class="clear-filters" onclick="clearFilters()">초기화</button>
+
+        <div class="course-list">
+            <div class="course-card" th:each="course : ${courseList}">
+                <img src="https://via.placeholder.com/300x180?text=Course+Image" alt="Course Image">
+                <div class="course-card-content">
+                    <h3 th:text="${course.title}"></h3>
+                    <p th:text="${course.introduction}"></p>
+                    <p class="instructor">강사: <span th:text="${course.userName}"></span></p>
+                    <p>업로드 날짜: <span th:text="${#temporals.format(course.uploadDate, 'yyyy-MM-dd')}"></span></p>
+                    <p th:if="${course.isPublic == 'N'}" style="color: red;">비공개 강의</p>
                 </div>
             </div>
-            
-            <div class="active-filters" id="activeFilters" style="display: none;">
-                <!-- Active filter tags will be inserted here -->
+            <div th:if="${#lists.isEmpty(courseList)}">
+                <p>강의가 없습니다.</p>
             </div>
         </div>
 
-         <!-- 강의 목록 -->
-    <div class="course-grid" id="courseGrid">
-        <div class="course-card" th:each="course : ${courses}">
-            <div class="course-thumbnail">
-                <div class="course-level" th:text="${course.difficulty}">중급</div>
-                <div class="course-duration" th:text="${course.duration}">12시간</div>
-                <img th:src="@{/images/quiz/{thumbnailName}(thumbnailName=${course.thumbnailName})}" th:alt="${course.title}" style="width:100%; height:auto;"/>
-            </div>
-            <div class="course-info">
-                <span class="course-category" th:text="${course.category}">개발</span>
-                <h3 class="course-title" th:text="${course.title}">React 완벽 마스터</h3>
-                <div class="course-instructor">
-                    <div class="instructor-avatar" th:text="${course.instructorNickname != null ? course.instructorNickname.substring(0,1) : ''}">김</div>
-                    <span class="instructor-name" th:text="${course.instructorNickname}">김개발</span>
-                </div>
-                <div class="course-stats">
-                    <div class="course-rating">⭐ <span th:text="${course.rating}">4.9</span> (<span th:text="${course.students}">1234</span>)</div>
-                    <div class="course-students" th:text="${course.students} + '명 수강'">1234명 수강</div>
-                </div>
-                <div class="course-footer">
-                    <div class="course-price">
-                        <span class="original-price" th:if="${course.originalPrice != course.currentPrice}" th:text="'₩' + ${#numbers.formatInteger(course.originalPrice, 0)}">₩129,000</span>
-                        <span class="current-price" th:text="'₩' + ${#numbers.formatInteger(course.currentPrice, 0)}">₩89,000</span>
-                    </div>
-                    <a th:href="@{/courses/enroll/{courseSeq}(courseSeq=${course.courseSeq})}" class="enroll-btn">수강신청</a>
-                </div>
-            </div>
+        <div class="pagination">
+            <a th:if="${currentPage > 1}" th:href="@{/courses(page=${currentPage - 1}, pageSize=${pageSize}, searchType=${searchType}, searchKeyword=${searchKeyword}, sort=${sort})}">이전</a>
+            <span th:each="pageNum : ${#numbers.sequence(startPage, endPage)}">
+                <a th:href="@{/courses(page=${pageNum}, pageSize=${pageSize}, searchType=${searchType}, searchKeyword=${searchKeyword}, sort=${sort})}" th:classappend="${pageNum == currentPage ? 'active' : ''}" th:text="${pageNum}"></a>
+            </span>
+            <a th:if="${currentPage < totalPages}" th:href="@{/courses(page=${currentPage + 1}, pageSize=${pageSize}, searchType=${searchType}, searchKeyword=${searchKeyword}, sort=${sort})}">다음</a>
         </div>
     </div>
-
-
-        <!-- Pagination -->
-        <div class="pagination" id="pagination">
-            <button th:if="${pageResponseDTO.prev}" th:onclick="'goToPage(' + ${pageResponseDTO.startPage - 1} + ')'" id="prevBtn">이전</button>
-            <th:block th:each="i : ${#numbers.sequence(pageResponseDTO.startPage, pageResponseDTO.endPage)}">
-                <button th:onclick="'goToPage(' + ${i} + ')'" th:classappend="${i == pageResponseDTO.page ? 'active' : ''}">[[${i}]]</button>
-            </th:block>
-            <button th:if="${pageResponseDTO.next}" th:onclick="'goToPage(' + ${pageResponseDTO.endPage + 1} + ')'" id="nextBtn">다음</button>
-        </div>
-          <div th:replace="layout/footer :: footer"></div>
-        
-    </main>
-    
-
-    <script>
-        function goToPage(page) {
-            const url = new URL(window.location.href);
-            url.searchParams.set("page", page);
-            window.location.href = url.toString();
-        }
-
-        function applyFilters() {
-            const searchTerm = document.getElementById('searchInput').value;
-            const category = document.getElementById('categoryFilter').value;
-            const difficulty = document.getElementById('levelFilter').value;
-            const priceRange = document.getElementById('priceFilter').value;
-            const sort = document.getElementById('sortFilter').value;
-
-            const url = new URL(window.location.href);
-            url.searchParams.set("searchTerm", searchTerm);
-            url.searchParams.set("category", category);
-            url.searchParams.set("difficulty", difficulty);
-            url.searchParams.set("priceRange", priceRange);
-
-            const [orderBy, order] = sort.split(",");
-            url.searchParams.set("orderBy", orderBy);
-            url.searchParams.set("sort", order);
-            url.searchParams.set("page", 1); // Reset to first page on filter change
-
-            window.location.href = url.toString();
-        }
-
-        function clearFilters() {
-            const url = new URL(window.location.href);
-            url.searchParams.delete('searchTerm');
-            url.searchParams.delete('category');
-            url.searchParams.delete('difficulty');
-            url.searchParams.delete('priceRange');
-            url.searchParams.delete('orderBy');
-            url.searchParams.delete('sort');
-            url.searchParams.set('page', 1);
-            window.location.href = url.toString();
-        }
-
-        // Search input event listener
-        document.getElementById('searchInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                applyFilters();
-            }
-        });
-
-        // Filter change event listeners
-        document.getElementById('categoryFilter').addEventListener('change', applyFilters);
-        document.getElementById('levelFilter').addEventListener('change', applyFilters);
-        document.getElementById('priceFilter').addEventListener('change', applyFilters);
-        document.getElementById('sortFilter').addEventListener('change', applyFilters);
-
-        // Initialize filter values from URL parameters
-        document.addEventListener('DOMContentLoaded', function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            document.getElementById('searchInput').value = urlParams.get('searchTerm') || '';
-            document.getElementById('categoryFilter').value = urlParams.get('category') || '';
-            document.getElementById('levelFilter').value = urlParams.get('difficulty') || '';
-            document.getElementById('priceFilter').value = urlParams.get('priceRange') || '';
-
-            const orderBy = urlParams.get('orderBy') || 'popular';
-            const sortOrder = urlParams.get('sort') || '';
-            document.getElementById('sortFilter').value = `${orderBy},${sortOrder}`;
-        });
-    </script>
 </body>
 </html>

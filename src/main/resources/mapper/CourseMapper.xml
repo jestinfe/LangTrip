@@ -5,87 +5,57 @@
 
 <mapper namespace="kr.co.sist.e_learning.course.CourseMapper">
 
-  <!-- Base SQL for User Course Selection -->
-  <sql id="userCourseColumns">
-    c.course_seq,
-    c.title,
-    c.category,
-    u.nickname AS instructor_nickname,
-    -- Dummy values for rating, students, prices, duration for now
-    -- These should come from actual data or calculated fields
-    4.5 AS rating,
-    (SELECT COUNT(*) FROM user_course_enrollment WHERE course_seq = c.course_seq) AS students,
-    100000 AS original_price,
-    80000 AS current_price,
-    c.difficulty,
-    '10시간' AS duration,
-    c.thumbnail_name,
-    c.thumbnail_path
-  </sql>
-
-  <sql id="userCourseJoin">
-    FROM course c
-    JOIN "C##UNDER".USERS u ON c.user_id = u.USER_ID
-  </sql>
-
-  <sql id="userCourseWhere">
+  <select id="selectAllCourses" parameterType="map" resultType="kr.co.sist.e_learning.course.UserCourseListDTO">
+    SELECT
+      c.COURSE_SEQ AS courseSeq,
+      c.TITLE AS title,
+      c.INTRODUCTION AS introduction,
+      c.UPLOAD_DATE AS uploadDate,
+      c.IS_PUBLIC AS isPublic,
+      u.NICKNAME AS userName
+    FROM COURSE c
+    JOIN USERS u ON c.USER_SEQ = u.USER_SEQ
     <where>
-      c.is_public = 'Y'
-      AND c.status = 'ACTIVE'
-      <if test="searchTerm != null and searchTerm != ''">
-        AND (c.title LIKE '%' || #{searchTerm} || '%'
-             OR u.nickname LIKE '%' || #{searchTerm} || '%')
-      </if>
-      <if test="category != null and category != ''">
-        AND c.category = #{category}
-      </if>
-      <if test="difficulty != null and difficulty != ''">
-        AND c.difficulty = #{difficulty}
-      </if>
-      <if test="priceRange != null and priceRange != ''">
+      c.IS_PUBLIC = 'Y'
+      <if test="searchType != null and searchKeyword != null and searchKeyword != ''">
         <choose>
-          <when test="priceRange == 'free'">
-            AND 0 = 0 -- Assuming free courses have 0 price, adjust if needed
+          <when test="searchType == 'title'">
+            AND c.TITLE LIKE '%' || #{searchKeyword} || '%'
           </when>
-          <when test="priceRange == '0-50000'">
-            AND 80000 BETWEEN 0 AND 50000 -- Dummy price, adjust to actual price column
-          </when>
-          <when test="priceRange == '50000-100000'">
-            AND 80000 BETWEEN 50001 AND 100000 -- Dummy price, adjust to actual price column
-          </when>
-          <when test="priceRange == '100000+'">
-            AND 80000 > 100000 -- Dummy price, adjust to actual price column
+          <when test="searchType == 'userName'">
+            AND u.NICKNAME LIKE '%' || #{searchKeyword} || '%'
           </when>
         </choose>
       </if>
     </where>
-  </sql>
-
-  <!-- 1. 사용자 강의 목록 조회 (검색, 필터, 정렬, 페이징 포함) -->
-  <select id="selectUserCourses" resultType="kr.co.sist.e_learning.course.UserCourseListDTO" parameterType="map">
-    SELECT
-      <include refid="userCourseColumns"/>
-    <include refid="userCourseJoin"/>
-    <include refid="userCourseWhere"/>
-    <if test="orderBy != null and orderBy != ''">
-      ORDER BY
+    ORDER BY
       <choose>
-        <when test="orderBy == 'popular'">students DESC</when>
-        <when test="orderBy == 'newest'">c.upload_date DESC</when>
-        <when test="orderBy == 'rating'">rating DESC</when>
-        <when test="orderBy == 'price-low'">current_price ASC</when>
-        <when test="orderBy == 'price-high'">current_price DESC</when>
-        <otherwise>c.upload_date DESC</otherwise> <!-- Default sort -->
+        <when test="sort == 'uploadDate,asc'">c.UPLOAD_DATE ASC</when>
+        <when test="sort == 'uploadDate,desc'">c.UPLOAD_DATE DESC</when>
+        <when test="sort == 'title,asc'">c.TITLE ASC</when>
+        <when test="sort == 'title,desc'">c.TITLE DESC</when>
+        <otherwise>c.UPLOAD_DATE DESC</otherwise>
       </choose>
-    </if>
     OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
   </select>
 
-  <!-- 2. 사용자 강의 목록 전체 개수 조회 (검색 조건 포함) -->
-  <select id="countUserCourses" resultType="int" parameterType="map">
+  <select id="countAllCourses" parameterType="map" resultType="int">
     SELECT COUNT(*)
-    <include refid="userCourseJoin"/>
-    <include refid="userCourseWhere"/>
+    FROM COURSE c
+    JOIN USERS u ON c.USER_SEQ = u.USER_SEQ
+    <where>
+      c.IS_PUBLIC = 'Y'
+      <if test="searchType != null and searchKeyword != null and searchKeyword != ''">
+        <choose>
+          <when test="searchType == 'title'">
+            AND c.TITLE LIKE '%' || #{searchKeyword} || '%'
+          </when>
+          <when test="searchType == 'userName'">
+            AND u.NICKNAME LIKE '%' || #{searchKeyword} || '%'
+          </when>
+        </choose>
+      </if>
+    </where>
   </select>
 
 </mapper>

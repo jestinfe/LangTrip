@@ -87,6 +87,15 @@
       <input type="text" id="signupId" required>
     </div>
     <div class="form-group">
+      <label for="signupPassword">비밀번호</label>
+      <input type="password" id="signupPassword" required>
+      <small id="password-strength" style="font-size:12px;display:block;margin-top:5px;"></small>
+    </div>
+    <div class="form-group">
+      <label for="confirmPassword">비밀번호 확인</label>
+      <input type="password" id="confirmPassword" required>
+    </div>
+    <div class="form-group">
       <label for="signupName">이름</label>
       <input type="text" id="signupName" required>
     </div>
@@ -120,21 +129,12 @@
       <label for="emailCode">이메일 인증코드</label>
       <div class="flex-group">
         <input type="text" id="emailCode" placeholder="인증코드를 입력하세요" required>
-        <button type="button" class="btn-verify" onclick="verifyCode()">코드 확인</button>
+        <button type="button" class="btn-verify" onclick="verifyCode()">인증하기</button>
       </div>
     </div>
     <div class="form-group">
       <label for="signupPhone">핸드폰 번호</label>
       <input type="tel" id="signupPhone" placeholder="010-0000-0000" required>
-    </div>
-    <div class="form-group">
-      <label for="signupPassword">비밀번호</label>
-      <input type="password" id="signupPassword" required>
-      <small id="password-strength" style="font-size:12px;display:block;margin-top:5px;"></small>
-    </div>
-    <div class="form-group">
-      <label for="confirmPassword">비밀번호 확인</label>
-      <input type="password" id="confirmPassword" required>
     </div>
     <button type="submit" class="btn btn-primary">회원가입</button>
     <a href="/admin/login" class="btn btn-secondary" style="text-align:center;display:block;text-decoration:none;">로그인으로 돌아가기</a>
@@ -210,7 +210,7 @@ $("#signupEmail").on("input", function() {
   emailVerified = false;
   $("#emailCode").val("").prop("disabled", false);
   $("#signupEmail").prop("disabled", false);
-  $(".btn-verify").prop("disabled", false).text("인증발송");
+  $(".btn-verify").prop("disabled", false).text("코드확인");
   if (resendTimer) clearInterval(resendTimer);
 });
 
