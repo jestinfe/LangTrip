@@ -54,7 +54,7 @@ public class MyPageServiceImpl implements MyPageService {
     }
     	
     
-    // 구독 목록 --디버깅용
+    // 구독 목록
     @Override
     public List<SubscriptionDTO> getSubscriptions(Long userSeq) {
         System.out.println("[Service] getSubscriptions(userSeq=" + userSeq + ")");
