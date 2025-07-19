@@ -1,4 +1,3 @@
-<!-- templates/layout/header.html -->
 <header class="header" th:fragment="header">
   <nav class="nav-container">
     <a href="/" class="logo">LangTrip</a>
@@ -12,10 +11,11 @@
       <span id="user-logged-out">
         <a href="/login" class="guest-state">로그인</a>
         <a href="/signup" class="guest-state">회원가입</a>
+        <a href="/mypage" class="guest-state">마이페이지</a>
       </span>
       <!-- 로그인 상태 (숨김) -->
       <span id="user-logged-in" style="display: none;">
-        <a id="user-name" class="user-state" href="/mypage"></a>
+        <a id="user-name" class="user-state" href="/mypage">마이페이지</a>
         <a href="#" onclick="logout()" class="user-state">로그아웃</a>
       </span>
     </div>

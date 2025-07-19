@@ -16,4 +16,10 @@ public class LectureHistoryDAOImpl implements LectureHistoryDAO {
     public List<LectureHistoryDTO> getLectureHistory(long userSeq) {
         return sqlSession.selectList("kr.co.sist.e_learning.mypage.LectureHistoryMapper.selectLectureHistory", userSeq);
     }
+    
+    @Override
+    public List<LectureHistoryDTO> selectMyLectures(long userSeq) {
+        return sqlSession.selectList("kr.co.sist.e_learning.mypage.LectureHistoryMapper.selectMyLectures", userSeq);
+    }
+
 }

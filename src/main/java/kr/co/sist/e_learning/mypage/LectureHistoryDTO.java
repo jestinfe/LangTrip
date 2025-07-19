@@ -20,5 +20,4 @@ public class LectureHistoryDTO {
     private String instructorName;
     private String uploadDate;
     private double courseRate;
-    private String completedYn;
 }

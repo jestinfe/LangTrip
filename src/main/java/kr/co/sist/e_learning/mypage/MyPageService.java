@@ -9,7 +9,8 @@ public interface MyPageService {
     String selectProfilePath(long userSeq);
     void updateProfilePath(long userSeq, String newPath);
     List<LectureHistoryDTO> getLectureHistory(long userSeq);
-    List<SubscriptionDTO> getSubscriptions(long userSeq);
-    int cancelSubscription(long followerId, String followeeId);
+    List<LectureHistoryDTO> selectMyLectures(long userSeq);
+    List<SubscriptionDTO> getSubscriptions(Long userSeq);
+    boolean cancelSubscription(Long userSeq, Long instructorId);
 }
 

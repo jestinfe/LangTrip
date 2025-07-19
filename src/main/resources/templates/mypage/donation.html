@@ -1,0 +1,26 @@
+<div th:fragment="content">
+  <div class="donation-section">
+    <h2 class="donation-title">💰 내 후원</h2>
+
+    <div class="donation-card">
+      <table class="donation-table">
+        <thead>
+          <tr>
+            <th>강의 제목</th>
+            <th>후원 마일</th>
+            <th>메시지</th>
+            <th>날짜</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="donation : ${fundingList}">
+            <td th:text="${donation.courseTitle}">강의 제목</td>
+            <td th:text="${donation.donationAmount} + ' M'">0 M</td>
+            <td th:text="${donation.message}">응원합니다!</td>
+            <td th:text="${#dates.format(donation.createdAt, 'yyyy-MM-dd')}">2025-07-15</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
