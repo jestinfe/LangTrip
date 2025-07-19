@@ -1,59 +1,36 @@
 package kr.co.sist.e_learning.admin.course;
 
-import java.util.HashMap;
+import kr.co.sist.e_learning.pagination.PageResponseDTO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.stereotype.Service;
-
-import kr.co.sist.e_learning.common.aop.Loggable;
-import kr.co.sist.e_learning.pagination.PageRequestDTO;
-import kr.co.sist.e_learning.pagination.PageResponseDTO;
-import lombok.RequiredArgsConstructor;
-
 @Service
-@RequiredArgsConstructor
 public class AdminCourseServiceImpl implements AdminCourseService {
 
-    private final AdminCourseMapper courseMapper;
+    @Autowired
+    private AdminCourseMapper adminCourseMapper;
 
     @Override
-    public PageResponseDTO<AdminCourseDTO> getCourses(PageRequestDTO pageRequestDTO, String title, String category, boolean includeInactive) {
-        Map<String, Object> param = new HashMap<>();
-        param.put("offset", pageRequestDTO.getOffset());
-        param.put("limit", pageRequestDTO.getLimit());
-        param.put("title", title);
-        param.put("category", category);
-        param.put("includeInactive", includeInactive);
-        param.put("orderBy", pageRequestDTO.getOrderBy());
-        param.put("sort", pageRequestDTO.getSort());
+    public PageResponseDTO<AdminCourseDTO> getAdminCourses(Map<String, Object> params) {
+        int page = (int) params.get("page");
+        int pageSize = (int) params.get("pageSize");
 
-        List<AdminCourseDTO> courses = courseMapper.selectCourses(param);
-        int totalCount = courseMapper.countCourses(param);
+        List<AdminCourseDTO> list = adminCourseMapper.selectAdminCourses(params);
+        int totalCount = adminCourseMapper.countAdminCourses(params);
 
-        return new PageResponseDTO<>(courses, totalCount, pageRequestDTO.getPage(), pageRequestDTO.getLimit(), 5);
+        return new PageResponseDTO<>(list, totalCount, page, pageSize, 5);
     }
 
     @Override
-    public AdminCourseDTO getCourseDetail(String courseSeq) {
-        return courseMapper.selectCourseDetail(courseSeq);
+    public AdminCourseDTO getAdminCourseDetail(String courseSeq) {
+        return adminCourseMapper.selectAdminCourseDetail(courseSeq);
     }
 
     @Override
-    @Loggable(actionType = "COURSE_VISIBILITY_UPDATE")
     public void updateCourseVisibility(String courseSeq, String isPublic) {
-        Map<String, Object> param = new HashMap<>();
-        param.put("courseSeq", courseSeq);
-        param.put("isPublic", isPublic);
-        courseMapper.updateCourseVisibility(param);
-    }
-
-    @Override
-    @Loggable(actionType = "COURSE_SOFT_DELETE")
-    public void softDeleteCourse(String courseSeq) {
-        Map<String, Object> param = new HashMap<>();
-        param.put("courseSeq", courseSeq);
-        param.put("status", "DELETED"); // Set status to DELETED for soft delete
-        courseMapper.updateCourseStatus(param);
+        adminCourseMapper.updateCourseVisibility(courseSeq, isPublic);
     }
 }

@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import kr.co.sist.e_learning.common.aop.Loggable;
+import kr.co.sist.e_learning.admin.signup.AdminSignupDAO;
 
 import java.util.*;
 import kr.co.sist.e_learning.common.service.EmailService;
@@ -25,6 +26,9 @@ public class AdminAccountServiceImpl implements AdminAccountService {
 
     @Autowired
     private EmailService emailService;
+
+    @Autowired
+    private AdminSignupDAO adminSignupDAO;
 
     @Override
     public List<AdminAccountUnifiedDTO> getUnifiedAdminList(Map<String, Object> params) {
@@ -64,15 +68,29 @@ public class AdminAccountServiceImpl implements AdminAccountService {
     @Override
     @Transactional
     public void updateAdmin(AdminAccountUnifiedDTO dto) {
-        dao.updateAdmin(dto);
-        dao.deleteAdminRoles(dto.getAdminId());
+        // Fetch the existing admin details to compare department
+        AdminAccountUnifiedDTO existingAdmin = dao.selectByAdminId(dto.getAdminId());
 
+        // Update personal details (name, email, phone, inline, status)
+        dao.updateAdmin(dto);
+
+        // Check if department has changed and update roles accordingly
+        if (existingAdmin != null && !Objects.equals(existingAdmin.getDept(), dto.getDept())) {
+            // Department has changed, fetch new roles based on the new department
+            List<String> newRoleCodes = adminSignupDAO.selectRoleCodesByDept(dto.getDept());
+            dto.setRoleCodes(newRoleCodes);
+        }
+
+        // Update roles if they are provided in the DTO (either from frontend or department change)
         List<String> roleCodes = dto.getRoleCodes();
-        if (roleCodes != null && !roleCodes.isEmpty()) {
-            Map<String, Object> map = new HashMap<>();
-            map.put("adminId", dto.getAdminId());
-            map.put("roleCodes", roleCodes);
-            dao.insertAdminRoles(map);
+        if (roleCodes != null) { // Only update if roleCodes are explicitly set
+            dao.deleteAdminRoles(dto.getAdminId());
+            if (!roleCodes.isEmpty()) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("adminId", dto.getAdminId());
+                map.put("roleCodes", roleCodes);
+                dao.insertAdminRoles(map);
+            }
         }
     }
 
@@ -98,6 +116,7 @@ public class AdminAccountServiceImpl implements AdminAccountService {
 
     @Override
     @Transactional
+    @Loggable(actionType = "SIGNUP_APPROVE")
     public void approveSignup(String requestId) {
         AdminAccountUnifiedDTO dto = dao.selectByRequestId(requestId);
         if (dto == null || !"PENDING".equals(dto.getStatus())) {

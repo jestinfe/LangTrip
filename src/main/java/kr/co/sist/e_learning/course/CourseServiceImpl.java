@@ -1,36 +1,26 @@
 package kr.co.sist.e_learning.course;
 
-import java.util.HashMap;
+import kr.co.sist.e_learning.pagination.PageResponseDTO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.stereotype.Service;
-
-import kr.co.sist.e_learning.pagination.PageRequestDTO;
-import kr.co.sist.e_learning.pagination.PageResponseDTO;
-import lombok.RequiredArgsConstructor;
-
 @Service
-@RequiredArgsConstructor
 public class CourseServiceImpl implements CourseService {
 
-    private final CourseMapper courseMapper;
+    @Autowired
+    private CourseMapper courseMapper;
 
     @Override
-    public PageResponseDTO<UserCourseListDTO> getUserCourses(PageRequestDTO pageRequestDTO, String searchTerm, String category, String difficulty, String priceRange) {
-        Map<String, Object> param = new HashMap<>();
-        param.put("offset", pageRequestDTO.getOffset());
-        param.put("limit", pageRequestDTO.getLimit());
-        param.put("searchTerm", searchTerm);
-        param.put("category", category);
-        param.put("difficulty", difficulty);
-        param.put("priceRange", priceRange);
-        param.put("orderBy", pageRequestDTO.getOrderBy());
-        param.put("sort", pageRequestDTO.getSort());
+    public PageResponseDTO<UserCourseListDTO> getAllCourses(Map<String, Object> params) {
+        int page = (int) params.get("page");
+        int pageSize = (int) params.get("pageSize");
 
-        List<UserCourseListDTO> courses = courseMapper.selectUserCourses(param);
-        int totalCount = courseMapper.countUserCourses(param);
+        List<UserCourseListDTO> list = courseMapper.selectAllCourses(params);
+        int totalCount = courseMapper.countAllCourses(params);
 
-        return new PageResponseDTO<>(courses, totalCount, pageRequestDTO.getPage(), pageRequestDTO.getLimit(), 5);
+        return new PageResponseDTO<>(list, totalCount, page, pageSize, 5);
     }
 }

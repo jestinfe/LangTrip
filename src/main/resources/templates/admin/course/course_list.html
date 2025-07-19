@@ -5,130 +5,66 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>관리자 강의 관리</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        /* —— sidebar + main-content 스타일은 기존과 동일 —— */
-        @charset "UTF-8";
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f7fa; display: flex; }
-        .sidebar { width:280px; height:100vh; background:linear-gradient(135deg,#667eea,#764ba2); padding:2rem 0; position:fixed; top:0; left:0; overflow-y:auto; box-shadow:4px 0 15px rgba(0,0,0,0.1);}
-        .sidebar h2 { color:#fff; text-align:center; font-size:1.5rem; font-weight:600; margin-bottom:2rem; display:flex; align-items:center; justify-content:center; gap:.5rem; }
-        .sidebar h2 i { font-size:1.8rem; background:rgba(255,255,255,0.2); padding:.5rem; border-radius:12px; backdrop-filter:blur(10px); }
-        .sidebar a { display:flex; align-items:center; padding:1rem 1.5rem; color:rgba(255,255,255,.9); text-decoration:none; margin:.2rem 1rem; border-radius:12px; font-weight:500; position:relative; overflow:hidden; transition:all .3s; }
-        .sidebar a::before { content:''; position:absolute; top:0; left:-100%; width:100%; height:100%; background:linear-gradient(90deg,transparent,rgba(255,255,255,.1),transparent); transition:left .5s; }
-        .sidebar a:hover::before { left:100%; }
-        .sidebar a:hover { background:rgba(255,255,255,.15); color:#fff; transform:translateX(5px); backdrop-filter:blur(10px); }
-        .sidebar a.active { background:rgba(255,255,255,.2); color:#fff; backdrop-filter:blur(10px); }
-        .sidebar a i { font-size:1.2rem; margin-right:1rem; width:24px; text-align:center; transition:transform .3s; }
-        .sidebar a:hover i { transform:scale(1.1); }
-
-        .main-content { margin-left:280px; padding:2rem; flex:1; min-height:100vh; background:#f8f9fa; }
-        .page-header { background:#fff; padding:2rem; border-radius:16px; box-shadow:0 8px 32px rgba(0,0,0,.1); margin-bottom:2rem; }
-        .page-header h1 { color:#333; font-size:2rem; margin-bottom:.5rem; }
-        .page-header p { color:#666; font-size:1.1rem; }
-
-        .search-section { background:#fff; padding:2rem; border-radius:16px; box-shadow:0 8px 32px rgba(0,0,0,.1); margin-bottom:2rem; }
-        .search-form { display:grid; grid-template-columns: repeat(auto-fit,minmax(200px,1fr)); gap:1.5rem; align-items:end; }
-        .form-group { display:flex; flex-direction:column; }
-        .form-group label { margin-bottom:.5rem; font-weight:600; color:#333; }
-        .form-group input, .form-group select { padding:.8rem; border:2px solid #e9ecef; border-radius:8px; font-size:1rem; transition:border-color .3s; }
-        .form-group input:focus, .form-group select:focus { outline:none; border-color:#667eea; }
-        .form-group.checkbox { flex-direction:row; align-items:center; gap:.5rem; }
-        .search-buttons { display:flex; gap:1rem; }
-        .btn { padding:.8rem 1.5rem; border:none; border-radius:8px; font-size:1rem; cursor:pointer; display:inline-flex; align-items:center; gap:.5rem; transition:all .3s; }
-        .btn-primary { background:linear-gradient(135deg,#667eea,#764ba2); color:#fff; }
-        .btn-primary:hover { transform:translateY(-2px); box-shadow:0 4px 20px rgba(102,126,234,.4); }
-        .btn-secondary { background:#6c757d; color:#fff; }
-        .btn-secondary:hover { background:#5a6268; }
-
-        .table-section { background:#fff; border-radius:16px; box-shadow:0 8px 32px rgba(0,0,0,.1); overflow:hidden; }
-        .table-header { padding:1.5rem 2rem; background:linear-gradient(135deg,#667eea,#764ba2); color:#fff; display:flex; justify-content:space-between; align-items:center; }
-        .table-header h3 { margin:0; font-size:1.3rem; }
-        .table-stats { font-size:.9rem; opacity:.9; }
-
-        .table-container { overflow-x:auto; }
-        .admin-table { width:100%; border-collapse:collapse; }
-        .admin-table th, .admin-table td { padding:1rem; text-align:left; border-bottom:1px solid #e9ecef; }
-        .admin-table th { background:#f8f9fa; font-weight:600; color:#333; }
-        .sort-icon { margin-left:.5rem; font-size:.8rem; }
-
-        @media (max-width:768px) {
-            .sidebar { position:relative; width:100%; height:auto; }
-            .main-content { margin-left:0; }
-            .search-form { grid-template-columns:1fr; }
-        }
-    </style>
+    <link rel="stylesheet" th:href="@{/css/admin_sidebar.css}">
+    <link rel="stylesheet" th:href="@{/css/admin_list_common.css}">
 </head>
 <body>
+    <div th:replace="layout/admin_sidebar :: sidebar"></div>
 
-    <!-- 사이드바 -->
-    <div class="sidebar">
-        <h2><i class="fas fa-chart-line"></i> Dashboard</h2>
-        <a href="/admin/accounts"><i class="fas fa-users-cog"></i> Admin Accounts</a>
-        <a href="/admin/signup/requests"><i class="fas fa-user-plus"></i> Signup Requests</a>
-        <a href="/admin/members"><i class="fas fa-user"></i> Members</a>
-        <a href="/admin/courses" class="active"><i class="fas fa-graduation-cap"></i> Courses</a>
-        <a href="/admin/subscriptions"><i class="fas fa-bell"></i> Subscriptions</a>
-        <a href="/admin/payments"><i class="fas fa-credit-card"></i> Payments</a>
-        <a href="/admin/community"><i class="fas fa-comments"></i> Community</a>
-        <a href="/admin/reports"><i class="fas fa-exclamation-triangle"></i> Reports</a>
-        <a href="/admin/support"><i class="fas fa-headset"></i> Support</a>
-    </div>
-
-    <!-- 메인 콘텐츠 -->
     <div class="main-content">
-
-        <!-- 페이지 헤더 -->
         <div class="page-header">
             <h1><i class="fas fa-graduation-cap"></i> 관리자 강의 관리</h1>
-            <p>강의를 검색·조회·관리할 수 있습니다.</p>
+            <p>등록된 강의를 조회하고 관리할 수 있습니다.</p>
         </div>
 
-        <!-- 검색 섹션 -->
         <div class="search-section">
-            <form class="search-form" th:action="@{/admin/courses}" method="get">
+            <form id="searchForm" action="/admin/courses" method="get" class="search-form">
                 <div class="form-group">
-                    <label for="title">강의 제목</label>
-                    <input type="text" id="title" name="title" th:value="${title}" placeholder="강의 제목 검색">
-                </div>
-                <div class="form-group">
-                    <label for="category">카테고리</label>
-                    <select id="category" name="category" th:value="${category}">
-                        <option value="">전체</option>
-                        <option value="영어" th:selected="${category == '영어'}">영어</option>
-                        <option value="일본어" th:selected="${category == '일본어'}">일본어</option>
-                        <option value="중국어" th:selected="${category == '중국어'}">중국어</option>
+                    <label for="searchType">검색 유형</label>
+                    <select id="searchType" name="searchType">
+                        <option value="title" th:selected="${searchType == 'title'}">제목</option>
+                        <option value="userName" th:selected="${searchType == 'userName'}">강사</option>
                     </select>
                 </div>
-         
-                <div class="form-group checkbox">
-                    <input type="checkbox" id="includeInactive" name="includeInactive" th:checked="${includeInactive}">
-                    <label for="includeInactive">비활성 강의 포함</label>
+                <div class="form-group">
+                    <label for="searchKeyword">검색어</label>
+                    <input type="text" id="searchKeyword" name="searchKeyword" th:value="${searchKeyword}" placeholder="검색어 입력">
+                </div>
+                <div class="form-group">
+                    <label for="isPublic">공개 여부</label>
+                    <select id="isPublic" name="isPublic">
+                        <option value="" th:selected="${isPublic == null or isPublic == ''}">전체</option>
+                        <option value="Y" th:selected="${isPublic == 'Y'}">공개</option>
+                        <option value="N" th:selected="${isPublic == 'N'}">비공개</option>
+                    </select>
                 </div>
                 <div class="search-buttons">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-search"></i> 검색
-                    </button>
-                    <button type="button" class="btn btn-secondary" onclick="clearSearch()">
-                        <i class="fas fa-redo"></i> 초기화
-                    </button>
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> 검색</button>
+                    <button type="button" class="btn btn-secondary" onclick="clearSearch()"><i class="fas fa-redo"></i> 초기화</button>
                 </div>
             </form>
         </div>
-        <div class="sort-bar" style="margin: -1rem 0 1.5rem 0; display: flex; justify-content: flex-end; padding: 0 1rem;">
-		  <label for="sort" style="font-weight: bold; margin-right: 10px;">정렬 기준</label>
-		  <select id="sort" name="sort" onchange="applySort()" style="padding: 0.5rem 1rem; border-radius: 8px; border: 2px solid #e0e0e0; font-size: 1rem;">
-		      <option value="upload_date,desc" th:selected="${pageRequestDTO.orderBy == 'upload_date' and pageRequestDTO.sort == 'desc'}">등록일자 ↓</option>
-		      <option value="upload_date,asc" th:selected="${pageRequestDTO.orderBy == 'upload_date' and pageRequestDTO.sort == 'asc'}">등록일자 ↑</option>
-		  </select>
-		</div>
 
-        <!-- 테이블 섹션 -->
+        <div class="sort-bar">
+            <label for="sort">정렬</label>
+            <select id="sort" name="sort" onchange="applySort()">
+                <option value="uploadDate,desc" th:selected="${sort == 'uploadDate,desc'}">최신순</option>
+                <option value="uploadDate,asc" th:selected="${sort == 'uploadDate,asc'}">오래된순</option>
+                <option value="title,asc" th:selected="${sort == 'title,asc'}">제목 오름차순</option>
+                <option value="title,desc" th:selected="${sort == 'title,desc'}">제목 내림차순</option>
+            </select>
+            <label for="pageSize" style="margin-left: 1rem;">항목 수</label>
+            <select id="pageSize" name="pageSize" onchange="applyPageSize()">
+                <option value="5" th:selected="${pageSize == 5}">5</option>
+                <option value="10" th:selected="${pageSize == 10}">10</option>
+                <option value="20" th:selected="${pageSize == 20}">20</option>
+            </select>
+        </div>
+
         <div class="table-section">
             <div class="table-header">
                 <h3>강의 목록</h3>
-                <div class="table-stats">
-                    총 <span th:text="${totalCount}">0</span>건
-                </div>
+                <div class="table-stats">총 <span th:text="${totalCount ?: 0}">0</span>건</div>
             </div>
             <div class="table-container">
                 <table class="admin-table">
@@ -136,82 +72,106 @@
                         <tr>
                             <th>순번</th>
                             <th>강의 제목</th>
-                            <th>강사명</th>
-                            <th>카테고리</th>
-                            <th>등록일자</th>
+                            <th>강사</th>
+                            <th>업로드 날짜</th>
+                            <th>영상 수</th>
+                            <th>퀴즈 수</th>
                             <th>공개 여부</th>
-                            <th>상태</th>
+                            <th>액션</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr th:each="course, stat : ${courseList}">
-                            <td th:text="${pageResponseDTO.startRow + stat.index}">1</td>
-                            <td><a th:href="@{/admin/courses/{courseSeq}(courseSeq=${course.courseSeq})}" th:text="${course.title}">애니로 배우는 진짜 일본어 표현</a></td>
-                            <td th:text="${course.instructorNickname}">takahashi</td>
-                            <td th:text="${course.category}">일본어</td>
-                            <td th:text="${#temporals.format(course.uploadDate,'yyyy-MM-dd')}">2025-01-10</td>
+                            <td th:text="${(currentPage - 1) * pageSize + stat.index + 1}"></td>
+                            <td th:text="${course.title}"></td>
+                            <td th:text="${course.userName}"></td>
+                            <td th:text="${#temporals.format(course.uploadDate, 'yyyy-MM-dd')}"></td>
+                            <td th:text="${course.videoCount}"></td>
+                            <td th:text="${course.quizCount}"></td>
                             <td>
-                                <form th:action="@{/admin/course/toggle}" method="post" style="display:inline;">
-                                    <input type="hidden" name="courseSeq" th:value="${course.courseSeq}" />
-                                    <input type="hidden" name="isPublic" th:value="${course.isPublic == 'Y' ? 'N' : 'Y'}" />
-                                    <button type="submit" th:classappend="${course.isPublic == 'Y' ? 'btn-public' : 'btn-private'}" style="border:none; padding: 5px 10px; border-radius: 5px; cursor:pointer;">
-                                        <span th:text="${course.isPublic == 'Y' ? '공개' : '비공개'}"></span>
-                                    </button>
+                                <span class="status-badge"
+                                      th:classappend="${course.isPublic == 'Y' ? 'status-active' : 'status-inactive'}"
+                                      th:text="${course.isPublic == 'Y' ? '공개' : '비공개'}">
+                                </span>
+                            </td>
+                            <td class="action-buttons">
+                                <a th:href="@{/admin/courses/{courseSeq}(courseSeq=${course.courseSeq})}" class="btn btn-secondary">상세</a>
+                                <form th:action="@{/admin/courses/{courseSeq}/toggleVisibility(courseSeq=${course.courseSeq})}" method="post" style="display:inline;">
+                                    <input type="hidden" name="isPublic" th:value="${course.isPublic == 'Y' ? 'N' : 'Y'}">
+                                    <button type="submit" class="btn btn-warning" th:text="${course.isPublic == 'Y' ? '비공개로 전환' : '공개로 전환'}"></button>
                                 </form>
                             </td>
-                            <td th:text="${course.status}">ACTIVE</td>
                         </tr>
                         <tr th:if="${#lists.isEmpty(courseList)}">
-                            <td colspan="7" style="text-align:center; padding:2rem; color:#666;">
-                                검색 결과가 없습니다.
-                            </td>
+                            <td colspan="8" style="text-align: center; color:#666; padding:1.5rem;">강의가 없습니다.</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
-            <!-- Pagination -->
-            <div class="pagination" style="display: flex; justify-content: center; padding: 1.5rem 0;">
-                <button th:if="${pageResponseDTO.prev}" th:onclick="'goToPage(' + ${pageResponseDTO.startPage - 1} + ')'" class="btn btn-secondary">이전</button>
-                <th:block th:each="i : ${#numbers.sequence(pageResponseDTO.startPage, pageResponseDTO.endPage)}">
-                    <button th:onclick="'goToPage(' + ${i} + ')'" th:classappend="${i == pageResponseDTO.page ? 'btn-primary' : 'btn-secondary'}" style="margin: 0 5px;">[[${i}]]</button>
-                </th:block>
-                <button th:if="${pageResponseDTO.next}" th:onclick="'goToPage(' + ${pageResponseDTO.endPage + 1} + ')'" class="btn btn-secondary">다음</button>
+
+            <div class="pagination-wrapper" style="padding: 2rem 1rem; display: flex; justify-content: center;">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination" style="display: flex; gap: 8px; list-style: none;">
+                        <li th:if="${currentPage > 1}">
+                            <a class="btn btn-secondary" th:href="@{/admin/courses(page=${currentPage - 1}, pageSize=${pageSize}, searchType=${searchType}, searchKeyword=${searchKeyword}, sort=${sort}, isPublic=${isPublic})}">이전</a>
+                        </li>
+                        <li th:each="pageNum : ${#numbers.sequence(startPage, endPage)}">
+                            <a class="btn" th:classappend="${pageNum == currentPage ? ' btn-primary' : ' btn-secondary'}"
+                               th:href="@{/admin/courses(page=${pageNum}, pageSize=${pageSize}, searchType=${searchType}, searchKeyword=${searchKeyword}, sort=${sort}, isPublic=${isPublic})}"
+                               th:text="${pageNum}"></a>
+                        </li>
+                        <li th:if="${currentPage < totalPages}">
+                            <a class="btn btn-secondary" th:href="@{/admin/courses(page=${currentPage + 1}, pageSize=${pageSize}, searchType=${searchType}, searchKeyword=${searchKeyword}, sort=${sort}, isPublic=${isPublic})}">다음</a>
+                        </li>
+                    </ul>
+                </nav>
             </div>
         </div>
-
     </div>
+<script>
+function clearSearch() {
+    const url = new URL(window.location.href);
+    url.searchParams.delete('searchType');
+    url.searchParams.delete('searchKeyword');
+    url.searchParams.delete('isPublic');
+    url.searchParams.delete('sort');
+    url.searchParams.set('page', 1);
+    window.location.href = url.toString();
+  }
+  function applySort() {
+    const sort = document.getElementById("sort").value;
+    const url = new URL(window.location.href);
+    url.searchParams.set("sort", sort);
+    window.location.href = url.toString();
+  }
 
-    <script>
-    function applySort() {
-        const sortValue = document.getElementById("sort").value;
-        const [orderBy, sort] = sortValue.split(",");
-        const url = new URL(window.location.href);
-        url.searchParams.set("orderBy", orderBy);
-        url.searchParams.set("sort", sort);
-        url.searchParams.set("page", 1); // Reset to first page on sort change
-        window.location.href = url.toString();
+  function applyPageSize() {
+    const pageSize = document.getElementById("pageSize").value;
+    localStorage.setItem('pageSize', pageSize);
+    const url = new URL(window.location.href);
+    url.searchParams.set("pageSize", pageSize);
+    url.searchParams.set("page", 1); // Reset to first page
+    window.location.href = url.toString();
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    const savedPageSize = localStorage.getItem('pageSize');
+    const url = new URL(window.location.href);
+    const currentSize = url.searchParams.get('pageSize');
+
+    if (savedPageSize) {
+        document.getElementById('pageSize').value = savedPageSize;
+        if (currentSize !== savedPageSize) {
+            url.searchParams.set('pageSize', savedPageSize);
+            url.searchParams.set('page', 1);
+            window.location.href = url.toString();
+        }
     }
 
-    function goToPage(page) {
-        const url = new URL(window.location.href);
-        url.searchParams.set("page", page);
-        window.location.href = url.toString();
+    // Apply search/filter/sort on page load if parameters exist
+    const searchParams = new URLSearchParams(window.location.search);
+    if (searchParams.has('searchType') || searchParams.has('searchKeyword') || searchParams.has('isPublic') || searchParams.has('sort')) {
+        // No need to submit form, as Thymeleaf already renders with these values
     }
-
-    function clearSearch() {
-        document.getElementById('title').value = '';
-        document.getElementById('category').value = '';
-        document.getElementById('includeInactive').checked = false;
-        // Reset sort to default if needed, or let applySort handle it
-        const url = new URL(window.location.href);
-        url.searchParams.delete('title');
-        url.searchParams.delete('category');
-        url.searchParams.delete('includeInactive');
-        url.searchParams.delete('orderBy');
-        url.searchParams.delete('sort');
-        url.searchParams.set('page', 1);
-        window.location.href = url.toString();
-    }
-    </script>
-</body>
-</html>
+  });
+</script>

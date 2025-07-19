@@ -19,6 +19,12 @@
   WHERE ADMIN_ID = #{id}
 </select>
 
+  <select id="selectAdminRoles" parameterType="String" resultType="String">
+    SELECT ROLE_CODE
+    FROM ADMIN_ROLE
+    WHERE ADMIN_ID = #{adminId}
+  </select>
+
   <!-- 관리자 회원가입 -->
   <insert id="insertAdmin" parameterType="AdminSignupDTO">
     INSERT INTO ADMINS (

@@ -1,6 +1,7 @@
 package kr.co.sist.e_learning.config;
 
-import kr.co.sist.e_learning.config.interceptor.AdminInterceptor;
+import kr.co.sist.e_learning.config.interceptor.AdminLoggingInterceptor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -9,6 +10,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
+
+    @Autowired
+    private AdminLoggingInterceptor adminLoggingInterceptor;
 
     @Value("${upload.path}")
     private String uploadPath;
@@ -29,11 +33,10 @@ public class WebConfig implements WebMvcConfigurer {
                 .addResourceLocations("classpath:/static/images/");
     }
 
-    // 관리자 인터셉터 등록
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new AdminInterceptor())
+        registry.addInterceptor(adminLoggingInterceptor)
                 .addPathPatterns("/admin/**")
-                .excludePathPatterns("/admin/login", "/admin/signup", "/admin/send-code", "/admin/verify-code", "/admin/check-id");
+                .excludePathPatterns("/css/**", "/js/**", "/images/**");
     }
 }

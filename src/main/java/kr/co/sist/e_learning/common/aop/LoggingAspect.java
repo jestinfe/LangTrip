@@ -4,11 +4,17 @@ import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+
+import kr.co.sist.e_learning.admin.account.AdminAccountUnifiedDTO;
 import kr.co.sist.e_learning.admin.log.AdminLogDTO;
 import kr.co.sist.e_learning.admin.log.AdminLogService;
+import kr.co.sist.e_learning.admin.signup.AdminSignupDTO;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 
 @Aspect
 @Component
@@ -17,44 +23,51 @@ public class LoggingAspect {
     @Autowired
     private AdminLogService logService;
 
-    @Autowired(required = false)
-    private HttpServletRequest request;
-
     @AfterReturning(pointcut = "@annotation(loggable)")
     public void logActivity(JoinPoint joinPoint, Loggable loggable) {
-        String actionType = loggable.actionType();
-        String adminId = "unknown";
-        String targetId = null;
-        String details = "";
+        // This aspect is now only for specific actions
+    }
 
-        // 1. Get Admin ID from Session
-        if (request != null) {
-            HttpSession session = request.getSession(false);
-            if (session != null && session.getAttribute("admin") != null) {
-                // Assuming the admin's ID is stored in the session attribute "admin"
-                adminId = (String) session.getAttribute("admin");
-            }
-            details = "IP: " + request.getRemoteAddr();
+    private String getAdminId() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof UserDetails) {
+            return ((UserDetails) principal).getUsername();
+        } else if (principal != null) {
+            return principal.toString();
+        } else {
+            return "anonymous";
         }
+    }
 
-        // 2. (Optional) Get Target ID from method arguments
-        Object[] args = joinPoint.getArgs();
+    private String getTargetId(Object[] args, String actionType, String adminId) {
+        String targetId = null;
         if (args.length > 0) {
-            // Example: if the first argument is the target object (e.g., a DTO)
-            // This part will need to be customized based on your method signatures
             if (args[0] instanceof String) {
                 targetId = (String) args[0];
+            } else if (args[0] instanceof AdminAccountUnifiedDTO) {
+                targetId = ((AdminAccountUnifiedDTO) args[0]).getAdminId();
+            } else if (args[0] instanceof AdminSignupDTO) {
+                targetId = ((AdminSignupDTO) args[0]).getRequestId(); // Or getAdminId() depending on context
+                if (targetId == null) {
+                    targetId = ((AdminSignupDTO) args[0]).getAdminId();
+                }
             }
-            // Add more conditions here for other types of DTOs
+            // Add more conditions for other DTOs as needed
         }
 
-        // 3. Create and Save the Log
-        AdminLogDTO logDTO = new AdminLogDTO();
-        logDTO.setAdminId(adminId);
-        logDTO.setActionType(actionType);
-        logDTO.setTargetId(targetId);
-        logDTO.setDetails(details);
+        // Special handling for logout to ensure targetId is adminId
+        if ("ADMIN_LOGOUT".equals(actionType) && targetId == null) {
+            targetId = adminId;
+        }
+        return targetId;
+    }
 
-        logService.addLog(logDTO);
+    private String getRequestDetails() {
+        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        if (attributes != null) {
+            HttpServletRequest request = attributes.getRequest();
+            return "IP: " + request.getRemoteAddr();
+        }
+        return "";
     }
 }
