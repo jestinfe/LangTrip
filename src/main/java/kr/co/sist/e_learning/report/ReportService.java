@@ -5,8 +5,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import kr.co.sist.e_learning.pagination.PageRequestDTO;
-import kr.co.sist.e_learning.pagination.PageResponseDTO;
+import kr.co.sist.e_learning.pagination.UsrAndRptPageRequestDTO;
+import kr.co.sist.e_learning.pagination.UsrAndRptPageResponseDTO;
 
 /**
  * 정제균.
@@ -21,9 +21,10 @@ public class ReportService {
 		this.reportMapper = reportMapper;
 	}
 
-	public PageResponseDTO<ReportDTO> getReports(PageRequestDTO pReqDTO) {
+	public UsrAndRptPageResponseDTO<ReportDTO> getReports(UsrAndRptPageRequestDTO pReqDTO) {
 		List<ReportDTO> list = reportMapper.selectReports(pReqDTO);
 		int totalCnt = reportMapper.countReports(pReqDTO);
-		return new PageResponseDTO<ReportDTO>(list, totalCnt, pReqDTO.getPage());
+		
+		return new UsrAndRptPageResponseDTO<ReportDTO>(list, totalCnt, pReqDTO.getPage());
 	}
 }

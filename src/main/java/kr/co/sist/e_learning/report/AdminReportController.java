@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import kr.co.sist.e_learning.pagination.PageRequestDTO;
-import kr.co.sist.e_learning.pagination.PageResponseDTO;
+import kr.co.sist.e_learning.pagination.UsrAndRptPageRequestDTO;
+import kr.co.sist.e_learning.pagination.UsrAndRptPageResponseDTO;
 
 /**
  * 정제균.
@@ -25,8 +25,8 @@ public class AdminReportController {
 	}
 	
 	@GetMapping("/reportList")
-	public String reportList(@ModelAttribute PageRequestDTO pReqDTO, Model model) {
-		PageResponseDTO<ReportDTO> pResDTO = reportService.getReports(pReqDTO);
+	public String reportList(@ModelAttribute UsrAndRptPageRequestDTO pReqDTO, Model model) {
+		UsrAndRptPageResponseDTO<ReportDTO> pResDTO = reportService.getReports(pReqDTO);
 		model.addAttribute("pResDTO", pResDTO);
 		model.addAttribute("pReqDTO", pReqDTO);
 		return "admin/report/reportList";

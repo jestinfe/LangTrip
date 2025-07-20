@@ -29,151 +29,277 @@
   justify-content: center;
 }
 */
+.modal-dialog {
+  animation: none !important;
+  transform: none !important;
+}
 </style>
 </head>
 <body class="container mt-5">
-  <h3>신고 목록</h3>
-  <hr>
+<h3>신고 목록</h3>
+<hr>
 
-  <!-- 검색/필터 영역 -->
-  <form th:action="@{/admin/report/reportList}" method="get" class="row g-3">
+<!-- 초기화 버튼 -->
+<div class="row justify-content-end mb-3">
+  <div class="col-12 col-md-auto">
+    <div class="d-flex justify-content-md-end">
+      <button type="button" class="btn btn-secondary w-100 w-md-auto" id="resetBtn">초기화</button>
+    </div>
+  </div>
+</div>
 
-    <div class="col-md-2">
-      <input type="text" name="reporterId" class="form-control"
-      	placeholder="신고인 ID" th:value="${pReqDTO.reporterId}">
-    </div>
-    <div class="col-md-1">
-      <button type="submit" class="btn btn-primary">검색</button>
-    </div>
+<!-- 검색/필터 영역 -->
+<form th:action="@{/admin/report/reportList}" method="get" class="mb-4">
+  <div class="row g-2 justify-content-md-end">
 
-    <div class="col-md-2">
-      <input type="text" name="reportedUserId" class="form-control"
-      	placeholder="피신고인 ID" th:value="${pReqDTO.reportedUserId}">
-    </div>
-    <div class="col-md-1">
-      <button type="submit" class="btn btn-primary">검색</button>
-    </div>
-
-    <div class="col-md-2">
+    <div class="col-12 col-md-auto">
       <select class="form-select" disabled>
         <option value="">최신순</option>
       </select>
     </div>
 
-    <div class="col-md-2">
-      <select name="contentType" class="form-select"
-      	th:value="${pReqDTO.contentType}">
+    <div class="col-12 col-md-auto">
+      <select name="contentType" id="contentType" class="form-select">
         <option value="">콘텐츠 유형</option>
-        <option value="강의">강의</option>
-        <option value="게시글">게시글</option>
+        <option value="강의" th:selected="${pReqDTO.contentType == '강의'}">강의</option>
+        <option value="게시글" th:selected="${pReqDTO.contentType == '게시글'}">게시글</option>
       </select>
     </div>
 
-    <div class="col-md-2">
-      <select name="actionStatus" class="form-select"
-      	th:value="${pReqDTO.actionStatus}">
+    <div class="col-12 col-md-auto">
+      <select name="actionStatus" id="actionStatus" class="form-select">
         <option value="">처리상태</option>
-        <option value="미처리">미처리</option>
-        <option value="제재">제재</option>
-        <option value="무제재">무제재</option>
+        <option value="미처리" th:selected="${pReqDTO.actionStatus == '미처리'}">미처리</option>
+        <option value="제재" th:selected="${pReqDTO.actionStatus == '제재'}">제재</option>
+        <option value="무제재" th:selected="${pReqDTO.actionStatus == '무제재'}">무제재</option>
       </select>
     </div>
-  </form>
 
-  <!-- 신고 목록 테이블 -->
-  <table class="table table-bordered table-hover mt-4 text-center align-middle">
-    <thead class="table-light">
-      <tr>
-        <th>신고일</th>
-        <th>컨텐츠 유형</th>
-        <th>제목</th>
-        <th>피신고인 ID</th>
-        <th>신고인 ID</th>
-        <th>신고 사유</th>
-        <th>처리상태</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr th:each="report : ${pResDTO.list}">
-        <td th:text="${report.reportedAt}">2025-01-01</td>
-        <td th:text="${report.contentType}">강의</td>
-        <td>
-          <a th:href="@{/admin/report/detail/{id}(id=${report.postId2})}"
-             th:text="${report.title}">콘텐츠 제목</a>
-        </td>
-        <td th:text="${report.reportedUserId}">피신고인</td>
-        <td th:text="${report.reporterId}">신고자</td>
-        <td th:text="${#strings.arrayJoin(report.reporterCheckedReason, ', ')}">신고사유</td>
-        <td th:text="${report.actionStatus}">미처리</td>
-      </tr>
-      <tr th:if="${pResDTO.list == null or pResDTO.list.empty}">
-        <td colspan="7">신고 내역이 없습니다.</td>
-      </tr>
-    </tbody>
-  </table>
+    <div class="col-12 col-md-auto">
+      <input type="text" name="reportedUserId" class="form-control"
+             placeholder="피신고인 ID" th:value="${pReqDTO.reportedUserId}">
+    </div>
 
-  <!-- 페이지네이션 -->
-  <nav class="d-flex justify-content-center mt-4">
-  <ul class="pagination">
+    <div class="col-12 col-md-auto">
+      <input type="text" name="reporterId" id="reporterId" class="form-control"
+             placeholder="신고인 ID" th:value="${pReqDTO.reporterId}">
+    </div>
 
-    <!-- 맨 처음 페이지 ≪ -->
-    <li class="page-item" th:classappend="${pResDTO.currentPage == 1} ? 'disabled' : ''">
-      <a class="page-link" th:href="@{/admin/report/reportList(
-        page=1,
-        reporterId=${requestDTO.reporterId},
-        reportedUserId=${requestDTO.reportedUserId},
-        contentType=${requestDTO.contentType},
-        actionStatus=${requestDTO.actionStatus}
-      )}">≪</a>
-    </li>
+    <div class="col-12 col-md-auto">
+      <button type="submit" class="btn btn-primary w-100 w-md-auto" id="searchBtn">검색</button>
+    </div>
 
-    <!-- 이전 페이지 ＜ -->
-    <li class="page-item" th:classappend="${pResDTO.currentPage == 1} ? 'disabled' : ''">
-      <a class="page-link" th:href="@{/admin/report/reportList(
-        page=${pResDTO.currentPage - 1},
-        reporterId=${requestDTO.reporterId},
-        reportedUserId=${requestDTO.reportedUserId},
-        contentType=${requestDTO.contentType},
-        actionStatus=${requestDTO.actionStatus}
-      )}">＜</a>
-    </li>
+  </div>
+</form>
 
-    <!-- 페이지 번호 목록 -->
-    <li class="page-item"
-        th:each="p : ${#numbers.sequence(pResDTO.startPage, pResDTO.endPage)}"
-        th:classappend="${p == pResDTO.currentPage} ? 'active' : ''">
-      <a class="page-link" th:href="@{/admin/report/reportList(
-        page=${p},
-        reporterId=${requestDTO.reporterId},
-        reportedUserId=${requestDTO.reportedUserId},
-        contentType=${requestDTO.contentType},
-        actionStatus=${requestDTO.actionStatus}
-      )}" th:text="${p}">1</a>
-    </li>
+<!-- 신고 목록 테이블 -->
+<table class="table table-bordered table-hover mt-4 text-center align-middle">
+  <thead class="table-light">
+    <tr>
+      <th>번호</th>
+      <th>신고일</th>
+      <th>컨텐츠 유형</th>
+      <th>제목</th>
+      <th>피신고인 ID</th>
+      <th>신고인 ID</th>
+      <th>신고 사유</th>
+      <th>처리상태</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr th:each="report, stat : ${pResDTO.list}"
+    	th:attr="
+    		data-reporter-reasons=${report.reporterReasons},
+			data-report-id=${report.reportId}, 
+            data-reported-at=${report.reportedAt}, 
+            data-content-type=${report.contentType}, 
+            data-title=${report.title}, 
+            data-reporter-id=${report.reporterId}, 
+            data-reported-user-id=${report.reportedUserId}, 
+            data-action-status=${report.actionStatus}, 
+            data-reported-user-status=${report.reportedUserStatus},
+            data-admin-checked-reason=${#strings.arrayJoin(report.adminCheckedReason, ',')},
+            data-admin-custom-reason-txt=${report.adminCustomReasonTxt},
+            data-admin-acted-at=${report.adminActedAtStr}"
+        class="report-row" style="cursor: pointer;">
+      <td th:text="${(pResDTO.currentPage - 1) * pReqDTO.size + stat.index + 1}"></td>
+      <td th:text="${report.reportedAt}"></td>
+      <td th:text="${report.contentType}"></td>
+      <td th:text="${report.title}"></td>
+      <td th:text="${report.reportedUserId}"></td>
+      <td th:text="${report.reporterId}"></td>
+      <td th:text="${report.getReporterReasonsSimple()}"></td>
+      <td th:text="${report.actionStatus}"></td>
+    </tr>
+    <tr th:if="${pResDTO.list == null or pResDTO.list.empty}">
+      <td colspan="8">신고 내역이 없습니다.</td>
+    </tr>
+  </tbody>
+</table>
 
-    <!-- 다음 페이지 › -->
-    <li class="page-item" th:classappend="${pResDTO.currentPage == pResDTO.totalPages} ? 'disabled' : ''">
-      <a class="page-link" th:href="@{/admin/report/reportList(
-        page=${pResDTO.currentPage + 1},
-        reporterId=${requestDTO.reporterId},
-        reportedUserId=${requestDTO.reportedUserId},
-        contentType=${requestDTO.contentType},
-        actionStatus=${requestDTO.actionStatus}
-      )}">＞</a>
-    </li>
+<!-- 페이지네이션 -->
+<nav class="d-flex justify-content-center mt-4">
+<ul class="pagination">
 
-    <!-- 마지막 페이지 ≫ -->
-    <li class="page-item" th:classappend="${pResDTO.currentPage == pResDTO.totalPages} ? 'disabled' : ''">
-      <a class="page-link" th:href="@{/admin/report/reportList(
-        page=${pResDTO.totalPages},
-        reporterId=${requestDTO.reporterId},
-        reportedUserId=${requestDTO.reportedUserId},
-        contentType=${requestDTO.contentType},
-        actionStatus=${requestDTO.actionStatus}
-      )}">≫</a>
-    </li>
+  <!-- 맨 처음 페이지 ≪ -->
+  <li class="page-item" th:classappend="${pResDTO.currentPage == 1} ? 'disabled' : ''">
+    <a class="page-link" th:href="@{/admin/report/reportList(
+      page=1,
+      reporterId=${pReqDTO.reporterId},
+      reportedUserId=${pReqDTO.reportedUserId},
+      contentType=${pReqDTO.contentType},
+      actionStatus=${pReqDTO.actionStatus}
+    )}">≪</a>
+  </li>
 
-  </ul>
-  </nav>
+  <!-- 이전 페이지 ＜ -->
+  <li class="page-item" th:classappend="${pResDTO.currentPage == 1} ? 'disabled' : ''">
+    <a class="page-link" th:href="@{/admin/report/reportList(
+      page=${pResDTO.currentPage - 1},
+      reporterId=${pReqDTO.reporterId},
+      reportedUserId=${pReqDTO.reportedUserId},
+      contentType=${pReqDTO.contentType},
+      actionStatus=${pReqDTO.actionStatus}
+    )}">＜</a>
+  </li>
+
+  <!-- 페이지 번호 목록 -->
+  <li class="page-item"
+      th:each="p : ${#numbers.sequence(pResDTO.startPage, pResDTO.endPage)}"
+      th:classappend="${p == pResDTO.currentPage} ? 'active' : ''">
+    <a class="page-link" th:href="@{/admin/report/reportList(
+      page=${p},
+      reporterId=${pReqDTO.reporterId},
+      reportedUserId=${pReqDTO.reportedUserId},
+      contentType=${pReqDTO.contentType},
+      actionStatus=${pReqDTO.actionStatus}
+    )}" th:text="${p}">1</a>
+  </li>
+
+  <!-- 다음 페이지 › -->
+  <li class="page-item" th:classappend="${pResDTO.currentPage == pResDTO.totalPages} ? 'disabled' : ''">
+    <a class="page-link" th:href="@{/admin/report/reportList(
+      page=${pResDTO.currentPage + 1},
+      reporterId=${pReqDTO.reporterId},
+      reportedUserId=${pReqDTO.reportedUserId},
+      contentType=${pReqDTO.contentType},
+      actionStatus=${pReqDTO.actionStatus}
+    )}">＞</a>
+  </li>
+
+  <!-- 마지막 페이지 ≫ -->
+  <li class="page-item" th:classappend="${pResDTO.currentPage == pResDTO.totalPages} ? 'disabled' : ''">
+    <a class="page-link" th:href="@{/admin/report/reportList(
+      page=${pResDTO.totalPages},
+      reporterId=${pReqDTO.reporterId},
+      reportedUserId=${pReqDTO.reportedUserId},
+      contentType=${pReqDTO.contentType},
+      actionStatus=${pReqDTO.actionStatus}
+    )}">≫</a>
+  </li>
+
+</ul>
+</nav>
+
+<!-- 신고 상세 모달 -->
+<div class="modal fade" id="reportDetailModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="reportDetailModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg modal-fullscreen-sm-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="reportDetailModalLabel">신고 상세 정보</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="닫기"></button>
+      </div>
+      <div class="modal-body">
+        <div class="container-fluid">
+
+		  <!-- 상세 정보 테이블 -->
+          <table class="table table-bordered">
+            <tbody>
+              <tr><th>신고 사유</th><td id="modal-reason"></td></tr>
+              <tr><th>콘텐츠 유형</th><td id="modal-contentType"></td></tr>
+              <tr><th>제목</th><td><a href="#" id="modal-title" class="text-decoration-underline"></a></td></tr>
+              <tr><th>신고일</th><td id="modal-date"></td></tr>
+              <tr><th>신고인 ID</th><td id="modal-reporterId"></td></tr>
+              <tr><th>피신고인 ID</th><td id="modal-reportedUserId"></td></tr>
+              <tr><th>처리상태</th><td id="modal-actionStatus"></td></tr>
+              <tr><th>최근 조치일</th><td id="modal-adminActedAt"></td></tr>
+              <tr><th>피신고인 계정 상태</th><td id="modal-reportedUserStatus"></td></tr>
+            </tbody>
+          </table>
+
+          <!-- 확인 버튼 -->
+          <div class="text-end">
+            <button type="button" class="btn btn-primary" id="confirmBtn">확인</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- bootstrap bundle CDN -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
+<script th:inline="javascript">
+document.addEventListener('DOMContentLoaded', () => {
+
+const list = [[${pResDTO.list}]];
+console.log("🔍 pResDTO =", list);
+
+const form = document.querySelector('form');
+const resetBtn = document.getElementById('resetBtn');
+const searchBtn = document.getElementById('searchBtn');
+const reporterInput = document.getElementById('reporterId');
+
+const reportDetailModalEl = document.getElementById('reportDetailModal');
+const reportDetailModal = new bootstrap.Modal(reportDetailModalEl);
+resetBtn.addEventListener("click", () => {
+  location.href = '/admin/report/reportList';
+});
+
+document.getElementById('contentType').addEventListener('change', () => {
+  form.submit();
+});
+document.getElementById('actionStatus').addEventListener('change', () => {
+  form.submit();
+});
+
+searchBtn.addEventListener('click', (e) => {
+  if (!reporterInput.value.trim()) {
+    e.preventDefault();
+    alert("신고인 ID를 입력해야 검색할 수 있습니다.");
+    reporterInput.focus();
+  }
+});
+
+// 한 행 클릭 시 상세 모달 띄우기 및 데이터 바인딩
+document.querySelectorAll('.report-row').forEach((row) => {
+	row.addEventListener('click', (e) => {
+		const data = e.currentTarget.dataset;
+			    
+		// 모달 내부 텍스트 채우기
+    	document.getElementById('modal-reason').innerText = data.reporterReasons;
+		document.getElementById('modal-date').innerText = data.reportedAt;
+	    document.getElementById('modal-contentType').innerText = data.contentType;
+	    document.getElementById('modal-title').innerText = data.title;
+	    // document.getElementById('modal-title').href = '/post/' + data.reportId; // 필요시
+	    document.getElementById('modal-reporterId').innerText = data.reporterId;
+	    document.getElementById('modal-reportedUserId').innerText = data.reportedUserId;
+	    document.getElementById('modal-actionStatus').innerText = data.actionStatus;
+	    document.getElementById('modal-adminActedAt').innerText = data.adminActedAt;
+	    document.getElementById('modal-reportedUserStatus').innerText = data.reportedUserStatus;
+
+	    // 모달 열기
+	    reportDetailModal.show();
+	});
+});
+
+// 모달의 확인 버튼
+document.getElementById("confirmBtn").addEventListener("click", () => {
+	reportDetailModal.hide();
+});
+
+});
+</script>
 </body>
 </html>
