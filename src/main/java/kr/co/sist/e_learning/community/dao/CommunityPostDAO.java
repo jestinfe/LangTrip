@@ -1,10 +1,11 @@
-package kr.co.sist.e_learning.community.dao;
+	package kr.co.sist.e_learning.community.dao;
 
 import java.util.List;
 
 import kr.co.sist.e_learning.community.dto.CommunityCommentDTO;
 import kr.co.sist.e_learning.community.dto.CommunityImageDTO;
 import kr.co.sist.e_learning.community.dto.CommunityPostDTO;
+import kr.co.sist.e_learning.community.dto.PageDTO;
 
 
 public interface CommunityPostDAO {
@@ -31,6 +32,13 @@ public interface CommunityPostDAO {
     int countBestPostsToday();
     
     public void increaseViewCount(Long postId);
+    
+    public List<CommunityPostDTO> selectPostList(PageDTO pageDTO);
+    public int selectPostCount(PageDTO pageDTO);
+    
+    List<CommunityPostDTO> selectPostsPaginatedWithSearch(int offset, int limit, String keyword);
+    int selectTotalPostCountWithSearch(String keyword);
+
     
     
 }
