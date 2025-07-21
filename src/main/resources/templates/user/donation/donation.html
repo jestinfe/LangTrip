@@ -2,702 +2,254 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>강의 후원하기</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Malgun Gothic', '맑은 고딕', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        .sponsorship-modal {
-            max-width: 450px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-            overflow: hidden;
-            animation: slideUp 0.3s ease-out;
-        }
-
-        @keyframes slideUp {
-            from {
-                transform: translateY(20px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
-        .modal-header {
-            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
-            color: white;
-            padding: 25px;
-            text-align: center;
-            position: relative;
-        }
-
-        .modal-header::before {
-            content: '💝';
-            font-size: 24px;
-            display: block;
-            margin-bottom: 8px;
-        }
-
-        .modal-header h2 {
-            font-size: 20px;
-            font-weight: 600;
-            margin-bottom: 5px;
-        }
-
-        .modal-header p {
-            font-size: 14px;
-            opacity: 0.9;
-        }
-
-        .close-btn {
-            position: absolute;
-            right: 20px;
-            top: 20px;
-            background: rgba(255, 255, 255, 0.2);
-            border: none;
-            color: white;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            font-size: 18px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .close-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: scale(1.1);
-        }
-
-        .sponsorship-content {
-            padding: 25px;
-        }
-
-        .lecture-info {
-            background: #f8fafc;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 25px;
-            border: 2px solid #e2e8f0;
-        }
-
-        .lecture-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: #1e293b;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .lecture-title::before {
-            content: '📚';
-            font-size: 16px;
-        }
-
-        .instructor-name {
-            font-size: 16px;
-            color: #64748b;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .instructor-name::before {
-            content: '👨‍🏫';
-            font-size: 14px;
-        }
-
-        .user-mile-info {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 25px;
-            text-align: center;
-        }
-
-        .user-mile-info h3 {
-            font-size: 16px;
-            margin-bottom: 8px;
-            opacity: 0.9;
-        }
-
-        .current-miles {
-            font-size: 28px;
-            font-weight: 700;
-            margin-bottom: 5px;
-        }
-
-        .miles-unit {
-            font-size: 14px;
-            opacity: 0.8;
-        }
-
-        .amount-section {
-            margin-bottom: 25px;
-        }
-
-        .section-title {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 15px;
-            color: #1e293b;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .section-title::before {
-            content: '💰';
-            font-size: 16px;
-        }
-
-        .amount-input-group {
-            display: flex;
-            align-items: center;
-            border: 2px solid #e5e7eb;
-            border-radius: 12px;
-            padding: 0 20px;
-            background: #f9fafb;
-            transition: all 0.2s;
-        }
-
-        .amount-input-group.focused {
-            border-color: #ff6b6b;
-            background: white;
-            box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.1);
-        }
-
-        .amount-input-group.error {
-            border-color: #ef4444;
-            background: #fef2f2;
-        }
-
-        .amount-input {
-            flex: 1;
-            border: none;
-            background: none;
-            padding: 18px 0;
-            font-size: 18px;
-            font-weight: 600;
-            outline: none;
-            text-align: center;
-            color: #1e293b;
-        }
-
-        .amount-input::placeholder {
-            color: #94a3b8;
-            font-weight: 400;
-        }
-
-        .amount-controls {
-            display: flex;
-            gap: 10px;
-        }
-
-        .amount-btn {
-            background: #ff6b6b;
-            border: none;
-            border-radius: 8px;
-            width: 36px;
-            height: 36px;
-            cursor: pointer;
-            font-size: 18px;
-            color: white;
-            transition: all 0.2s;
-            font-weight: 600;
-        }
-
-        .amount-btn:hover {
-            background: #ff5252;
-            transform: scale(1.05);
-        }
-
-        .amount-btn:disabled {
-            background: #cbd5e1;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .preset-amounts {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-            margin-top: 15px;
-        }
-
-        .preset-btn {
-            padding: 12px;
-            border: 2px solid #e2e8f0;
-            border-radius: 10px;
-            background: white;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-            transition: all 0.2s;
-            color: #475569;
-        }
-
-        .preset-btn:hover {
-            border-color: #ff6b6b;
-            color: #ff6b6b;
-            transform: translateY(-2px);
-        }
-
-        .preset-btn.active {
-            background: #ff6b6b;
-            color: white;
-            border-color: #ff6b6b;
-            transform: translateY(-2px);
-        }
-
-        .error-message {
-            color: #ef4444;
-            font-size: 14px;
-            margin-top: 8px;
-            display: none;
-        }
-
-        .error-message.show {
-            display: block;
-        }
-
-        .message-section {
-            margin-bottom: 25px;
-            opacity: 0.5;
-            transition: all 0.3s;
-        }
-
-        .message-section.enabled {
-            opacity: 1;
-        }
-
-        .message-section .section-title::before {
-            content: '💌';
-        }
-
-        .message-textarea {
-            width: 100%;
-            min-height: 100px;
-            padding: 15px;
-            border: 2px solid #e5e7eb;
-            border-radius: 12px;
-            font-size: 14px;
-            line-height: 1.5;
-            resize: vertical;
-            outline: none;
-            transition: all 0.2s;
-            background: #f9fafb;
-        }
-
-        .message-textarea:focus {
-            border-color: #ff6b6b;
-            background: white;
-            box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.1);
-        }
-
-        .message-textarea:disabled {
-            background: #f1f5f9;
-            color: #94a3b8;
-            cursor: not-allowed;
-        }
-
-        .message-counter {
-            text-align: right;
-            font-size: 12px;
-            color: #94a3b8;
-            margin-top: 8px;
-        }
-
-        .message-info {
-            background: #fff7ed;
-            border: 1px solid #fed7aa;
-            border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 15px;
-            font-size: 13px;
-            color: #9a3412;
-        }
-
-        .sponsorship-btn {
-            width: 100%;
-            padding: 18px;
-            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .sponsorship-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.5s;
-        }
-
-        .sponsorship-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
-        }
-
-        .sponsorship-btn:hover::before {
-            left: 100%;
-        }
-
-        .sponsorship-btn:disabled {
-            background: #cbd5e1;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-
-        .sponsorship-btn:disabled::before {
-            display: none;
-        }
-
-        .notice {
-            margin-top: 20px;
-            padding: 15px;
-            background: #f0f9ff;
-            border: 1px solid #bae6fd;
-            border-radius: 8px;
-            font-size: 13px;
-            color: #0369a1;
-        }
-
-        .notice ul {
-            margin-left: 15px;
-            margin-top: 8px;
-        }
-
-        .notice li {
-            margin-bottom: 4px;
-        }
-
-        .highlight {
-            background: #fef3c7;
-            padding: 2px 4px;
-            border-radius: 4px;
-            font-weight: 600;
-        }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" th:href="@{/css/donation.css}">
 </head>
 <body>
-    <div class="sponsorship-modal">
-        <div class="modal-header">
-            <h2>강의 후원하기</h2>
-            <p>소중한 마음을 전해보세요</p>
-            <button class="close-btn" onclick="closeModal()">&times;</button>
-        </div>
-        
-        <div class="sponsorship-content">
-            <!-- 강의 정보 -->
-            <div class="lecture-info">
-                <div class="lecture-title" id="lectureTitle">
-                    JavaScript 완벽 마스터 과정
-                </div>
-                <div class="instructor-name" id="instructorName">
-                    김개발 강사님
-                </div>
-            </div>
-
-            <!-- 사용자 마일 정보 -->
-            <div class="user-mile-info">
-                <h3>보유 마일</h3>
-                <div class="current-miles" id="currentMiles">25,000</div>
-                <div class="miles-unit">마일</div>
-            </div>
-
-            <!-- 후원 금액 섹션 -->
-            <div class="amount-section">
-                <div class="section-title">후원 금액</div>
-                
-                <div class="amount-input-group" id="amountInputGroup">
-                    <input type="number" 
-                           class="amount-input" 
-                           id="amountInput" 
-                           placeholder="후원할 마일 입력"
-                           min="100"
-                           max="25000"
-                           value=""
-                           oninput="updateAmount()">
-                    <span style="color: #94a3b8; margin-right: 15px;">마일</span>
-                    <div class="amount-controls">
-                        <button class="amount-btn" onclick="decreaseAmount()">-</button>
-                        <button class="amount-btn" onclick="increaseAmount()">+</button>
-                    </div>
-                </div>
-                
-                <div class="error-message" id="errorMessage">
-                    후원 금액은 100마일 이상 25,000마일 이하로 입력해주세요.
-                </div>
-                
-                <div class="preset-amounts">
-                    <button class="preset-btn" onclick="setAmount(1000)">1,000</button>
-                    <button class="preset-btn" onclick="setAmount(3000)">3,000</button>
-                    <button class="preset-btn" onclick="setAmount(5000)">5,000</button>
-                    <button class="preset-btn" onclick="setAmount(10000)">10,000</button>
-                    <button class="preset-btn" onclick="setAmount(20000)">20,000</button>
-                    <button class="preset-btn" onclick="setAmount(25000)">전액</button>
-                </div>
-            </div>
-
-            <!-- 후원 메시지 섹션 -->
-            <div class="message-section" id="messageSection">
-                <div class="section-title">후원 메시지</div>
-                
-                <div class="message-info" id="messageInfo">
-                    <span class="highlight">3,000마일 이상</span> 후원 시 감사 메시지를 남길 수 있습니다.
-                </div>
-                
-                <textarea class="message-textarea" 
-                          id="messageTextarea" 
-                          placeholder="강사님께 전하고 싶은 메시지를 입력해주세요..."
-                          maxlength="200"
-                          disabled
-                          oninput="updateMessageCounter()"></textarea>
-                
-                <div class="message-counter">
-                    <span id="messageCount">0</span> / 200
-                </div>
-            </div>
-
-            <!-- 후원 버튼 -->
-            <button class="sponsorship-btn" id="sponsorshipBtn" onclick="processSponsor()" disabled>
-                <span id="sponsorshipBtnText">후원하기</span>
-            </button>
-
-            <!-- 안내사항 -->
-            <div class="notice">
-                <strong>💡 후원 안내</strong>
-                <ul>
-                    <li>후원된 마일은 <span class="highlight">즉시 강사님께 전달</span>됩니다</li>
-                    <li>후원 완료 후에는 <span class="highlight">취소가 불가능</span>합니다</li>
-                    <li>3,000마일 이상 후원 시 감사 메시지를 남길 수 있습니다</li>
-                    <li>후원 내역은 마이페이지에서 확인할 수 있습니다</li>
-                </ul>
-            </div>
-        </div>
+<div class="sponsorship-modal">
+    <div class="modal-header">
+        <h2>강의 후원하기</h2>
+        <p>소중한 마음을 전해보세요</p>
+        <button class="close-btn" onclick="closeModal()">&times;</button>
     </div>
 
-    <script>
-        let currentAmount = 0;
-        let maxMiles = 25000; // 사용자 보유 마일 (서버에서 전달받을 값)
-        let messageEnabled = false;
+    <div class="sponsorship-content">
+        <!-- 강의 정보 -->
+        <div class="lecture-info">
+            <div class="lecture-title" th:text="${lecture.title}">테스트 강의 제목</div>
+            <div class="instructor-name" th:text="${lecture.instructorName} + ' 강사님'">홍길동 강사님</div>
+        </div>
 
-        // 초기 데이터 설정 (실제로는 서버에서 전달받음)
-        const lectureData = {
-            title: "JavaScript 완벽 마스터 과정",
-            instructor: "김개발 강사님",
-            userMiles: 25000
-        };
+        <!-- 사용자 마일 정보 -->
+        <div class="user-mile-info">
+            <button class="charge-btn" onclick="chargeMiles()">마일 충전하기</button>
+            <h3>보유 마일</h3>
+            <div class="current-miles" th:text="${#numbers.formatInteger(userMiles, 0, 'COMMA')}">15,000</div>
+            <div class="miles-unit">마일</div>
+        </div>
 
-        function initializePage() {
-            // 페이지 초기화
-            document.getElementById('lectureTitle').textContent = lectureData.title;
-            document.getElementById('instructorName').textContent = lectureData.instructor;
-            document.getElementById('currentMiles').textContent = lectureData.userMiles.toLocaleString();
-            maxMiles = lectureData.userMiles;
-            
-            // 입력 필드 max 값 설정
-            document.getElementById('amountInput').max = maxMiles;
-            
-            updateSponsorshipButton();
+        <!-- 후원 금액 입력 -->
+        <div class="amount-section">
+            <div class="section-title">후원 금액</div>
+            <div class="amount-input-group" id="amountInputGroup">
+                <input type="number" id="amountInput" class="amount-input" placeholder="후원할 마일 입력"
+                       min="100" th:max="${userMiles}" 
+                       oninput="updateAmount()" 
+                       onfocus="this.parentElement.classList.add('focused')" 
+                       onblur="this.parentElement.classList.remove('focused')">
+                <span class="miles-label">마일</span>
+                <div class="amount-controls">
+                    <button class="amount-btn" onclick="decreaseAmount()">-</button>
+                    <button class="amount-btn" onclick="increaseAmount()">+</button>
+                </div>
+            </div>
+            <div class="error-message" id="errorMessage">후원 금액은 100마일 이상 입력해주세요</div>
+            <div class="preset-amounts">
+                <button class="preset-btn" onclick="setAmount(1000)">1,000</button>
+                <button class="preset-btn" onclick="setAmount(3000)">3,000</button>
+                <button class="preset-btn" onclick="setAmount(5000)">5,000</button>
+                <button class="preset-btn" onclick="setAmount(10000)">10,000</button>
+                <button class="preset-btn" onclick="setAmount(20000)">20,000</button>
+                <button class="preset-btn" th:onclick="'setAmount(' + ${userMiles} + ')'">전액</button>
+            </div>
+        </div>
+
+        <!-- 후원 메시지 -->
+        <div class="message-section" id="messageSection">
+            <div class="section-title">후원 메시지</div>
+            <div class="message-info" id="messageInfo">
+                <span class="highlight">3,000마일 이상</span> 후원 시 메시지를 보낼 수 있어요.
+            </div>
+            <textarea id="messageTextarea" class="message-textarea" maxlength="200" disabled
+                      placeholder="강사님께 전하고 싶은 메시지를 입력해주세요..." oninput="updateMessageCounter()"></textarea>
+            <div class="message-counter"><span id="messageCount">0</span> / 200</div>
+        </div>
+
+        <!-- 후원 버튼 -->
+        <button id="sponsorshipBtn" class="sponsorship-btn" onclick="processSponsor()" disabled>
+            <span id="sponsorshipBtnText">후원하기</span>
+        </button>
+
+        <!-- 안내사항 -->
+        <div class="notice">
+            <strong>💡 후원 안내</strong>
+            <ul>
+                <li>후원된 마일은 즉시 강사님께 전달됩니다</li>
+                <li>후원 완료 후에는 취소가 불가능합니다</li>
+                <li>3,000마일 이상 후원 시 감사 메시지를 남길 수 있습니다</li>
+                <li>후원 내역은 마이페이지에서 확인할 수 있습니다</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+/*<![CDATA[*/
+const lectureData = {
+    lectureId: 999, // 가데이터
+    instructorId: 123, // 테스트 강사
+    title: '테스트 강의',
+    instructorName: '홍길동'
+};
+const maxMiles = /*[[${userMiles}]]*/ 15000;
+/*]]>*/
+
+let currentAmount = 0;
+let messageEnabled = false;
+
+function updateAmount() {
+    const input = document.getElementById('amountInput');
+    const value = parseInt(input.value) || 0;
+    currentAmount = value;
+    validateAmount();
+    updateMessageSection();
+    updateSponsorshipButton();
+    updatePresetButtons();
+}
+
+function validateAmount() {
+    const group = document.getElementById('amountInputGroup');
+    const error = document.getElementById('errorMessage');
+    if (currentAmount < 100 || currentAmount > maxMiles) {
+        group.classList.add('error');
+        error.classList.add('show');
+        return false;
+    } else {
+        group.classList.remove('error');
+        error.classList.remove('show');
+        return true;
+    }
+}
+
+function setAmount(amount) {
+    document.getElementById('amountInput').value = amount;
+    updateAmount();
+}
+
+function increaseAmount() {
+    setAmount(Math.min(currentAmount + 1000, maxMiles));
+}
+
+function decreaseAmount() {
+    setAmount(Math.max(currentAmount - 1000, 0));
+}
+
+function updatePresetButtons() {
+    const presetButtons = document.querySelectorAll('.preset-btn');
+    presetButtons.forEach(btn => {
+        btn.classList.remove('active');
+        const btnAmount = parseInt(btn.textContent.replace(',', '').replace('전액', maxMiles));
+        if (btnAmount === currentAmount) {
+            btn.classList.add('active');
         }
+    });
+}
 
-        function updateAmount() {
-            const input = document.getElementById('amountInput');
-            let amount = parseInt(input.value) || 0;
-            
-            currentAmount = amount;
-            validateAmount();
-            updateMessageSection();
-            updateSponsorshipButton();
-        }
+function updateMessageSection() {
+    const section = document.getElementById('messageSection');
+    const textarea = document.getElementById('messageTextarea');
+    const info = document.getElementById('messageInfo');
+    if (currentAmount >= 3000) {
+        section.classList.add('enabled');
+        textarea.disabled = false;
+        info.style.display = 'none';
+        messageEnabled = true;
+    } else {
+        section.classList.remove('enabled');
+        textarea.disabled = true;
+        textarea.value = '';
+        info.style.display = 'block';
+        messageEnabled = false;
+    }
+    updateMessageCounter();
+}
 
-        function validateAmount() {
-            const inputGroup = document.getElementById('amountInputGroup');
-            const errorMessage = document.getElementById('errorMessage');
-            
-            if (currentAmount < 100 || currentAmount > maxMiles) {
-                inputGroup.classList.add('error');
-                errorMessage.classList.add('show');
-                return false;
-            } else {
-                inputGroup.classList.remove('error');
-                errorMessage.classList.remove('show');
-                return true;
-            }
-        }
+function updateMessageCounter() {
+    document.getElementById('messageCount').textContent =
+        document.getElementById('messageTextarea').value.length;
+}
 
-        function setAmount(amount) {
-            if (amount > maxMiles) {
-                amount = maxMiles;
-            }
-            
-            document.getElementById('amountInput').value = amount;
-            currentAmount = amount;
-            validateAmount();
-            updateMessageSection();
-            updateSponsorshipButton();
-            
-            // 버튼 활성화 상태 업데이트
-            document.querySelectorAll('.preset-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            event.target.classList.add('active');
-        }
+function updateSponsorshipButton() {
+    const btn = document.getElementById('sponsorshipBtn');
+    const text = document.getElementById('sponsorshipBtnText');
+    const valid = currentAmount >= 100 && currentAmount <= maxMiles;
+    btn.disabled = !valid;
+    text.textContent = valid ? `${currentAmount.toLocaleString()}마일 후원하기` : '후원하기';
+}
 
-        function increaseAmount() {
-            const newAmount = Math.min(maxMiles, currentAmount + 1000);
-            document.getElementById('amountInput').value = newAmount;
-            currentAmount = newAmount;
-            validateAmount();
-            updateMessageSection();
-            updateSponsorshipButton();
-        }
+async function processSponsor() {
+    if (!validateAmount()) return;
 
-        function decreaseAmount() {
-            const newAmount = Math.max(0, currentAmount - 1000);
-            document.getElementById('amountInput').value = newAmount;
-            currentAmount = newAmount;
-            validateAmount();
-            updateMessageSection();
-            updateSponsorshipButton();
-        }
+    const message = messageEnabled ? document.getElementById('messageTextarea').value : '';
+    if (!confirm(`강사: ${lectureData.instructorName}\n후원: ${currentAmount.toLocaleString()}마일\n\n후원하시겠습니까?`)) return;
 
-        function updateMessageSection() {
-            const messageSection = document.getElementById('messageSection');
-            const messageTextarea = document.getElementById('messageTextarea');
-            const messageInfo = document.getElementById('messageInfo');
-            
-            if (currentAmount >= 3000) {
-                messageSection.classList.add('enabled');
-                messageTextarea.disabled = false;
-                messageEnabled = true;
-                messageInfo.style.display = 'none';
-            } else {
-                messageSection.classList.remove('enabled');
-                messageTextarea.disabled = true;
-                messageTextarea.value = '';
-                messageEnabled = false;
-                messageInfo.style.display = 'block';
-                updateMessageCounter();
-            }
-        }
+    const btn = document.getElementById('sponsorshipBtn');
+    const text = document.getElementById('sponsorshipBtnText');
+    btn.disabled = true;
+    text.textContent = '후원 중...';
 
-        function updateMessageCounter() {
-            const textarea = document.getElementById('messageTextarea');
-            const counter = document.getElementById('messageCount');
-            counter.textContent = textarea.value.length;
-        }
-
-        function updateSponsorshipButton() {
-            const btn = document.getElementById('sponsorshipBtn');
-            const btnText = document.getElementById('sponsorshipBtnText');
-            
-            if (currentAmount > 0) {
-                btnText.textContent = `${currentAmount.toLocaleString()}마일 후원하기`;
-            } else {
-                btnText.textContent = '후원하기';
-            }
-            
-            const isValid = currentAmount >= 100 && currentAmount <= maxMiles;
-            btn.disabled = !isValid;
-        }
-
-        function processSponsor() {
-            if (!validateAmount()) {
-                return;
-            }
-            
-            const message = messageEnabled ? document.getElementById('messageTextarea').value : '';
-            
-            // 후원 확인 다이얼로그
-            const confirmMsg = `
-강의: ${lectureData.title}
-강사: ${lectureData.instructor}
-후원 금액: ${currentAmount.toLocaleString()}마일
-${message ? `메시지: ${message}` : ''}
-
-후원하시겠습니까?
-            `;
-            
-            if (confirm(confirmMsg.trim())) {
-                // 실제 후원 API 호출
-                const sponsorData = {
-                    lectureId: 'lecture123', // 실제 강의 ID
-                    instructorId: 'instructor456', // 실제 강사 ID
-                    amount: currentAmount,
-                    message: message,
-                    timestamp: new Date().toISOString()
-                };
-                
-                // 로딩 상태 표시
-                const btn = document.getElementById('sponsorshipBtn');
-                btn.disabled = true;
-                btn.textContent = '후원 처리 중...';
-                
-                // 실제 API 호출
-                // sponsorAPI(sponsorData);
-                
-                // 임시 성공 처리
-                setTimeout(() => {
-                    alert('후원이 완료되었습니다!\n감사합니다. 💝');
-                    window.location.href = '/lecture/detail'; // 강의 상세 페이지로 리다이렉트
-                }, 1000);
-            }
-        }
-
-        function closeModal() {
-            if (currentAmount > 0) {
-                if (confirm('작성 중인 후원 내용이 있습니다.\n정말 취소하시겠습니까?')) {
-                    window.history.back();
-                }
-            } else {
-                window.history.back();
-            }
-        }
-
-        // 입력 필드 포커스 효과
-        document.getElementById('amountInput').addEventListener('focus', function() {
-            document.getElementById('amountInputGroup').classList.add('focused');
+    try {
+        const res = await fetch('/api/donation', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                lectureNo: lectureData.lectureId, // lectureNo로 변경
+                amount: currentAmount,
+                message: message
+            })
         });
+        
+        if (res.ok) {
+            const result = await res.json();
+            alert('후원이 완료되었습니다!');
+            
+            // 성공 페이지로 이동할 URL 생성
+            const successUrl = new URL('/donation/success', window.location.origin);
+            successUrl.searchParams.append('lectureTitle', result.lectureTitle);
+            successUrl.searchParams.append('instructorName', result.instructorName);
+            successUrl.searchParams.append('amount', result.amount);
+            if (result.message) {
+                successUrl.searchParams.append('message', result.message);
+            }
+            
+            window.location.href = successUrl.href;
+        } else {
+            const result = await res.json();
+            alert(result.message || '후원 실패');
+            btn.disabled = false;
+            updateSponsorshipButton();
+        }
+    } catch (e) {
+        console.error(e);
+        alert('오류가 발생했습니다.');
+        btn.disabled = false;
+        updateSponsorshipButton();
+    }
+}
 
-        document.getElementById('amountInput').addEventListener('blur', function() {
-            document.getElementById('amountInputGroup').classList.remove('focused');
-        });
+function closeModal() {
+    if (currentAmount > 0) {
+        if (confirm('작성 중인 후원 내용이 있습니다. 닫을까요?')) window.history.back();
+    } else {
+        window.history.back();
+    }
+}
 
-        // 페이지 로드 시 초기화
-        window.addEventListener('load', initializePage);
-    </script>
+function chargeMiles() {
+    const result = confirm('마일을 충전하시겠습니까?');
+    if (result) {
+        // 확인을 누른 경우
+        window.location.href = '/user/payment';
+    }
+    // 취소를 누르면 아무 일도 일어나지 않음
+}
+
+
+// 초기화
+document.addEventListener('DOMContentLoaded', function() {
+    updateSponsorshipButton();
+});
+</script>
 </body>
 </html>

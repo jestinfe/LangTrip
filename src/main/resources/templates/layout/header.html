@@ -9,53 +9,16 @@
     </ul>
     <div class="nav-actions">
       <!-- 비로그인 상태 (기본값) -->
-      <span id="user-logged-out">
+      <span id="user-logged-out" style="display: flex; gap: 10px;">
         <a href="/login" class="guest-state">로그인</a>
         <a href="/signup" class="guest-state">회원가입</a>
       </span>
-      <!-- 로그인 상태 (숨김) -->
-      <span id="user-logged-in" style="display: none;">
-        <a id="user-name" class="user-state" href="/mypage"></a>
-        <a href="#" onclick="logout()" class="user-state">로그아웃</a>
+
+      <!-- 로그인 상태 (초기 숨김) -->
+      <span id="user-logged-in" style="display: none; gap: 10px;">
+        <a id="user-name" class="user-state" href="/mypage">사용자</a>
+        <a href="/user/logout" onclick="logout(); return false;" class="user-state">로그아웃</a>
       </span>
     </div>
   </nav>
-
-  <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      const loggedInSpan = document.getElementById('user-logged-in');
-      const loggedOutSpan = document.getElementById('user-logged-out');
-      const userNameElement = document.getElementById('user-name');
-
-      const token = localStorage.getItem('user_token');
-
-      if (token) {
-        // JWT가 있으면 로그인 상태로 UI 변경
-        loggedOutSpan.style.display = 'none';
-        loggedInSpan.style.display = 'block';
-
-        try {
-          // JWT의 payload를 디코딩하여 사용자 이름 추출
-          const payload = JSON.parse(atob(token.split('.')[1]));
-          // 'sub' 클레임에 사용자 이름이 있다고 가정
-          userNameElement.textContent = payload.sub ? payload.sub + '님' : '내 정보';
-        } catch (e) {
-          console.error('Failed to decode JWT:', e);
-          userNameElement.textContent = '내 정보';
-        }
-
-      } else {
-        // JWT가 없으면 로그아웃 상태로 UI 변경
-        loggedInSpan.style.display = 'none';
-        loggedOutSpan.style.display = 'block';
-      }
-    });
-
-    function logout() {
-      // localStorage에서 JWT 제거
-      localStorage.removeItem('user_token');
-      // 홈페이지로 리디렉션
-      window.location.href = '/';
-    }
-  </script>
 </header>

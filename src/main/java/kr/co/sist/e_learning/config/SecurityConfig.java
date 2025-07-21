@@ -1,40 +1,44 @@
 package kr.co.sist.e_learning.config;
 
+import kr.co.sist.e_learning.user.auth.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
+
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 public class SecurityConfig {
-	
-	@Autowired
+
+    @Autowired
     private CustomOAuth2AuthenticationSuccessHandler customOAuth2AuthenticationSuccessHandler;
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http,
+                                           JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
         http
+            .httpBasic(httpBasic -> httpBasic.disable())
+            .csrf(csrf -> csrf.disable())
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(authz -> authz
-                // 모든 URL을 로그인 없이 접근 가능하게 허용
                 .anyRequest().permitAll()
             )
-            // Oauth2Login 설정
             .oauth2Login(oauth2 -> oauth2
-            	    .successHandler(customOAuth2AuthenticationSuccessHandler)
+                .loginPage("/user/login/login")
+                .successHandler(customOAuth2AuthenticationSuccessHandler)
             )
-            .csrf(csrf -> csrf.disable());
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
-    
 
-    	
+    @Bean
+    public JwtAuthenticationFilter jwtAuthenticationFilter(JwtTokenProvider jwtProvider,
+                                                           JwtAuthUtils jwtAuthUtils,
+                                                           AuthService authService) {
+        return new JwtAuthenticationFilter(jwtProvider, jwtAuthUtils, authService);
+    }
 }

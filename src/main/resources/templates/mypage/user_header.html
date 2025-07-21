@@ -1,25 +1,21 @@
+<!-- resources/templates/layout/header.html -->
 <div th:fragment="header" class="header">
   <div class="logo">
-    <a th:href="@{/}">
+    <a href="/">
       <img src="/images/favicon.png" alt="Logo">
     </a>
   </div>
 
   <div class="nav-center">
-    <a th:href="@{/course}">📘 강의</a>
+    <a href="/course">📘 강의</a>
     <div class="separator"></div>
-    <a th:href="@{/community}">💬 커뮤니티</a>
+    <a href="/community">💬 커뮤니티</a>
     <div class="separator"></div>
-    <a th:href="@{/support}">🛠️ 지원센터</a>
+    <a href="/support">🛠️ 지원센터</a>
   </div>
 
-  <div class="nav-right">
-    <span th:if="${session.loginUser != null}">
-      <a th:href="@{/mypage}">👤 마이페이지</a>
-      <a th:href="@{/logout}">🔓 로그아웃</a>
-    </span>
-    <span th:if="${session.loginUser == null}">
-      <a th:href="@{/login}">🔐 로그인</a>
-    </span>
+  <div class="nav-right" id="navRight">
+    <!-- 로그인 여부에 따라 JS로 동적 변경 -->
+    <!-- 초기엔 비워 두고 JS에서 채움 -->
   </div>
 </div>

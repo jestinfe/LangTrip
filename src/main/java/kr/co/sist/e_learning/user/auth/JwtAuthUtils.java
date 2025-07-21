@@ -60,6 +60,17 @@ public class JwtAuthUtils {
         }
         return null;
     }
+    
+    /**
+     * AccessToken에서 userSeq 추출
+     */
+    public Long getUserSeqFromToken(HttpServletRequest request) {
+        String token = extractTokenFromCookies(request);
+        if (token != null && jwtTokenProvider.validateToken(token)) {
+            return jwtTokenProvider.getUserSeq(token);
+        }
+        return null;
+    }
 
     /**
      * Access Token 쿠키 세팅
@@ -72,6 +83,8 @@ public class JwtAuthUtils {
         cookie.setMaxAge(30 * 60);
         response.addCookie(cookie);
     }
+    
+    
 
 
     /**
@@ -80,9 +93,29 @@ public class JwtAuthUtils {
     public void setRefreshTokenCookie(HttpServletResponse response, String token) {
         Cookie cookie = new Cookie("refreshToken", token);
         cookie.setHttpOnly(true);
-        cookie.setSecure(true);
+        cookie.setSecure(false); // 개발환경에서는 false
         cookie.setPath("/");
         cookie.setMaxAge(7 * 24 * 60 * 60); // 7일
+        response.addCookie(cookie);
+    }
+
+    /**
+     * Access Token 쿠키 삭제
+     */
+    public void deleteAccessTokenCookie(HttpServletResponse response) {
+        Cookie cookie = new Cookie("accessToken", null);
+        cookie.setPath("/");
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
+    }
+
+    /**
+     * Refresh Token 쿠키 삭제
+     */
+    public void deleteRefreshTokenCookie(HttpServletResponse response) {
+        Cookie cookie = new Cookie("refreshToken", null);
+        cookie.setPath("/");
+        cookie.setMaxAge(0);
         response.addCookie(cookie);
     }
 }

@@ -285,259 +285,319 @@
             margin-bottom: 3px;
         }
     </style>
+    <script src="https://cdn.iamport.kr/v1/iamport.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    
 </head>
 <body>
-    <div class="payment-modal">
-        <div class="modal-header">
-            <h2>마일 충전하기</h2>
-            <button class="close-btn" onclick="closeModal()">&times;</button>
-        </div>
-        
-        <div class="payment-content">
-            <!-- 충전 금액 섹션 -->
-            <div class="amount-section">
-                <div class="section-title">충전금액</div>
-                
-                <div class="amount-input-group" id="amountInputGroup">
-                    <input type="number" 
-                           class="amount-input" 
-                           id="amountInput" 
-                           placeholder="충전할 금액 입력"
-                           min="3000"
-                           value="10000"
-                           oninput="updateAmount()">
-                    <span style="color: #6b7280; margin-right: 10px;">원</span>
-                    <div class="amount-controls">
-                        <button class="amount-btn" onclick="decreaseAmount()">-</button>
-                        <button class="amount-btn" onclick="increaseAmount()">+</button>
-                    </div>
-                </div>
-                
-                <div class="preset-amounts">
-                    <button class="preset-btn" onclick="setAmount(3000)">3,000원</button>
-                    <button class="preset-btn active" onclick="setAmount(10000)">10,000원</button>
-                    <button class="preset-btn" onclick="setAmount(30000)">30,000원</button>
-                    <button class="preset-btn" onclick="setAmount(50000)">50,000원</button>
-                    <button class="preset-btn" onclick="setAmount(100000)">100,000원</button>
-                    <button class="preset-btn" onclick="setAmount(300000)">300,000원</button>
-                </div>
-                
-                <div class="amount-info">
-                    <div class="amount-info-row">
-                        <span>충전금액</span>
-                        <span id="chargeAmount">10,000원</span>
-                    </div>
-                    <div class="amount-info-row">
-                        <span>수수료 (10%)</span>
-                        <span id="feeAmount">1,000원</span>
-                    </div>
-                    <div class="amount-info-row">
-                        <span>받을 마일</span>
-                        <span id="receiveMile">9,000 마일</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 결제수단 섹션 -->
-            <div class="payment-methods">
-                <div class="section-title">결제수단</div>
-                
-                <div class="method-group">
-                    <div class="method-group-title">간편결제</div>
-                    <div class="method-options">
-                        <div class="method-option">
-                            <input type="radio" name="paymentMethod" id="kakao" value="kakao" class="method-radio">
-                            <label for="kakao" class="method-label">카카오페이</label>
-                        </div>
-                        <div class="method-option">
-                            <input type="radio" name="paymentMethod" id="naver" value="naver" class="method-radio">
-                            <label for="naver" class="method-label">네이버페이</label>
-                        </div>
-                        <div class="method-option">
-                            <input type="radio" name="paymentMethod" id="toss" value="toss" class="method-radio">
-                            <label for="toss" class="method-label">토스페이</label>
-                        </div>
-                        <div class="method-option">
-                            <input type="radio" name="paymentMethod" id="payco" value="payco" class="method-radio">
-                            <label for="payco" class="method-label">PAYCO</label>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="method-group">
-                    <div class="method-group-title">일반결제</div>
-                    <div class="method-options">
-                        <div class="method-option">
-                            <input type="radio" name="paymentMethod" id="card" value="card" class="method-radio" checked>
-                            <label for="card" class="method-label">카드결제</label>
-                        </div>
-                        <div class="method-option">
-                            <input type="radio" name="paymentMethod" id="bank" value="bank" class="method-radio">
-                            <label for="bank" class="method-label">무통장입금</label>
-                        </div>
-                        <div class="method-option">
-                            <input type="radio" name="paymentMethod" id="transfer" value="transfer" class="method-radio">
-                            <label for="transfer" class="method-label">계좌이체</label>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 약관 동의 섹션 -->
-            <div class="agreement-section">
-                <div class="agreement-item">
-                    <div class="agreement-checkbox" id="termsCheckbox" onclick="toggleAgreement('terms')"></div>
-                    <label for="terms">마일 충전 약관에 동의합니다</label>
-                </div>
-            </div>
-
-            <!-- 결제 버튼 -->
-            <button class="payment-btn" id="paymentBtn" onclick="processPayment()" disabled>
-                <span id="paymentBtnText">10,000원 결제하기</span>
-            </button>
-
-            <!-- 안내사항 -->
-            <div class="notice">
-                <strong>안내사항</strong>
-                <ul>
-                    <li>1 마일 = 1원으로 환산됩니다 (수수료 10% 차감)</li>
-                    <li>최소 충전 금액은 3,000원입니다</li>
-                    <li>충전하신 포인트 중 일부를 후원하신 경우, 환불이 불가능합니다.</li>
-                    <li>결제 완료 후 즉시 마일이 지급됩니다</li>
-                </ul>
-            </div>
-        </div>
+  <div class="payment-modal">
+    <div class="modal-header">
+      <h2>마일 충전하기</h2>
+      <button class="close-btn" onclick="closeModal()">&times;</button>
     </div>
 
-    <script>
-        let currentAmount = 10000;
-        let agreementChecked = false;
+    <div class="payment-content">
+      <div class="amount-section">
+        <div class="section-title">충전금액</div>
+        <div class="amount-input-group" id="amountInputGroup">
+          <input type="number" id="amountInput" class="amount-input"
+            placeholder="충전할 금액 입력" min="3000" value="10000"
+            oninput="updateAmount()" />
+          <span style="color: #6b7280; margin-right: 10px;">원</span>
+          <div class="amount-controls">
+            <button class="amount-btn" onclick="decreaseAmount()">-</button>
+            <button class="amount-btn" onclick="increaseAmount()">+</button>
+          </div>
+        </div>
 
-        function updateAmount() {
-            const input = document.getElementById('amountInput');
-            let amount = parseInt(input.value) || 0;
-            
-            if (amount < 3000) {
-                amount = 3000;
-                input.value = amount;
-            }
-            
-            currentAmount = amount;
-            updateAmountDisplay();
-            updatePaymentButton();
-        }
+        <div class="preset-amounts">
+          <button class="preset-btn" onclick="setAmount(event, 3000)">3,000원</button>
+          <button class="preset-btn active" onclick="setAmount(event, 10000)">10,000원</button>
+          <button class="preset-btn" onclick="setAmount(event, 30000)">30,000원</button>
+          <button class="preset-btn" onclick="setAmount(event, 50000)">50,000원</button>
+          <button class="preset-btn" onclick="setAmount(event, 100000)">100,000원</button>
+          <button class="preset-btn" onclick="setAmount(event, 300000)">300,000원</button>
+        </div>
 
-        function setAmount(amount) {
-            document.getElementById('amountInput').value = amount;
-            currentAmount = amount;
-            updateAmountDisplay();
-            updatePaymentButton();
-            
-            // 버튼 활성화 상태 업데이트
-            document.querySelectorAll('.preset-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            event.target.classList.add('active');
-        }
+        <div class="amount-info">
+          <div class="amount-info-row">
+            <span>충전금액</span>
+            <span id="chargeAmount">10,000원</span>
+          </div>
+          <div class="amount-info-row">
+            <span>수수료 (10%)</span>
+            <span id="feeAmount">1,000원</span>
+          </div>
+          <div class="amount-info-row">
+            <span>받을 마일</span>
+            <span id="receiveMile">9,000 마일</span>
+          </div>
+        </div>
+      </div>
 
-        function increaseAmount() {
-            const newAmount = currentAmount + 1000;
-            document.getElementById('amountInput').value = newAmount;
-            currentAmount = newAmount;
-            updateAmountDisplay();
-            updatePaymentButton();
-        }
+      <div class="payment-methods">
+        <div class="section-title">결제수단</div>
 
-        function decreaseAmount() {
-            const newAmount = Math.max(3000, currentAmount - 1000);
-            document.getElementById('amountInput').value = newAmount;
-            currentAmount = newAmount;
-            updateAmountDisplay();
-            updatePaymentButton();
-        }
+        <div class="method-group">
+          <div class="method-group-title">간편결제</div>
+          <div class="method-options">
+            <div class="method-option">
+              <input type="radio" name="paymentMethod" id="kakao" value="kakao" class="method-radio" />
+              <label for="kakao" class="method-label">카카오페이</label>
+            </div>
+            <div class="method-option">
+              <input type="radio" name="paymentMethod" id="naver" value="naver" class="method-radio" />
+              <label for="naver" class="method-label">네이버페이</label>
+            </div>
+            <div class="method-option">
+              <input type="radio" name="paymentMethod" id="toss" value="toss" class="method-radio" />
+              <label for="toss" class="method-label">토스페이</label>
+            </div>
+            <div class="method-option">
+              <input type="radio" name="paymentMethod" id="payco" value="payco" class="method-radio" />
+              <label for="payco" class="method-label">PAYCO</label>
+            </div>
+          </div>
+        </div>
 
-        function updateAmountDisplay() {
-            const fee = Math.floor(currentAmount * 0.1);
-            const receiveMile = currentAmount - fee;
-            
-            document.getElementById('chargeAmount').textContent = currentAmount.toLocaleString() + '원';
-            document.getElementById('feeAmount').textContent = fee.toLocaleString() + '원';
-            document.getElementById('receiveMile').textContent = receiveMile.toLocaleString() + ' 마일';
-        }
+        <div class="method-group">
+          <div class="method-group-title">일반결제</div>
+          <div class="method-options">
+            <div class="method-option">
+              <input type="radio" name="paymentMethod" id="card" value="card" class="method-radio" checked />
+              <label for="card" class="method-label">카드결제</label>
+            </div>
+            <div class="method-option">
+              <input type="radio" name="paymentMethod" id="bank" value="bank" class="method-radio" />
+              <label for="bank" class="method-label">무통장입금</label>
+            </div>
+            <div class="method-option">
+              <input type="radio" name="paymentMethod" id="transfer" value="transfer" class="method-radio" />
+              <label for="transfer" class="method-label">계좌이체</label>
+            </div>
+          </div>
+        </div>
+      </div>
 
-        function toggleAgreement(type) {
-            const checkbox = document.getElementById('termsCheckbox');
-            agreementChecked = !agreementChecked;
-            
-            if (agreementChecked) {
-                checkbox.classList.add('checked');
+      <div class="agreement-section">
+        <div class="agreement-item">
+          <div class="agreement-checkbox" id="termsCheckbox" onclick="toggleAgreement('terms')"></div>
+          <label for="terms">마일 충전 약관에 동의합니다</label>
+        </div>
+      </div>
+
+      <button class="payment-btn" id="paymentBtn" onclick="processPayment()" disabled>
+        <span id="paymentBtnText">10,000원 결제하기</span>
+      </button>
+    </div>
+  </div>
+
+<script>
+    const FEE_RATE = 0.1;
+    let currentAmount = 10000;
+    let agreementChecked = false;
+
+    function updateAmount() {
+      const input = document.getElementById("amountInput");
+      let amount = parseInt(input.value) || 0;
+
+      if (amount < 3000) {
+        amount = 3000;
+        input.value = amount;
+      }
+
+      currentAmount = amount;
+      updateAmountDisplay();
+      updatePaymentButton();
+    }
+
+    function setAmount(e, amount) {
+      document.getElementById("amountInput").value = amount;
+      currentAmount = amount;
+      updateAmountDisplay();
+      updatePaymentButton();
+
+      document.querySelectorAll(".preset-btn").forEach(btn => {
+        btn.classList.remove("active");
+      });
+      e.target.classList.add("active");
+    }
+
+    function increaseAmount() {
+      const newAmount = currentAmount + 1000;
+      document.getElementById("amountInput").value = newAmount;
+      currentAmount = newAmount;
+      updateAmountDisplay();
+      updatePaymentButton();
+    }
+
+    function decreaseAmount() {
+      const newAmount = Math.max(3000, currentAmount - 1000);
+      document.getElementById("amountInput").value = newAmount;
+      currentAmount = newAmount;
+      updateAmountDisplay();
+      updatePaymentButton();
+    }
+
+    function updateAmountDisplay() {
+      const fee = Math.floor(currentAmount * FEE_RATE);
+      const receiveMile = currentAmount - fee;
+
+      document.getElementById("chargeAmount").textContent = currentAmount.toLocaleString() + "원";
+      document.getElementById("feeAmount").textContent = fee.toLocaleString() + "원";
+      document.getElementById("receiveMile").textContent = receiveMile.toLocaleString() + " 마일";
+    }
+
+    function toggleAgreement() {
+      const checkbox = document.getElementById("termsCheckbox");
+      agreementChecked = !agreementChecked;
+
+      if (agreementChecked) {
+        checkbox.classList.add("checked");
+      } else {
+        checkbox.classList.remove("checked");
+      }
+
+      updatePaymentButton();
+    }
+
+    function updatePaymentButton() {
+      const btn = document.getElementById("paymentBtn");
+      const btnText = document.getElementById("paymentBtnText");
+
+      btnText.textContent = currentAmount.toLocaleString() + "원 결제하기";
+
+      btn.disabled = !(agreementChecked && currentAmount >= 3000);
+    }
+
+    function getPG(method) {
+      switch (method) {
+        case "kakao": return "kakaopay.TC0ONETIME";
+        case "naver": return "naverpay";
+        case "toss": return "tosspay.tosstest";
+        case "payco": return "payco";
+        default: return "html5_inicis";
+      }
+    }
+
+    function getPayMethod(method) {
+      switch (method) {
+        case "card": return "card";
+        case "bank": return "vbank";
+        case "transfer": return "trans";
+        case "kakao":
+        case "naver":
+        case "toss":
+        case "payco": return "easy";
+        default: return "card";
+      }
+    }
+
+    function getChannelKey(pgProvider) {
+      // TODO: 실제 channelKey 매핑 로직을 적용
+      switch (pgProvider) {
+        case "kakaopay.TC0ONETIME":
+          return "channel-key-01764171-b249-4c16-9d18-e9174fa8e611";
+        case "tosspay.tosstest":
+          return "channel-key-01aab9b9-828b-4913-9395-52f922e578f6";
+        case "payco":
+          return "channel-key-a0962379-a4eb-41d3-90a8-47198b8af642";
+        case "naverpay":
+          return "channel-key-xxxx"; // 실제 채널키로 교체
+        default:
+          return "channel-key-001cc830-159d-45af-a551-fa834c07f6b9"; // 일반 카드, 무통장 등
+      }
+    }
+
+    function processPayment() {
+      IMP.init("imp14397622"); // userCode만!
+
+      const selectedMethod = document.querySelector('input[name="paymentMethod"]:checked');
+      if (!selectedMethod) {
+        alert("결제수단을 선택해주세요.");
+        return;
+      }
+      if (!agreementChecked) {
+        alert("약관에 동의해주세요.");
+        return;
+      }
+
+      const paymentMethod = selectedMethod.value;
+      const pg = getPG(paymentMethod);
+      const channelKey = getChannelKey(pg);
+
+      const merchantUid = "mid_" + Date.now();
+
+      const amount = currentAmount;
+
+      const paymentData = {
+        channelKey: channelKey,
+        pg: pg,
+        pay_method: getPayMethod(paymentMethod),
+        merchant_uid: merchantUid,
+        name: "마일 충전",
+        amount: amount,
+        buyer_email: "test@example.com",
+        buyer_name: "홍길동",
+        buyer_tel: "010-1234-5678",
+        buyer_addr: "서울특별시 강남구",
+        buyer_postcode: "123-456"
+      };
+
+      IMP.request_pay(paymentData, function (rsp) {
+        if (rsp.success) {
+          // 성공 시 결제 서버에 저장
+          axios.post("/payment", {
+            impUid: rsp.imp_uid,
+            merchantUid: rsp.merchant_uid,
+            paymentAmount: rsp.paid_amount,
+            method: paymentData.pay_method,
+            provider: paymentData.pg,
+            name: paymentData.name,
+            buyerEmail: paymentData.buyer_email,
+            buyerName: paymentData.buyer_name,
+            buyerTel: paymentData.buyer_tel,
+            buyerAddr: paymentData.buyer_addr,
+            buyerPostcode: paymentData.buyer_postcode,
+            receiptUrl: rsp.receipt_url,
+            mileAmount: Math.floor(amount * (1 - FEE_RATE)),
+            feeRate: FEE_RATE * 100
+          }).then(res => {
+            if (res.data.success) {
+              // 백엔드에서 전달받은 URL로 페이지 이동
+              alert("결제가 완료되었습니다!");
+              window.location.href = res.data.redirectUrl;
             } else {
-                checkbox.classList.remove('checked');
+              alert("결제 검증 실패: " + res.data.message);
             }
-            
-            updatePaymentButton();
+          }).catch(err => {
+            console.error(err);
+            alert("서버 오류가 발생했습니다.");
+          });
+        } else {
+          // 실패 시 결제 취소 서버 호출
+          axios.post("/payment/cancel", {
+            impUid: rsp.imp_uid,
+            failReason: rsp.error_msg
+          }).then(res => {
+            alert("결제가 취소되었습니다.\n사유: " + rsp.error_msg);
+          }).catch(err => {
+            console.error(err);
+            alert("결제 취소 처리 중 오류가 발생했습니다.");
+          });
         }
+      });
+    }
 
-        function updatePaymentButton() {
-            const btn = document.getElementById('paymentBtn');
-            const btnText = document.getElementById('paymentBtnText');
-            
-            btnText.textContent = currentAmount.toLocaleString() + '원 결제하기';
-            
-            if (agreementChecked && currentAmount >= 3000) {
-                btn.disabled = false;
-            } else {
-                btn.disabled = true;
-            }
-        }
+    function closeModal() {
+      if (confirm("결제를 취소하시겠습니까?")) {
+        window.history.back();
+      }
+    }
 
-        function processPayment() {
-            const selectedMethod = document.querySelector('input[name="paymentMethod"]:checked');
-            
-            if (!selectedMethod) {
-                alert('결제수단을 선택해주세요.');
-                return;
-            }
-            
-            if (!agreementChecked) {
-                alert('약관에 동의해주세요.');
-                return;
-            }
-            
-            // 실제 결제 API 호출
-            const paymentData = {
-                amount: currentAmount,
-                method: selectedMethod.value,
-                itemName: '마일 충전',
-                // 추가 결제 정보들...
-            };
-            
-            alert(`${selectedMethod.value} 결제를 진행합니다.\n금액: ${currentAmount.toLocaleString()}원`);
-            
-            // 여기서 실제 결제 API를 호출하면 됩니다
-            // callPaymentAPI(paymentData);
-        }
+    updateAmountDisplay();
+    updatePaymentButton();
+</script>
 
-        function closeModal() {
-            // 모달 닫기 로직
-            if (confirm('결제를 취소하시겠습니까?')) {
-                // 모달 닫기 또는 페이지 이동
-                window.history.back();
-            }
-        }
-
-        // 입력 필드 포커스 효과
-        document.getElementById('amountInput').addEventListener('focus', function() {
-            document.getElementById('amountInputGroup').classList.add('focused');
-        });
-
-        document.getElementById('amountInput').addEventListener('blur', function() {
-            document.getElementById('amountInputGroup').classList.remove('focused');
-        });
-
-        // 초기 상태 설정
-        updateAmountDisplay();
-        updatePaymentButton();
-    </script>
 </body>
 </html>
