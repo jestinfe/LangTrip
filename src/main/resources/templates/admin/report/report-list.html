@@ -49,7 +49,7 @@
 </div>
 
 <!-- 검색/필터 영역 -->
-<form th:action="@{/admin/report/reportList}" method="get" class="mb-4">
+<form th:action="@{/admin/report/report-list}" method="get" class="mb-4">
   <div class="row g-2 justify-content-md-end">
 
     <div class="col-12 col-md-auto">
@@ -143,7 +143,7 @@
 
   <!-- 맨 처음 페이지 ≪ -->
   <li class="page-item" th:classappend="${pResDTO.currentPage == 1} ? 'disabled' : ''">
-    <a class="page-link" th:href="@{/admin/report/reportList(
+    <a class="page-link" th:href="@{/admin/report/report-list(
       page=1,
       reporterId=${pReqDTO.reporterId},
       reportedUserId=${pReqDTO.reportedUserId},
@@ -154,7 +154,7 @@
 
   <!-- 이전 페이지 ＜ -->
   <li class="page-item" th:classappend="${pResDTO.currentPage == 1} ? 'disabled' : ''">
-    <a class="page-link" th:href="@{/admin/report/reportList(
+    <a class="page-link" th:href="@{/admin/report/report-list(
       page=${pResDTO.currentPage - 1},
       reporterId=${pReqDTO.reporterId},
       reportedUserId=${pReqDTO.reportedUserId},
@@ -167,7 +167,7 @@
   <li class="page-item"
       th:each="p : ${#numbers.sequence(pResDTO.startPage, pResDTO.endPage)}"
       th:classappend="${p == pResDTO.currentPage} ? 'active' : ''">
-    <a class="page-link" th:href="@{/admin/report/reportList(
+    <a class="page-link" th:href="@{/admin/report/report-list(
       page=${p},
       reporterId=${pReqDTO.reporterId},
       reportedUserId=${pReqDTO.reportedUserId},
@@ -178,7 +178,7 @@
 
   <!-- 다음 페이지 › -->
   <li class="page-item" th:classappend="${pResDTO.currentPage == pResDTO.totalPages} ? 'disabled' : ''">
-    <a class="page-link" th:href="@{/admin/report/reportList(
+    <a class="page-link" th:href="@{/admin/report/report-list(
       page=${pResDTO.currentPage + 1},
       reporterId=${pReqDTO.reporterId},
       reportedUserId=${pReqDTO.reportedUserId},
@@ -189,7 +189,7 @@
 
   <!-- 마지막 페이지 ≫ -->
   <li class="page-item" th:classappend="${pResDTO.currentPage == pResDTO.totalPages} ? 'disabled' : ''">
-    <a class="page-link" th:href="@{/admin/report/reportList(
+    <a class="page-link" th:href="@{/admin/report/report-list(
       page=${pResDTO.totalPages},
       reporterId=${pReqDTO.reporterId},
       reportedUserId=${pReqDTO.reportedUserId},
@@ -243,8 +243,8 @@
 <script th:inline="javascript">
 document.addEventListener('DOMContentLoaded', () => {
 
-const list = [[${pResDTO.list}]];
-console.log("🔍 pResDTO =", list);
+// const list = [[${pResDTO.list}]];
+// console.log("🔍 pResDTO =", list);
 
 const form = document.querySelector('form');
 const resetBtn = document.getElementById('resetBtn');
@@ -254,7 +254,7 @@ const reporterInput = document.getElementById('reporterId');
 const reportDetailModalEl = document.getElementById('reportDetailModal');
 const reportDetailModal = new bootstrap.Modal(reportDetailModalEl);
 resetBtn.addEventListener("click", () => {
-  location.href = '/admin/report/reportList';
+  location.href = '/admin/report/report-list';
 });
 
 document.getElementById('contentType').addEventListener('change', () => {
