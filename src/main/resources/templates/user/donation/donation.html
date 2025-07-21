@@ -17,13 +17,13 @@
     <div class="sponsorship-content">
         <!-- 강의 정보 -->
         <div class="lecture-info">
-            <div class="lecture-title" th:text="${lecture.title}">테스트 강의 제목</div>
-            <div class="instructor-name" th:text="${lecture.instructorName} + ' 강사님'">홍길동 강사님</div>
+            <div class="lecture-title" th:text="${lecture.courseTitle}">테스트 강의 제목</div>
+            <div class="instructor-name" th:text="${lecture.instructorNickname} + ' 강사님'">홍길동 강사님</div>
         </div>
 
         <!-- 사용자 마일 정보 -->
         <div class="user-mile-info">
-            <button class="charge-btn" onclick="chargeMiles()">마일 충전하기</button>
+           <button class="charge-btn" onclick="chargeMiles()">마일 충전하기</button>
             <h3>보유 마일</h3>
             <div class="current-miles" th:text="${#numbers.formatInteger(userMiles, 0, 'COMMA')}">15,000</div>
             <div class="miles-unit">마일</div>
@@ -51,7 +51,7 @@
                 <button class="preset-btn" onclick="setAmount(5000)">5,000</button>
                 <button class="preset-btn" onclick="setAmount(10000)">10,000</button>
                 <button class="preset-btn" onclick="setAmount(20000)">20,000</button>
-                <button class="preset-btn" th:onclick="'setAmount(' + ${userMiles} + ')'">전액</button>
+                <button class="preset-btn" onclick="setAmount('전액')">전액</button>
             </div>
         </div>
 
@@ -86,17 +86,14 @@
 
 <script th:inline="javascript">
 /*<![CDATA[*/
-const lectureData = {
-    lectureId: 999, // 가데이터
-    instructorId: 123, // 테스트 강사
-    title: '테스트 강의',
-    instructorName: '홍길동'
-};
-const maxMiles = /*[[${userMiles}]]*/ 15000;
+const lectureData = /*[[${lecture}]]*/ null;
+const maxMiles = /*[[${userMiles}]]*/ 0;
+let currentAmount = 0;  // 초기값을 설정해줍니다.
 /*]]>*/
 
-let currentAmount = 0;
-let messageEnabled = false;
+
+
+
 
 function updateAmount() {
     const input = document.getElementById('amountInput');
@@ -123,6 +120,9 @@ function validateAmount() {
 }
 
 function setAmount(amount) {
+    if (amount === '전액') {
+        amount = maxMiles;
+    }
     document.getElementById('amountInput').value = amount;
     updateAmount();
 }
@@ -182,7 +182,7 @@ async function processSponsor() {
     if (!validateAmount()) return;
 
     const message = messageEnabled ? document.getElementById('messageTextarea').value : '';
-    if (!confirm(`강사: ${lectureData.instructorName}\n후원: ${currentAmount.toLocaleString()}마일\n\n후원하시겠습니까?`)) return;
+    if (!confirm(`강사: ${lectureData.instructorNickname}\n후원: ${currentAmount.toLocaleString()}마일\n\n후원하시겠습니까?`)) return;
 
     const btn = document.getElementById('sponsorshipBtn');
     const text = document.getElementById('sponsorshipBtnText');
@@ -191,10 +191,10 @@ async function processSponsor() {
 
     try {
         const res = await fetch('/api/donation', {
-            method: 'POST',
+            method: 'post',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({
-                lectureNo: lectureData.lectureId, // lectureNo로 변경
+                lectureNo: lectureData.courseSeq,
                 amount: currentAmount,
                 message: message
             })
@@ -221,7 +221,6 @@ async function processSponsor() {
             updateSponsorshipButton();
         }
     } catch (e) {
-        console.error(e);
         alert('오류가 발생했습니다.');
         btn.disabled = false;
         updateSponsorshipButton();
@@ -240,10 +239,23 @@ function chargeMiles() {
     const result = confirm('마일을 충전하시겠습니까?');
     if (result) {
         // 확인을 누른 경우
-        window.location.href = '/user/payment';
+        // URL에서 lectureNo 파라미터 값을 추출
+        const urlParams = new URLSearchParams(window.location.search);
+        const lectureNo = urlParams.get('lectureNo');
+
+        if (lectureNo) {
+            // 세션에 lectureNo 값 저장
+            sessionStorage.setItem('lectureNo', lectureNo);
+            
+            // 결제 페이지로 이동
+            window.location.href = '/user/payments?lectureNo=' + lectureNo;
+        } else {
+            alert("강의 정보를 찾을 수 없습니다.");
+        }
     }
     // 취소를 누르면 아무 일도 일어나지 않음
 }
+
 
 
 // 초기화

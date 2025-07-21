@@ -79,13 +79,14 @@
         .btn {
             display: inline-block;
             color: white;
-            padding: 14px 30px;
+            padding: 14px 30px; /* 동일한 패딩으로 설정 */
             border-radius: 8px;
             text-decoration: none;
             font-weight: 600;
             transition: all 0.3s ease;
             border: none;
             cursor: pointer;
+            font-size: 16px; /* 글꼴 크기 동일하게 설정 */
         }
         .btn-primary {
             background-color: #007bff;
@@ -124,9 +125,28 @@
         </div>
 
         <div class="actions">
-            <a href="/user/donation" class="btn btn-primary">후원하러 가기</a>
+            <!-- "후원하러 가기" 버튼을 클릭하면 POST 요청으로 데이터 전송 -->
+            <form action="/user/donation" method="get" id="donationForm">
+               <input type="hidden" name="lectureNo" id="lectureNoInput" th:value="${lectureNo}">
+                <button type="submit" class="btn btn-primary">후원하러 가기</button>
+            </form>
             <a href="/" class="btn btn-secondary">메인으로 돌아가기</a>
         </div>
     </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const currentUrl = window.location.href;
+        // URL에서 lectureNo를 query string으로 추출
+        const lectureNo = new URL(currentUrl).searchParams.get('lectureNo');
+        
+        if (lectureNo) {
+            // lectureNo 값을 폼의 숨겨진 입력 필드에 넣기
+            document.getElementById('lectureNoInput').value = lectureNo;
+        } else {
+            alert('강의 정보를 찾을 수 없습니다.');
+        }
+    });
+    </script>
 </body>
 </html>

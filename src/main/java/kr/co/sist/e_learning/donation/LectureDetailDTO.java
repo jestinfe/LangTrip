@@ -6,8 +6,9 @@ import lombok.Setter;
 @Getter
 @Setter
 public class LectureDetailDTO {
-    private Long lectureId;        // course_seq
-    private String title;          // 강의 제목
-    private Long instructorId;     // user_seq
-    private String instructorName; // users.nickname
+    private String courseSeq;
+    private String courseTitle;
+    private Long instructorUserSeq;
+    private String instructorNickname;
+    private String instructorWalletSeq;
 }

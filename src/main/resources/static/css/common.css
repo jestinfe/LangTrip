@@ -465,21 +465,7 @@
             border-top: 1px solid rgba(148, 163, 184, 0.2);
         }
         
-        .user-state { 
-            display: none; 
-        }
-        
-        .logged-in .user-state { 
-            display: block; 
-        }
-        
-        .logged-out .guest-state { 
-            display: block; 
-        }
-        
-        .logged-out .user-state { 
-            display: none; 
-        }
+
         
         @media (max-width: 768px) { 
             .nav-menu { 
@@ -504,20 +490,21 @@
                 grid-template-columns: 1fr; 
             }
             
-            .user-state {
-    display: none;
+
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 30px;
 }
 
-.logged-in .user-state {
-    display: block;
+.user-state,
+.guest-state {
+  display: inline-flex;
+  gap: 10px;
 }
 
-.logged-out .guest-state {
-    display: block;
-}
 
-.logged-out .user-state {
-    display: none;
-}
+
             
         }

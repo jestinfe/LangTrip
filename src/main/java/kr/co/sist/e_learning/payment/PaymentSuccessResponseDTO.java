@@ -13,4 +13,6 @@ public class PaymentSuccessResponseDTO {
     private boolean success;
     private String message;
     private String redirectUrl;
+    private Long paymentAmount;
+    private Long mileAmount;
 }
