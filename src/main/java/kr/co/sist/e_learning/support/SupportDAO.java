@@ -4,21 +4,88 @@ import java.util.List;
 
 public interface SupportDAO {
 
-	boolean insert(Object dto); // 항목 추가
+	boolean insertNoticeDTO(NoticeDTO dto);
 
-	List<NoticeDTO> selectAllNoticeDTO(String type); // 전체 항목 조회
+	List<NoticeDTO> selectAllNoticeDTO();
 
-	List<FaqDTO> selectAllFaqDTO(String type); // 전체 항목 조회
+	List<NoticeDTO> selectAllNoticeDTOAdmin();
 
-	List<FeedbackDTO> selectAllFeedbackDTO(String type); // 전체 항목 조회
+	int updateNoticeById(NoticeDTO notice);
 
-	NoticeDTO selectOneNoticeDTOById(String type, String id); // ID로 단일 항목 조회
+	boolean increaseNoticeHits(String id);
 
-	FaqDTO selectOneFaqDTOById(String type, String id); // ID로 단일 항목 조회
+	boolean updateNoticeTitle(String id, String newTitle);
 
-	FeedbackDTO selectOneFeedbackDTOById(String type, String id); // ID로 단일 항목 조회
+	boolean updateNoticeContent(String id, String newContent);
 
-	boolean update(Object dto); // 항목 수정
+	void updateNoticeFixFlag(String id, String fixFlag);
 
-	boolean delete(String id); // ID로 항목 삭제
+	List<NoticeDTO> selectNoticeTitlesByKeyword(String keyword);
+
+	NoticeDTO selectOneNoticeByTitle(String title);
+
+	List<NoticeDTO> selectNoticesByKeyword(String keyword);
+
+	int updateNoticeStatusInactive(String id);// delete 대체=비활성(완료)
+
+	int updateNoticeStatusActive(String id);// delete 대체=활성(완료)
+
+	NoticeDTO selectOneNoticeById(String id);
+
+	// ---------------------------------------------------------------------------------------------------------------------
+
+	boolean insertFaqDTO(FaqDTO dto);
+
+	List<FaqDTO> selectAllFaqDTO();
+
+	FaqDTO selectOneFaqById(String id);
+
+	int updateFaqById(FaqDTO faq);// 통합 update(완료)
+
+	boolean increaseFaqHits(String id);// (완료)
+
+	public List<FaqDTO> selectFaqsByType(String typeId);
+
+	boolean updateFaqTitle(String id, String newTitle);
+
+	boolean updateFaqContent(String id, String newContent);
+
+	boolean updateFaqtype(String id, String faqtype);
+
+	List<FaqDTO> selectFaqByType(String typeId);
+
+	List<FaqtypeDTO> selectActiveFaqTypes();
+
+	List<FaqDTO> selectTop3FaqDTO();
+
+	List<FaqDTO> selectFaqByTypeId(String typeId);
+
+	int updateFaqStatus(String id);// delete 대체(완료)
+
+	List<FaqtypeDTO> selectAllFaqtype();
+
+	// ---------------------------------------------------------------------------------------------
+
+	boolean insertFeedbackDTO(FeedbackDTO dto);
+
+	List<FeedbackDTO> selectAllFeedbackDTO();
+	List<FeedbackDTO> selectTotalFeedbackDTO();
+
+	FeedbackDTO selectOneFeedbackById(String id);
+
+	boolean updateFeedbackStatus(String id);// delete 대체(완료)
+
+	boolean updateFeedbackStep(String feedback_id);
+	boolean updateFeedbackStepRefuse(String feedback_id);
+
+	boolean updateFeedbackStepFinished(String feedback_id);
+
+	List<FeedbackDTO> selectAllNewFeedbackDTO();
+
+	List<FeedbackDTO> selectAllNiceFeedbackDTO();
+
+	int selectMaxFaqHits();
+
+	int selectMaxFeedbackSends();
+
 }
