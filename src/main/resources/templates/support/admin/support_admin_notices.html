@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="/css/admin_sidebar.css">
+
+<link rel="stylesheet" href="/support_static/support_design/admin_notices_design.css">
+
+
+<title>templates/support/admin/support_admin_notice.html</title>
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+</head>
+
+
+<body>
+<div th:replace="layout/admin_sidebar :: sidebar"></div>
+	<div class="parent-container"
+		style="border: none !important; width: 100%; height: 100%; padding-top: 30px; margin-bottom : 120px; padding-bottom:0px;
+		background: linear-gradient( to bottom, rgba(204,169,254, 0.8), rgba(204,169,254, 0.1), rgba(204,169,254, 0.1), white, transparent);
+		border:none; padding-right: 320px; min-width: 1800px; 
+		">
+
+
+
+	
+	
+		<div class="child-div" style="height: 90px; border:none !important;
+		box-shadow: none; width: 100%; margin-left: 600px; background:transparent;
+			margin-top: -20px;
+		">
+			<div class="title-div" style="border:none !important;">
+			
+				<div class="div-1" style="border:none !important; margin-right:-20px; ">
+					<div >
+						<img th:src="@{/support_static/support_images/symbol_support.png}"
+							style="width: 50px; height: 50px; border:none !important; margin-right: 50px;" />
+					</div>
+				</div>
+				
+				<div class="div-2" style="border:none !important;">지원센터 관리</div>
+				
+				<div class="div-3" style="border: none; display: flex; flex-direction: row; width: 400px; margin-left: 40px;">
+					<div style="margin-right: 50px;">
+						<a th:href="@{/support/admin/feedback}" style="color: #cca9fe !important">관련 통계</a>
+					</div>
+					<div style="margin-right: 50px;">
+						<a th:href="@{/support/admin/notice}">공지사항 관리</a>
+					</div>
+					<div style="margin-right: 50px;">
+						<a th:href="@{/support/admin/faq}" style="color: #cca9fe !important">FAQ 관리</a>
+					</div>
+					<div style="margin-right: 50px;">
+						<a th:href="@{/support/admin/feedback2}" style="color: #cca9fe !important">피드백 관리</a>
+					</div>
+				</div><!-- div-3 -->
+				
+				<div class="div-4" style="border:none !important; color: #5701d0; flex: 10">
+					<span><a href="/support/admin/notice"></a></span>
+				</div>
+				
+			</div>
+		</div>
+		<!-- child-div -->
+	
+	
+	
+	
+	
+	
+		
+		<div class="child-div"
+			style="height: auto; width: 100%; box-shadow: 0 0 6px rgba(0, 0, 0, 0.4) !important; margin-left: 600px;">
+
+			<div class="title-div"
+				style="border-bottom: none; border: 1px solid none; margin-left: 20px; margin-bottom: -10px;">
+				<div class="div-1" style="flex:5; border:none">
+					<div class="div-2" style="font-size: 30px; border:none">
+						공지사항 관리 <span style="opacity : 0.4; font-size: 28px">
+<!-- 						> </span> -->
+<!-- 						<span style="color: #5701d0">전체 조회</span> -->
+					</div>
+				</div>
+			</div>
+			
+<!-- 			<div class="title-div" -->
+<!-- 				style="border-bottom: none; border: 1px solid #cecece !important; margin-left: 28px; margin-bottom: 5px; width: 96%; margin-top: 20px"> -->
+<!-- 				<div class="div-1" style="flex:5; border:none"> -->
+<!-- 					<div class="div-2" style="font-size: 24px; border:none"> -->
+<!-- 						<span style="color: #5701d0">검색 조건</span> -->
+<!-- 					</div> -->
+<!-- 				</div> -->
+<!-- 			</div> -->
+
+			<form th:action="@{/support/admin/notice}" method="get">
+				<div class="child-div"
+					style="height: auto; width: 99%; box-shadow: 0 0 0px rgba(0, 0, 0, 0.0)">
+
+
+
+
+
+					
+					
+					
+					
+					
+
+				</div>
+				<!-- child-div -->
+			</form>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+			<div class="child-div"
+				style="height: auto; box-shadow: none; margin-top: -10px; margin-left: 22px; width: 97%; box-shadow: 0 0 0px rgba(0, 0, 0, 0.0)">
+
+				<div class="notice-header">
+					<div class="notice-cell" style="color: white">ID</div>
+					<div class="notice-cell" style="color: white">게시</div>
+					<div class="notice-cell" style="color: white">고정</div>
+					<div class="notice-cell" style="color: white; text-align: left;">제목</div>
+					<div class="notice-cell" style="color: white; text-align: left;">작성자</div>
+					<div class="notice-cell" style="color: white; text-align: left;">내용</div>
+					<div class="notice-cell" style="color: white">최조 작성일</div>
+					<div class="notice-cell" style="color: white">최종 수정일</div>
+					<div class="notice-cell" style="color: white">조회수</div>
+					<div class="notice-cell" style="color: white">상태</div>
+					<div class="notice-cell" style="color: white">고정</div>
+				</div>
+				<div th:if="${#lists.isEmpty(noticeList)}"
+					style="padding: 30px; font-size: 30px; color: #2e0070; opacity: 0.5; text-align: center;">
+					검색된 결과가 없습니다.</div>
+					
+
+					
+					
+<!-- 				<div class="notice-row row-bordered" style="z-index:9998;" -->
+<!-- 					th:each="notice : ${noticeList}"> -->
+<!-- 					<a -->
+<!-- 						th:href="@{/support/admin/notice/{id}(id=${notice.notice_id})}" -->
+<!-- 						style="display: contents;"> -->
+<!-- 						<div class="notice-cell" th:text="${notice.notice_id}"></div> -->
+<!-- 						<div class="notice-cell" th:text="${notice.notice_status}"></div> -->
+<!-- 						<div class="notice-cell" -->
+<!-- 							th:text="${notice.notice_fix_flag == 'Y' ? 'Y' : 'N'}"></div> -->
+<!-- 						<div class="notice-cell" th:text="${notice.notice_title}"></div> -->
+<!-- 						<div class="notice-cell" th:text="${notice.notice_content}"></div> -->
+<!-- 						<div class="notice-cell" -->
+<!-- 							th:text="${#dates.format(notice.notice_created_date, 'yyyy-MM-dd')}"></div> -->
+<!-- 						<div class="notice-cell" -->
+<!-- 							th:text="${#dates.format(notice.notice_last_modified_date, 'yyyy-MM-dd')}"></div> -->
+<!-- 						<div class="notice-cell" th:text="${notice.notice_writer}"></div> -->
+<!-- 						<div class="notice-cell" th:text="${notice.notice_hits}"></div> -->
+<!-- 					</a> -->
+<!-- 				</div> -->
+
+
+
+
+
+
+<div class="notice-row row-bordered" style="z-index:9998;" th:each="notice : ${noticeList}" th:attr="data-status=${notice.notice_status}">
+    <a th:href="@{/support/admin/notice/{id}(id=${notice.notice_id})}" style="display: contents;">
+        <div class="notice-cell" th:text="${notice.notice_id}"></div>
+        
+            <!-- 버튼 추가 칸 -->
+    <div class="notice-cell button-cell">
+        <th:block th:if="${notice.notice_status} == 'A'">
+            <form th:action="@{/support/admin/notice/delete/{id}(id=${notice.notice_id})}" method="post"
+                  onsubmit="return confirm('해당 공지를 게시 중지할까요?')">
+                <button type="submit" style="border:none; background-color:#0184d0; color:white; border-radius:4px; padding:4px 8px; font-size:14px;">
+                    활성
+                </button>
+            </form>
+        </th:block>
+        <th:block th:if="${notice.notice_status} == 'I'">
+            <form th:action="@{/support/admin/notice/active/{id}(id=${notice.notice_id})}" method="post"
+                  onsubmit="return confirm('해당 공지를 다시 게시할까요?')">
+                <button type="submit" style="border:none;  background-color:rgb(0,0,0, 1); color:white; border-radius:4px; padding:4px 8px; font-size:14px;">
+                    중지
+                </button>
+            </form>
+        </th:block>
+    </div>
+    
+    
+<!-- 고정 여부 토글 버튼 -->
+<div class="notice-cell">
+    <th:block th:if="${notice.notice_fix_flag} == 'Y'">
+        <form th:action="@{/support/admin/notice/unfix/{id}(id=${notice.notice_id})}" method="post"
+              onsubmit="return confirm('해당 공지를 고정 해제할까요?')">
+            <button type="submit"
+                    style="border: none; background-color: #5701d0; color: white; border: 1px solid #5701d0; border-radius: 4px; padding: 4px 8px; font-size: 14px;">
+                고정
+            </button>
+        </form>
+    </th:block>
+    <th:block th:if="${notice.notice_fix_flag} == 'N'">
+        <form th:action="@{/support/admin/notice/fix/{id}(id=${notice.notice_id})}" method="post"
+              onsubmit="return confirm('해당 공지를 고정할까요?')">
+            <button type="submit"
+                    style="border: none; background-color: rgba(204,169,254, 0); color: #5701d0; border: 1px solid #5701d0; border-radius: 4px; padding: 4px 8px; font-size: 14px;">
+                일반
+            </button>
+        </form>
+    </th:block>
+</div>
+
+
+        <div class="notice-cell" th:text="${notice.notice_title}" style="text-align: left;"></div>
+        <div class="notice-cell" th:text="${notice.notice_writer}" style="text-align: left;"></div>
+        <div class="notice-cell" th:text="${notice.notice_content}" style="text-align: left;"></div>
+        <div class="notice-cell notice-created" th:text="${#dates.format(notice.notice_created_date, 'yyyy-MM-dd')}"></div>
+        <div class="notice-cell notice-modified" th:text="${#dates.format(notice.notice_last_modified_date, 'yyyy-MM-dd')}"></div>
+        <div class="notice-cell" th:text="${notice.notice_hits}" style="text-align: left; padding-left: 30px"></div>
+        <div class="notice-cell notice-status"  th:text="${notice.notice_status}"></div>
+        <div class="notice-cell" th:text="${notice.notice_fix_flag == 'Y' ? 'Y' : 'N'}"></div>
+    </a>
+    
+    
+    
+    
+</div>
+
+
+
+
+
+
+			</div>
+			<!-- child-div -->
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+
+			<div class="child-div"
+				th:if="${param.keyword != null and !#strings.isEmpty(param.keyword)}"
+				style="height: 70px; margin-top: -18px; width: 99%; box-shadow: 0 0 0px rgba(0, 0, 0, 0.0)">
+				<hr
+					style="border-color: rgba(0, 0, 0, 0.1) !important; width: 96%; margin-top: 0px; margin-bottom: 0px;">
+
+
+				<div class="content-div"
+					style="display: flex; flex-direction: row; padding: 10px">
+
+					<div style="border: 1px solid #5701d0; flex: 15"></div>
+
+					<div
+						style="border: 1px solid #5701d0; flex: 1; color: #9a43fe; font-size: 32px; font-weight: bold"
+						class="toolbox" th:text="${totalCount}"></div>
+
+
+					<div style="border: 1px solid #5701d0; flex: 0.7; font-size: 24px;"
+						class="toolbox">건</div>
+
+				</div>
+			</div>
+			<!-- child-div -->
+
+
+		</div>
+		<!-- child-div -->
+		
+
+
+	</div>
+	<!-- parent-container -->
+	
+<style>
+.notice-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(220, 220, 220, 0.6);
+    pointer-events: none;
+/*  z-index: 9999; */
+    z-index: 10;
+}
+.notice-row {
+    position: relative; /* 오버레이 위치 기준 */
+}
+.notice-cell.button-cell {
+    position: relative;
+    z-index: 20; /* 오버레이보다 위로 */
+}
+</style>
+
+
+
+<script>
+
+// $(document).ready(function () {
+//     $('.notice-row').each(function () {
+//         const statusText = $(this).find('.notice-cell').eq(1).text().trim(); // 두 번째 셀
+//         if (statusText === 'I') {
+//             const overlay = $('<div class="notice-overlay"></div>');
+//             $(this).append(overlay);
+//         }
+//     });
+// });
+
+// $(document).ready(function () {
+//     $('.notice-row').each(function () {
+//         const cells = $(this).find('.notice-cell');
+//         const created = cells.eq(5).text().trim();
+//         const modified = cells.eq(6).text().trim();
+//         if (created !== modified) {
+// //             cells.eq(6).css('font-weight', 'bold'); // 최종수정일에 bold 적용
+//             cells.eq(6).css('color', '#5701d0');
+//         }
+//     });
+// });
+
+// $(document).ready(function () {
+//     $('.notice-row').each(function () {
+//         const cells = $(this).find('.notice-cell');
+//         const created = cells.eq(5).text().trim();
+//         const modified = cells.eq(6).text().trim();
+//         if (created === modified) {
+// //          cells.eq(6).css('color', '#949494'); // 최종수정일이 생성일과 같으면 색상 변경
+//         	cells.eq(6).text('-').css('color', '#5701d0');
+//         }
+//     });
+// });
+
+
+$(document).ready(function () {
+    $('.notice-row').each(function () {
+        const $row = $(this);
+//      const statusText = $row.find('.notice-status').text().trim();
+		const statusText = $row.data('status'); // data-status 값 읽기
+        const created = $row.find('.notice-created').text().trim();
+        const modified = $row.find('.notice-modified').text().trim();
+
+        // 비활성 상태 오버레이
+        if (statusText === 'I') {
+            const overlay = $('<div class="notice-overlay"></div>');
+            $row.append(overlay);
+        }
+
+        // 수정일 강조 or '-' 표시
+        if (created !== modified) {
+            $row.find('.notice-modified').css('color', '#5701d0');
+        } else {
+            $row.find('.notice-modified').text('-').css('color', '#5701d0');
+        }
+    });
+});
+
+</script>
+
+
+
+</body>
+</html>

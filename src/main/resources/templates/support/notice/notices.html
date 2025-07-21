@@ -3,488 +3,230 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style>
-/*  div { border-color: white !important }  */
-
-a {
-	text-decoration: none;
-	color: #5701d0;
-	transition: color 0.5s ease;
-}
-
-a:hover {
-	text-decoration: none;
-	color: #cca9fe
-}
-
-.parent-container {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	padding: 20px;
-	border: 1px solid #cecece; /* 부모 div에 보라색 테두리 */
-	margin: 20px;
-	width: fit-content; /* 자식 div 크기에 따라 부모 크기가 자동 조절되도록 설정 */
-}
-
-.child-div {
-	width: 1200px; /* 자식 div 너비 두 배로 설정 */
-	height: 240px; /* 자식 div 높이 반으로 줄임 */
-	margin: 10px 0;
-	margin-bottom: 18px;
-	padding: 3px; /* padding 제거 */
-	border: 1px solid #cccccc; /* 자식 div 테두리 색상 검정색 */
-	display: flex;
-	flex-direction: column;
-	justify-content: space-between;
-	background-color: white; /* 배경을 흰색으로 설정 */
-	border-radius: 8px;
-	box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
-}
-
-/* 제목 상단 부분을 가로로 1:3:10:3 비율로 나누기 */
-.title-div {
-	display: flex;
-	padding: 10px; /* 제목 부분에 패딩 추가 */
-	font-size: 18px;
-	color: black; /* 텍스트 색상을 검정색으로 */
-	font-weight: bold;
-	flex: 1; /* 제목부분이 1배 비율 */
-	border: 2px solid #a5a5f7; /* 보라색 테두리 */
-	margin: 5px;
-}
-
-.title-div>div {
-	margin: 2px;
-	border: 2px solid #ccccf9; /* 보라색 테두리 */
-	justify-content: center;
-	align-items: center;
-	align-content: center;
-}
-
-.title-div>.div-1 {
-	flex: 1; /* 1:3:10:3 비율의 1배 */
-}
-
-.title-div>.div-2 {
-	flex: 0.4 4 auto; /* 1:3:10:3 비율의 3배 */
-	font-size: 34px;
-	min-width: 0; /* 내용에 따라 자동으로 크기 조정 */
-}
-
-.title-div>.div-3 {
-	flex: 10; /* 1:3:10:3 비율의 10배 */
-	color: #777777;
-	font-weight: normal;
-	animation: glowColor 2.4s infinite alternate;
-}
-
-.title-div>.div-4 {
-	flex: 3; /* 1:3:10:3 비율의 3배 */
-	text-align: right;
-	font-size: 24px;
-	
-	
-}
-
-.content-div {
-	padding: 5px; /* 내용 부분에 패딩 추가 */
-	font-size: 16px;
-	color: black; /* 텍스트 색상을 검정색으로 */
-	background-color: white; /* 내용 부분의 배경색 */
-	flex: 2; /* 내용부분이 2배 비율 */
-	border: 2px solid #a5a5f7; /* 보라색 테두리 */
-	overflow: auto;
-	margin: 5px;
-	position: relative;
-	display: flex;
-	flex-direction: column;
-}
-
-/* 중앙 정렬되는 div 추가 */
-.center-div {
-	margin: 3px;
-	padding: 3px;
-	border: 2px solid #a5a5f7; /* 보라색 테두리 */
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	text-align: center;
-	width: 90%; /* 중앙 div의 너비를 조정 */
-	height: 90px;
-}
-
-/* 1:1 비율로 나누는 div 추가 */
-.split-div {
-	display: flex;
-	justify-content: space-between;
-	flex: 1; /* 1:1 비율로 나누기 */
-}
-
-.split-div>.half-div {
-	margin: 3px;
-	padding: 3px;
-	border: 2px solid #a5a5f7; /* 보라색 테두리 */
-	flex: 1; /* 1:1 비율로 나누기 */
-}
-
-/* 왼쪽 내용 div 내에서 세로로 2:1 비율로 나누는 div */
-.left-content {
-	display: flex;
-	flex-direction: column;
-	color: #5701d0;
-}
-
-.left-content>.half-top {
-	flex: 2; /* 2배 비율 */
-	border: 1px solid #a5a5f7; /* 보라색 테두리 */
-	padding: 10px;
-	margin-bottom: 10px;
-}
-
-.left-content>.half-bottom {
-	flex: 1; /* 1배 비율 */
-	border: 1px solid #a5a5f7; /* 보라색 테두리 */
-	padding: 10px;
-	text-align: right;
-	font-weight: bold;
-	font-size: 24px;
-	color: #5701d0;
-}
-
-/* 지원센터의 피드백 기능 안에 세로로 2:1 비율로 자식 div 추가 */
-.left-inner-content {
-	display: flex;
-	flex-direction: column;
-}
-
-.left-inner-content>.half-inner-top {
-	flex: 2; /* 2배 비율 */
-	border: 1px solid #a5a5f7; /* 보라색 테두리 */
-	margin-bottom: 10px;
-	font-size: 28px;
-	font-weight: bold;
-	color: #9a43fe;
-}
-
-.left-inner-content>.half-inner-bottom {
-	flex: 1; /* 1배 비율 */
-	border: 1px solid #a5a5f7; /* 보라색 테두리 */
-	margin-top: -10px;
-	color: #9a43fe;
-}
-
-input::placeholder {
-	color: rgba(87, 1, 208, 0.3); /* 0.5는 50% 투명도 */
-}
-
-/*
---------------------------------------------------------------------------------------------------------
-*/
-
-
-
-.notice-board {
-	width: 100%;
-	max-width: 1150px;
-	margin: 10px auto;
-	font-family: 'Segoe UI', sans-serif;
-	border: 1px solid #ddd;
-	border-radius: 8px;
-	overflow: hidden;
-	background-color: #fff;
-}
-
-.notice-header {
-	display: grid;
-	grid-template-columns: 80px 200px 1fr 100px 80px 100px 80px 100px 80px;
-	padding: 12px 16px;
-	align-items: center;
-	border-bottom: 1px solid #eee;
-	background-color: #5701d0;
-	color: white;
-	font-weight: bold;
-	position: sticky;
-	top: 0;
-	z-index: 2;
-}
-
-.notice-body {
-	max-height: 600px; /* 최대 높이 지정 (스크롤 영역) */
-	overflow-y: auto;
-}
-
-.notice-row {
-  display: grid;
-  grid-template-columns: 80px 200px 1fr 100px 80px 100px 80px 100px 80px;
-  padding: 12px 16px;
-  align-items: center;
-  background: #fff;
-  transition: background 0.2s ease;
-  cursor: pointer; /* 클릭 가능한 느낌 부여 */
-}
-
-.notice-row:hover {
-  background: #f3e8ff; /* 연보라색 hover */
-}
-
-.notice-cell {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-size: 14px;
-  color: black;
-}
-
-.notice-empty {
-	text-align: center;
-	padding: 200px 0;
-	color: #888;
-	font-size: 16px;
-}
-
-.notice-row.row-bordered {
-	border-bottom: 1px solid #cccccc;
-}
-
-
-/*
---------------------------------------------------------------------------------------------------------
-*/
-
-
-.pagination a {
-  display: inline-block;
-  padding: 6px 12px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  color: #5701d0;
-  text-decoration: none;
-  font-size: 14px;
-}
-
-.pagination a:hover {
-  background-color: #f2f2f2;
-}
-
-.pagination .active-page {
-  background-color: #5701d0;
-  color: white;
-  font-weight: bold;
-}
-
-.pagination a.disabled-page {
-  pointer-events: none;
-  color: #aaa;
-  border-color: #ddd;
-  background-color: #f9f9f9;
-  cursor: default;
-}
-/*
---------------------------------------------------------------------------------------------------------
-*/
-
-.toolbox {display: flex; align-items: center; justify-content: center;}
-.toolbox > span {font-size: 22px;}
-
-</style>
-<title>부모와 자식 div 수정</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" th:href="@{/css/common.css}">
+<link rel="stylesheet" href="/support_static/support_design/notices_design.css">
+<title>templates/support/notice.html</title>
+<!-- jquery CDN -->
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
 </head>
 <body>
-
-
+<div th:replace="layout/header :: header"></div>
 	<div class="parent-container"
-		style="border: 1px solid #cecece !important;"> <!-- 부모 div 시작 -->
+		style="border: none !important; width: 100%; padding-top: 30px;">
 
 		<div class="child-div"
-			style="height: auto; margin: 0px; border: none; box-shadow: 0 0 0px rgba(0, 0, 0, 0.0)">
-
+			style="height: auto; margin: 0px; border: none; box-shadow: 0 0 0px rgba(0, 0, 0, 0.0); background: none">
 			<div class="title-div"
 				style="margin: 0px; padding: 1px; border: none;">
+
+
 				<div class="div-2"
-					style="font-size: 20px; color: #000000; margin: 0px; margin-bottom: -5px; border: none">
-					지원센터</div>
+					style="font-size: 28px; color: #000000; margin: 0px; margin-bottom: -5px; border: none; display: flex">
+					<div>
+						<a th:href="@{/support}"><img
+							th:src="@{/support_static/support_images/symbol_support.png}"
+							style="width: 32px; height: 32px; margin-right: 15px; margin-top: 8px;" /></a>
+					</div>
+					<div>
+						<a th:href="@{/support}" style="color: #000000">지원센터</a>
+					</div>
+				</div>
+
+
 				<div class="div-3" style="margin: 0px; border: none"></div>
 				<div class="div-4" style="margin: 0px; border: none"></div>
 			</div>
-			<!-- content-div 부분을 주석 처리 -->
 		</div>
-		
-		
+		<!-- child-div -->
 
-		<div class="child-div" style="height: auto; box-shadow: none; margin-bottom: -20px;" >
-			<div class="title-div">
-				<div class="div-1"></div>
+
+		<div class="child-div"
+			style="height: 90px; margin-top: 40px; margin-bottom: -5px; box-shadow: 0 0 6px rgba(0, 0, 0, 0.4) !important;">
+			<div class="title-div" style="margin-top: -3px">
+				<div class="div-1">
+					<div>
+						<img th:src="@{/support_static/support_images/symbol_notice.png}"
+							style="width: 50px; height: 50px" />
+					</div>
+				</div>
 				<div class="div-2">공지사항</div>
 				<div class="div-3">사이트의 핵심 안내사항과 피드백 반영을 전달해드립니다.</div>
 				<div class="div-4" style="color: #5701d0">
-					<span><a href="/support">뒤로가기</a></span>
+					<span
+						th:if="${param.keyword != null and !#strings.isEmpty(param.keyword)}">
+						<a href="/support/notice" style="font-size: 24px">초기화</a>
+					</span> <span
+						th:if="${param.keyword == null || #strings.isEmpty(param.keyword)}">
+						<a href="/support" style="font-size: 24px">뒤로가기</a>
+					</span>
+
 				</div>
 			</div>
-			<!-- content-div 부분을 주석 처리 -->
 		</div>
-		
-		
-		
-		
-		
-		
-		
-		<!--
+		<!-- child-div -->
+
+
 		<div class="child-div"
-			style="height: 80px; box-shadow: 0 0 0px rgba(0, 0, 0, 0.0);">
-			<div class="content-div"
-				style="display: flex; flex-direction: row; padding: 10px">
-				<div style="border: 1px solid #5701d0; flex: 1" class="toolbox"><span>날짜</span></div>
-				<div style="border: 1px solid #5701d0; flex: 3; padding: 4px">
-			  <input type="date" name="date" style="width: 100%; height: 100%; font-size: 20px; border: 3px solid #5701d0; border-radius: 0; box-sizing: border-box; text-align: center;" />
-			</div>
-				<div style="border: 1px solid #5701d0; flex: 0.4"></div>
-				<div style="border: 1px solid #5701d0; flex: 1" class="toolbox"><span>키워드</span></div>
-				<div style="flex: 3; padding: 5px">
-					<input type="text" placeholder="키워드"
-						style="font-size: 22px; border: 3px solid #5701d0 !important; border-radius: 0px; width: 100%; height: 100%; box-sizing: border-box; text-align: center;" />
-				</div>
-				<div style="border: 1px solid #5701d0; flex: 0.4"></div>
-				<div style="border: 1px solid #5701d0; flex: 1;" class="toolbox"><span>유형</span></div>
-					<div style="border: 1px solid #5701d0; flex: 2.4; padding: 5px;">
-					  <select name="category"
-					          style="width: 100%; height: 100%; font-size: 20px; border: 3px solid #5701d0; border-radius: 0; box-sizing: border-box; text-align: center;">
-					    <option value="" disabled selected>선택</option>
-					    <option th:each="cat : ${categoryList}" th:value="${cat}" th:text="${cat}"></option>
-					  </select>
-					</div>
-				<div style="border: 1px solid #5701d0; flex: 0.4"></div>
-				<div style="border: 1px solid #5701d0; flex: 1;" class="toolbox">
-						<div style="border: 1px solid #5701d0; flex: 1;" class="toolbox">
-						  <input type="button" value="적용"
-						         style="width: 100%; height: 40px; border-radius : 8px; background-color: #5701d0; color: white; border: none; font-size: 16px; cursor: pointer;" />
+			style="height: auto; width: 1200px; box-shadow: 0 0 6px rgba(0, 0, 0, 0.4) !important;">
+
+			<form th:action="@{/support/notice}" method="get">
+				<div class="child-div"
+					style="height: auto; width: 99%; box-shadow: 0 0 0px rgba(0, 0, 0, 0.0)">
+
+					<div class="content-div"
+						style="display: flex; flex-direction: row; padding: 10px">
+
+						<div style="border: 1px solid #5701d0; flex: 0.1"></div>
+						<div style="border: 1px solid #5701d0; flex: 2" class="toolbox">
+							<span style="color: #5701d0; font-size: 24px; font-weight: bold">빠른
+								탐색</span>
 						</div>
+
+						<div
+							style="border: 1px solid #5701d0; flex: 5; color: #777777; font-weight: normal; animation: glowColor 2.4s infinite alternate;"
+							class="toolbox">
+							<div
+								style="margin-left: 10px; color: #9a43fe; margin-top: 2px; border: none; font-size: 20px">
+								<span style="font-weight: bold">제목</span>과 <span
+									style="font-weight: bold">내용</span>을 <span
+									style="font-weight: bold; margin-left: 10px;">키워드</span><span>로
+									검색할 수 있습니다.</span>
+							</div>
+						</div>
+
+						<div style="border: 1px solid #5701d0; flex: 1"></div>
+						<div style="flex: 4; padding: 2px">
+							<input type="text" name="keyword" placeholder="키워드"
+								th:value="${param.keyword}"
+								style="font-size: 22px; border: 3px solid #5701d0 !important; border-radius: 0px; width: 100%; height: 100%; box-sizing: border-box; text-align: center;" />
+						</div>
+
+						<div style="border: 1px solid #5701d0; flex: 0.5"></div>
+						<div style="border: 1px solid #5701d0; flex: 1.5">
+							<input type="submit" value="적용"
+								style="width: 100%; height: 40px; border-radius: 8px; background-color: #5701d0; color: white; border: none; font-size: 16px; cursor: pointer;" />
+						</div>
+						<div style="border: 1px solid #5701d0; flex: 0.2"></div>
+
+					</div>
+					<!-- content-div -->
+
 				</div>
-				<div style="border: 1px solid #5701d0; flex: 0.2"></div>
+				<!-- child-div -->
+			</form>
+
+
+			<div class="child-div"
+				style="height: auto; box-shadow: none; margin-top: -10px; margin-left: 22px; width: 95%; box-shadow: 0 0 0px rgba(0, 0, 0, 0.0)">
+
+				<div class="notice-header">
+					<div class="notice-cell" style="color: white">번호</div>
+					<div class="notice-cell" style="color: white">제목</div>
+<!-- 					<div class="notice-cell" style="color: white">내용</div> -->
+<!-- 					<div class="notice-cell" style="color: white">고정</div> -->
+					<div class="notice-cell" style="color: white">작성자</div>
+					<div class="notice-cell" style="color: white">작성일</div>
+					<div class="notice-cell" style="color: white">조회수</div>
+<!-- 					<div class="notice-cell" style="color: white">수정일</div> -->
+<!-- 					<div class="notice-cell" style="color: white">상태</div> -->
+				</div>
+				<div th:if="${#lists.isEmpty(noticeList)}"
+					style="padding: 30px; font-size: 30px; color: #5701d0; opacity: 0.5; text-align: center;">
+					검색된 결과가 없습니다.</div>
+				<div class="notice-row row-bordered"
+					th:each="notice, stat : ${noticeList}">
+
+					<a
+						th:href="@{/support/notice/{id}(id=${notice.notice_id})}"
+						style="display: contents;">
+<!-- 						<div class="notice-cell" th:text="${stat.index + 1}"></div> -->
+						<div class="notice-cell" th:text="${(currPage - 1) * 10 + stat.index + 1}"></div>
+						<div class="notice-cell" th:text="${notice.notice_title}"></div>
+<!-- 						<div class="notice-cell" th:text="${notice.notice_content}"></div> -->
+<!-- 						<div class="notice-cell" -->
+<!-- 							th:text="${notice.notice_fix_flag == 'Y' ? 'Y' : 'N'}"></div> -->
+						<div class="notice-cell" th:text="${notice.notice_writer}"></div>
+						<div class="notice-cell"
+							th:text="${#dates.format(notice.notice_created_date, 'yyyy-MM-dd')}"></div>
+						<div class="notice-cell" th:text="${notice.notice_hits}"></div>
+<!-- 						<div class="notice-cell" -->
+<!-- 							th:text="${#dates.format(notice.notice_last_modified_date, 'yyyy-MM-dd')}"></div> -->
+<!-- 						<div class="notice-cell" th:text="${notice.notice_status}"></div> -->
+					</a>
+				</div>
+
+				<!-- 페이지네이션 영역 -->
+				<div class="pagination" th:if="${not #lists.isEmpty(noticeList)}"
+					style="text-align: center; margin-top: 30px; margin-bottom: 20px;">
+
+
+					<!-- 이전 버튼 -->
+					<a th:if="${currPage > 1}"
+						th:href="@{/support/notice(page=${currPage - 1}, keyword=${keyword})}"
+						style="margin-right: 10px;">&laquo; 이전</a> <a
+						th:if="${currPage == 1}" class="disabled-page"
+						style="margin-right: 10px;">&laquo; 이전</a>
+
+					<!-- 페이지 숫자 -->
+					<!-- <span th:each="i : ${#numbers.sequence(1, totalPages)}"> -->
+					<span
+						th:each="i : ${#numbers.sequence(1, totalPages > 0 ? totalPages : 1)}">
+
+						<a
+						th:href="@{/support/notice(page=${i}, keyword=${keyword})}"
+						th:text="${i}" th:classappend="${i == currPage} ? 'active-page'"
+						style="margin: 0 5px;"></a>
+					</span>
+
+					<!-- 다음 버튼 -->
+					<a th:if="${currPage < totalPages}"
+						th:href="@{/support/notice(page=${currPage + 1}, keyword=${keyword})}"
+						style="margin-left: 10px;">다음 &raquo;</a> <a
+						th:if="${currPage == totalPages}" class="disabled-page"
+						style="margin-left: 10px;">다음 &raquo;</a>
+				</div>
+				<!-- pagination -->
+
 			</div>
+			<!-- child-div -->
+
+			<div class="child-div"
+				th:if="${param.keyword != null and !#strings.isEmpty(param.keyword)}"
+				style="height: auto; margin-top: -18px; width: 99%; box-shadow: 0 0 0px rgba(0, 0, 0, 0.0)">
+				<hr
+					style="border-color: rgba(0, 0, 0, 0.1) !important; width: 96%; height: auto ">
+
+
+				<div class="content-div"
+					style="display: flex; flex-direction: row; padding: 10px;">
+
+					<div style="border: 1px solid #5701d0; flex: 15"></div>
+
+					<div
+						style="border: 1px solid #5701d0; flex: 1; color: #9a43fe; font-size: 32px; font-weight: bold"
+						class="toolbox" th:text="${totalCount}"></div>
+
+
+					<div style="border: 1px solid #5701d0; flex: 0.7; font-size: 24px;"
+						class="toolbox">건</div>
+
+				</div>
+			</div>
+			<!-- child-div -->
+
+
 		</div>
-		-->
-		
-		<form th:action="@{/support/notice/notices}" method="get">
-  <div class="child-div" style="height: 80px; box-shadow: 0 0 0px rgba(0, 0, 0, 0.0);">
-    <div class="content-div" style="display: flex; flex-direction: row; padding: 10px">
-    
-      <div style="border: 1px solid #5701d0; flex: 6; padding: 4px">
-<!--         <input type="date" name="date" -->
-<!--                style="width: 100%; height: 100%; font-size: 20px; border: 3px solid #5701d0; border-radius: 0; box-sizing: border-box; text-align: center;" /> -->
-      </div>
+		<!-- child-div -->
 
+		<div style="margin-top: 60px"></div>
 
-      <div style="border: 1px solid #5701d0; flex: 1" class="toolbox"><span>키워드</span></div>
-      <div style="flex: 5; padding: 5px">
-        <input type="text" name="keyword" placeholder="키워드" th:value="${param.keyword}"
-               style="font-size: 22px; border: 3px solid #5701d0 !important; border-radius: 0px; width: 100%; height: 100%; box-sizing: border-box; text-align: center;" />
-      </div>
+	</div>
+	<!-- parent-container -->
+<script src="/support_static/support_js/notices_search.js"></script>
+<script src="/support_static/support_js/support_ready.js"></script>
 
-      <div style="border: 1px solid #5701d0; flex: 0.4"></div>
-
-      <div style="border: 1px solid #5701d0; flex: 1;" class="toolbox">
-<input type="submit" value="적용"
-                 style="width: 100%; height: 40px; border-radius : 8px; background-color: #5701d0; color: white; border: none; font-size: 16px; cursor: pointer;" />
-</div>
-      <div style="border: 1px solid #5701d0; flex: 2.4; padding: 5px;">
-<!--         <select name="category" -->
-<!--                 style="width: 100%; height: 100%; font-size: 20px; border: 3px solid #5701d0; border-radius: 0; box-sizing: border-box; text-align: center;"> -->
-<!--           <option value="" disabled selected>선택</option> -->
-<!--           <option th:each="cat : ${categoryList}" th:value="${cat}" th:text="${cat}"></option> -->
-<!--         </select> -->
-      </div>
-
-      <div style="border: 1px solid #5701d0; flex: 0.4; font-size: 20px; " class="toolbox">총</div>
-
-      <div style="border: 1px solid #5701d0; flex: 1; color:#9a43fe; font-size: 24px; font-weight: bold" class="toolbox" th:text="${totalCount}"></div>
-
-
-      <div style="border: 1px solid #5701d0; flex: 0.2; font-size: 20px;" class="toolbox">건</div>
-
-    </div>
-  </div>
-</form>
-		
-
-
-
-
-
-
-
-
-
-<div class="child-div" style="height: auto; box-shadow: none; margin-top: -20px;">
-
-
-  <!-- 상단 고정 헤더 -->
-  <div class="notice-header" style="border-radius: 8px">
-    <div class="notice-cell" style="color:white">ID</div>
-    <div class="notice-cell" style="color:white">제목</div>
-    <div class="notice-cell" style="color:white">내용</div>
-    <div class="notice-cell" style="color:white">작성일</div>
-    <div class="notice-cell" style="color:white">고정</div>
-    <div class="notice-cell" style="color:white">작성자</div>
-    <div class="notice-cell" style="color:white">조회수</div>
-    <div class="notice-cell" style="color:white">수정일</div>
-    <div class="notice-cell" style="color:white">상태</div>
-  </div>
-
-<!-- 공지 목록 표시 -->
-<div class="notice-row row-bordered" th:each="notice : ${noticeList}">
-  <a th:href="@{/support/notice/notice_detail/{id}(id=${notice.notice_id})}" style="display: contents;">
-    <div class="notice-cell" th:text="${notice.notice_id}"></div>
-    <div class="notice-cell" th:text="${notice.notice_title}"></div>
-    <div class="notice-cell" th:text="${notice.notice_content}"></div>
-    <div class="notice-cell" th:text="${#dates.format(notice.notice_created_date, 'yyyy-MM-dd')}"></div>
-    <div class="notice-cell" th:text="${notice.notice_fix_flag == 'Y' ? 'Y' : 'N'}"></div>
-    <div class="notice-cell" th:text="${notice.notice_writer}"></div>
-    <div class="notice-cell" th:text="${notice.notice_hits}"></div>
-    <div class="notice-cell" th:text="${#dates.format(notice.notice_last_modified_date, 'yyyy-MM-dd')}"></div>
-    <div class="notice-cell" th:text="${notice.notice_status}"></div>
-  </a>
-</div>
-
-<!-- 페이지네이션 영역 -->
-<div class="pagination" style="text-align: center; margin-top: 30px; margin-bottom: 30px;">
-
-  <!-- 이전 버튼 -->
-  <a th:if="${currPage > 1}"
-     th:href="@{/support/notice/notices(page=${currPage - 1})}"
-     style="margin-right: 10px;">&laquo; 이전</a>
-  <a th:if="${currPage == 1}"
-     class="disabled-page" style="margin-right: 10px;">&laquo; 이전</a>
-
-  <!-- 페이지 숫자 -->
-  <span th:each="i : ${#numbers.sequence(1, totalPages)}">
-    <a th:href="@{/support/notice/notices(page=${i})}"
-       th:text="${i}"
-       th:classappend="${i == currPage} ? 'active-page'" 
-       style="margin: 0 5px;"></a>
-  </span>
-
-  <!-- 다음 버튼 -->
-  <a th:if="${currPage < totalPages}"
-     th:href="@{/support/notice/notices(page=${currPage + 1})}"
-     style="margin-left: 10px;">다음 &raquo;</a>
-  <a th:if="${currPage == totalPages}"
-     class="disabled-page" style="margin-left: 10px;">다음 &raquo;</a>
-</div><!-- pagination -->
-
-
-
-
-
-
-
-
-
-
-
-</div><!-- child-div -->
-</div><!-- parent-container -->
+<div th:replace="layout/footer :: footer"></div>
 </body>
 </html>
