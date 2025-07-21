@@ -6,7 +6,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class DonationRequestDTO {
-    private Long lectureId;
+    private String lectureNo;
     private Long instructorUserSeq; // instructor 지갑은 서버에서 찾음
     private Long amount;
     private String message;

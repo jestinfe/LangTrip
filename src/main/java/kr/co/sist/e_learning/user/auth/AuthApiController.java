@@ -1,8 +1,11 @@
 package kr.co.sist.e_learning.user.auth;
 
 
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -161,14 +164,40 @@ public class AuthApiController {
     }
     
     @PostMapping("/password/reset")
-    public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordRequestDTO dto) {
+    public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordRequestDTO dto,
+                                           HttpServletRequest request,
+                                           HttpServletResponse response) {
         try {
             authService.resetPassword(dto.getUserId(), dto.getNewPassword());
-            return ResponseEntity.ok(new SimpleResponseDTO(true, "비밀번호가 성공적으로 변경되었습니다.", null));
+
+            // ✅ 쿠키 삭제
+            Cookie accessCookie = new Cookie("accessToken", null);
+            accessCookie.setMaxAge(0);
+            accessCookie.setPath("/");
+            accessCookie.setHttpOnly(true);
+            response.addCookie(accessCookie);
+
+            Cookie refreshCookie = new Cookie("refreshToken", null);
+            refreshCookie.setMaxAge(0);
+            refreshCookie.setPath("/");
+            refreshCookie.setHttpOnly(true);
+            response.addCookie(refreshCookie);
+
+            // ✅ 세션 무효화
+            HttpSession session = request.getSession(false);
+            if (session != null) {
+                session.invalidate();
+            }
+
+            // ✅ 응답: 프론트에게 리디렉션 지시
+            return ResponseEntity.ok(new SimpleResponseDTO(true, "비밀번호가 성공적으로 변경되어 로그아웃됩니다.", "/login"));
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new SimpleResponseDTO(false, e.getMessage(), null));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new SimpleResponseDTO(false, e.getMessage(), null));
         }
     }
+
+    
 
     @GetMapping("/user/current-id")
     public ResponseEntity<?> getCurrentUserId(HttpServletRequest request) {
@@ -182,33 +211,27 @@ public class AuthApiController {
 
     @GetMapping("/status")
     public ResponseEntity<?> getLoginStatus(Authentication authentication) {
-        if (authentication != null && authentication.isAuthenticated() && !(authentication.getPrincipal() instanceof String && authentication.getPrincipal().equals("anonymousUser"))) {
+        if (authentication != null &&
+            authentication.isAuthenticated() &&
+            !(authentication.getPrincipal() instanceof String &&
+              authentication.getPrincipal().equals("anonymousUser"))) {
+
             try {
                 Long userSeq = Long.parseLong(authentication.getPrincipal().toString());
-                Optional<UserEntity> userOptional = userRepository.findByUserSeq(userSeq);
-                if (userOptional.isPresent()) {
-                    UserEntity user = userOptional.get();
-                    return ResponseEntity.ok(Map.of("loggedIn", true, "nickname", user.getNickname()));
-                }
+                return userRepository.findByUserSeq(userSeq)
+                        .map(user -> ResponseEntity.ok(Map.of(
+                            "loggedIn", true,
+                            "nickname", user.getNickname()
+                        )))
+                        .orElseGet(() -> ResponseEntity.ok(Map.of("loggedIn", false)));
             } catch (NumberFormatException e) {
-                // Principal이 숫자로 변환될 수 없는 경우 로깅 또는 예외 처리
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new SimpleResponseDTO(false, "Invalid user identifier in token.", null));
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(Map.of("success", false, "message", "Invalid user ID in token"));
             }
         }
         return ResponseEntity.ok(Map.of("loggedIn", false));
     }
 
-    @PostMapping("/logout")
-    public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
-        String refreshToken = jwtAuthUtils.extractRefreshTokenFromCookies(request);
-        if (refreshToken != null) {
-            authService.logout(refreshToken);
-        }
-        // 쿠키 삭제
-        jwtAuthUtils.deleteAccessTokenCookie(response);
-        jwtAuthUtils.deleteRefreshTokenCookie(response);
-        return ResponseEntity.ok(new SimpleResponseDTO(true, "로그아웃 성공", null));
-    }
 }
     
     

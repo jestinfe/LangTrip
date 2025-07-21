@@ -34,7 +34,7 @@
         user_seq
     ) VALUES (
         #{paymentSeq},
-        #{impUid},
+        #{impUid, jdbcType=VARCHAR},
         #{walletSeq},
         #{method, jdbcType=VARCHAR},
         #{provider, jdbcType=VARCHAR},

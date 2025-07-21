@@ -10,7 +10,7 @@ public class LectureServiceImpl implements LectureService {
     private final LectureMapper lectureMapper;
 
     @Override
-    public LectureDetailDTO getLectureDetail(Long courseSeq) {
+    public LectureDetailDTO getLectureDetail(String courseSeq) {
         return lectureMapper.selectLectureDetailByCourseSeq(courseSeq);
     }
 }

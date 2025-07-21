@@ -24,4 +24,7 @@ public interface MileWalletDao {
 
     // 7. 받은 누적 마일 증가
     void addReceivedMiles(@Param("walletSeq") Long walletSeq, @Param("amount") Long amount);
+
+    // 8. 지갑 존재 여부 확인
+    boolean checkWalletExists(Long walletSeq);
 }

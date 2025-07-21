@@ -63,4 +63,9 @@ public class MileWalletDaoImpl implements MileWalletDao {
         params.put("amount", amount);
         sqlSession.update(NAMESPACE + ".addReceivedMiles", params);
     }
+
+    @Override
+    public boolean checkWalletExists(Long walletSeq) {
+        return sqlSession.selectOne(NAMESPACE + ".checkWalletExists", walletSeq);
+    }
 }

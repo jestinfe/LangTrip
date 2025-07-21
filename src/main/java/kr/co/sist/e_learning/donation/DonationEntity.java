@@ -10,27 +10,22 @@ import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
 @Entity
-@Table(name = "DONATION")
+@Table(name = "DONATIONS")
 public class DonationEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "donation_seq_gen")
-    @SequenceGenerator(
-        name = "donation_seq_gen",
-        sequenceName = "SEQ_donation",
-        allocationSize = 1
-    )
     @Column(name = "DONATION_SEQ")
-    private Long donationSeq;
+    private String donationSeq;
 
     @Column(name = "COURSE_SEQ")
-    private Long courseSeq;
+    private String courseSeq;
 
     @Column(name = "WALLET_SEQ")
     private Long sponsorWalletSeq;
@@ -47,8 +42,12 @@ public class DonationEntity {
     @Column(name = "CREATED_AT")
     private LocalDateTime createdAt;
 
+
     @PrePersist
     public void prePersist() {
         this.createdAt = LocalDateTime.now();
+
+        }
     }
-}
+
+
