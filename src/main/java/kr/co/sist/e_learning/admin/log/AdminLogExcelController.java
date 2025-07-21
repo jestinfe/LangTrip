@@ -1,6 +1,9 @@
 package kr.co.sist.e_learning.admin.log;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.apache.poi.ss.usermodel.Cell;
@@ -36,33 +39,42 @@ public class AdminLogExcelController {
 
         List<AdminLogDTO> logs = adminLogService.getAllAdminLogs(searchDTO);
 
-        Workbook workbook = new XSSFWorkbook();
-        Sheet sheet = workbook.createSheet("Admin Logs");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-        // Header
-        Row headerRow = sheet.createRow(0);
-        String[] headers = {"Log ID", "Admin ID", "Action Type", "Target ID", "Log Time", "Details"};
-        for (int i = 0; i < headers.length; i++) {
-            Cell cell = headerRow.createCell(i);
-            cell.setCellValue(headers[i]);
+        try (Workbook workbook = new XSSFWorkbook()) {
+            Sheet sheet = workbook.createSheet("Admin Logs");
+
+            // Header
+            String[] headers = {"Log ID", "Admin ID", "Action Type", "Target ID", "Log Time", "Details"};
+            Row headerRow = sheet.createRow(0);
+            for (int i = 0; i < headers.length; i++) {
+                headerRow.createCell(i).setCellValue(headers[i]);
+            }
+
+            // Data rows
+            int rowNum = 1;
+            for (AdminLogDTO log : logs) {
+                Row row = sheet.createRow(rowNum++);
+                row.createCell(0).setCellValue(log.getLogId());
+                row.createCell(1).setCellValue(log.getAdminId());
+                row.createCell(2).setCellValue(log.getActionType());
+                row.createCell(3).setCellValue(log.getTargetId());
+                row.createCell(4).setCellValue(
+                	log.getLogTime().toLocalDateTime().format(formatter)
+                );                
+                row.createCell(5).setCellValue(log.getDetails());
+            }
+
+            for (int i = 0; i < headers.length; i++) {
+                sheet.autoSizeColumn(i);
+            }
+
+            String fileName = "admin_logs_" + LocalDate.now() + ".xlsx";
+            response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            response.setHeader("Content-Disposition", "attachment; filename=" + URLEncoder.encode(fileName, "UTF-8"));
+
+            workbook.write(response.getOutputStream());
         }
-
-        // Data
-        int rowNum = 1;
-        for (AdminLogDTO log : logs) {
-            Row row = sheet.createRow(rowNum++);
-            row.createCell(0).setCellValue(log.getLogId());
-            row.createCell(1).setCellValue(log.getAdminId());
-            row.createCell(2).setCellValue(log.getActionType());
-            row.createCell(3).setCellValue(log.getTargetId());
-            row.createCell(4).setCellValue(log.getLogTime().toString());
-            row.createCell(5).setCellValue(log.getDetails());
-        }
-
-        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-        response.setHeader("Content-Disposition", "attachment; filename=admin_logs.xlsx");
-
-        workbook.write(response.getOutputStream());
-        workbook.close();
     }
+
 }
