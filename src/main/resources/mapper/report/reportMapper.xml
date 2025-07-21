@@ -70,13 +70,23 @@ SELECT * FROM (
 		AND r.action_status = #{actionStatus}
 		</if>
 		</where>
-<![CDATA[
-		ORDER BY r.reported_at DESC
+		<choose>
+			<when test="sort != null and sort.contains(',')">
+				ORDER BY
+				<foreach collection="sort.split(',')" item="item" separator=" ">
+					<if test="item == 'reportedAt'">r.reported_at</if>
+					<if test="item == 'desc'">DESC</if>
+					<if test="item == 'asc'">ASC</if>
+				</foreach>
+			</when>
+			<otherwise>
+				ORDER BY r.reported_at DESC
+			</otherwise>
+		</choose>
 	) A
 	WHERE ROWNUM <= #{endRow}
 )
 WHERE rnum >= #{startRow}
-]]>
 </select>
 
 <select id="countReports" parameterType="kr.co.sist.e_learning.pagination.UsrAndRptPageRequestDTO" resultType="Integer">
