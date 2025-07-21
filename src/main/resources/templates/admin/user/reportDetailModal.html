@@ -43,19 +43,21 @@
 		  <!-- 상세 정보 테이블 -->
           <table class="table table-bordered">
             <tbody>
-              <tr><th>신고 사유</th><td>욕설, 기타(직접입력한내용)</td></tr>
-              <tr><th>콘텐츠 유형</th><td>강의</td></tr>
-              <tr><th>제목</th><td><a href="#" class="text-decoration-underline">풀스택</a></td></tr>
-              <tr><th>신고일</th><td>2025-06-21</td></tr>
-              <tr><th>신고인 ID</th><td>홍길동</td></tr>
-              <tr><th>피신고인 ID</th><td>Content</td></tr>
-              <tr><th>처리상태</th><td>미처리</td></tr>
-              <tr><th>피신고인 계정 상태</th><td>정상</td></tr>
+              <tr><th>신고 사유</th><td id="modal-reason">욕설, 기타(직접입력한내용)</td></tr>
+              <tr><th>콘텐츠 유형</th><td id="modal-contentType">강의</td></tr>
+              <tr><th>제목</th><td><a href="#" id="modal-title" class="text-decoration-underline">풀스택</a></td></tr>
+              <tr><th>신고일</th><td id="modal-date">2025-06-21</td></tr>
+              <tr><th>신고인 ID</th><td id="modal-reporterId">홍길동</td></tr>
+              <tr><th>피신고인 ID</th><td id="modal-reportedUserId">Content</td></tr>
+              <tr><th>처리상태</th><td id="modal-actionStatus">미처리</td></tr>
+              <tr><th>피신고인 계정 상태</th><td id="modal-reportedUserStatus">정상</td></tr>
             </tbody>
           </table>
+          <!-- JS/axios에서 필요 -->
+          <input type="hidden" id="modal-reportId">
 
-          <!-- 피신고인 조치 -->
-          <h6 class="fw-bold mb-3">피신고인 조치</h6>
+          <!-- 계정 조치 -->
+          <h6 class="fw-bold mb-3">계정 조치</h6>
 
           <!-- 제재 여부 -->
           <div class="mb-3">
@@ -149,8 +151,12 @@
   </div>
 </div>
 
+<!-- bootstrap bundle CDN -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
 <!-- 스크립트 -->
 <script>
+document.addEventListener('DOMContentLoaded', () => {
+
 // 무제재/제재 라디오
 const noPenaltyRadio = document.getElementById("noPenalty");
 const penaltyRadio = document.getElementById("penalty");
@@ -231,8 +237,8 @@ document.getElementById("confirmApplyBtn").addEventListener("click", () => {
 
   console.log("신고 처리 적용됨");
 });
+
+});
 </script>
-<!-- bootstrap bundle CDN -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
 </body>
 </html>

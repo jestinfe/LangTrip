@@ -24,11 +24,11 @@ public class AdminReportController {
 		this.reportService = reportService;
 	}
 	
-	@GetMapping("/reportList")
+	@GetMapping("/report-list")
 	public String reportList(@ModelAttribute UsrAndRptPageRequestDTO pReqDTO, Model model) {
 		UsrAndRptPageResponseDTO<ReportDTO> pResDTO = reportService.getReports(pReqDTO);
 		model.addAttribute("pResDTO", pResDTO);
 		model.addAttribute("pReqDTO", pReqDTO);
-		return "admin/report/reportList";
+		return "admin/report/report-list";
 	}
 }
