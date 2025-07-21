@@ -73,7 +73,17 @@
         )
         <where>
           <if test="status != null and status != ''">
-            status = #{status}
+            <choose>
+              <when test="status == 'ACTIVE'">
+                status = 'Y'
+              </when>
+              <when test="status == 'INACTIVE'">
+                status = 'N'
+              </when>
+              <when test="status == 'PENDING'">
+                status = 'PENDING'
+              </when>
+            </choose>
           </if>
           <if test="searchType != null and searchKeyword != null and searchKeyword != ''">
             <choose>
@@ -224,7 +234,17 @@
     ) unified
     <where>
       <if test="status != null and status != ''">
-        unified.status = #{status}
+        <choose>
+          <when test="status == 'ACTIVE'">
+            unified.status = 'Y'
+          </when>
+          <when test="status == 'INACTIVE'">
+            unified.status = 'N'
+          </when>
+          <when test="status == 'PENDING'">
+            unified.status = 'PENDING'
+          </when>
+        </choose>
       </if>
       <if test="searchType != null and searchKeyword != null and searchKeyword != ''">
         <choose>

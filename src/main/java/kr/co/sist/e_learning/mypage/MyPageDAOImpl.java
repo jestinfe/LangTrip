@@ -17,22 +17,22 @@ public class MyPageDAOImpl implements MyPageDAO {
     @Autowired
     private SqlSessionTemplate sst;
     
-    private final String NAMESPACE = "kr.co.sist.e_learning.mypage.MyPageMapper";
-    
+    private final String nsMP = "kr.co.sist.e_learning.mypage.MyPageMapper";
+
     @Override
     public MyPageDTO getMyPageSummary(long userSeq) {
-        return session.selectOne(NAMESPACE + ".selectMyPageSummary", userSeq);
+        return session.selectOne(nsMP + ".selectMyPageSummary", userSeq);
     }
 
     @Override
     public MyPageDTO selectUserInfo(long userSeq) {
-        return sst.selectOne(NAMESPACE + ".selectUserInfo", userSeq);
+        return sst.selectOne(nsMP + ".selectUserInfo", userSeq);
     }
     
     
     @Override
     public String selectProfilePath(long userSeq) {
-        return session.selectOne(NAMESPACE + ".selectProfilePath", userSeq);
+        return session.selectOne(nsMP + ".selectProfilePath", userSeq);
     }
     
     @Override
@@ -40,20 +40,25 @@ public class MyPageDAOImpl implements MyPageDAO {
         Map<String, Object> map = new HashMap<>();
         map.put("userSeq", userSeq);
         map.put("profile", profile);
-        session.update(NAMESPACE + ".updateProfile", map);
+        session.update(nsMP + ".updateProfile", map);
     }
 
+  
+    @Override
+    public List<SubscriptionDTO> selectSubscriptions(Long userSeq) {
+        System.out.println("[DAO] selectSubscriptions(userSeq=" + userSeq + ")");
+        List<SubscriptionDTO> list = session.selectList(nsMP + ".selectSubscriptions", userSeq);
+        System.out.println("[DAO] session.selectList → size=" + list.size() + ", list=" + list);
+        return list;
+    }
+
+    @Override
+    public int deleteSubscription(Map<String, Object> paramMap) {
+        System.out.println("[DAO] deleteSubscription(paramMap=" + paramMap + ")");
+        int count = session.delete(nsMP + ".deleteSubscription", paramMap);
+        System.out.println("[DAO] session.delete → count=" + count);
+        return count;
+    }
     
-    @Override
-    public List<SubscriptionDTO> getSubscriptions(long userSeq) {
-        return session.selectList(NAMESPACE + ".selectSubscriptions", userSeq);
-    }
-
-    @Override
-    public void unsubscribe(long userSeq, String instructorId) {
-        Map<String, Object> map = new HashMap<>();
-        map.put("userSeq", userSeq);
-        map.put("instructorId", instructorId);
-        session.delete(NAMESPACE + ".deleteSubscription", map);
-    }
+    
 }

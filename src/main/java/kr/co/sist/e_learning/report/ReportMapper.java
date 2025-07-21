@@ -4,10 +4,10 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
 
-import kr.co.sist.e_learning.pagination.PageRequestDTO;
+import kr.co.sist.e_learning.pagination.UsrAndRptPageRequestDTO;
 
 @Mapper
 public interface ReportMapper {
-	List<ReportDTO> selectReports(PageRequestDTO pDTO);
-	int countReports(PageRequestDTO pDTO);
+	List<ReportDTO> selectReports(UsrAndRptPageRequestDTO pReqDTO);
+	int countReports(UsrAndRptPageRequestDTO pReqDTO);
 }

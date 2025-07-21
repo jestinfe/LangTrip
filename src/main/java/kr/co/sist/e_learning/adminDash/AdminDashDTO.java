@@ -10,5 +10,5 @@ public class AdminDashDTO {
     private int count;
 
     private String signupPath;
-    private String unsugnPath; 
+    private String unsignPath; 
 }

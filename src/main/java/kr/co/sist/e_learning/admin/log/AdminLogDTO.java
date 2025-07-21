@@ -15,4 +15,8 @@ public class AdminLogDTO {
     private String targetId;
     private Timestamp logTime;
     private String details;
+    private String searchKeyword;
+    private String searchType = "all";
+    private String startDate;
+    private String endDate;
 }

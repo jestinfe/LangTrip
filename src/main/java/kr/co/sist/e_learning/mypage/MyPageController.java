@@ -8,16 +8,13 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.servlet.http.HttpSession;
@@ -27,7 +24,10 @@ import jakarta.servlet.http.HttpSession;
 public class MyPageController {
 
     @Autowired
-    private MyPageService mps;
+    private MyPageService mpSV;
+    
+    @Autowired
+    private FundingService fdSV;
 
     private long getOrInitUserSeq(HttpSession session) {
         Object raw = session.getAttribute("user_seq");
@@ -51,17 +51,23 @@ public class MyPageController {
 
         switch (tab) {
             case "my_info":
-                model.addAttribute("myData", mps.getUserInfo(userSeq));
+                model.addAttribute("myData", mpSV.getUserInfo(userSeq));
                 break;
             case "lecture_history":
-                model.addAttribute("lectureList", mps.getLectureHistory(userSeq));
+                model.addAttribute("lectureList", mpSV.getLectureHistory(userSeq));
                 break;
             case "subscriptions":
-                model.addAttribute("subscriptionList", mps.getSubscriptions(userSeq));
+            	//디버깅용
+                System.out.println("[Controller] case=‘subscriptions’, userSeq=" + userSeq);
+                List<SubscriptionDTO> subs = mpSV.getSubscriptions(userSeq);
+                System.out.println("[Controller] getSubscriptions → size=" + subs.size() + ", data=" + subs);
+                model.addAttribute("subscriptionList", subs);
                 break;
+//                model.addAttribute("subscriptionList", mpSV.getSubscriptions(userSeq));
+//                break;
             case "dashboard":
             default:
-                model.addAttribute("myData", mps.getMyPageData(userSeq));
+                model.addAttribute("myData", mpSV.getMyPageData(userSeq));
                 break;
         }
 
@@ -73,7 +79,7 @@ public class MyPageController {
     @GetMapping("/dashboard")
     public String dashboard(HttpSession session, Model model) {
     	long userSeq = getOrInitUserSeq(session);
-        model.addAttribute("myData", mps.getMyPageData(userSeq));
+        model.addAttribute("myData", mpSV.getMyPageData(userSeq));
         return "mypage/dashboard";
     }
 
@@ -81,38 +87,16 @@ public class MyPageController {
     @GetMapping("/lecture_history")
     public String lectureHistory(HttpSession session, Model model) {
     	long userSeq = getOrInitUserSeq(session);
-        model.addAttribute("lectureList", mps.getLectureHistory(userSeq));
+        model.addAttribute("lectureList", mpSV.getLectureHistory(userSeq));
+        model.addAttribute("myLectureList", mpSV.selectMyLectures(userSeq));
         return "mypage/lecture_history";
     }
 
-    /** 구독 목록 */
-    @GetMapping("/subscriptions")
-    public String subscriptions(@SessionAttribute("user_seq") long userSeq, Model model) {
-        List<SubscriptionDTO> subs = mps.getSubscriptions(userSeq);
-        System.out.println("구독 목록 사이즈: " + subs.size());
-        for (SubscriptionDTO dto : subs) {
-            System.out.println(dto); // 혹은 dto.getNickname(), dto.getThumbnailPath() 등
-        }
-        model.addAttribute("subscriptions", subs);
-        return "mypage/subscriptions";
-    }
-
-    /** 구독 취소 (폼 전송용) */
     @PostMapping("/unsubscribe")
-    public String unsubscribe(@RequestParam String instructorId, HttpSession session) {
-    	long userSeq = getOrInitUserSeq(session);
-        mps.cancelSubscription(userSeq, instructorId);
-        return "redirect:/mypage?tab=subscriptions";
-    }
-
-    /** 구독 취소 (AJAX용) */
-    @DeleteMapping("/cancel_subscription")
-    @ResponseBody
-    public ResponseEntity<Void> cancelSubscription(@RequestParam("instructorId") String instructorId,
-                                                   HttpSession session) {
-        long userSeq = getOrInitUserSeq(session);
-        mps.cancelSubscription(userSeq, instructorId);
-        return ResponseEntity.ok().build();
+    public boolean cancelSubscription(HttpSession session,
+                                      @RequestParam Long instructorId) {
+        Long userSeq = (Long) session.getAttribute("user_seq");
+        return mpSV.cancelSubscription(userSeq, instructorId);
     }
 
 
@@ -121,7 +105,7 @@ public class MyPageController {
     public String myInfo(HttpSession session, Model model) {
     	long userSeq = getOrInitUserSeq(session);
         System.out.println("uploadProfile 메서드 진입");
-        model.addAttribute("myData", mps.getUserInfo(userSeq));
+        model.addAttribute("myData", mpSV.getUserInfo(userSeq));
         return "mypage/my_info";
     }
 
@@ -157,7 +141,7 @@ public class MyPageController {
             if (!dir.exists()) dir.mkdirs();
 
             // 기존 이미지 삭제
-            String oldPath = mps.selectProfilePath(userSeq); // 예: /images/userprofile/abc_user001.png
+            String oldPath = mpSV.selectProfilePath(userSeq); // 예: /images/userprofile/abc_user001.png
             if (oldPath != null && oldPath.startsWith("/images/userprofile/")) {
                 String oldFileName = oldPath.replace("/images/userprofile/", "");
                 File oldFile = new File(dir, oldFileName);
@@ -175,7 +159,7 @@ public class MyPageController {
 
             // DB 업데이트
             String webPath = "/images/userprofile/" + newFileName;
-            mps.updateProfilePath(userSeq, webPath);
+            mpSV.updateProfilePath(userSeq, webPath);
 
             result.put("success", true);
             result.put("newPath", webPath);
@@ -205,11 +189,34 @@ public class MyPageController {
     public String leave() {
         return "mypage/leave";
     }
+    
+    @GetMapping("/subscriptions")
+    public String subscriptionPage(HttpSession session, Model model) {
+    	
+    	//디버깅용//
+        long userSeq = getOrInitUserSeq(session);
+        System.out.println("[Controller·/subscriptions] called, userSeq=" + userSeq);
+        List<SubscriptionDTO> subscriptions = mpSV.getSubscriptions(userSeq);
+        System.out.println("[Controller·/subscriptions] from service → subscriptions("
+                           + subscriptions.size() + ")=" + subscriptions);
+        model.addAttribute("subscriptionList", subscriptions);
+        return "mypage/subscriptions"; // subscriptions.html
+    }
 
-    /** 후원 기록 */
-    @GetMapping("/donation_history")
-    public String donation_history() {
-        return "mypage/donation_history";
+    @GetMapping("/wallet")
+    public String accountPage(Model model, HttpSession session) {
+        long userSeq = getOrInitUserSeq(session);
+        FundingDTO accountInfo = fdSV.getAccountInfo(userSeq);
+        model.addAttribute("accountInfo", accountInfo);
+        return "mypage/wallet"; // 프래그먼트 지정
+    }
+
+    @GetMapping("/donation")
+    public String fundingPage(Model model, HttpSession session) {
+        long userSeq = getOrInitUserSeq(session);
+        List<FundingDTO> fundingList = fdSV.getUserFundings(userSeq);
+        model.addAttribute("fundingList", fundingList);
+        return "mypage/donation";
     }
 
     /** 헤더/사이드바 (프래그먼트) */

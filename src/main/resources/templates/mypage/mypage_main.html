@@ -1,548 +1,125 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
+  <!-- Chart.js 전역 로드 -->
+  <script src="/js/chart.umd.js"></script>
+  <!-- drawCharts 함수 정의 파일 -->
+  <script src="/js/dashboardCharts.js"></script>
 
-<!-- Chart.js 전역 로드 -->
-<script src="/js/chart.umd.js"></script>
+  <!-- 공통 스타일 -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" th:href="@{/css/common.css}">
+  <link rel="stylesheet" th:href="@{/css/course_list.css}">
 
-<!-- drawCharts 함수 정의 파일 -->
-<script src="/js/dashboardCharts.js"></script>
-
+  <!-- 마이페이지 전용 스타일 -->
+  <link rel="stylesheet" th:href="@{/css/mypage.css}">
+  <link rel="stylesheet" th:href="@{/css/lecture.css}">
+  <link rel="stylesheet" th:href="@{/css/subscription.css}">
+  
   <meta charset="UTF-8">
   <title>마이페이지</title>
-<style>
-  body {
-    margin: 0;
-    font-family: 'Segoe UI', sans-serif;
-    background-color: #f0f2f5;
-  }
+  <script>
+    // 🎯 콘텐츠 영역 비동기 로드
+    function loadContent(url) {
+      fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          document.querySelector("#content-area").innerHTML = html;
+          history.replaceState(null, '', '/mypage?tab=' + url.split('/').pop());
 
-  .container {
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-  }
+          if (url.includes("dashboard") && typeof window.drawCharts === 'function') {
+            setTimeout(() => window.drawCharts(), 50);
+          }
+        })
+        .catch(err => console.error("내용 로드 실패:", err));
+    }
 
-  .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: linear-gradient(to right, #709dff, #9ec2ff);
-    padding: 15px 30px;
-    color: white;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    position: relative;
-  }
 
-  .logo img {
-    height: 40px;
-    border-radius: 8px;
-  }
+  function initSidebarClick() {
+    document.querySelector(".sidebar").addEventListener("click", function (e) {
+      const target = e.target.closest("a");
+      if (!target) return;
 
-  .nav-center {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    gap: 24px;
-    font-weight: 600;
-  }
+      const href = target.getAttribute("href");
+      // /mypage 또는 /mypage?tab=xxx 까지 포함하도록 조건 넓히기
+      if (href.startsWith("/mypage")) {
+        e.preventDefault();
 
-  .nav-center a {
-    text-decoration: none;
-    color: white;
-    font-size: 16px;
-    position: relative;
-    padding: 6px 10px;
-  }
+        // 쿼리파라미터에서 tab 추출
+        const urlObj = new URL(href, window.location.origin);
+        const tabParam = urlObj.searchParams.get("tab") || urlObj.pathname.split("/").pop();
 
-  .nav-center a::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    bottom: -4px;
-    width: 100%;
-    height: 2px;
-    background-color: white;
-    transform: scaleX(0);
-    transition: transform 0.3s ease;
-  }
-
-  .nav-center a:hover::after {
-    transform: scaleX(1);
-  }
-
-  .separator {
-    width: 2px;
-    height: 20px;
-    background-color: rgba(255,255,255,0.5);
-    border-radius: 1px;
-  }
-
-  .nav-right {
-    display: flex;
-    gap: 12px;
-    margin-left: auto;
-  }
-
-  .nav-right a {
-    text-decoration: none;
-    color: white;
-    font-weight: bold;
-    background-color: rgba(255, 255, 255, 0.25);
-    padding: 8px 16px;
-    border-radius: 20px;
-    transition: background 0.25s;
-  }
-
-  .nav-right a:hover {
-    background-color: rgba(255, 255, 255, 0.4);
-  }
-
-  .main-content {
-    display: flex;
-    flex: 1;
-    overflow: hidden;
-  }
-
-  .sidebar {
-    flex: 0 0 240px;
-    background-color: #ffffff;
-    border-right: 1px solid #e0e0e0;
-    overflow-y: auto;
-    padding-top: 20px;
-    box-shadow: 2px 0 4px rgba(0,0,0,0.03);
-  }
-
-  .sidebar-header {
-    font-size: 20px;
-    font-weight: bold;
-    padding: 0 20px 20px;
-    color: #3f51b5;
-  }
-
-  .sidebar-menu {
-    list-style: none;
-    padding: 0 20px;
-  }
-
-  .sidebar-menu li {
-    margin: 12px 0;
-  }
-
-  .sidebar-menu a {
-    color: #333;
-    text-decoration: none;
-    font-weight: 500;
-    display: block;
-    padding: 8px 12px;
-    border-radius: 8px;
-    transition: background 0.2s;
-  }
-
-  .sidebar-menu a:hover {
-    background-color: #e3ecff;
-    color: #1a3acc;
-  }
-
-  .content-area {
-    flex: 1;
-    background-color: #f9fbfe;
-    padding: 30px;
-    overflow-y: auto;
-    
-    max-width: 1200px;   /* 최대 너비 제한 */
-    margin: 0 auto;      /* 가운데 정렬 */
-  }
-	/* 수강 내역 카드 스타일 (기존 테이블과 별개로 동작) */
-	.lecture-grid {
-	  display: grid;
-	  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-	  gap: 20px;
-	}
-	
-	.info-section {
-  margin-top: 30px;
-  padding: 20px;
-  background-color: #fff;
-  border-radius: 12px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-}
-
-.info-title {
-  font-size: 22px;
-  color: #3f51b5;
-  margin-bottom: 20px;
-  font-weight: bold;
-}
-
-.info-table {
-  width: 100%;
-  border-collapse: collapse;
-  background-color: white;
-  border-radius: 10px;
-  overflow: hidden;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-}
-
-.info-table th,
-.info-table td {
-  padding: 12px 15px;
-  border-bottom: 1px solid #eee;
-  text-align: left;
-}
-
-.info-table th {
-  background-color: #f0f4ff;
-  font-weight: 600;
-  color: #333;
-  width: 150px;
-}
-
-.info-table td {
-  color: #555;
-  vertical-align: middle;
-}
-
-.info-profile-img {
-  height: 60px;
-  border-radius: 10px;
-  object-fit: cover;
-}
-
-.info-button {
-  background-color: #3f51b5;
-  color: white;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-  font-size: 14px;
-  margin-left: 10px;
-}
-
-.info-button:hover {
-  background-color: #3143a1;
-}
-
-.info-password-button {
-  margin-left: 10px;
-  background-color: #6c63ff;
-}
-
-.info-flex {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.info-leave-button {
-  margin-top: 24px;
-  background-color: #ff4d4f;
-  color: white;
-  padding: 10px 18px;
-  border: none;
-  border-radius: 6px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.info-leave-button:hover {
-  background-color: #e04848;
-}
-
-	.lecture-card {
-	  background: #ffffff;
-	  border: 1px solid #ddd;
-	  border-radius: 12px;
-	  padding: 20px;
-	  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.04);
-	  transition: transform 0.2s ease;
-	}
-	
-	.lecture-card:hover {
-	  transform: translateY(-4px);
-	}
-	
-	.lecture-title {
-	  font-size: 16px;
-	  font-weight: 600;
-	  margin-bottom: 4px;
-	  color: #333;
-	}
-	
-	.video-title {
-	  font-size: 14px;
-	  color: #666;
-	  margin-bottom: 10px;
-	}
-	
-	.progress-bar {
-	  width: 100%;
-	  height: 10px;
-	  background-color: #eee;
-	  border-radius: 5px;
-	  overflow: hidden;
-	  margin-bottom: 8px;
-	}
-	
-	.progress {
-	  height: 100%;
-	  background: #4a76ff;
-	  border-radius: 5px;
-	  transition: width 0.3s ease;
-	}
-	
-	.progress-text {
-	  font-size: 14px;
-	  color: #444;
-	  margin-bottom: 10px;
-	}
-	
-	.complete-text {
-	  font-size: 14px;
-	  color: #2e7d32;
-	  font-weight: bold;
-	}
-	
-	.go-button {
-	  display: inline-block;
-	  padding: 8px 14px;
-	  background-color: #5c6bc0;
-	  color: white;
-	  border-radius: 8px;
-	  text-decoration: none;
-	  font-size: 14px;
-	  font-weight: bold;
-	  transition: background 0.3s;
-	}
-	
-	.go-button:hover {
-	  background-color: #3949ab;
-	}
-
-.subcard-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 24px;
-}
-
-.subcard {
-  background-color: #fff;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  transition: transform 0.2s ease;
-}
-
-.subcard:hover {
-  transform: translateY(-6px);
-}
-
-.subcard-thumb {
-  width: 100%;
-  height: 140px;
-  object-fit: cover;
-  border-top-left-radius: 12px;
-  border-top-right-radius: 12px;
-}
-
-.subcard-title {
-  font-size: 15px;
-  font-weight: bold;
-  margin: 12px 16px 4px;
-  color: #333;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.subcard-sub {
-  font-size: 13px;
-  color: #666;
-  margin: 0 16px 12px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.subcard-bottom {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 16px 16px;
-  margin-top: auto;
-}
-
-.subcard-date {
-  font-size: 12px;
-  color: #888;
-}
-
-.subcard-unsub {
-  background-color: #ff5e5e;
-  color: white;
-  padding: 6px 12px;
-  border: none;
-  border-radius: 6px;
-  font-size: 13px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.subcard-unsub:hover {
-  background-color: #e04848;
-  
-  h2 {
-    font-size: 22px;
-    color: #3f51b5;
-    margin-bottom: 20px;
-  }
-
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    background-color: white;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-  }
-
-  th, td {
-    padding: 12px 15px;
-    border-bottom: 1px solid #eee;
-    text-align: left;
-  }
-
-  th {
-    background-color: #f0f4ff;
-    font-weight: 600;
-    color: #333;
-  }
-
-  td {
-    color: #555;
-  }
-
-  button {
-    background-color: #3f51b5;
-    color: white;
-    border: none;
-    padding: 6px 12px;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background-color 0.2s;
-  }
-
-  button:hover {
-    background-color: #3143a1;
-  }
-</style>
-
-<script>
-// 콘텐츠 영역 비동기 로드
-function loadContent(url) {
-  fetch(url)
-    .then(res => res.text())
-    .then(html => {
-      console.log("🚀 Loaded HTML:", html);  //디버깅 용
-      const contentArea = document.querySelector("#content-area");
-      contentArea.innerHTML = html;
-      history.replaceState(null, '', '/mypage?tab=' + url.split('/').pop());
-
-      // 대시보드라면 차트 함수 실행
-      if (url.includes("dashboard") && typeof window.drawCharts === 'function') {
-        setTimeout(() => window.drawCharts(), 50);  // DOM 렌더링 후 실행
+        // 패스 방식(/mypage/subscriptions)을 AJAX로 호출
+        loadContent("/mypage/" + tabParam);
       }
-    })
-    .catch(err => console.error("내용 로드 실패:", err));
-}
+    });
+  }
 
-// 사이드바 메뉴 클릭 시 Ajax 로드
-function initSidebarClick() {
-  document.querySelector(".sidebar").addEventListener("click", function (e) {
-    const target = e.target.closest("a");
-    if (target && target.getAttribute("href").startsWith("/mypage/")) {
-      e.preventDefault();
-      loadContent(target.getAttribute("href"));
-    }
+  document.addEventListener("DOMContentLoaded", function () {
+    // 초기 로드 시에도 query string 기준으로 tab 뽑아서 path 호출
+    const initialTab = new URL(window.location.href).searchParams.get("tab") || "dashboard";
+    loadContent("/mypage/" + initialTab);
+    initSidebarClick();
   });
-}
+    
+    
+    
 
-// 페이지 로드시 기본 탭 로드
-document.addEventListener("DOMContentLoaded", function () {
-  const urlParams = new URLSearchParams(window.location.search);
-  const tab = urlParams.get("tab") || "dashboard";
-  loadContent("/mypage/" + tab);
-  initSidebarClick();
-});
+    function uploadProfile() {
+      const file = document.getElementById("profileFile").files[0];
+      if (!file) return;
 
-// 프로필 이미지 업로드
-function uploadProfile() {
-  const fileInput = document.getElementById("profileFile");
-  const file = fileInput.files[0];
-  if (!file) return;
+      const formData = new FormData();
+      formData.append("file", file);
 
-  const formData = new FormData();
-  formData.append("file", file);
-
-  fetch("/mypage/upload_profile", {
-    method: "POST",
-    body: formData
-  })
-  .then(resp => resp.json())
-  .then(data => {
-    if (data.success) {
-      const newSrc = data.newPath + "?t=" + new Date().getTime(); // 캐시 우회
-      document.getElementById("profilePreview").src = newSrc;
-      alert("프로필 이미지가 변경되었습니다.");
-    } else {
-      alert("업로드 실패: " + data.message);
+      fetch("/mypage/upload_profile", {
+        method: "POST",
+        body: formData
+      })
+      .then(resp => resp.json())
+      .then(data => {
+        if (data.success) {
+          document.getElementById("profilePreview").src = data.newPath + "?t=" + new Date().getTime();
+          alert("프로필 이미지가 변경되었습니다.");
+        } else {
+          alert("업로드 실패: " + data.message);
+        }
+      })
+      .catch(err => alert("에러 발생: " + err));
     }
-  })
-  .catch(err => alert("에러 발생: " + err));
-}
 
-// 구독 취소 요청
-function unsubscribe(followeeId) {
-  fetch('/mypage/unsubscribe', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: 'followee_id=' + followeeId
-  })
-  .then(res => {
-    if (res.ok) {
-      alert('구독 취소되었습니다.');
-      location.reload();
-    } else {
-      alert('에러가 발생했습니다.');
+ 	 function unsubscribe(followingId) {
+      fetch('/mypage/unsubscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'following_id=' + followingId
+      })
+      .then(res => {
+        if (res.ok) {
+          alert('구독 취소되었습니다.');
+          location.reload();
+        } else {
+          alert('에러가 발생했습니다.');
+        }
+      });
+      
     }
-  });
-}
-
-</script>
-
-
-
+  </script>
 </head>
 
-<body>
-<div class="container">
+<!--  클래스 추가 -->
+<body class="mypage">
+  <div class="container">
+    <!-- 헤더 Fragment -->
+    <th:block th:replace="~{layout/header :: header}"/>
 
-  <!-- 헤더 Fragment -->
-  <div class="header" th:replace="~{mypage/user_header :: header}"></div>
+    <div class="main-content">
+      <!-- 사이드바 Fragment -->
+      <div class="sidebar" th:replace="~{mypage/sidebar :: sidebar}"></div>
 
-  <div class="main-content">
-    <!-- 사이드바 Fragment -->
-    <div class="sidebar" th:replace="~{mypage/sidebar :: sidebar}"></div>
-
-    <!-- 동적 콘텐츠 영역 -->
-    <div class="content-area" id="content-area"></div>
+      <!-- 동적 콘텐츠 영역 -->
+      <div class="content-area" id="content-area"></div>
+    </div>
   </div>
-</div>
 </body>
 </html>

@@ -1,32 +1,70 @@
 package kr.co.sist.e_learning.admin.course;
 
-import java.util.List;
-
+import kr.co.sist.e_learning.pagination.PageResponseDTO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import lombok.RequiredArgsConstructor;
+import java.util.HashMap;
+import java.util.Map;
 
 @Controller
-@RequestMapping("/admin")
-@RequiredArgsConstructor
+@RequestMapping("/admin/courses")
 public class AdminCourseController {
 
-    private final AdminCourseService courseService;
+    @Autowired
+    private AdminCourseService adminCourseService;
 
-    // 1. 강의 목록 조회
-    @GetMapping("/courses")
-    public String showCourseList(Model model) {
-        List<AdminCourseDTO> courseList = courseService.getAllCourses();
-        model.addAttribute("courseList", courseList);
-        return "admin/course/course_list";  // 템플릿 경로
+    @GetMapping
+    public String listAdminCourses(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int pageSize,
+            @RequestParam(required = false) String searchType,
+            @RequestParam(required = false) String searchKeyword,
+            @RequestParam(required = false, defaultValue = "uploadDate,desc") String sort,
+            @RequestParam(required = false) String isPublic,
+            Model model) {
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("page", page);
+        params.put("pageSize", pageSize);
+        params.put("searchType", searchType);
+        params.put("searchKeyword", searchKeyword);
+        params.put("sort", sort);
+        params.put("isPublic", isPublic);
+        params.put("offset", (page - 1) * pageSize);
+        params.put("limit", pageSize);
+
+        PageResponseDTO<AdminCourseDTO> responseDTO = adminCourseService.getAdminCourses(params);
+
+        model.addAttribute("courseList", responseDTO.getList());
+        model.addAttribute("currentPage", responseDTO.getPage());
+        model.addAttribute("totalPages", responseDTO.getTotalPages());
+        model.addAttribute("startPage", responseDTO.getStartPage());
+        model.addAttribute("endPage", responseDTO.getEndPage());
+        model.addAttribute("totalCount", responseDTO.getTotalCnt());
+        model.addAttribute("pageSize", pageSize);
+        model.addAttribute("searchType", searchType);
+        model.addAttribute("searchKeyword", searchKeyword);
+        model.addAttribute("sort", sort);
+        model.addAttribute("isPublic", isPublic);
+
+        return "admin/course/course_list";
     }
 
-    // 2. 공개 여부 변경
-    @PostMapping("/course/toggle")
-    public String toggleCourseVisibility(@RequestParam String courseSeq, @RequestParam String isPublic) {
-        courseService.updateCourseVisibility(courseSeq, isPublic);
-        return "redirect:/admin/courses";
+    @GetMapping("/{courseSeq}")
+    public String adminCourseDetail(@PathVariable String courseSeq, Model model) {
+        AdminCourseDTO course = adminCourseService.getAdminCourseDetail(courseSeq);
+        model.addAttribute("course", course);
+        return "admin/course/course_detail";
+    }
+
+    @PostMapping("/{courseSeq}/toggleVisibility")
+    public String toggleCourseVisibility(@PathVariable String courseSeq, @RequestParam String isPublic, RedirectAttributes ra) {
+        adminCourseService.updateCourseVisibility(courseSeq, isPublic);
+        ra.addFlashAttribute("message", "Course visibility updated successfully!");
+        return "redirect:/admin/courses/" + courseSeq;
     }
 }

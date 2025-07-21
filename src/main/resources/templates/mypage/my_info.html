@@ -1,37 +1,43 @@
-<div class="info-section">
-  <h2 class="info-title">🙋 내 정보</h2>
+<div class="profile-container">
+  <div class="profile-header">🙋 내 정보</div>
 
-  <table class="info-table">
-    <tr>
-      <th>프로필</th>
-      <td>
-        <img th:src="@{${myData.profile}}" alt="프로필 이미지"
-             class="info-profile-img" id="profilePreview"/>
-        <input type="file" id="profileFile" accept="image/*" style="display: none;" onchange="uploadProfile()"/>
-        <button type="button" class="info-button" onclick="document.getElementById('profileFile').click();">
-          프로필 수정
-        </button>
-      </td>
-    </tr>
-    <tr><th>유저 번호</th><td th:text="${myData.userSeq}">user001</td></tr>
-    <tr><th>이메일</th><td th:text="${myData.email}">user@example.com</td></tr>
-    <tr>
-      <th>비밀번호</th>
-      <td class="info-flex">
-        <span th:text="${myData.maskedPassword}">****</span>
-        <button type="button" class="info-button info-password-button" onclick="location.href='/mypage/reset_password'">
-          비밀번호 변경
-        </button>
-      </td>
-    </tr>
-    <tr><th>닉네임</th><td th:text="${myData.nickname}">홍길동</td></tr>
-    <tr><th>상태</th><td th:text="${myData.status}">ACTIVE</td></tr>
-    <tr><th>소셜 ID</th><td th:text="${myData.socialId}">abc123</td></tr>
-    <tr><th>소셜 제공자</th><td th:text="${myData.socialProvider}">KAKAO</td></tr>
-  </table>
+  <div class="profile-content">
+    <!-- 프로필 이미지 영역 -->
+    <div class="profile-image">
+      <img th:src="@{${myData.profile}}" alt="프로필 이미지" id="profilePreview">
+      <input type="file" id="profileFile" style="display:none;" onchange="uploadProfile()">
+    </div>
+
+    <!-- 사용자 정보 -->
+    <div class="profile-info">
+      <div class="label">유저 번호</div>
+      <div class="value" th:text="${myData.userSeq}"></div>
+
+      <div class="label">이메일</div>
+      <div class="value" th:text="${myData.email}"></div>
+
+      <div class="label">닉네임</div>
+      <div class="value" th:text="${myData.nickname}"></div>
+
+      <div class="label">상태</div>
+      <div class="value" th:text="${myData.status}"></div>
+
+      <div class="label">소셜 ID</div>
+      <div class="value" th:text="${myData.socialId}"></div>
+
+      <div class="label">제공자</div>
+      <div class="value" th:text="${myData.socialProvider}"></div>
+    </div>
+  </div>
+
+  <!-- 버튼 영역 -->
+<div class="profile-buttons">
+  <div class="left-buttons">
+    <button onclick="document.getElementById('profileFile').click()">프로필 사진 변경</button>
+    <button class="warning" onclick="location.href='/mypage/reset_password'">비밀번호 변경</button>
+  </div>
+  <div class="right-buttons">
+    <button onclick="location.href='/mypage/leave'" class="danger">회원 탈퇴</button>
+  </div>
 </div>
 
-<button type="button" class="info-leave-button"
-        onclick="if(confirm('정말로 탈퇴하시겠습니까?')) location.href='/mypage/leave';">
-  💥 회원 탈퇴
-</button>

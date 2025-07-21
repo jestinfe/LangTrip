@@ -18,9 +18,6 @@ public class MyPageServiceImpl implements MyPageService {
     @Autowired
     private LectureHistoryDAO lctDAO;
 
-    @Autowired
-    private SubscriptionDAO sbDAO;
-
     // 대시보드 요약 정보
     @Override
     public MyPageDTO getMyPageData(long userSeq) {
@@ -50,20 +47,33 @@ public class MyPageServiceImpl implements MyPageService {
         return lctDAO.getLectureHistory(userSeq);
     }
     
-    //구독목록
+    //내 강의
     @Override
-    public List<SubscriptionDTO> getSubscriptions(long userSeq) {
-        return sbDAO.selectSubscriptions(userSeq);
+    public List<LectureHistoryDTO> selectMyLectures(long userSeq) {
+        return lctDAO.selectMyLectures(userSeq);
+    }
+    	
+    
+    // 구독 목록
+    @Override
+    public List<SubscriptionDTO> getSubscriptions(Long userSeq) {
+        System.out.println("[Service] getSubscriptions(userSeq=" + userSeq + ")");
+        List<SubscriptionDTO> list = mpDAO.selectSubscriptions(userSeq);
+        System.out.println("[Service] selectSubscriptions → size=" + list.size() + ", list=" + list);
+        return list;
     }
 
-    //구독취소
+    // 구독 취소
     @Override
-    public int cancelSubscription(long followerId, String followeeId) {
-        Map<String, Object> map = new HashMap<>();
-        map.put("userSeq", followerId);
-        map.put("instructorId", followeeId);
-        sbDAO.deleteSubscription(map);
-        return 1; // 성공 시 1 반환. 실제 영향 줄 수는 DAO 쪽에서 반환값 받아도 됨
+    public boolean cancelSubscription(Long userSeq, Long instructorId) {
+        System.out.println("[Service] cancelSubscription(userSeq=" + userSeq + ", instructorId=" + instructorId + ")");
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("userSeq", userSeq);
+        paramMap.put("instructorId", instructorId);
+        int deleted = mpDAO.deleteSubscription(paramMap);
+        boolean result = deleted > 0;
+        System.out.println("[Service] deleteSubscription → deleted=" + deleted + ", result=" + result);
+        return result;
     }
 
 }

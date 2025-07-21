@@ -6,6 +6,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import kr.co.sist.e_learning.common.aop.Loggable;
+
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -40,6 +42,7 @@ public class AdminAccountController {
      * 관리자 정보 수정
      */
     @PostMapping("/{id}")
+    @Loggable(actionType = "ADMIN_UPDATE")
     public String updateAdmin(@PathVariable("id") String id,
                               @ModelAttribute AdminAccountUnifiedDTO dto) {
         dto.setAdminId(id);
@@ -88,9 +91,9 @@ public class AdminAccountController {
         @RequestParam(required = false) String searchKeyword,
         @RequestParam(required = false, defaultValue = "createdAt,desc") String sort,
         @RequestParam(defaultValue = "1") int page,
+        @RequestParam(defaultValue = "10") int pageSize,
         Model model
     ) {
-        int pageSize = 10;
         int offset = (page - 1) * pageSize;
 
         Map<String, Object> params = new HashMap<>();

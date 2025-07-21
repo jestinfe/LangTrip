@@ -68,7 +68,16 @@ function drawSignupPathChart(paths) {
 }
 
 function drawUnsignReasonChart(reasons) {
-  const labels = reasons.map(i => i.unsugnPath);
+  const reasonMap = {
+    "1": "흥미 감소",
+    "2": "진행 어려움",
+    "3": "콘텐츠 불만족",
+    "4": "기술 문제",
+    "5": "개인 사정",
+    "6": "기타"
+  };
+
+  const labels = reasons.map(i => reasonMap[i.unsignPath] || "알 수 없음");
   const counts = reasons.map(i => i.count);
 
   new Chart(document.getElementById('reasonBarChart'), {
@@ -88,9 +97,7 @@ function drawUnsignReasonChart(reasons) {
         legend: { display: false }
       },
       scales: {
-        y: {
-          beginAtZero: true
-        }
+        y: { beginAtZero: true }
       }
     }
   });

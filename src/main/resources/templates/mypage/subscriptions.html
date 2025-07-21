@@ -1,97 +1,23 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-  <meta charset="UTF-8">
-  <title>구독 목록</title>
-  <style>
-    body {
-      font-family: 'Arial', sans-serif;
-      background-color: #f9f9f9;
-      margin: 0;
-      padding: 20px;
-    }
-
-    h2 {
-      color: #333;
-      margin-bottom: 20px;
-    }
-
-    .subscriptions-container {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 20px;
-    }
-
-    .subscription-card {
-      background-color: #fff;
-      border-radius: 12px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      padding: 16px;
-      transition: transform 0.2s ease;
-    }
-
-    .subscription-card:hover {
-      transform: translateY(-5px);
-    }
-
-    .subscription-card img {
-      width: 100%;
-      height: 160px;
-      object-fit: cover;
-      border-radius: 8px;
-      margin-bottom: 10px;
-    }
-
-    .subscription-card p {
-      margin: 5px 0;
-      font-size: 14px;
-      color: #444;
-    }
-
-    .subscription-card strong {
-      color: #000;
-    }
-  </style>
-</head>
-<body>
-  <div>
-    <h2>📌 구독 목록</h2>
-
-    <div class="subscriptions-container">
-      
-      <!-- 첫 번째 카드 -->
-      <div class="subscription-card">
-        <img th:src="@{/images/thumbnail/jap01_thumb.png}" />
-        <p><strong>닉네임:</strong> 영어킹</p>
-        <p><strong>제목:</strong> 기본 영어 회화</p>
-        <p><strong>구독일:</strong> 2025-07-10</p>
-      </div>
-
-      <!-- 두 번째 카드 -->
-      <div class="subscription-card">
-        <img th:src="@{/images/thumbnail/jap02_thumb.png}"  />
-        <p><strong>닉네임:</strong> 구조마스터</p>
-        <p><strong>제목:</strong> 영어 문법 구조</p>
-        <p><strong>구독일:</strong> 2025-07-09</p>
-      </div>
-
-      <!-- 세 번째 카드 -->
-      <div class="subscription-card">
-        <img th:src="@{/images/thumbnail/eng01_thumb.png}"  />
-        <p><strong>닉네임:</strong> 실전회화</p>
-        <p><strong>제목:</strong> 일본어 일상 회화</p>
-        <p><strong>구독일:</strong> 2025-07-08</p>
-      </div>
-
-      <!-- 네 번째 카드 -->
-      <div class="subscription-card">
-        <img th:src="@{/images/thumbnail/eng01_thumb.png}"  />
-        <p><strong>닉네임:</strong> 일본어짱</p>
-        <p><strong>제목:</strong> 일상 대화 (일본어)</p>
-        <p><strong>구독일:</strong> 2025-07-07</p>
-      </div>
-
-    </div>
-  </div>
-</body>
-</html>
+<div class="subscription-page">
+	<div class="subscription-section">
+	    <h2>구독한 강사 목록</h2>
+	    
+	    <div th:if="${#lists.isEmpty(subscriptionList)}" class="empty-state">
+	        <p>아직 구독한 강사가 없습니다. 🎓<br>
+	        새로운 강사를 구독하여 학습을 시작해보세요!</p>
+	    </div>
+	    
+	    <div class="subscription-grid">
+	        <div th:each="sub : ${subscriptionList}" class="subscription-card">
+	            <div class="instructor-info">
+	                <p><strong th:text="${sub.instructorName}">강사 이름</strong></p>
+	                <p>구독일: <span th:text="${sub.subscribedAt}">2025-07-19</span></p>
+	            </div>
+	            <button class="unsubscribe-btn"
+	                    th:onclick="|unsubscribe(${sub.instructorId})|">
+	                구독 취소
+	            </button>
+	        </div>
+	    </div>
+	</div>
+</div>

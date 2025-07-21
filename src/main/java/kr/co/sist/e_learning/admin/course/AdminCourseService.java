@@ -1,10 +1,11 @@
 package kr.co.sist.e_learning.admin.course;
 
-import java.util.List;
+import kr.co.sist.e_learning.pagination.PageResponseDTO;
+
+import java.util.Map;
 
 public interface AdminCourseService {
-
-    List<AdminCourseDTO> getAllCourses();
-
+    PageResponseDTO<AdminCourseDTO> getAdminCourses(Map<String, Object> params);
+    AdminCourseDTO getAdminCourseDetail(String courseSeq);
     void updateCourseVisibility(String courseSeq, String isPublic);
 }
