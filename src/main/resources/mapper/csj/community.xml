@@ -16,7 +16,8 @@
       #{content},
       SYSTIMESTAMP,
       0,
-      'A'
+      'A',
+       #{communityNotice, jdbcType=CHAR} 	
     )
   </insert>
 
@@ -34,6 +35,8 @@
     cp.created_at AS createdAt,
     cp.views,
     cp.post_state AS postState
+  	, cp.community_notice AS communityNotice
+  	
   FROM community_post cp
   JOIN users u ON cp.user_id = u.user_seq
   WHERE cp.post_state = 'A'
@@ -100,6 +103,8 @@
       cp.created_at AS createdAt,
       cp.views,
       cp.post_state AS postState,
+      cp.community_notice AS communityNotice
+      
       NVL((
         SELECT COUNT(*) FROM community_like cl
         WHERE cl.post_id2 = cp.post_id
@@ -249,5 +254,12 @@
 	ORDER BY NVL(c.parent_id, c.comment_id) DESC, c.parent_id NULLS FIRST, c.created_at DESC
 	
 </select>
+
+
+
+
+
+
+
 
 </mapper>

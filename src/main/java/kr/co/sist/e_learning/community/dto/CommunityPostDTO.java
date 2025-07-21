@@ -29,4 +29,6 @@ public class CommunityPostDTO {
     private int upCount;
     
     
+    private String communityNotice;
+    
 }
