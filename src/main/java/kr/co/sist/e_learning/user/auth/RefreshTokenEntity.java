@@ -19,7 +19,7 @@ public class RefreshTokenEntity {
     @SequenceGenerator(
             name = "refresh_token_seq_gen",
             sequenceName = "REFRESH_TOKEN_SEQ",
-            allocationSize = 10
+            allocationSize = 1
     )
     @Column(name = "ID")
     private Long id;

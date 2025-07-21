@@ -1,14 +1,14 @@
 package kr.co.sist.e_learning.user.auth;
 
-import jakarta.servlet.http.Cookie;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;
 
@@ -17,27 +17,20 @@ import java.util.Optional;
 public class AuthApiController {
 
     @Autowired
-    private AuthService AuthService;
+    private AuthService authService;
 
     @Autowired
     private JwtAuthUtils jwtAuthUtils;
 
     @Autowired
-    private RefreshTokenRepository refreshTokenRepository;
-    
-  
-   
-    
-
-    @Autowired
-    private JwtTokenProvider jwtTokenProvider;
+    private UserRepository userRepository; // UserRepository 주입
 
     /**
      * 이메일 인증 코드 전송
      */
     @PostMapping("/email/send")
     public ResponseEntity<?> sendEmailVerification(@RequestBody EmailRequestDTO dto) {
-        String verificationSeq = AuthService.sendEmailVerification(dto.getEmail());
+        String verificationSeq = authService.sendEmailVerification(dto.getEmail());
         return ResponseEntity.ok(
                 new SimpleResponseDTO(true, "이메일 인증 코드 발송 완료", verificationSeq)
         );
@@ -48,7 +41,7 @@ public class AuthApiController {
      */
     @PostMapping("/email/verify")
     public ResponseEntity<?> verifyEmailCode(@RequestBody EmailCodeVerifyRequestDTO dto) {
-        boolean isValid = AuthService.verifyEmailCode(
+        boolean isValid = authService.verifyEmailCode(
                 dto.getVerificationSeq(),
                 dto.getCode()
         );
@@ -64,7 +57,7 @@ public class AuthApiController {
      */
     @GetMapping("/email/check")
     public ResponseEntity<?> checkEmailDuplicate(@RequestParam String email) {
-        boolean duplicated = AuthService.isEmailDuplicated(email);
+        boolean duplicated = authService.isEmailDuplicated(email);
         return ResponseEntity.ok(
                 new SimpleResponseDTO(!duplicated,
                         duplicated ? "이미 가입된 이메일입니다." : "사용 가능한 이메일입니다.",
@@ -77,7 +70,7 @@ public class AuthApiController {
      */
     @GetMapping("/nickname/check")
     public ResponseEntity<?> checkNicknameDuplicate(@RequestParam String nickname) {
-        boolean duplicated = AuthService.isNicknameDuplicated(nickname);
+        boolean duplicated = authService.isNicknameDuplicated(nickname);
         return ResponseEntity.ok(
                 new SimpleResponseDTO(!duplicated,
                         duplicated ? "이미 사용 중인 닉네임입니다." : "사용 가능한 닉네임입니다.",
@@ -87,7 +80,7 @@ public class AuthApiController {
 
     @PostMapping("/nickname/find")
     public ResponseEntity<?> findNicknameByEmail(@RequestBody EmailRequestDTO dto) {
-        String nickname = AuthService.findNicknameByEmail(dto.getEmail());
+        String nickname = authService.findNicknameByEmail(dto.getEmail());
         if (nickname != null) {
             return ResponseEntity.ok(new SimpleResponseDTO(true, "닉네임을 찾았습니다.", nickname));
         } else {
@@ -97,7 +90,7 @@ public class AuthApiController {
 
     @PostMapping("/password/forgot")
     public ResponseEntity<?> forgotPassword(@RequestBody ForgotPasswordRequestDTO dto) {
-        boolean success = AuthService.forgotPassword(dto);
+        boolean success = authService.forgotPassword(dto);
         if (success) {
             return ResponseEntity.ok(new SimpleResponseDTO(true, "임시 비밀번호가 이메일로 발송되었습니다.", null));
         } else {
@@ -106,18 +99,13 @@ public class AuthApiController {
                     .body(new SimpleResponseDTO(false, "입력하신 정보와 일치하는 사용자가 없습니다.", null));
         }
     }
-
-
-
-
-
     
     /**
      * 회원가입
      */
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@RequestBody LocalSignUpRequestDTO dto) {
-        AuthService.signup(dto);
+        authService.signup(dto);
         return ResponseEntity.ok(
                 new SimpleResponseDTO(true, "회원가입 완료", null)
         );
@@ -126,7 +114,7 @@ public class AuthApiController {
     @PostMapping("/socialSignup")
     public ResponseEntity<?> socialSignup(@RequestBody SocialSignUpRequestDTO dto,
                                           HttpServletResponse response) {
-        AuthService.socialSignup(dto, response);
+        authService.socialSignup(dto, response);
         return ResponseEntity.ok(
                 new SimpleResponseDTO(true, "소셜 회원가입 완료", null)
         );
@@ -139,7 +127,7 @@ public class AuthApiController {
     public ResponseEntity<?> localLogin(@RequestBody LocalLoginRequestDTO dto,
                                         HttpServletResponse response) {
         try {
-            String loginStatus = AuthService.localLogin(dto, response);
+            String loginStatus = authService.localLogin(dto, response);
             if ("FORCE_CHANGE_PASSWORD".equals(loginStatus)) {
                 return ResponseEntity.ok(new SimpleResponseDTO(true, "임시 비밀번호로 로그인했습니다. 비밀번호를 변경해야 합니다.", "FORCE_CHANGE_PASSWORD"));
             } else {
@@ -153,7 +141,7 @@ public class AuthApiController {
     @PostMapping("/login/social")
     public ResponseEntity<?> socialLogin(@RequestBody SocialLoginDTO dto,
                                          HttpServletResponse response) {
-        AuthService.socialLogin(dto, response);
+        authService.socialLogin(dto, response);
         return ResponseEntity.ok(
                 new SimpleResponseDTO(true, "소셜 로그인 성공", null)
         );
@@ -165,17 +153,17 @@ public class AuthApiController {
     @PostMapping("/token/refresh")
     public ResponseEntity<?> refreshToken(HttpServletRequest request, HttpServletResponse response) {
         try {
-            AuthService.reissueAccessToken(request, response);
+            authService.reissueAccessToken(request, response);
             return ResponseEntity.ok(new SimpleResponseDTO(true, "Access Token 재발급 완료", null));
         } catch (RuntimeException e) {
             return ResponseEntity.status(401).body(new SimpleResponseDTO(false, e.getMessage(), null));
         }
     }
-
+    
     @PostMapping("/password/reset")
     public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordRequestDTO dto) {
         try {
-            AuthService.resetPassword(dto.getUserId(), dto.getNewPassword());
+            authService.resetPassword(dto.getUserId(), dto.getNewPassword());
             return ResponseEntity.ok(new SimpleResponseDTO(true, "비밀번호가 성공적으로 변경되었습니다.", null));
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new SimpleResponseDTO(false, e.getMessage(), null));
@@ -190,6 +178,36 @@ public class AuthApiController {
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new SimpleResponseDTO(false, e.getMessage(), null));
         }
+    }
+
+    @GetMapping("/status")
+    public ResponseEntity<?> getLoginStatus(Authentication authentication) {
+        if (authentication != null && authentication.isAuthenticated() && !(authentication.getPrincipal() instanceof String && authentication.getPrincipal().equals("anonymousUser"))) {
+            try {
+                Long userSeq = Long.parseLong(authentication.getPrincipal().toString());
+                Optional<UserEntity> userOptional = userRepository.findByUserSeq(userSeq);
+                if (userOptional.isPresent()) {
+                    UserEntity user = userOptional.get();
+                    return ResponseEntity.ok(Map.of("loggedIn", true, "nickname", user.getNickname()));
+                }
+            } catch (NumberFormatException e) {
+                // Principal이 숫자로 변환될 수 없는 경우 로깅 또는 예외 처리
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new SimpleResponseDTO(false, "Invalid user identifier in token.", null));
+            }
+        }
+        return ResponseEntity.ok(Map.of("loggedIn", false));
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
+        String refreshToken = jwtAuthUtils.extractRefreshTokenFromCookies(request);
+        if (refreshToken != null) {
+            authService.logout(refreshToken);
+        }
+        // 쿠키 삭제
+        jwtAuthUtils.deleteAccessTokenCookie(response);
+        jwtAuthUtils.deleteRefreshTokenCookie(response);
+        return ResponseEntity.ok(new SimpleResponseDTO(true, "로그아웃 성공", null));
     }
 }
     

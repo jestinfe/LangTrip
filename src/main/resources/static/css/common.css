@@ -503,4 +503,21 @@
             .course-grid { 
                 grid-template-columns: 1fr; 
             }
+            
+            .user-state {
+    display: none;
+}
+
+.logged-in .user-state {
+    display: block;
+}
+
+.logged-out .guest-state {
+    display: block;
+}
+
+.logged-out .user-state {
+    display: none;
+}
+            
         }

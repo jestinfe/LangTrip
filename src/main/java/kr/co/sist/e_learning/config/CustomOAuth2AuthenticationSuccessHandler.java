@@ -75,7 +75,7 @@ public class CustomOAuth2AuthenticationSuccessHandler implements AuthenticationS
             UserEntity user = userOpt.get();
 
             // Access Token 발급
-            String accessToken = jwtTokenProvider.createAccessToken(user.getUserId());
+            String accessToken = jwtTokenProvider.createAccessToken(user.getUserId(), user.getUserSeq());
 
             // Refresh Token 발급
             String refreshToken = jwtTokenProvider.createRefreshToken();

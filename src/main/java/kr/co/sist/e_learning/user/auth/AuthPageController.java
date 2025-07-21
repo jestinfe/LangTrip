@@ -25,10 +25,6 @@ public class AuthPageController {
         return "user/sign_up/sign_up";
     }
 
-    @GetMapping("/user/login")
-    public String showLoginPage() {
-        return "user/login/login";
-    }
 
     @GetMapping("/forgot-username")
     public String showForgotUsername() {
@@ -89,5 +85,18 @@ public class AuthPageController {
         session.removeAttribute("email");
 
         return "user/sign_up/social_sign_up";
+    }
+    
+    @GetMapping("/login")
+    public String showLoginPage(HttpServletRequest request, Model model) {
+        try {
+            if (jwtAuthUtils.isLoggedIn(request)) {
+                return "redirect:/";
+            }
+        } catch (Exception e) {
+            // 예외 발생 시 로그인 페이지로 이동
+            model.addAttribute("error", "로그인 상태 확인 중 오류 발생");
+        }
+        return "user/login/login";
     }
 }

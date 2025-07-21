@@ -167,7 +167,7 @@ public class AuthServiceImpl implements AuthService {
         
         
 
-        String token = jwtTokenProvider.createAccessToken(user.getUserId());
+        String token = jwtTokenProvider.createAccessToken(user.getUserId(), user.getUserSeq());
         setTokenCookie(response, token);
     }
 
@@ -229,7 +229,7 @@ public class AuthServiceImpl implements AuthService {
             throw new RuntimeException("아이디 또는 비밀번호가 일치하지 않습니다.");
         }
 
-        String accessToken = jwtTokenProvider.createAccessToken(user.getUserId());
+        String accessToken = jwtTokenProvider.createAccessToken(user.getUserId(), user.getUserSeq());
         String refreshToken = jwtTokenProvider.createRefreshToken();
         LocalDateTime expiresAt = LocalDateTime.now().plusDays(7);
         saveRefreshToken(user.getUserId(), refreshToken, expiresAt);
@@ -247,7 +247,7 @@ public class AuthServiceImpl implements AuthService {
     private void setTokenCookie(HttpServletResponse response, String token) {
         Cookie cookie = new Cookie("accessToken", token);
         cookie.setHttpOnly(true);
-        cookie.setSecure(true);
+        cookie.setSecure(false); // 개발환경에서는 false
         cookie.setPath("/");
         cookie.setMaxAge(30 * 60);
         response.addCookie(cookie);
@@ -256,9 +256,9 @@ public class AuthServiceImpl implements AuthService {
     private void setRefreshTokenCookie(HttpServletResponse response, String token) {
         Cookie cookie = new Cookie("refreshToken", token);
         cookie.setHttpOnly(true);
-        cookie.setSecure(true);
+        cookie.setSecure(false); // 개발환경에서는 false
         cookie.setPath("/");
-        cookie.setMaxAge(7 * 24 * 60 * 60);
+        cookie.setMaxAge(7 * 24 * 60 * 60); // 7일
         response.addCookie(cookie);
     }
 
@@ -270,7 +270,7 @@ public class AuthServiceImpl implements AuthService {
                 .findBySocialProviderAndSocialId(dto.getSocialProvider(), dto.getSocialId())
                 .orElseThrow(() -> new RuntimeException("소셜 회원가입이 필요합니다."));
 
-        String accessToken = jwtTokenProvider.createAccessToken(user.getUserId());
+        String accessToken = jwtTokenProvider.createAccessToken(user.getUserId(), user.getUserSeq());
 
         // Refresh Token 발급
         String refreshToken = jwtTokenProvider.createRefreshToken();
@@ -288,7 +288,7 @@ public class AuthServiceImpl implements AuthService {
     }
     
     @Override
-    public void reissueAccessToken(HttpServletRequest request, HttpServletResponse response) {
+    public Long reissueAccessToken(HttpServletRequest request, HttpServletResponse response) {
         String refreshToken = jwtAuthUtils.extractRefreshTokenFromCookies(request);
 
         if (refreshToken == null) {
@@ -304,9 +304,14 @@ public class AuthServiceImpl implements AuthService {
         }
 
         String userId = token.getUserId(); // refresh token entity에 포함됨
+        UserEntity user = userRepository.findByUserId(userId);
+        if (user == null) {
+            throw new RuntimeException("Refresh Token에 해당하는 사용자를 찾을 수 없습니다.");
+        }
 
-        String newAccessToken = jwtTokenProvider.createAccessToken(userId);
+        String newAccessToken = jwtTokenProvider.createAccessToken(user.getUserId(), user.getUserSeq());
         jwtAuthUtils.setAccessTokenCookie(response, newAccessToken);
+        return user.getUserSeq();
     }
 
     @Override
