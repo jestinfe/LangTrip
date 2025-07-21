@@ -119,7 +119,7 @@
         </div>
         <div class="search-buttons">
           <button type="submit" class="btn btn-primary">검색</button>
-                <a th:href="@{/admin/log/excel(searchType=${param.searchType}, searchKeyword=${param.searchKeyword}, startDate=${param.startDate}, endDate=${param.endDate})}" class="btn btn-primary">Excel 다운로드</a>
+                <a th:href="@{/admin/log/excel(page=${pageResponse.page}, size=${pageResponse.pageSize}, orderBy=${pageRequestDTO.orderBy}, sort=${pageRequestDTO.sort}, searchType=${param.searchType}, searchKeyword=${param.searchKeyword}, startDate=${param.startDate}, endDate=${param.endDate})}" class="btn btn-primary">Excel 다운로드</a>
             </form>
         </div>
       </form>
