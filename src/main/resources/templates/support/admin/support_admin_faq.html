@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="/css/admin_sidebar.css">
+
+<link rel="stylesheet"
+	href="/support_static/support_design/admin_faqs_design.css">
+
+
+<title>templates/support/admin/support_admin_notice.html</title>
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+</head>
+<body>
+	<div th:replace="layout/admin_sidebar :: sidebar"></div>
+	<div class="parent-container"
+		style="border: none !important; width: 100%; height: 100%; padding-top: 30px; margin-bottom: 0px; padding-bottom: 0px; background: linear-gradient(to bottom, rgba(204, 169, 254, 0.8), rgba(204, 169, 254, 0.1), rgba(204, 169, 254, 0.1), white, transparent); border: none; padding-right: 320px; min-width: 1800px;">
+
+		<div class="child-div"
+			style="height: 90px; border: none !important; box-shadow: none; width: 100%; margin-left: 600px; background: transparent; margin-top: -20px;">
+			<div class="title-div" style="border: none !important;">
+
+				<div class="div-1"
+					style="border: none !important; margin-right: -20px;">
+					<div>
+						<img th:src="@{/support_static/support_images/symbol_support.png}"
+							style="width: 50px; height: 50px; border: none !important; margin-right: 50px;" />
+					</div>
+				</div>
+
+				<div class="div-2" style="border: none !important;">지원센터 관리</div>
+
+				<div class="div-3" style="border: none; display: flex; flex-direction: row; width: 400px; margin-left: 40px;">	
+					<div style="margin-right: 50px;">
+						<a th:href="@{/support/admin/feedback}"
+							style="color: #cca9fe !important">관련 통계</a>
+					</div>
+					<div style="margin-right: 50px;">
+						<a th:href="@{/support/admin/notice}"
+							style="color: #cca9fe !important">공지사항 관리</a>
+					</div>
+					<div style="margin-right: 50px;">
+						<a th:href="@{/support/admin/faq}">FAQ 관리</a>
+					</div>
+					<div style="margin-right: 50px;">
+						<a th:href="@{/support/admin/feedback2}"
+							style="color: #cca9fe !important">피드백 관리</a>
+					</div>
+				</div>
+				<!-- div-3 -->
+
+				<div class="div-4"
+					style="border: none !important; color: #5701d0; flex: 10">
+					<span><a href="/support/admin/notice"></a></span>
+				</div>
+
+			</div>
+		</div>
+		<!-- child-div -->
+
+
+
+		<div class="child-div"
+			style="height: auto; width: 100%; box-shadow: 0 0 6px rgba(0, 0, 0, 0.4) !important; margin-left: 600px;">
+
+			<div class="title-div"
+				style="border-bottom: none; border: 1px solid none; margin-left: 20px; margin-bottom: 30px">
+				<div class="div-1" style="flex: 5; border: none">
+					<div class="div-2" style="font-size: 30px; border: none">
+						FAQ 관리 <span style="opacity: 0.4; font-size: 28px"> <!-- 						> </span> -->
+							<!-- 						<span style="color: #5701d0">등록 현황</span> -->
+					</div>
+				</div>
+			</div>
+
+
+			<div class="child-div"
+				style="height: 480px; box-shadow: none; margin-top: -10px; margin-left: 22px; width: 97%; box-shadow: 0 0 0px rgba(0, 0, 0, 0.0)">
+
+
+
+
+			</div>
+			<!-- child-div -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		</div>
+		<!-- child-div -->
+
+
+
+
+
+
+
+
+
+
+	</div>
+	<!-- parent-container -->
+
+</body>
+</html>

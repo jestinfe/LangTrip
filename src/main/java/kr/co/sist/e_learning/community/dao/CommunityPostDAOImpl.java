@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 import kr.co.sist.e_learning.community.dto.CommunityCommentDTO;
 import kr.co.sist.e_learning.community.dto.CommunityImageDTO;
 import kr.co.sist.e_learning.community.dto.CommunityPostDTO;
+import kr.co.sist.e_learning.community.dto.PageDTO;
 
 import org.apache.ibatis.session.SqlSession;
 import org.mybatis.spring.SqlSessionTemplate;
@@ -101,6 +102,33 @@ public class CommunityPostDAOImpl implements CommunityPostDAO {
     public void increaseViewCount(Long postId) {
         sqlSession.update("kr.co.sist.e_learning.community.dao.CommunityPostDAO.increaseViewCount", postId);
     }
+    
+    
+    @Override
+    public List<CommunityPostDTO> selectPostList(PageDTO pageDTO) {
+        return sqlSession.selectList("csjMapper.selectPostList", pageDTO);
+    }
+
+    @Override
+    public int selectPostCount(PageDTO pageDTO) {
+        return sqlSession.selectOne("csjMapper.selectPostCount", pageDTO);
+    }
+
+    @Override
+    public List<CommunityPostDTO> selectPostsPaginatedWithSearch(int offset, int limit, String keyword) {
+        Map<String, Object> param = new HashMap<>();
+        param.put("offset", offset);
+        param.put("limit", limit);
+        param.put("keyword", keyword);
+        return sqlSession.selectList(NS+".selectPostsPaginatedWithSearch", param);
+    }
+
+    @Override
+    public int selectTotalPostCountWithSearch(String keyword) {
+        return sqlSession.selectOne(NS+".selectTotalPostCountWithSearch", keyword);
+    }
+
+    
     
 }
 

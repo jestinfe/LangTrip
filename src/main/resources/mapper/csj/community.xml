@@ -16,9 +16,64 @@
       #{content},
       SYSTIMESTAMP,
       0,
-      'A'
+      'A',
+       #{communityNotice, jdbcType=CHAR} 	
     )
   </insert>
+
+
+<!-- 페이징 + 제목·내용 검색용 게시글 조회 -->
+<select id="selectPostsPaginatedWithSearch"
+        parameterType="map"
+        resultType="kr.co.sist.e_learning.community.dto.CommunityPostDTO">
+  SELECT 
+    cp.post_id    AS postId,
+    cp.user_id    AS userId,
+    u.nickname    AS nickname,
+    cp.title,
+    cp.content,
+    cp.created_at AS createdAt,
+    cp.views,
+    cp.post_state AS postState
+  	, cp.community_notice AS communityNotice
+  	
+  FROM community_post cp
+  JOIN users u ON cp.user_id = u.user_seq
+  WHERE cp.post_state = 'A'
+  <if test="keyword != null and keyword != ''">
+    AND (
+      cp.title   LIKE '%' || #{keyword} || '%'
+      OR cp.content LIKE '%' || #{keyword} || '%'
+    )
+  </if>
+  ORDER BY cp.created_at DESC
+  <if test="offset != null and limit != null">
+    OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+  </if>
+</select>
+
+
+
+<!-- 검색 결과 전체 건수 조회 -->
+<select id="selectTotalPostCountWithSearch"
+        parameterType="map"
+        resultType="int">
+  SELECT COUNT(*)
+  FROM community_post cp
+  JOIN users u ON cp.user_id = u.user_seq
+  WHERE cp.post_state = 'A'
+  <if test="keyword != null and keyword != ''">
+    AND (
+      cp.title   LIKE '%' || #{keyword} || '%'
+      OR cp.content LIKE '%' || #{keyword} || '%'
+    )
+  </if>
+</select>
+
+
+
+
+
 
   <!-- 게시글 전체 조회 -->
   <select id="selectAllPosts" resultType="kr.co.sist.e_learning.community.dto.CommunityPostDTO">
@@ -48,6 +103,8 @@
       cp.created_at AS createdAt,
       cp.views,
       cp.post_state AS postState,
+      cp.community_notice AS communityNotice
+      
       NVL((
         SELECT COUNT(*) FROM community_like cl
         WHERE cl.post_id2 = cp.post_id
@@ -137,6 +194,9 @@
     WHERE post_state = 'A'
   </select>
 
+
+
+
   <!-- 이미지 등록 -->
   <insert id="insertImage" parameterType="kr.co.sist.e_learning.community.dto.CommunityImageDTO">
     <selectKey resultType="long" keyProperty="imageId" order="BEFORE">
@@ -194,5 +254,12 @@
 	ORDER BY NVL(c.parent_id, c.comment_id) DESC, c.parent_id NULLS FIRST, c.created_at DESC
 	
 </select>
+
+
+
+
+
+
+
 
 </mapper>

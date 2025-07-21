@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>공지사항 편집</title>
+    <link rel="stylesheet" href="/css/admin_sidebar.css">
+    <link rel="stylesheet" href="/support_static/support_design/admin_notice_detail_design.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+
+    <!-- 주어진 디자인 스타일 통합 적용 -->
+    <link rel="stylesheet" href="/css/your_common_design.css"> <!-- 또는 위에 주신 CSS 직접 삽입 -->
+</head>
+<body>
+
+<div th:replace="layout/admin_sidebar :: sidebar"></div>
+
+<div class="parent-container" style="min-width: 1800px; padding-top: 30px; background: linear-gradient(to bottom, rgba(204,169,254, 0.8), white);">
+    
+    <!-- 상단 타이틀 바 -->
+    <div class="child-div" style="height: auto;">
+        <div class="title-div">
+            <div class="div-1">
+                <img th:src="@{/support_static/support_images/symbol_support.png}" style="width: 50px; height: 50px;" />
+            </div>
+            <div class="div-2">지원센터 관리</div>
+            <div class="div-3" style="display: flex; gap: 50px;">
+                <a th:href="@{/support/admin/notice}" style="color: #5701d0;">공지사항</a>
+                <a th:href="@{/support/admin/faq}">FAQ</a>
+                <a th:href="@{/support/admin/feedback}">피드백</a>
+            </div>
+            <div class="div-4">공지사항 편집</div>
+        </div>
+    </div>
+
+    <!-- 편집 폼 -->
+    <div class="child-div" style="height: auto; padding: 30px;">
+        <form th:action="@{/support/admin/notice/update/{id}(id=${notice.notice_id})}" method="post">
+            <input type="hidden" name="notice_id" th:value="${notice.notice_id}" />
+
+            <!-- 공지사항 ID (수정 불가, 표시만) -->
+            <div class="detailDivs">
+                <label for="notice_id" style="color: #5701d0;">공지사항 ID</label><br>
+                <input type="text" id="notice_id" name="notice_id" th:value="${notice.notice_id}"
+                       style="width: 100%; padding: 10px; font-size: 20px; border: 1px solid #ccc; border-radius: 4px; color:#cca9fe" readonly;/>
+            </div>
+
+            <!-- 작성일 (수정 불가, 표시만) -->
+            <div class="detailDivs">
+                <label for="notice_created_date" style="color: #5701d0;">작성일</label><br>
+                <input type="text" id="notice_created_date" name="notice_created_date" th:value="${#dates.format(notice.notice_created_date, 'yyyy-MM-dd')}"
+                       style="width: 100%; padding: 10px; font-size: 20px; border: 1px solid #ccc; border-radius: 4px; color:#cca9fe" readonly />
+            </div>
+            
+            <div style="background-color: #f0e6fe; width: 100%; padding-top: 20px; padding-bottom:20px;">
+            			
+	            <!-- 제목 -->
+	            <div class="detailDivs">
+	                <label for="notice_title" style="color: #5701d0;">공지사항 제목</label><br>
+	                <input type="text" id="notice_title" name="notice_title" th:value="${notice.notice_title}"
+	                       placeholder="공지사항 제목을 입력하세요" style="width: 100%; padding: 10px; font-size: 20px; border: 1px solid #ccc; border-radius: 4px;" />
+	            </div>
+	
+	            <!-- 내용 -->
+	            <div class="detailDivs">
+	                <label for="notice_content" style="color: #5701d0;">공지사항 내용</label><br>
+	                <textarea id="notice_content" name="notice_content" rows="10" style="width: 100%; padding: 20px; font-size: 18px; border: 1px solid #ccc; border-radius: 4px;"
+	                          th:text="${notice.notice_content}"></textarea> 
+	            </div>
+
+	            <!-- 고정 여부 -->
+	            <div class="detailDivs">
+	                <label for="notice_fix_flag" style="color: #5701d0;">공지 고정 여부</label><br>
+	                <select name="notice_fix_flag" id="notice_fix_flag"
+	                        style="width: 50%; padding: 10px; font-size: 18px; border-radius: 4px;">
+	                    <option value="Y" th:selected="${notice.notice_fix_flag == 'Y'}">고정</option>
+	                    <option value="N" th:selected="${notice.notice_fix_flag == 'N'}">고정 안함</option>
+	                </select>
+	            </div>
+	
+	            <!-- 상태 -->
+	            <div class="detailDivs">
+	                <label for="notice_status" style="color: #5701d0;">상태</label><br>
+	                <select name="notice_status" id="notice_status"
+	                        style="width: 50%; padding: 10px; font-size: 18px; border-radius: 4px;">
+	                    <option value="A" th:selected="${notice.notice_status == 'A'}">게시 중</option>
+	                    <option value="I" th:selected="${notice.notice_status == 'I'}">게시 중지</option>
+	                </select>
+	            </div>
+	            
+	        </div>
+
+            <!-- 조회수 (수정 불가, 표시만) -->
+            <div class="detailDivs">
+                <label for="notice_hits" style="color: #5701d0;">조회수</label><br>
+                <input type="text" id="notice_hits" name="notice_hits" th:value="${notice.notice_hits}"
+                       style="width: 100%; padding: 10px; font-size: 20px; border: 1px solid #ccc; border-radius: 4px; color:#cca9fe" readonly />
+            </div>
+
+            <!-- 수정일 (수정 불가, 표시만) -->
+            <div class="detailDivs">
+                <label for="notice_last_modified_date" style="color: #5701d0;">수정일</label><br>
+                <input type="text" id="notice_last_modified_date" name="notice_last_modified_date" th:value="${#dates.format(notice.notice_last_modified_date, 'yyyy-MM-dd')}"
+                       style="width: 100%; padding: 10px; font-size: 20px; border: 1px solid #ccc; border-radius: 4px; color:#cca9fe" readonly />
+            </div>
+
+
+            <!-- 버튼 영역 -->
+            <div style="margin-top: 40px; text-align: right;">
+                <button type="submit" class="noticeEditButton">수정 완료</button>
+                <a th:href="@{/support/admin/notice}" class="noticeDeleteButton" style="margin-left: 20px; background-color: #aaaaaa">취소</a>
+            </div>
+        </form>
+    </div>
+
+    <!-- 버튼 공통 스타일 -->
+    <style>
+        .noticeEditButton {
+            background-color: #5701d0;
+            color: white;
+            padding: 12px 25px;
+            font-size: 18px;
+            border: none;
+            border-radius: 5px;
+        }
+
+        .noticeEditButton:hover {
+            opacity: 0.8;
+        }
+
+        .noticeDeleteButton {
+            background-color: #e4015f;
+            color: white;
+            padding: 12px 25px;
+            font-size: 18px;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+
+        .noticeDeleteButton:hover {
+            opacity: 0.8;
+        }
+    </style>
+
+</div>
+</body>
+</html>

@@ -6,6 +6,7 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import kr.co.sist.e_learning.community.dto.PageDTO;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -20,6 +21,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import kr.co.sist.e_learning.community.dto.CommunityCommentDTO;
 import kr.co.sist.e_learning.community.dto.CommunityPostDTO;
+import kr.co.sist.e_learning.community.dto.PageDTO;
 import kr.co.sist.e_learning.community.dto.UsersssDTO;
 import kr.co.sist.e_learning.community.service.CommunityPostService;
 import kr.co.sist.e_learning.community.service.VoteService;
@@ -46,6 +48,7 @@ public class CommunityPostController {
         @RequestParam(name = "page", defaultValue = "1") int page,
         @RequestParam(name = "size", defaultValue = "50") int size,
         @RequestParam(name = "tab", defaultValue = "all") String tab,
+        @RequestParam(name = "keyword", required = false) String keyword,
         Model model
     ) {
         int offset = (page - 1) * size;
@@ -58,8 +61,8 @@ public class CommunityPostController {
             totalCount = communityService.getBestPostCount();
             model.addAttribute("bestPostCount", totalCount); 
         } else {
-            postList = communityService.getPostsPaginated(offset, size);
-            totalCount = communityService.getTotalPostCount();
+            postList = communityService.getPostsPaginatedWithSearch(offset, size, keyword);
+            totalCount = communityService.getTotalPostCountWithSearch(keyword);
         }
 
         int totalPages = (int) Math.ceil((double) totalCount / size);
@@ -68,9 +71,9 @@ public class CommunityPostController {
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", totalPages);
         model.addAttribute("size", size);
-        model.addAttribute("totalPostCount", totalCount);
         model.addAttribute("tab", tab);
-        model.addAttribute("bestPostCount", totalCount);
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("totalPostCount", totalCount);
 
         return "csj/community";
     }
@@ -187,6 +190,32 @@ public class CommunityPostController {
         commentDTO.setCreatedAt(Timestamp.valueOf(LocalDateTime.now()));
         return commentDTO;
     }
+    
+    @GetMapping("/csj/community")
+    public String showCommunity(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "50") int size,
+            @RequestParam(required = false) String keyword,
+            Model model) {
+
+        PageDTO pageDTO = new PageDTO();
+        pageDTO.setPage(page);
+        pageDTO.setSize(size);
+        pageDTO.setKeyword(keyword);
+
+        List<CommunityPostDTO> postList = communityService.getPostList(pageDTO);
+        int totalCount = communityService.getPostCount(pageDTO);
+
+        model.addAttribute("postList", postList);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", (int)Math.ceil((double)totalCount / size));
+        model.addAttribute("size", size);
+        model.addAttribute("keyword", keyword);
+        return "csj/community";
+    }
+    
+    
+    
     
     
    

@@ -10,6 +10,7 @@ import kr.co.sist.e_learning.community.dao.CommunityPostDAO;
 import kr.co.sist.e_learning.community.dto.CommunityCommentDTO;
 import kr.co.sist.e_learning.community.dto.CommunityImageDTO;
 import kr.co.sist.e_learning.community.dto.CommunityPostDTO;
+import kr.co.sist.e_learning.community.dto.PageDTO;
 
 @Service
 public class CommunityPostServiceImpl implements CommunityPostService {
@@ -80,7 +81,26 @@ public class CommunityPostServiceImpl implements CommunityPostService {
     	communityDAO.increaseViewCount(postId);
     }
     
+    @Override
+    public List<CommunityPostDTO> getPostList(PageDTO pageDTO) {
+        return communityDAO.selectPostList(pageDTO); // ✅ 올바른 호출
+    }
+
+    @Override
+    public int getPostCount(PageDTO pageDTO) {
+        return communityDAO.selectPostCount(pageDTO); // ✅ 올바른 호출
+    }
     
+    @Override
+    public List<CommunityPostDTO> getPostsPaginatedWithSearch(int offset, int limit, String keyword) {
+        return communityDAO.selectPostsPaginatedWithSearch(offset, limit, keyword);
+    }
+
+    @Override
+    public int getTotalPostCountWithSearch(String keyword) {
+        return communityDAO.selectTotalPostCountWithSearch(keyword);
+    }
+
     
     
 }

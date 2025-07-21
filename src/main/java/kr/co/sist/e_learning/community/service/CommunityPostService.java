@@ -5,6 +5,7 @@ import java.util.List;
 import kr.co.sist.e_learning.community.dto.CommunityCommentDTO;
 import kr.co.sist.e_learning.community.dto.CommunityImageDTO;
 import kr.co.sist.e_learning.community.dto.CommunityPostDTO;
+import kr.co.sist.e_learning.community.dto.PageDTO;
 
 
 public interface CommunityPostService {
@@ -32,4 +33,13 @@ public interface CommunityPostService {
     int getBestPostCount(); 
     
     void increaseViewCount(Long postId);
+    
+    //////////////
+    List<CommunityPostDTO> getPostList(PageDTO pageDTO);
+    int getPostCount(PageDTO pageDTO);
+    
+    List<CommunityPostDTO> getPostsPaginatedWithSearch(int offset, int limit, String keyword);
+    int getTotalPostCountWithSearch(String keyword);
+
+
 }
