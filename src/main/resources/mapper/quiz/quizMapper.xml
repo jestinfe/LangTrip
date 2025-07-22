@@ -6,6 +6,7 @@
 <mapper namespace="kr.co.sist.e_learning.quiz.QuizMapper">
 <!-- 퀴즈 리스트 묶음 -->
 <insert id="insertQuizList" parameterType="kr.co.sist.e_learning.quiz.QuizListDTO">
+<!-- 퀴즈 리스트 묶음 -->
  <selectKey keyProperty="quizListSeq" resultType="String" order="BEFORE">
     SELECT 'QL' || TO_CHAR(SYSDATE, 'YYYYMMDD') || LPAD(quiz_list_seq.NEXTVAL, 4, '0') FROM dual
   </selectKey>
