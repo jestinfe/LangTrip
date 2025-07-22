@@ -104,22 +104,24 @@ public class MyPageController {
     @GetMapping("/my_info")
     public String myInfo(HttpSession session, Model model) {
     	long userSeq = getOrInitUserSeq(session);
+    	MyPageDTO user = mpSV.getUserInfo(userSeq);
+    	System.out.println("userDTO = " + user);
         System.out.println("uploadProfile 메서드 진입");
         model.addAttribute("myData", mpSV.getUserInfo(userSeq));
         return "mypage/my_info";
     }
 
-    /** 프로필 업로드 */
     @Value("${file.upload-dir}")
     private String uploadDir;
 
+    /** 프로필 업로드 */
     @PostMapping("/upload_profile")
     @ResponseBody
     public Map<String, Object> uploadProfile(@RequestParam("file") MultipartFile file,
                                              HttpSession session) {
         Map<String, Object> result = new HashMap<>();
-
         Object obj = session.getAttribute("user_seq");
+
         if (!(obj instanceof Long userSeq) || file.isEmpty()) {
             result.put("success", false);
             result.put("message", "사용자 정보 또는 파일이 없습니다.");
@@ -132,40 +134,57 @@ public class MyPageController {
             String ext = originalName.substring(originalName.lastIndexOf(".") + 1).toLowerCase();
             if (!List.of("png", "jpg", "jpeg", "gif").contains(ext)) {
                 result.put("success", false);
-                result.put("message", "허용되지 않은 확장자입니다.");
+                result.put("message", "이미지 파일만 업로드 가능합니다.");
                 return result;
             }
 
-            // 저장 디렉토리 생성
-            File dir = new File(uploadDir);
-            if (!dir.exists()) dir.mkdirs();
+            // 저장 경로 및 파일 이름
+            String filename = "profile_" + userSeq + "." + ext;
+            File dest = new File(uploadDir, filename);
+            file.transferTo(dest);
 
-            // 기존 이미지 삭제
-            String oldPath = mpSV.selectProfilePath(userSeq); // 예: /images/userprofile/abc_user001.png
-            if (oldPath != null && oldPath.startsWith("/images/userprofile/")) {
-                String oldFileName = oldPath.replace("/images/userprofile/", "");
-                File oldFile = new File(dir, oldFileName);
-                if (oldFile.exists()) {
-                    oldFile.delete();
-                    System.out.println("기존 파일 삭제됨: " + oldFile.getAbsolutePath());
-                }
-            }
-
-            // 새 파일명 생성
-            String uuid = UUID.randomUUID().toString();
-            String newFileName = uuid + "_" + userSeq + "." + ext;
-            File destFile = new File(dir, newFileName);
-            file.transferTo(destFile);
-
-            // DB 업데이트
-            String webPath = "/images/userprofile/" + newFileName;
-            mpSV.updateProfilePath(userSeq, webPath);
+            // DB에 프로필 경로 업데이트
+            String dbPath = "/userprofile/" + filename;
+            mpSV.updateUserProfile(userSeq, dbPath);
 
             result.put("success", true);
-            result.put("newPath", webPath);
+            result.put("path", dbPath);
         } catch (Exception e) {
+            e.printStackTrace();
             result.put("success", false);
-            result.put("message", e.getMessage());
+            result.put("message", "업로드 중 오류 발생");
+        }
+        return result;
+    }
+
+    /** 프로필 삭제 */
+    @PostMapping("/delete_profile")
+    @ResponseBody
+    public Map<String, Object> deleteProfile(HttpSession session) {
+        Map<String, Object> result = new HashMap<>();
+        Object obj = session.getAttribute("user_seq");
+
+        if (!(obj instanceof Long userSeq)) {
+            result.put("success", false);
+            result.put("message", "사용자 정보 없음");
+            return result;
+        }
+
+        try {
+            String profilePath = mpSV.selectProfilePath(userSeq);
+            if (profilePath != null) {
+                File file = new File(uploadDir + profilePath.replace("/userprofile", ""));
+                if (file.exists()) {
+                    file.delete();
+                }
+            }
+            // DB에서 경로 제거
+            mpSV.updateUserProfile(userSeq, null);
+            result.put("success", true);
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.put("success", false);
+            result.put("message", "삭제 중 오류 발생");
         }
 
         return result;

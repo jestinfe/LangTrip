@@ -7,7 +7,7 @@ public interface MyPageService {
     MyPageDTO getMyPageData(long userSeq);
     MyPageDTO getUserInfo(long userSeq);
     String selectProfilePath(long userSeq);
-    void updateProfilePath(long userSeq, String newPath);
+    void updateUserProfile(long userSeq, String newPath);
     List<LectureHistoryDTO> getLectureHistory(long userSeq);
     List<LectureHistoryDTO> selectMyLectures(long userSeq);
     List<SubscriptionDTO> getSubscriptions(Long userSeq);

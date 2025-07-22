@@ -21,14 +21,9 @@ public class MyPageServiceImpl implements MyPageService {
     // 대시보드 요약 정보
     @Override
     public MyPageDTO getMyPageData(long userSeq) {
-        return mpDAO.getMyPageSummary(userSeq);
+        return mpDAO.getUserInfo(userSeq);
     }
 
-    // 내 정보 조회
-    @Override
-    public MyPageDTO getUserInfo(long userSeq) {
-        return mpDAO.selectUserInfo(userSeq); // ⬅ static 호출이 아니라 인스턴스 메서드 호출로 수정
-    }
 
     @Override
     public String selectProfilePath(long userSeq) {
@@ -37,7 +32,7 @@ public class MyPageServiceImpl implements MyPageService {
     
     //프로필 이미지 업로드
     @Override
-    public void updateProfilePath(long userSeq, String newPath) {
+    public void updateUserProfile(long userSeq, String newPath) {
     	mpDAO.updateProfile(userSeq, newPath);
     }
     

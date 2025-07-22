@@ -14,21 +14,23 @@ public class WebConfig implements WebMvcConfigurer {
     @Autowired
     private AdminLoggingInterceptor adminLoggingInterceptor;
 
-    @Value("${upload.path}")
-    private String uploadPath;
+    @Value("${upload.path}") // 예: /e_learning_uploads/profile
+    private String communityUploadPath;
 
-    // 정적 리소스 핸들러
+    @Value("${file.upload-dir}") // 예: C:/dev/workspace/e_learning/userprofile
+    private String userProfileUploadDir;
+
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // 커뮤니티 이미지
+        // 1. 커뮤니티 이미지 경로
         registry.addResourceHandler("/images/community/**")
-                .addResourceLocations("file:///" + uploadPath + "/");
+                .addResourceLocations("file:///" + communityUploadPath + "/");
 
-        // 프로필 이미지
-        registry.addResourceHandler("/images/userprofile/**")
-                .addResourceLocations("file:///C:/e_learning_uploads/userprofile/");
+        // 2. 유저 프로필 이미지 경로
+        registry.addResourceHandler("/userprofile/**") // 브라우저 요청 URL: /userprofile/xxx.png
+                .addResourceLocations("file:///" + userProfileUploadDir + "/");
 
-        // 내부 static 이미지
+        // 3. 기본 static 이미지
         registry.addResourceHandler("/images/**")
                 .addResourceLocations("classpath:/static/images/");
     }
