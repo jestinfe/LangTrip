@@ -16,6 +16,10 @@
 <!-- bootstrap CSS CDN -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"
 	integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<!-- Admin Specific CSS -->
+<link rel="stylesheet" th:href="@{/css/admin_sidebar.css}">
+<link rel="stylesheet" th:href="@{/css/admin_list_common.css}">
 <style type="text/css">
 /*
 .search-group {
@@ -100,64 +104,52 @@ h3 {
 }
 </style>
 </head>
-<body class="container mt-5">
+<body>
 <div th:replace="layout/admin_sidebar :: sidebar"></div>
+<div class="main-content">
 
-<h3>신고 목록</h3>
-<hr>
-
-<!-- 초기화 버튼 -->
-<div class="row justify-content-end mb-3">
-  <div class="col-12 col-md-auto">
-    <div class="d-flex justify-content-md-end">
-      <button type="button" class="btn btn-secondary w-100 w-md-auto" id="resetBtn">초기화</button>
-    </div>
-  </div>
+<div class="page-header">
+  <h1><i class="fas fa-exclamation-triangle"></i> 신고 목록</h1>
+  <p>신고 내역을 조회하고 관리할 수 있습니다.</p>
 </div>
 
-<!-- 검색/필터 영역 -->
-<form th:action="@{/admin/report/report-list}" method="get" class="mb-4">
-  <div class="row g-2 justify-content-md-end">
-
-    <div class="col-12 col-md-auto">
-      <select class="form-select" disabled>
-        <option value="">최신순</option>
-      </select>
-    </div>
-
-    <div class="col-12 col-md-auto">
-      <select name="contentType" id="contentType" class="form-select">
-        <option value="">콘텐츠 유형</option>
+<div class="search-section">
+  <form class="search-form" th:action="@{/admin/report/report-list}" method="get">
+    <div class="form-group">
+      <label for="contentType">콘텐츠 유형</label>
+      <select name="contentType" id="contentType">
+        <option value="">전체</option>
         <option value="강의" th:selected="${pReqDTO.contentType == '강의'}">강의</option>
         <option value="게시글" th:selected="${pReqDTO.contentType == '게시글'}">게시글</option>
       </select>
     </div>
 
-    <div class="col-12 col-md-auto">
-      <select name="actionStatus" id="actionStatus" class="form-select">
-        <option value="">처리상태</option>
+    <div class="form-group">
+      <label for="actionStatus">처리상태</label>
+      <select name="actionStatus" id="actionStatus">
+        <option value="">전체</option>
         <option value="미처리" th:selected="${pReqDTO.actionStatus == '미처리'}">미처리</option>
         <option value="제재" th:selected="${pReqDTO.actionStatus == '제재'}">제재</option>
         <option value="무제재" th:selected="${pReqDTO.actionStatus == '무제재'}">무제재</option>
       </select>
     </div>
 
-    <div class="col-12 col-md-auto">
-      <input type="text" name="reportedUserId" class="form-control"
-             placeholder="피신고인 ID" th:value="${pReqDTO.reportedUserId}">
+    <div class="form-group">
+      <label for="reportedUserId">피신고인 ID</label>
+      <input type="text" name="reportedUserId" id="reportedUserId" th:value="${pReqDTO.reportedUserId}" placeholder="피신고인 ID">
     </div>
 
-    <div class="col-12 col-md-auto">
-      <input type="text" name="reporterId" id="reporterId" class="form-control"
-             placeholder="신고인 ID" th:value="${pReqDTO.reporterId}">
+    <div class="form-group">
+      <label for="reporterId">신고인 ID</label>
+      <input type="text" name="reporterId" id="reporterId" th:value="${pReqDTO.reporterId}" placeholder="신고인 ID">
     </div>
 
-    <div class="col-12 col-md-auto">
-      <button type="submit" class="btn btn-primary w-100 w-md-auto" id="searchBtn">검색</button>
+    <div class="search-buttons">
+      <button type="submit" class="btn btn-primary" id="searchBtn"><i class="fas fa-search"></i> 검색</button>
+      <button type="button" class="btn btn-secondary" id="resetBtn"><i class="fas fa-redo"></i> 초기화</button>
     </div>
-
-  </div>
-</form>
+  </form>
+</div>
 
 <!-- 신고 목록 테이블 -->
 <table class="table table-bordered table-hover mt-4 text-center align-middle">
@@ -314,12 +306,23 @@ document.addEventListener('DOMContentLoaded', () => {
 // console.log("🔍 pResDTO =", list);
 
 const form = document.querySelector('form');
+console.log('Form element:', form);
 const resetBtn = document.getElementById('resetBtn');
+console.log('Reset button element:', resetBtn);
 const searchBtn = document.getElementById('searchBtn');
+console.log('Search button element:', searchBtn);
 const reporterInput = document.getElementById('reporterId');
+console.log('Reporter input element:', reporterInput);
 
 const reportDetailModalEl = document.getElementById('reportDetailModal');
-const reportDetailModal = new bootstrap.Modal(reportDetailModalEl);
+let reportDetailModal; // Declare with let to allow re-assignment if needed, though not strictly necessary here
+
+if (reportDetailModalEl && typeof bootstrap !== 'undefined' && typeof bootstrap.Modal !== 'undefined') {
+    reportDetailModal = new bootstrap.Modal(reportDetailModalEl);
+    console.log("reportDetailModal initialized successfully.");
+} else {
+    console.error("Error: Bootstrap modal element or Bootstrap library (bootstrap.Modal) not found.");
+}
 resetBtn.addEventListener("click", () => {
   location.href = '/admin/report/report-list';
 });
@@ -357,7 +360,13 @@ document.querySelectorAll('.report-row').forEach((row) => {
 	    document.getElementById('modal-reportedUserStatus').innerText = data.reportedUserStatus;
 
 	    // 모달 열기
-	    reportDetailModal.show();
+    console.log("Attempting to show modal...");
+    if (reportDetailModal) {
+        reportDetailModal.show();
+        console.log("Modal show method called.");
+    } else {
+        console.error("Modal object is not initialized. Cannot show modal.");
+    }
 	});
 });
 
@@ -368,5 +377,6 @@ document.getElementById("confirmBtn").addEventListener("click", () => {
 
 });
 </script>
+</div>
 </body>
 </html>
