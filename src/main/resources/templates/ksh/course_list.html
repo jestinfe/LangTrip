@@ -18,8 +18,7 @@
     <div class="page-header">
         <div>
             <h1 class="page-title">전체 강의</h1>
-<p class="results-count" th:if="${courses != null}" th:text="'총 ' + ${#lists.size(courses)} + '개의 강의'"></p>
-<p class="results-count" th:unless="${courses != null}">총 0개의 강의</p>        </div>
+      </div>
     </div>
 
     <div class="search-filter-section">
@@ -264,9 +263,6 @@
             updatePagination(courses.length);
         }
 
-        function updateResultsCount(total) {
-            document.getElementById('resultsCount').textContent = `총 ${total}개의 강의`;
-        }
 
         function updatePagination(totalCourses) {
             const totalPages = Math.ceil(totalCourses / coursesPerPage);
