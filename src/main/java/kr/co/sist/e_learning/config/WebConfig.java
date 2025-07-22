@@ -14,23 +14,26 @@ public class WebConfig implements WebMvcConfigurer {
     @Autowired
     private AdminLoggingInterceptor adminLoggingInterceptor;
 
-    @Value("${upload.path.community}")
-    private String communityUploadPath;
+    @Value("${file.upload-dir.root}")       // C:/dev/workspace/e_learning_uploads
+    private String uploadRootDir;
 
-    @Value("${upload.path.profile}")
-    private String userProfileUploadDir;
+    @Value("${upload.path.profile}")        // /userprofile
+    private String profilePath;
+
+    @Value("${upload.path.community}")      // /community
+    private String communityPath;
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // 1. 커뮤니티 이미지 경로
-        registry.addResourceHandler("/images/community/**")
-                .addResourceLocations("file:///" + communityUploadPath + "/");
+        // 프로필 이미지 URL: /userprofile/xxx.png → 로컬 경로: {uploadRootDir}/userprofile
+        registry.addResourceHandler(profilePath + "/**")
+                .addResourceLocations("file:///" + uploadRootDir + "/userprofile/");
 
-        // 2. 유저 프로필 이미지 경로
-        registry.addResourceHandler("/userprofile/**") // 브라우저 요청 URL: /userprofile/xxx.png
-                .addResourceLocations("file:///" + userProfileUploadDir + "/");
+        // 커뮤니티 이미지 URL: /community/xxx.jpg → 로컬 경로: {uploadRootDir}/community
+        registry.addResourceHandler(communityPath + "/**")
+                .addResourceLocations("file:///" + uploadRootDir + "/community/");
 
-        // 3. 기본 static 이미지
+        // 기본 static 이미지 경로 (클래스패스)
         registry.addResourceHandler("/images/**")
                 .addResourceLocations("classpath:/static/images/");
     }

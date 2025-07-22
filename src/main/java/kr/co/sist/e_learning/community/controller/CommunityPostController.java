@@ -35,15 +35,8 @@ import org.slf4j.LoggerFactory;
 @RequestMapping("/csj")
 public class CommunityPostController {
 
-    
-
     @Autowired
     private CommunityPostService communityService;
-    @Value("${file.upload-dir.community}")
-    private String uploadDir;
-    
-    @Value("${upload.path.community}")
-    private String uploadPath;
 
     @Autowired
     private VoteService voteService;
@@ -51,39 +44,38 @@ public class CommunityPostController {
     @Autowired
     private UserRepository userRepository;
 
-    // 현재 로그인된 사용자의 userSeq를 가져오는 헬퍼 메서드
+    @Value("${file.upload-dir.root}")
+    private String uploadDirRoot;
+
+    @Value("${upload.path.community}")
+    private String uploadPathWeb;
+
+    private final String subFolder = "community";
+
     private Long getCurrentUserSeq() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication instanceof UserAuthentication) {
-          
             return (Long) authentication.getPrincipal();
         }
-      
-        return null; // 로그인되지 않았거나 UserAuthentication 타입이 아닌 경우
+        return null;
     }
 
-    // 현재 로그인된 사용자의 UserEntity를 가져오는 헬퍼 메서드
     private UserEntity getCurrentUserEntity() {
         Long userSeq = getCurrentUserSeq();
         if (userSeq != null) {
-            UserEntity user = userRepository.findByUserSeq(userSeq).orElse(null);
-          
-            return user;
+            return userRepository.findByUserSeq(userSeq).orElse(null);
         }
-        
         return null;
     }
 
     @GetMapping("/community")
-    public String list(
-        @RequestParam(name = "page", defaultValue = "1") int page,
-        @RequestParam(name = "size", defaultValue = "50") int size,
-        @RequestParam(name = "tab", defaultValue = "all") String tab,
-        @RequestParam(name = "keyword", required = false) String keyword,
-        Model model
-    ) {
-        int offset = (page - 1) * size;
+    public String list(@RequestParam(name = "page", defaultValue = "1") int page,
+                       @RequestParam(name = "size", defaultValue = "50") int size,
+                       @RequestParam(name = "tab", defaultValue = "all") String tab,
+                       @RequestParam(name = "keyword", required = false) String keyword,
+                       Model model) {
 
+        int offset = (page - 1) * size;
         List<CommunityPostDTO> postList;
         int totalCount;
 
@@ -110,16 +102,13 @@ public class CommunityPostController {
     }
 
     @GetMapping("/communityWrite")
-    public String communityWrite(Model model) { // Model 추가
-        
-        UserEntity currentUser = getCurrentUserEntity(); // UserEntity 가져오기
+    public String communityWrite(Model model) {
+        UserEntity currentUser = getCurrentUserEntity();
         if (currentUser == null) {
-            
             return null;
         }
-        model.addAttribute("currentUserNickname", currentUser.getNickname()); // 닉네임 추가
-        model.addAttribute("currentUserSeq", currentUser.getUserSeq());     // userSeq 추가
-       
+        model.addAttribute("currentUserNickname", currentUser.getNickname());
+        model.addAttribute("currentUserSeq", currentUser.getUserSeq());
         return "csj/communityWrite";
     }
 
@@ -127,31 +116,20 @@ public class CommunityPostController {
     public String writePost(CommunityPostDTO dto) {
         Long userSeq = getCurrentUserSeq();
         if (userSeq == null) {
-            
             throw new IllegalStateException("로그인 상태가 아닙니다.");
         }
-        dto.setUserId(userSeq); // CommunityPostDTO에 userId(userSeq) 설정
+        dto.setUserId(userSeq);
         communityService.writeRecommendation(dto);
-        
         return "redirect:/csj/community";
     }
 
     @GetMapping("/community/detail")
     public String detail(@RequestParam("postId") Long postId, Model model) {
-        
         Long currentUserSeq = getCurrentUserSeq();
-        if (currentUserSeq == null) {
-            
-        } else {
-            
-        }
-
         communityService.increaseViewCount(postId);
-
         CommunityPostDTO post = communityService.getRecommendation(postId);
         List<CommunityCommentDTO> comments = communityService.getAllComments(postId);
 
-        // 🔥 추천 수 조회 추가
         int upCount = voteService.getVoteCount(postId.intValue(), "UP");
         int downCount = voteService.getVoteCount(postId.intValue(), "DOWN");
 
@@ -159,32 +137,27 @@ public class CommunityPostController {
         model.addAttribute("commentList", comments);
         model.addAttribute("upCount", upCount);
         model.addAttribute("downCount", downCount);
-        model.addAttribute("currentUserSeq", currentUserSeq); // 현재 사용자 userSeq를 뷰에 전달
-
-        
+        model.addAttribute("currentUserSeq", currentUserSeq);
         return "csj/communityDetail";
     }
 
-//댓글
     @GetMapping("/comment/add")
     public String commentAdd(@RequestParam("postId") Long postId, Model model) {
-    	CommunityPostDTO post = communityService.getRecommendation(postId);
-    	model.addAttribute("post", post);
-    	return "csj/communityDetail";
+        CommunityPostDTO post = communityService.getRecommendation(postId);
+        model.addAttribute("post", post);
+        return "csj/communityDetail";
     }
 
     @PostMapping("/uploadImage")
     @ResponseBody
     public String uploadImage(@RequestParam("image") MultipartFile imageFile) {
-        
         if (getCurrentUserSeq() == null) {
-            
-            return "error: Not logged in"; // 또는 적절한 오류 처리
+            return "error: Not logged in";
         }
 
         try {
             String fileName = UUID.randomUUID() + "_" + imageFile.getOriginalFilename();
-            File dir = new File(uploadPath);
+            File dir = new File(uploadDirRoot + "/community");
             if (!dir.exists()) {
                 dir.mkdirs();
             }
@@ -192,10 +165,9 @@ public class CommunityPostController {
             File dest = new File(dir, fileName);
             imageFile.transferTo(dest);
 
-            
-            return "/images/community/" + fileName;
+            // 웹 접근용 경로 반환
+            return uploadPathWeb + "/" + fileName;
         } catch (IOException e) {
-           
             e.printStackTrace();
             return null;
         }
@@ -203,20 +175,15 @@ public class CommunityPostController {
 
     @GetMapping("/community/delete")
     public String deletePost(@RequestParam("postId") Long postId) {
-        
-        // 권한 체크: 로그인한 유저와 작성자가 같을 때만 삭제 허용
         Long currentUserSeq = getCurrentUserSeq();
         if (currentUserSeq == null) {
-            
             throw new IllegalStateException("로그인 상태가 아닙니다.");
         }
 
         CommunityPostDTO post = communityService.getRecommendation(postId);
         if (post != null && currentUserSeq.equals(post.getUserId())) {
             communityService.deletePost(postId);
-            
         } else {
-            
             throw new IllegalStateException("삭제 권한이 없거나 게시글을 찾을 수 없습니다.");
         }
         return "redirect:/csj/community";
@@ -225,35 +192,28 @@ public class CommunityPostController {
     @PostMapping("/comment/write")
     @ResponseBody
     public CommunityCommentDTO writeComment(@RequestBody CommunityCommentDTO commentDTO) {
-      
         UserEntity currentUser = getCurrentUserEntity();
         if (currentUser == null) {
-            
             throw new IllegalStateException("로그인 상태가 아닙니다.");
         }
 
-        // 유저 정보 주입
         commentDTO.setUserId2(currentUser.getUserSeq());
         commentDTO.setNickname(currentUser.getNickname());
 
-        // 방어 코드
         if (commentDTO.getPostId2() == null || commentDTO.getContent() == null || commentDTO.getContent().trim().isEmpty()) {
-            
             throw new IllegalArgumentException("postId2 또는 content가 비어 있음");
         }
 
         communityService.writeCommet(commentDTO);
         commentDTO.setCreatedAt(Timestamp.valueOf(LocalDateTime.now()));
-       
         return commentDTO;
     }
 
     @GetMapping("/csj/community")
-    public String showCommunity(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "50") int size,
-            @RequestParam(required = false) String keyword,
-            Model model) {
+    public String showCommunity(@RequestParam(defaultValue = "1") int page,
+                                @RequestParam(defaultValue = "50") int size,
+                                @RequestParam(required = false) String keyword,
+                                Model model) {
 
         PageDTO pageDTO = new PageDTO();
         pageDTO.setPage(page);

@@ -25,10 +25,17 @@ public class MyPageController {
 
     @Autowired
     private MyPageService mpSV;
-    
+
     @Autowired
     private FundingService fdSV;
 
+    @Value("${file.upload-dir.root}")
+    private String uploadDirRoot;
+
+    @Value("${upload.path.profile}")
+    private String uploadPathWeb;
+    
+    
     private long getOrInitUserSeq(Authentication auth) {
         Object raw = auth.getPrincipal();
         Long userSeq = null;
@@ -38,13 +45,10 @@ public class MyPageController {
         return userSeq;
     }
 
-
-
-    /** 공통 진입점 (탭 파라미터 기반) */
     @GetMapping
     public String mypageMain(@RequestParam(value = "tab", required = false, defaultValue = "dashboard") String tab,
-    		Authentication auth, Model model) {
-    	long userSeq = getOrInitUserSeq(auth);
+                             Authentication auth, Model model) {
+        long userSeq = getOrInitUserSeq(auth);
 
         switch (tab) {
             case "my_info":
@@ -54,14 +58,9 @@ public class MyPageController {
                 model.addAttribute("lectureList", mpSV.getLectureHistory(userSeq));
                 break;
             case "subscriptions":
-            	//디버깅용
-                System.out.println("[Controller] case=‘subscriptions’, userSeq=" + userSeq);
                 List<SubscriptionDTO> subs = mpSV.getSubscriptions(userSeq);
-                System.out.println("[Controller] getSubscriptions → size=" + subs.size() + ", data=" + subs);
                 model.addAttribute("subscriptionList", subs);
                 break;
-//                model.addAttribute("subscriptionList", mpSV.getSubscriptions(userSeq));
-//                break;
             case "dashboard":
             default:
                 model.addAttribute("myData", mpSV.getMyPageData(userSeq));
@@ -72,101 +71,84 @@ public class MyPageController {
         return "mypage/mypage_main";
     }
 
-    /** 대시보드 단독 접근용 (직접 경로 접근시) */
     @GetMapping("/dashboard")
     public String dashboard(Authentication auth, Model model) {
-    	long userSeq = getOrInitUserSeq(auth);
+        long userSeq = getOrInitUserSeq(auth);
         model.addAttribute("myData", mpSV.getMyPageData(userSeq));
         return "mypage/dashboard";
     }
 
-    /** 수강 내역 */
     @GetMapping("/lecture_history")
     public String lectureHistory(Authentication auth, Model model) {
-    	long userSeq = getOrInitUserSeq(auth);
+        long userSeq = getOrInitUserSeq(auth);
         model.addAttribute("lectureList", mpSV.getLectureHistory(userSeq));
         model.addAttribute("myLectureList", mpSV.selectMyLectures(userSeq));
         return "mypage/lecture_history";
     }
 
     @PostMapping("/unsubscribe")
-    public boolean cancelSubscription(HttpSession session,
-                                      @RequestParam Long instructorId) {
+    public boolean cancelSubscription(HttpSession session, @RequestParam Long instructorId) {
         Long userSeq = (Long) session.getAttribute("user_seq");
         return mpSV.cancelSubscription(userSeq, instructorId);
     }
 
-
-    /** 내 정보 */
     @GetMapping("/my_info")
     public String myInfo(Authentication auth, Model model) {
-    	long userSeq = getOrInitUserSeq(auth);
-        System.out.println("uploadProfile 메서드 진입");
+        long userSeq = getOrInitUserSeq(auth);
         model.addAttribute("myData", mpSV.getUserInfo(userSeq));
         return "mypage/my_info";
     }
 
-    @Value("${file.upload-dir.profile}")
-    private String uploadDir;
 
-    @Value("${upload.path.profile}")
-    private String uploadPath;
+@PostMapping("/upload_profile")
+@ResponseBody
+public Map<String, Object> uploadProfile(@RequestParam("file") MultipartFile file, Authentication auth) {
+    Map<String, Object> result = new HashMap<>();
 
-    /** 프로필 업로드 */
-    @PostMapping("/upload_profile")
-    @ResponseBody
-    public Map<String, Object> uploadProfile(@RequestParam("file") MultipartFile file,
-                                             Authentication auth) {
-        Map<String, Object> result = new HashMap<>();
-
-        Object raw = auth.getPrincipal();
-        if (!(raw instanceof Long userSeq) || file.isEmpty()) {
-            System.out.println("principal = " + auth.getPrincipal());
-            result.put("success", false);
-            result.put("message", "사용자 정보 또는 파일이 없습니다.");
-            return result;
-        }
-
-        try {
-            // 확장자 체크
-            String originalName = file.getOriginalFilename();
-            String ext = originalName.substring(originalName.lastIndexOf(".") + 1).toLowerCase();
-            if (!List.of("png", "jpg", "jpeg", "gif").contains(ext)) {
-                result.put("success", false);
-                result.put("message", "이미지 파일만 업로드 가능합니다.");
-                return result;
-            }
-
-            // 실제 파일 저장 경로
-            String filename = "profile_" + userSeq + "." + ext;
-            File uploadFolder = new File(uploadDir);
-            if (!uploadFolder.exists()) {
-                uploadFolder.mkdirs(); // 폴더 없으면 생성
-            }
-            File dest = new File(uploadFolder, filename);
-            file.transferTo(dest);
-
-            // DB에 저장되는 경로는 "/userprofile/파일명" 형식으로
-            String dbPath = "/userprofile/" + filename;
-            mpSV.updateUserProfile(userSeq, dbPath);
-
-            result.put("success", true);
-            result.put("newPath", dbPath);
-        } catch (Exception e) {
-            e.printStackTrace();
-            result.put("success", false);
-            result.put("message", "업로드 중 오류 발생");
-        }
-
+    Object raw = auth.getPrincipal();
+    if (!(raw instanceof Long userSeq) || file.isEmpty()) {
+        result.put("success", false);
+        result.put("message", "사용자 정보 또는 파일이 없습니다.");
         return result;
     }
 
-    /** 프로필 삭제 */
+    try {
+        String originalName = file.getOriginalFilename();
+        String ext = originalName.substring(originalName.lastIndexOf(".") + 1).toLowerCase();
+        if (!List.of("png", "jpg", "jpeg", "gif").contains(ext)) {
+            result.put("success", false);
+            result.put("message", "이미지 파일만 업로드 가능합니다.");
+            return result;
+        }
+
+        String filename = "profile_" + userSeq + "." + ext;
+        File uploadFolder = new File(uploadDirRoot + "/userprofile");
+        if (!uploadFolder.exists()) {
+            uploadFolder.mkdirs();
+        }
+
+        File dest = new File(uploadFolder, filename);
+        file.transferTo(dest);
+
+        // DB에는 웹 접근용 경로 저장
+        String dbPath = uploadPathWeb + "/" + filename;
+        mpSV.updateUserProfile(userSeq, dbPath);
+
+        result.put("success", true);
+        result.put("newPath", dbPath);
+    } catch (Exception e) {
+        e.printStackTrace();
+        result.put("success", false);
+        result.put("message", "업로드 중 오류 발생");
+    }
+
+    return result;
+}
+
     @PostMapping("/delete_profile")
     @ResponseBody
     public Map<String, Object> deleteProfile(Authentication auth) {
         Map<String, Object> result = new HashMap<>();
-
         Object raw = auth.getPrincipal();
         if (!(raw instanceof Long userSeq)) {
             result.put("success", false);
@@ -175,17 +157,14 @@ public class MyPageController {
         }
 
         try {
-            // DB에서 경로 조회
             String profilePath = mpSV.selectProfilePath(userSeq);
             if (profilePath != null && !profilePath.isBlank()) {
-                // 경로: "/userprofile/profile_410.png" → 실제 파일 경로 계산
-                File file = new File(uploadDir, profilePath.replace("/userprofile/", ""));
+                File file = new File(uploadDirRoot + "/userprofile", profilePath.replace("/userprofile/", ""));
                 if (file.exists()) {
                     file.delete();
                 }
             }
 
-            // DB 경로 null 처리
             mpSV.updateUserProfile(userSeq, null);
             result.put("success", true);
         } catch (Exception e) {
@@ -197,57 +176,46 @@ public class MyPageController {
         return result;
     }
 
-
-
-    /** 비밀번호 변경 */
     @GetMapping("/reset_password")
     public String resetPassword() {
         return "mypage/reset_password";
     }
 
-    /** 계좌 연동 */
     @GetMapping("/link_account")
     public String linkAccount() {
         return "mypage/link_account";
     }
 
-    /** 탈퇴 페이지 */
     @GetMapping("/leave")
     public String leave() {
         return "mypage/leave";
     }
-    
+
     @GetMapping("/subscriptions")
     public String subscriptionPage(Authentication auth, Model model) {
-    	
-    	//디버깅용//
-    	long userSeq = getOrInitUserSeq(auth);
-        System.out.println("[Controller·/subscriptions] called, userSeq=" + userSeq);
+        long userSeq = getOrInitUserSeq(auth);
         List<SubscriptionDTO> subscriptions = mpSV.getSubscriptions(userSeq);
-        System.out.println("[Controller·/subscriptions] from service → subscriptions("
-                           + subscriptions.size() + ")=" + subscriptions);
         model.addAttribute("subscriptionList", subscriptions);
-        return "mypage/subscriptions"; // subscriptions.html
+        return "mypage/subscriptions";
     }
 
     @GetMapping("/wallet")
-    public String accountPage(Model model,Authentication auth) {
-    	long userSeq = getOrInitUserSeq(auth);
+    public String accountPage(Model model, Authentication auth) {
+        long userSeq = getOrInitUserSeq(auth);
         FundingDTO accountInfo = fdSV.getAccountInfo(userSeq);
         model.addAttribute("accountInfo", accountInfo);
-        return "mypage/wallet"; // 프래그먼트 지정
+        return "mypage/wallet";
     }
 
     @GetMapping("/donation")
     public String fundingPage(Model model, Authentication auth) {
-    	long userSeq = getOrInitUserSeq(auth);
+        long userSeq = getOrInitUserSeq(auth);
         List<FundingDTO> fundingList = fdSV.getUserFundings(userSeq);
         model.addAttribute("fundingList", fundingList);
-        model.addAttribute("donationType", "given"); // 추가된 라인
+        model.addAttribute("donationType", "given");
         return "mypage/donation";
     }
 
-    /** 헤더/사이드바 (프래그먼트) */
     @GetMapping("/user_header")
     public String userHeader() {
         return "mypage/user_header";
@@ -257,5 +225,4 @@ public class MyPageController {
     public String sidebarPage() {
         return "mypage/sidebar";
     }
-
 }
