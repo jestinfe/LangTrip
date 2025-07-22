@@ -18,9 +18,19 @@
       <div class="stat-box xp-box">총 문제수<br>⚡ <span th:text="${totalCnt}"></span></div>
 <div class="stat-box accuracy-box">정답률<br>🎯 <span th:text="${accuracyRate + '%'}"></span></div>
     </div>
-
+<!-- 	<input type="hidden" id="courseSeq" th:value="${qDTO.courseSeq}"/> -->
     <div class="footer-buttons">
-      <button class="btn-fill" onclick="location.href='/quiz/classRoom'">강의실로 이동</button>
+     <button class="btn-fill"
+        th:data-course="${qDTO.courseSeq}"
+        onclick="goToCourse(this)">
+  강의실로 이동
+</button>
+<script>
+  function goToCourse(btn) {
+    const courseSeq = btn.getAttribute('data-course');
+    location.href = '/upload/upload_course?seq=' + courseSeq;
+  }
+</script>
     </div>
   </div>
 

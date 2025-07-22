@@ -68,7 +68,18 @@
 										</button>
 									</div>
 								</div>
-								
+							</div>
+							<div th:if="${quizList != null and !quizList.isEmpty()}">
+							  <div class="video-tree">
+							    <div th:each="quiz : ${quizList}" class="video-node inactive">
+							      <button type="button" class="start-quiz-button"
+							             th:id="|quiz-btn-${quiz.quizListSeq}|"
+           								th:data-quiz-id="${quiz.quizListSeq}"
+           								th:data-course-id="${courseData.courseSeq}">
+							        <i class="fa-solid fa-book"></i>
+							      </button>
+							    </div>
+							  </div>
 							</div>
 						</div>
 
@@ -77,7 +88,7 @@
 						<div class="side-panel">
 							<h5>📚 후원</h5>
 							<p class="mb-3">강사님께 후원해보세요.</p>
-							<a class="btn btn-outline-primary btn-sm w-100 mb-2">
+							<a class="btn btn-outline-primary btn-sm w-100 mb-2" onclick="goToDonate('${courseData.courseSeq}')">
 							 후원하기</a>
 						</div>
 						
@@ -137,6 +148,23 @@
 
 
 		<script>
+		function goToDonate(courseSeq){
+			location.href = "/user/donation?lectureNo="+ courseSeq;
+		}
+		//퀴즈
+		const startButtons = document.querySelectorAll(".start-quiz-button");
+		  startButtons.forEach(btn => {
+		    btn.addEventListener("click", function () {
+		      const quizListSeq = this.dataset.quizId;
+		      const quizCourseSeq = this.dataset.courseId;
+		      startQuiz(quizListSeq, quizCourseSeq);
+		    });
+		  });
+		//퀴즈 시작시 학습 화면으로 이동
+		  function startQuiz(quizListSeq, courseSeq) {
+		    location.href = "/quiz/playQuiz/" + quizListSeq+"?courseSeq=" + courseSeq;
+		  }
+		
         function toggleMobileMenu() {
             const sidebar = document.getElementById('sidebar');
             const overlay = document.querySelector('.mobile-overlay');
