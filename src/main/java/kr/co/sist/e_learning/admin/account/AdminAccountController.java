@@ -92,6 +92,7 @@ public class AdminAccountController {
         @RequestParam(required = false, defaultValue = "createdAt,desc") String sort,
         @RequestParam(defaultValue = "1") int page,
         @RequestParam(defaultValue = "10") int pageSize,
+        @RequestParam(name = "async", required = false) boolean async,
         Model model
     ) {
         int offset = (page - 1) * pageSize;
@@ -120,13 +121,17 @@ public class AdminAccountController {
         model.addAttribute("searchType", searchType);
         model.addAttribute("searchKeyword", searchKeyword);
         model.addAttribute("sort", sort);
-        model.addAttribute("pageSize", pageSize); // Add pageSize to the model
-        model.addAttribute("page", page);       // ✅ 추가
+        model.addAttribute("pageSize", pageSize);
+        model.addAttribute("page", page);
         model.addAttribute("totalCount", totalCount);
         model.addAttribute("totalPages", totalPages);
         model.addAttribute("startPage", startPage);
         model.addAttribute("endPage", endPage);
         model.addAttribute("roleNameMap", getRoleNameMap());
+
+        if (async) {
+            return "admin/account/account_list_fragment";
+        }
 
         return "admin/account/account_list";
     }

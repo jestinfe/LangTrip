@@ -18,6 +18,11 @@ import ch.qos.logback.core.net.server.Client;
 
 @Service
 public class OpenAiService {
+	
+	  @Value("${api_key}")
+	  private String api_key;
+	  @Value("${api_url}")
+	  private String api_url;
 
 
     @Value("${openai.api.url}")

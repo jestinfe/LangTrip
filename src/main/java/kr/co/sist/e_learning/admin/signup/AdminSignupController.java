@@ -23,6 +23,7 @@ public class AdminSignupController {
     @Loggable(actionType = "SIGNUP_SEND_CODE")
     public void sendVerification(@RequestParam String email) {
         signupService.sendVerificationCode(email);
+        System.out.println("씨삐라빨삐라ㅃ이ㅏ러ㅣ아ㅓ리ㅏㄹ");
     }
 
     // 인증코드 확인

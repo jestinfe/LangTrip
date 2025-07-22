@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 
 @Data
 public class DonationVO {
-    private Long donationId;
+    private String donationId;
     private String senderId;
     private String recipientId;
     private String lectureTitle;

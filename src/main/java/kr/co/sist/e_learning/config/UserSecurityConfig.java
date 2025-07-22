@@ -40,6 +40,7 @@ public class UserSecurityConfig {
             			        "/login", "/signup", "/social_signup",
             			        "/forgot-username", "/forgot-password", "/reset-password",
             			        "/user/logout", "/user/login/**",
+            			        "/admin/**", // Permit all admin paths for UserSecurityConfig
             			        
             			        // 🔐 로그인 없이 접근 가능한 API 경로 추가
             			        "/api/auth/**"

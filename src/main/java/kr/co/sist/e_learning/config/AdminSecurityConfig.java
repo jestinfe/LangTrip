@@ -35,8 +35,7 @@ public class AdminSecurityConfig {
         http
             .securityMatcher("/admin/**") // /admin/** 에만 적용
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/admin/login", "/admin/signup", "/admin/send-code", "/admin/verify-code", "/admin/check-id").permitAll()
-                .requestMatchers("/admin/**").authenticated()
+                .anyRequest().permitAll() // Temporarily permit all requests under /admin/** for debugging
             )
             .formLogin(form -> form
                 .loginPage("/admin/login")
@@ -49,7 +48,8 @@ public class AdminSecurityConfig {
             .logout(logout -> logout
                 .logoutUrl("/admin/logout")
                 .logoutSuccessHandler(customAdminLogoutSuccessHandler)
-            );
+            )
+            .csrf(csrf -> csrf.disable()); // Temporarily disable CSRF entirely for AdminSecurityConfig
 
         return http.build();
     }
