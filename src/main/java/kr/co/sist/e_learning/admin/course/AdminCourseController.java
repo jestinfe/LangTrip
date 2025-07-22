@@ -25,6 +25,7 @@ public class AdminCourseController {
             @RequestParam(required = false) String searchKeyword,
             @RequestParam(required = false, defaultValue = "uploadDate,desc") String sort,
             @RequestParam(required = false) String isPublic,
+            @RequestParam(name = "async", required = false) boolean async,
             Model model) {
 
         Map<String, Object> params = new HashMap<>();
@@ -50,6 +51,10 @@ public class AdminCourseController {
         model.addAttribute("searchKeyword", searchKeyword);
         model.addAttribute("sort", sort);
         model.addAttribute("isPublic", isPublic);
+
+        if (async) {
+            return "admin/course/course_list_fragment";
+        }
 
         return "admin/course/course_list";
     }
