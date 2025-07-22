@@ -15,7 +15,7 @@
 </head>
 <body>
 <input type="hidden" id="quizListSeq" th:value="${qlDTO.quizListSeq}" />
-
+<input type="hidden" id="quizCourseSeq" th:value="${qDTO.courseSeq}"/>
 <div class="logo-box text-center mb-4">
   <img th:src="@{/upload/img/mascot.png}" alt="LangTrip Logo">
 </div>
@@ -228,6 +228,7 @@ $(function () {
       title: $("#quizTitle").val(),
       langCategory: $("#langCategory").val(),
       quiz: quizList
+      
     }));
     imageFiles.forEach(file => formData.append("imageFiles", file));
 
@@ -237,7 +238,8 @@ $(function () {
     .then(res => {
       if (res.data === "success") {
         alert("수정 완료!");
-        location.href = "/classRoom";
+        const courseSeq = document.getElementById("quizCourseSeq").value;
+        window.location.href = '/upload/upload_course?seq='+courseSeq;
       }
     })
     .catch(err => {
@@ -255,7 +257,7 @@ $(function () {
       .then(res => {
         if (res.data === "delete") {
           alert("삭제 완료");
-          location.href = "/classRoom";
+          window.location.href = '/upload/upload_course?seq='+courseSeq;
         }
       })
       .catch(err => {

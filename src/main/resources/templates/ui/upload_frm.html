@@ -46,7 +46,7 @@
 							</div>
 						</div>
 						<div class="video-section">
-							<div th:if="${videoList.isEmpty()}" class="lecture-empty">
+							<div th:if="${videoList.isEmpty() && quizList.isEmpty()}" class="lecture-empty">
 								등록된 강의가 없습니다.
 								<div style="margin-top: 20px; font-size: 14px; color: #999;">
 									새로운 강의를 등록해보세요!</div>
@@ -68,8 +68,22 @@
 										</button>
 									</div>
 								</div>
-								
 							</div>
+							<div th:if="${quizList != null and !quizList.isEmpty()}">
+							  <div class="video-tree">
+							    <div th:each="quiz : ${quizList}" class="video-node inactive">
+							      <button type="button" class="start-quiz-button"
+							             th:id="|quiz-btn-${quiz.quizListSeq}|"
+           								th:data-quiz-id="${quiz.quizListSeq}"
+           								th:data-course-id="${courseData.courseSeq}">
+							        <i class="fa-solid fa-book"></i>
+							      </button>
+							    </div>
+							  </div>
+							</div>
+							
+							
+							
 						</div>
 
 						<!-- 우측 설명 패널 -->
@@ -81,7 +95,6 @@
 							🎬 영상 등록</a>
 							<a th:href="@{/quiz/addQuizForm(seq=${courseData.courseSeq})}" class="btn btn-outline-primary btn-sm w-100 mb-2">
 							❓ 퀴즈 등록</a>
-<!-- 							<button class="btn btn-outline-secondary btn-sm">❓ 퀴즈 등록</button> -->
 						</div>
 						
 						<div class="side-panel">
@@ -140,6 +153,35 @@
 
 
 		<script>
+		
+		 // 모달 "퀴즈 수정" 버튼
+		  const modifyButtons = document.querySelectorAll(".start-quiz-button");
+		  modifyButtons.forEach(btn => {
+		    btn.addEventListener("click", function () {
+		      const quizListSeq = this.dataset.quizId;
+		      const courseSeq = this.dataset.courseId;
+		      modifyQuiz(quizListSeq, courseSeq);
+		    });
+		  });
+		  
+		//퀴즈 수정 화면으로 이동
+		  function modifyQuiz(quizListSeq, courseSeq) {
+			  location.href = "/quiz/modifyQuizForm/" + quizListSeq + "?courseSeq=" + courseSeq;
+		}
+// 		//퀴즈
+// 		const startButtons = document.querySelectorAll(".start-quiz-button");
+// 		  startButtons.forEach(btn => {
+// 		    btn.addEventListener("click", function () {
+// 		      const quizListSeq = this.dataset.quizId;
+// 		      startQuiz(quizListSeq);
+// 		    });
+// 		  });
+// 		//퀴즈 시작시 학습 화면으로 이동
+// 		  function startQuiz(quizListSeq) {
+// 		    location.href = "/quiz/playQuiz/" + quizListSeq;
+// 		  }
+		
+		
         function toggleMobileMenu() {
             const sidebar = document.getElementById('sidebar');
             const overlay = document.querySelector('.mobile-overlay');
@@ -246,26 +288,6 @@
         });
         
         
-        
-//         document.addEventListener("DOMContentLoaded", function () {
-//         	  const courseData = sessionStorage.getItem("newCourse");
-//         	  if (courseData) {
-//         	    const c = JSON.parse(courseData);
-
-//         	    const html = `
-//         	      <div class="box">
-//         	        <strong>${c.courseTitle}</strong><br/>
-//         	        강의번호: ${c.courseSeq}<br/>
-//         	        등록일: ${c.uploadDate}
-//         	      </div>
-//         	    `;
-
-//         	    document.getElementById("courseDataSector").innerHTML = html;
-
-//         	    // 사용 후 세션 스토리지에서 삭제 (원하면 주석처리 가능)
-//         	    sessionStorage.removeItem("newCourse");
-//         	  }
-//         	});
         
     </script>
 		
