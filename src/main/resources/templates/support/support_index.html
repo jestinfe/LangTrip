@@ -118,9 +118,26 @@
    color: #9a43fe;
   }
   
-  
+body.logged-in .guest-state {
+  display: none;
+}
+body.logged-in .user-state {
+  display: inline-flex ;
+}
+body.logged-out .guest-state {
+  display: inline-flex ;
+}
+body.logged-out .user-state {
+  display: none ;
+}
+
+
 </style>
+  
+
+ <script src="/js/login-status.js" defer></script>
 </head>
+
 <body>
 
 	<div th:replace="layout/header :: header"></div>
