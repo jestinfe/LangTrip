@@ -16,8 +16,9 @@ public class AdminLogController {
     private AdminLogService adminLogService;
 
     @GetMapping("/admin/log")
-    public String adminLogPage(PageRequestDTO pageRequestDTO, AdminLogDTO searchDTO, 
+    public String adminLogPage(@RequestParam(name = "pageSize", defaultValue = "10") int pageSize, PageRequestDTO pageRequestDTO, AdminLogDTO searchDTO, 
                                @RequestParam(name = "async", required = false) boolean async, Model model) {
+        pageRequestDTO.setSize(pageSize); // Set the size from the request parameter
         PageResponseDTO<AdminLogDTO> pageResponse = adminLogService.getAdminLogs(pageRequestDTO, searchDTO);
         model.addAttribute("pageResponse", pageResponse);
         model.addAttribute("searchDTO", searchDTO);

@@ -76,6 +76,11 @@ public class AdminLogExcelController {
             row.createCell(5).setCellValue(log.getDetails());
         }
 
+        // Auto-size columns
+        for (int i = 0; i < headers.length; i++) {
+            sheet.autoSizeColumn(i);
+        }
+
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         response.setHeader("Content-Disposition", "attachment; filename=admin_logs.xlsx");
 

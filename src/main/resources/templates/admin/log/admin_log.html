@@ -184,7 +184,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         url.searchParams.set('sort', sortSelect.value);
         url.searchParams.set('pageSize', pageSizeSelect.value);
-        url.search_params.set('page', currentPage);
+        url.searchParams.set('page', currentPage);
         excelDownloadBtn.href = url.toString();
     }
 

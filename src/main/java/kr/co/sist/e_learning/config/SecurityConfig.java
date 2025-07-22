@@ -82,6 +82,9 @@ public class SecurityConfig {
             .oauth2Login(oauth2 -> oauth2
 
                 .successHandler(customOAuth2AuthenticationSuccessHandler)
+            )
+            .csrf(csrf -> csrf
+                .ignoringRequestMatchers("/admin/send-code", "/admin/verify-code", "/admin/signup")
             );
 
         return http.build();
