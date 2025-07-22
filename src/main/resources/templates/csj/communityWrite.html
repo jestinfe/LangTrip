@@ -2,8 +2,6 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 	<head>
   <meta charset="UTF-8" />
-  <meta name="_csrf" th:content="${_csrf.token}" />
-  <meta name="_csrf_header" th:content="${_csrf.headerName}" />
   <title>강의 추천 글쓰기</title>
 
   <!-- CSS / JS -->
@@ -102,10 +100,10 @@ body.logged-out .user-state {
 
     <div class="mb-3">
       <label for="nickname" class="form-label">작성자</label>
-      <input type="text" class="form-control" id="nickname" name="nickname" th:value="${session.loginUser.nickname}" readonly>
+      <input type="text" class="form-control" id="nickname" name="nickname" th:value="${currentUserNickname}" readonly>
     </div>
 
-    <input type="hidden" name="userId" th:value="${session.loginUser.userSeq}" />
+    <input type="hidden" name="userId" th:value="${currentUserSeq}" />
 
     <div class="mb-3">
       <label for="content" class="form-label">내용</label>
@@ -123,11 +121,7 @@ body.logged-out .user-state {
 <div th:replace="layout/footer :: footer"></div>
 
 <script>
-  $(document).ajaxSend(function(e, xhr, options) {
-    const token = $("meta[name='_csrf']").attr("content");
-    const header = $("meta[name='_csrf_header']").attr("content");
-    xhr.setRequestHeader(header, token);
-  });
+
 
   $(document).ready(function () {
     $('#content').summernote({

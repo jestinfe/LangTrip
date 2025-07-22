@@ -18,7 +18,7 @@ import lombok.ToString;
 public class CommunityPostDTO {
 
     private Long postId;
-    private Integer userId;
+    private Long userId;
     private String title;
     private String content;
     private Timestamp createdAt;

@@ -355,4 +355,19 @@
 .donation-table tr:hover {
   background-color: #fafafa;
 }
+
+.donation-table td {
+  padding: 8px;
+  text-align: center;
+  vertical-align: middle;
+  word-wrap: break-word;
+}
+
+.donation-table th {
+  text-align: center;
+}
+
+.donation-table td, .donation-table th {
+  min-width: 120px; /* 최소 너비 설정 */
+}
     
