@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title th:text="${videoData.title}">영상 보기</title>
+  <link rel="icon" href="http://localhost/images/favicon.ico">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <style>
+    :root {
+      --primary-blue: #1e40af;
+      --light-blue: #3b82f6;
+      --sky-blue: #0ea5e9;
+      --gradient-bg: linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #0ea5e9 100%);
+      --card-shadow: 0 8px 32px rgba(30, 64, 175, 0.1);
+      --travel-accent: #f59e0b;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+/*       background: var(--gradient-bg); */
+      min-height: 100vh;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* 배경 장식 요소들 */
+    body::before {
+      content: '';
+      position: fixed;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: 
+        radial-gradient(circle at 20% 20%, rgba(255,255,255,0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(255,255,255,0.05) 0%, transparent 50%);
+      animation: float 20s ease-in-out infinite;
+      z-index: -1;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-20px) rotate(180deg); }
+    }
+
+    .travel-header {
+      background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(6px);
+  border-radius: 20px;
+  padding: 20px;
+  margin-bottom: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+    }
+
+    .travel-header::before {
+      content: '✈️';
+      position: absolute;
+      top: 10px;
+      right: 20px;
+      font-size: 1.5rem;
+      animation: fly 3s ease-in-out infinite;
+    }
+
+    @keyframes fly {
+      0%, 100% { transform: translateX(0px) translateY(0px); }
+      50% { transform: translateX(10px) translateY(-5px); }
+    }
+
+    .travel-title {
+	     color: #1e40af;
+    }
+
+    .travel-subtitle {
+     color: #1e40af;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .video-container {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      padding: 25px;
+      box-shadow: var(--card-shadow);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      margin-bottom: 25px;
+    }
+
+    .video-title {
+      color: var(--primary-blue);
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .video-desc {
+      color: #64748b;
+      margin-bottom: 20px;
+      font-size: 0.95rem;
+    }
+
+    .video-wrapper {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: 15px;
+  background: #000;
+}
+
+.video-element {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+    .subtitle-section {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      padding: 25px;
+      box-shadow: var(--card-shadow);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      margin-bottom: 25px;
+    }
+
+    .subtitle-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid rgba(30, 64, 175, 0.1);
+    }
+
+    .subtitle-speed {
+      background: var(--light-blue);
+      color: white;
+      padding: 5px 15px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .subtitle-lang {
+      background: var(--travel-accent);
+      color: white;
+      padding: 5px 15px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .subtitle-content {
+      line-height: 1.8;
+    }
+
+    .english-text {
+      color: var(--light-blue);
+      font-weight: 700;
+      font-size: 1.1rem;
+      margin-bottom: 8px;
+    }
+
+    .korean-text {
+      color: #334155;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .vocabulary-note {
+      background: linear-gradient(135deg, #eff6ff, #dbeafe);
+      color: #1e40af;
+      font-size: 0.85rem;
+      padding: 8px 12px;
+      border-radius: 10px;
+      border-left: 4px solid var(--light-blue);
+      margin-top: 10px;
+    }
+
+    .learning-sidebar {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      padding: 25px;
+      box-shadow: var(--card-shadow);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      height: fit-content;
+    }
+
+    .sidebar-title {
+      color: var(--primary-blue);
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .current-topic {
+      background: linear-gradient(135deg, #eff6ff, #dbeafe);
+      color: var(--primary-blue);
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .progress-section {
+      margin-bottom: 25px;
+    }
+
+    .progress-bar-custom {
+      height: 12px;
+      background: linear-gradient(90deg, var(--light-blue), var(--sky-blue));
+      border-radius: 10px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .progress-bar-custom::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      animation: shimmer 2s infinite;
+    }
+
+    @keyframes shimmer {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    .quiz-button {
+      background: linear-gradient(135deg, var(--travel-accent), #f97316);
+      color: white;
+      border: none;
+      padding: 15px 20px;
+      border-radius: 15px;
+      font-weight: 700;
+      font-size: 1rem;
+      width: 100%;
+      margin-bottom: 25px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+    }
+
+    .quiz-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
+    }
+
+    .quiz-section {
+      background: linear-gradient(135deg, #fef3c7, #fde68a);
+      padding: 20px;
+      border-radius: 15px;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .quiz-question {
+      color: #92400e;
+      font-weight: 700;
+      margin-bottom: 15px;
+    }
+
+    .quiz-content {
+      color: #451a03;
+      line-height: 1.6;
+    }
+
+    /* 모바일 반응형 */
+    @media (max-width: 768px) {
+      .container {
+        padding: 10px;
+      }
+      
+      .travel-header {
+        padding: 15px;
+        margin-bottom: 20px;
+      }
+      
+      .travel-title {
+
+		  color: var(--primary-blue);
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+      }
+      
+      .travel-subtitle {
+        font-size: 0.9rem;
+      }
+      
+      .video-container {
+        padding: 20px;
+        margin-bottom: 20px;
+      }
+      
+      .video-title {
+        font-size: 1.2rem;
+      }
+      
+      .video-element {
+  width: 100%;
+  aspect-ratio: 16 / 9; /* 화면 비율 고정 */
+  height: auto;
+  object-fit: cover; /* 좌우 검은 여백 제거 */
+  border-radius: 15px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  background: #000;
+}
+      
+      .subtitle-section {
+        padding: 20px;
+        margin-bottom: 20px;
+      }
+      
+      .learning-sidebar {
+        padding: 20px;
+        margin-top: 20px;
+      }
+      
+      .sidebar-title {
+        font-size: 1.1rem;
+      }
+      
+      .quiz-button {
+        padding: 12px 16px;
+        font-size: 0.95rem;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .travel-header {
+        padding: 12px;
+      }
+      
+      .travel-title {
+        font-size: 1.2rem;
+      }
+      
+      .video-container {
+        padding: 15px;
+      }
+      
+      .video-title {
+        font-size: 1.1rem;
+      }
+      
+      
+        .video-element {
+  width: 100%;
+  aspect-ratio: 16 / 9; /* 화면 비율 고정 */
+  height: auto;
+  object-fit: cover; /* 좌우 검은 여백 제거 */
+  border-radius: 15px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  background: #000;
+}
+      
+      
+      .subtitle-section {
+        padding: 15px;
+      }
+      
+      .learning-sidebar {
+        padding: 15px;
+      }
+      
+      .english-text {
+        font-size: 1rem;
+      }
+      
+      .subtitle-header {
+        flex-direction: column;
+        gap: 10px;
+        align-items: stretch;
+      }
+      
+      .subtitle-speed, .subtitle-lang {
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <!-- 여행 헤더 -->
+  <div class="travel-header">
+    <h1 class="travel-title">🌍 English Travel Adventure</h1>
+    <div class="travel-subtitle">
+      <i class="fas fa-route"></i>
+      <span>언어와 함께 떠나는 특별한 여행</span>
+      <i class="fas fa-globe-americas"></i>
+    </div>
+  </div>
+
+  <div class="row">
+    <!-- 왼쪽: 비디오 및 자막 -->
+    <div class="col-lg-8">
+      <div class="video-container">
+        <h2 class="video-title">
+          <i class="fas fa-play-circle"></i>
+          <span th:text="${videoData.title}">영상 제목</span>
+        </h2>
+        <p class="video-desc" th:text="${videoData.description}">영상 설명</p>
+        <div class="video-wrapper">
+  			<video class="video-element" th:src="@{|/upload/video/${videoData.fileName}|}" controls></video>
+		</div>
+
+      </div>
+      
+      <!-- 자막 및 해석 부분 -->
+      <div class="subtitle-section">
+        <div class="subtitle-header">
+          <div class="subtitle-speed">
+            <i class="fas fa-tachometer-alt"></i> 1x
+          </div>
+          <div class="subtitle-lang">
+            <i class="fas fa-language"></i> 한/A
+          </div>
+        </div>
+        <div class="subtitle-content">
+          <p class="english-text">
+            <i class="fas fa-quote-left"></i>
+            There you go! You're a natural!
+            <i class="fas fa-quote-right"></i>
+          </p>
+          <p class="korean-text">
+            <i class="fas fa-heart"></i> 잘하네! 타고났네요!
+          </p>
+          <div class="vocabulary-note">
+            <i class="fas fa-lightbulb"></i>
+            <strong>natural:</strong> 재능을 타고난 사람
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 오른쪽: 진행 상태 -->
+    <div class="col-lg-4">
+      <div class="learning-sidebar">
+        <h5 class="sidebar-title">
+          <i class="fas fa-compass"></i>
+          학습 여행지
+        </h5>
+        <div class="current-topic">
+          <i class="fas fa-map-marker-alt"></i>
+          인사 표현하기
+        </div>
+        <div class="progress-section">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span style="color: var(--primary-blue); font-weight: 600;">여행 진행도</span>
+            <span style="color: var(--travel-accent); font-weight: 700;">Lv.1</span>
+          </div>
+          <div class="progress">
+            <div class="progress-bar progress-bar-custom" style="width: 25%;"></div>
+          </div>
+        </div>
+        
+        <button class="quiz-button">
+          <i class="fas fa-question-circle"></i>
+          여행 퀴즈 도전하기
+        </button>
+        
+        <div class="quiz-section">
+          <div class="quiz-question">
+            <i class="fas fa-puzzle-piece"></i>
+            오늘의 여행 미션
+          </div>
+          <div class="quiz-content">
+            <p><strong>&lt;신기하네&gt;는 영어로?</strong></p>
+            <p>That's a ___.</p>
+            <hr style="border-color: rgba(245, 158, 11, 0.3); margin: 15px 0;">
+            <p>엄청 신기하네요!<br>That's ______!</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+</body>
+</html>
