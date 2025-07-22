@@ -106,8 +106,11 @@ public class MyPageController {
         return "mypage/my_info";
     }
 
-    @Value("${file.upload-dir}")
+    @Value("${file.upload-dir.profile}")
     private String uploadDir;
+
+    @Value("${upload.path.profile}")
+    private String uploadPath;
 
     /** 프로필 업로드 */
     @PostMapping("/upload_profile")

@@ -14,10 +14,10 @@ public class WebConfig implements WebMvcConfigurer {
     @Autowired
     private AdminLoggingInterceptor adminLoggingInterceptor;
 
-    @Value("${upload.path}") // 예: /e_learning_uploads/profile
+    @Value("${upload.path.community}")
     private String communityUploadPath;
 
-    @Value("${file.upload-dir}") // 예: C:/dev/workspace/e_learning/userprofile
+    @Value("${upload.path.profile}")
     private String userProfileUploadDir;
 
     @Override

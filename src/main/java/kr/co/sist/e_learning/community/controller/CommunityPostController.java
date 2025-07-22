@@ -35,7 +35,10 @@ public class CommunityPostController {
 
     @Autowired
     private CommunityPostService communityService;
-    @Value("${upload.path}")
+    @Value("${file.upload-dir.community}")
+    private String uploadDir;
+    
+    @Value("${upload.path.community}")
     private String uploadPath;
 
     @Autowired
