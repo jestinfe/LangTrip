@@ -7,7 +7,24 @@
   <link rel="stylesheet" th:href="@{/css/common.css}">
   <link rel="stylesheet" th:href="@{/css/community.css}"> 
   
+ <script src="/js/login-status.js" defer></script>
 </head>
+<style>
+body.logged-in .guest-state {
+  display: none;
+}
+body.logged-in .user-state {
+  display: inline-flex ;
+}
+body.logged-out .guest-state {
+  display: inline-flex ;
+}
+body.logged-out .user-state {
+  display: none ;
+}
+
+
+</style>
 
 <body>
   <div th:replace="layout/header :: header"></div>
@@ -156,5 +173,6 @@
   </script>
 
   <div th:replace="layout/footer :: footer"></div>
+  
 </body>
 </html>

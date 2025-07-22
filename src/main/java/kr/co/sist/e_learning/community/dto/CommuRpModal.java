@@ -9,4 +9,7 @@ public class CommuRpModal {
 	private Long postId2;
     private Integer reasonChk;
     private String reasonText;
+    
+    
+  
 }

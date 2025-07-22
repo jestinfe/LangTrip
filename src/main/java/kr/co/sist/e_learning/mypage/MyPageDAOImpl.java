@@ -20,15 +20,9 @@ public class MyPageDAOImpl implements MyPageDAO {
     private final String nsMP = "kr.co.sist.e_learning.mypage.MyPageMapper";
 
     @Override
-    public MyPageDTO getMyPageSummary(long userSeq) {
-        return session.selectOne(nsMP + ".selectMyPageSummary", userSeq);
+    public MyPageDTO getUserInfo(long userSeq) {
+    	return session.selectOne(nsMP + ".selectUserInfo", userSeq);
     }
-
-    @Override
-    public MyPageDTO selectUserInfo(long userSeq) {
-        return sst.selectOne(nsMP + ".selectUserInfo", userSeq);
-    }
-    
     
     @Override
     public String selectProfilePath(long userSeq) {

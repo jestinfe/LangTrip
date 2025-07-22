@@ -6,7 +6,7 @@
   <a th:href="@{/admin/courses?page=1}" sec:authorize="hasAnyRole('ROLE_COURSE', 'ROLE_SUPER')"><i class="fas fa-graduation-cap"></i> Courses</a>
   <a th:href="@{/admin/payments}" sec:authorize="hasAnyRole('ROLE_PAYMENT', 'ROLE_SUPER')"><i class="fas fa-credit-card"></i> Payments</a>
   <a th:href="@{/admin/donation}" sec:authorize="hasAnyRole('ROLE_DONATION', 'ROLE_SUPER')"><i class="fas fa-hand-holding-heart"></i> Donation</a>
-  <a th:href="@{/admin/commu/commu}" sec:authorize="hasAnyRole('ROLE_COMMUNITY', 'ROLE_SUPER')"><i class="fas fa-comments"></i> Community</a>
+  <a th:href="@{/adminDash/admincommunity}" sec:authorize="hasAnyRole('ROLE_COMMUNITY', 'ROLE_SUPER')"><i class="fas fa-comments"></i> Community</a>
   <a th:href="@{/admin/report/report-list}" sec:authorize="hasAnyRole('ROLE_REPORT', 'ROLE_SUPER')"><i class="fas fa-exclamation-triangle"></i> Reports</a>
   <a th:href="@{/admin/support}" sec:authorize="hasAnyRole('ROLE_SUPPORT', 'ROLE_SUPER')"><i class="fas fa-headset"></i> Support</a>
   <a th:href="@{/admin/log}" sec:authorize="hasAnyRole('ROLE_LOG', 'ROLE_SUPER')"><i class="fas fa-clipboard-list"></i> Logs</a>
