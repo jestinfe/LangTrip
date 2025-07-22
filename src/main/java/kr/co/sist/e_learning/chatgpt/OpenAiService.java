@@ -8,6 +8,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,6 +19,12 @@ import ch.qos.logback.core.net.server.Client;
 @Service
 public class OpenAiService {
 
+
+    @Value("${openai.api.url}")
+    private String apiUrl;
+
+    @Value("${openai.api.key}")
+    private String apiKey;
 	public String askChatGpt(String userMessage) throws Exception {
 
 		HttpClient client = HttpClient.newHttpClient();
