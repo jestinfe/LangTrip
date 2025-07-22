@@ -35,7 +35,7 @@ public class AdminAuthController {
                                             .map(grantedAuthority -> grantedAuthority.getAuthority())
                                             .collect(Collectors.toList()));
         }
-        return "admin/dashboard";
+        return "/adminDash/user_statistics";
     }
 }
 

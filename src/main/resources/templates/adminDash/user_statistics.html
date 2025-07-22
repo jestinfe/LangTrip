@@ -74,7 +74,7 @@
 <body>
 
 <!-- 사이드바 -->
-<div class="sidebar">
+<!-- <div class="sidebar">
   <h2><i class="fa-solid fa-chart-line"></i> 관리자 대시보드</h2>
   <a href="/adminDash/user_statistics" class="active"><i class="fa-solid fa-users"></i> 회원 통계</a>
   <a href="/adminDash/instructor_statistics"><i class="fa-solid fa-user-tie"></i> 강사 통계</a>
@@ -84,7 +84,9 @@
   <a href="/adminDash/admincommunity"><i class="fa-solid fa-comments"></i> 커뮤니티</a>
   <a href="/adminDash/reports"><i class="fa-solid fa-triangle-exclamation"></i> 신고 처리</a>
   <a href="/adminDash/support"><i class="fa-solid fa-phone-volume"></i> 고객 지원</a>
-</div>
+</div> -->
+  <div th:replace="~{/layout/admin_sidebar :: sidebar}"></div>
+
 
 <!-- 메인 콘텐츠 -->
 <main class="main-content">

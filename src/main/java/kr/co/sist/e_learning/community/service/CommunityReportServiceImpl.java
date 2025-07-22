@@ -19,28 +19,34 @@ public class CommunityReportServiceImpl implements CommunityReportService {
     @Override
     public void reportPost(Long postId2,
                            Long reporterId,
-                           Integer reasonChk,   // 추가
+                           Integer reasonChk,
                            String reasonText) {
-        System.out.println("신고 서비스 진입: postId2=" + postId2 +
-                           ", reporterId=" + reporterId +
-                           ", reasonChk=" + reasonChk +
-                           ", reasonText=" + reasonText);
 
-        // 1) 중복 신고
-        if (reportDAO.hasReportedToday(postId2, reporterId)) {
+        System.out.println("[Service] 신고 서비스 진입");
+        System.out.println("[Service] postId2=" + postId2
+                         + ", reporterId=" + reporterId
+                         + ", reasonChk=" + reasonChk
+                         + ", reasonText=" + reasonText);
+
+        boolean alreadyReported = reportDAO.hasReportedToday(postId2, reporterId);
+        System.out.println("[Service] 중복 신고 여부: " + alreadyReported);
+
+        if (alreadyReported) {
             throw new IllegalStateException("ALREADY_REPORTED");
         }
 
-        // 2) report 삽입
         CommunityReportDTO dto = new CommunityReportDTO();
         dto.setPostId2(postId2);
         dto.setReporterId(reporterId);
         dto.setReasonText(reasonText);
+        
         reportDAO.insertReport(dto);
         Long newReportId = dto.getReportId();
+        System.out.println("[Service] insert 후 생성된 reportId: " + newReportId);
 
-        // 3) REPORT_REASON_USER 테이블에 사유 코드 삽입
         reasonDAO.insertReason(newReportId, reasonChk);
+        System.out.println("[Service] 신고 사유 insert 완료");
     }
 }
+
 
