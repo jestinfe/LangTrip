@@ -5,5 +5,5 @@ import kr.co.sist.e_learning.admin.PageResponseDTO_donation;
 
 public interface AdminDonationService {
     PageResponseDTO_donation<DonationVO> getDonationList(DonationSearchDTO searchDTO, PageRequestDTO_donation pageRequestDTO);
-    boolean deleteDonationMessage(Long donationId);
+    boolean deleteDonationMessage(String donationId);
 }

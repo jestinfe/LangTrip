@@ -3,9 +3,9 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="kr.co.sist.elearning.quiz.QuizMapper">
+<mapper namespace="kr.co.sist.e_learning.quiz.QuizMapper">
 <!-- 퀴즈 리스트 묶음 -->
-<insert id="insertQuizList" parameterType="kr.co.sist.elearning.quiz.QuizListDTO">
+<insert id="insertQuizList" parameterType="kr.co.sist.e_learning.quiz.QuizListDTO">
  <selectKey keyProperty="quizListSeq" resultType="String" order="BEFORE">
     SELECT 'QL' || TO_CHAR(SYSDATE, 'YYYYMMDD') || LPAD(quiz_list_seq.NEXTVAL, 4, '0') FROM dual
   </selectKey>
@@ -20,7 +20,7 @@
 
 
 <!-- 퀴즈 등록 -->
-<insert id="insertQuiz" parameterType="kr.co.sist.elearning.quiz.QuizDTO">
+<insert id="insertQuiz" parameterType="kr.co.sist.e_learning.quiz.QuizDTO">
 <!-- 시퀀스 생성 -->
 <selectKey keyProperty="quizSeq" resultType="String" order="BEFORE">
 	SELECT 'Quiz' || TO_CHAR(SYSDATE, 'YYYYMMDD') || LPAD(quiz_seq.NEXTVAL, 4, '0') FROM dual
@@ -36,7 +36,7 @@ INSERT INTO quiz (
 </insert>
 
 <!-- 퀴즈 보기 추가 -->
-<insert id="insertQuizOption" parameterType="kr.co.sist.elearning.quiz.QuizOptionDTO">
+<insert id="insertQuizOption" parameterType="kr.co.sist.e_learning.quiz.QuizOptionDTO">
 
 	INSERT INTO quiz_option (
 		quiz_option_seq,  quiz_seq, option_order, content,
@@ -56,7 +56,7 @@ WHERE is_delete = 'N'
 </select>
 
 <!-- resultMap 설정 (하나의 객체 안에 다른 객체 리스트 중첩 매핑/퀴즈 하나에 보기 여러개 중첩해서 quizDTO 안에 담기) -->
-<resultMap id="quizWithOptionsMap" type="kr.co.sist.elearning.quiz.QuizDTO">
+<resultMap id="quizWithOptionsMap" type="kr.co.sist.e_learning.quiz.QuizDTO">
 	<id property="quizSeq" column="quiz_seq" /> <!-- pk -->
 	<result property="quizListSeq" column="quiz_list_seq" />
 	<result property="courseSeq" column="course_seq" />
@@ -65,7 +65,7 @@ WHERE is_delete = 'N'
 	<result property="quizOrder" column="quiz_order" />
 	<result property="type" column="type" />
 <!-- quizDTO_options에 quiz_option 보기 데이터 담기 -->
- <collection property="options" ofType="kr.co.sist.elearning.quiz.QuizOptionDTO">
+ <collection property="options" ofType="kr.co.sist.e_learning.quiz.QuizOptionDTO">
     <id property="quizOptionSeq" column="quiz_option_seq" />
     <result property="optionOrder" column="option_order" />
     <result property="content" column="content" />
@@ -103,7 +103,7 @@ ORDER BY
 </select>
 
 <!-- QuizListDTO를 위한 resultMap / 강의실 modal 창에 제목, 언어 등 데이터 주기 -->
-<resultMap id="quizListDTOMap" type="kr.co.sist.elearning.quiz.QuizListDTO">
+<resultMap id="quizListDTOMap" type="kr.co.sist.e_learning.quiz.QuizListDTO">
     <id property="quizListSeq" column="quiz_list_seq"/>
     <result property="courseSeq" column="course_seq"/>
     <result property="langCategory" column="lang_category"/>
@@ -119,7 +119,7 @@ WHERE quiz_list_seq = #{quizListSeq, jdbcType=VARCHAR}
 AND is_delete = 'N'
 </select>
 
-<resultMap id="quizDTOMap" type="kr.co.sist.elearning.quiz.QuizDTO">
+<resultMap id="quizDTOMap" type="kr.co.sist.e_learning.quiz.QuizDTO">
   <id property="quizSeq" column="quiz_seq"/>
   <result property="quizListSeq" column="quiz_list_seq"/>
   <result property="courseSeq" column="course_seq"/>
@@ -137,7 +137,7 @@ WHERE quiz_seq = #{quizSeq, jdbcType=VARCHAR}
 AND is_delete = 'N'
 </select>
 
-<select id="selectQuizByCourseSeq" parameterType="String" resultType="kr.co.sist.elearning.quiz.QuizListDTO">
+<select id="selectQuizByCourseSeq" parameterType="String" resultType="kr.co.sist.e_learning.quiz.QuizListDTO">
 SELECT quiz_seq, quiz_list_seq, course_seq, question, correct_option, 
        quiz_order, type
 FROM quiz
@@ -145,14 +145,14 @@ WHERE is_delete = 'N'
 and course_seq=#{courseSeq}
 </select>
 
-<select id="selectQuizSeqByCourseId" parameterType="String" resultType="kr.co.sist.elearning.quiz.QuizListDTO">
+<select id="selectQuizSeqByCourseId" parameterType="String" resultType="kr.co.sist.e_learning.quiz.QuizListDTO">
 SELECT quiz_seq, quiz_list_seq
 FROM quiz
 WHERE is_delete = 'N'
 and course_seq=#{courseSeq}
 </select>
 
-<select id="selectDistinctQuizLists" parameterType="String" resultType="kr.co.sist.elearning.quiz.QuizListDTO">
+<select id="selectDistinctQuizLists" parameterType="String" resultType="kr.co.sist.e_learning.quiz.QuizListDTO">
     SELECT DISTINCT quiz_list_seq 
     FROM quiz 
     WHERE is_delete = 'N'
@@ -160,7 +160,7 @@ and course_seq=#{courseSeq}
 </select>
 
 <!-- 퀴즈 학습 데이터 저장 -->
-<insert id="insertQuizResponse" parameterType="kr.co.sist.elearning.quiz.QuizResponseDTO">
+<insert id="insertQuizResponse" parameterType="kr.co.sist.e_learning.quiz.QuizResponseDTO">
  <selectKey keyProperty="quizResponseSeq" resultType="String" order="BEFORE">
     SELECT 'QR' || TO_CHAR(SYSDATE, 'YYYYMMDD') || LPAD(quiz_response_seq.NEXTVAL, 4, '0') FROM dual
  </selectKey>
@@ -176,7 +176,7 @@ INSERT INTO quiz_response (
 </insert>
 
 <!-- 저장된 응답 기록들 조회 -->
-<select id="selectQuizResponse" resultType="kr.co.sist.elearning.quiz.QuizResponseDTO">
+<select id="selectQuizResponse" resultType="kr.co.sist.e_learning.quiz.QuizResponseDTO">
 SELECT *
 FROM quiz_response
 WHERE quiz_seq = #{quizSeq}
@@ -193,7 +193,7 @@ WHERE quiz_seq = #{quizSeq}
 </select>
 
 <!-- 퀴즈 정답률 및 응답 수 조회 -->
-<select id="QuizCorrectChk" resultType="kr.co.sist.elearning.quiz.QuizStatusDTO">
+<select id="QuizCorrectChk" resultType="kr.co.sist.e_learning.quiz.QuizStatusDTO">
 SELECT 
 COUNT(*) AS totalCnt, 
 SUM(CASE WHEN correct_check = 'Y' THEN 1 ELSE 0 END) AS correctCnt
@@ -222,7 +222,7 @@ WHERE quiz_list_seq = #{quizListSeq, jdbcType=VARCHAR}
 </update>
 
 <!-- 퀴즈 update -->
-<update id="updateQuiz" parameterType="kr.co.sist.elearning.quiz.QuizDTO">
+<update id="updateQuiz" parameterType="kr.co.sist.e_learning.quiz.QuizDTO">
 UPDATE quiz
 SET question = #{question, jdbcType=VARCHAR},
     correct_option = #{correctOption, jdbcType=NUMERIC},

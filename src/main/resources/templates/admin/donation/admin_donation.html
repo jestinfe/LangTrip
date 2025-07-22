@@ -29,12 +29,23 @@
     .page-header p { color:#666; font-size:1.1rem; }
 
     .search-section { background:#fff; padding:2rem; border-radius:16px; box-shadow:0 8px 32px rgba(0,0,0,.1); margin-bottom:2rem; }
-    .search-form { display:grid; grid-template-columns: repeat(auto-fit,minmax(200px,1fr)); gap:1.5rem; align-items:end; }
+    .search-form {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      align-items: end;
+      padding-bottom: 1rem; /* Added padding */
+    }
     .form-group { display:flex; flex-direction:column; }
     .form-group label { margin-bottom:.5rem; font-weight:600; color:#333; }
     .form-group input, .form-group select { padding:.8rem; border:2px solid #e9ecef; border-radius:8px; font-size:1rem; transition:border-color .3s; }
     .form-group input:focus, .form-group select:focus { outline:none; border-color:#667eea; }
-    .search-buttons { display:flex; gap:1rem; }
+    .search-buttons {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap; /* Added for responsiveness */
+      justify-content: flex-end; /* Aligns buttons to the right */
+    }
     .btn { padding:.8rem 1.5rem; border:none; border-radius:8px; font-size:1rem; cursor:pointer; display:inline-flex; align-items:center; gap:.5rem; transition:all .3s; }
     .btn-primary { background:linear-gradient(135deg,#667eea,#764ba2); color:#fff; }
     .btn-primary:hover { transform:translateY(-2px); box-shadow:0 4px 20px rgba(102,126,234,.4); }
@@ -75,7 +86,14 @@
     @media (max-width:768px) {
         .sidebar { position:relative; width:100%; height:auto; }
         .main-content { margin-left:0; }
-        .search-form { grid-template-columns:1fr; }
+        .search-form {
+            grid-template-columns: 1fr; /* Stack form elements on small screens */
+            gap: 1rem; /* Reduce gap for smaller screens */
+        }
+        .search-buttons {
+            justify-content: center; /* Center buttons on small screens */
+            margin-top: 1rem; /* Add some space above buttons */
+        }
         .modal-content { width: 95%; }
     }
   </style>
@@ -102,6 +120,7 @@
             <option value="sender" th:selected="${searchDTO.searchType == 'sender'}">보낸 사람</option>
             <option value="recipient" th:selected="${searchDTO.searchType == 'recipient'}">받는 사람</option>
             <option value="lecture" th:selected="${searchDTO.searchType == 'lecture'}">강의명</option>
+            <option value="message" th:selected="${searchDTO.searchType == 'message'}">강의명</option>
           </select>
         </div>
         <div class="form-group">
@@ -137,7 +156,7 @@
               <th>보낸 사람</th>
               <th>받는 사람</th>
               <th>강의명</th>
-              <th>후원금액</th>
+              <th>후원마일</th>
               <th>메시지</th>
               <th>후원일시</th>
               <th>관리</th>
@@ -201,6 +220,7 @@
   </div>
 
 <script>
+  console.log("admin_donation.html script loaded.");
   const modal = document.getElementById('detailModal');
 
   function showDetails(button) {
@@ -227,6 +247,7 @@
       const row = button.closest('tr');
       const donationId = row.dataset.donationId;
 
+      console.log("Attempting to delete message for donationId:", donationId);
       fetch(`/admin/donation/deleteMessage/${donationId}`, {
         method: 'POST',
         headers: {

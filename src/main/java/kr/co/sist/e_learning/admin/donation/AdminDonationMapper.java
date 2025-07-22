@@ -11,5 +11,5 @@ import java.util.List;
 public interface AdminDonationMapper {
     List<DonationVO> selectDonations(@Param("search") DonationSearchDTO searchDTO, @Param("page") PageRequestDTO_donation pageRequestDTO);
     int countDonations(@Param("search") DonationSearchDTO searchDTO);
-    int updateDonationMessageDeleted(Long donationId);
+    int updateDonationMessageDeleted(String donationId);
 }
