@@ -2,7 +2,10 @@ package kr.co.sist.e_learning.support;
 
 import java.sql.Date;
 
-public class NoticeDTO implements SupportDTOIdentifier {
+import org.springframework.stereotype.Component;
+
+@Component
+public class NoticeDTO {
 	private String notice_id;
 	private String notice_title;
 	private String notice_content;
@@ -12,11 +15,6 @@ public class NoticeDTO implements SupportDTOIdentifier {
 	private int notice_hits;
 	private Date notice_last_modified_date;
 	private String notice_status;
-
-	@Override
-	public String getId() {
-		return this.getNotice_id();
-	}
 
 	public String getNotice_id() {
 		return notice_id;

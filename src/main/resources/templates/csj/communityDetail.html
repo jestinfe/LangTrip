@@ -11,8 +11,59 @@
   <link rel="stylesheet" th:href="@{/css/common.css}">
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
+<script>
+function vote(postId, voteType) {
 
-<body>
+	  $.ajax({
+	    type: 'POST',
+	    url: '/csj/vote',
+	    contentType: 'application/json',
+	    data: JSON.stringify({ postId: postId, voteType: voteType }),
+	    success: function(res) {
+	      $('#upVoteCount').text(res.up);
+	      $('#downVoteCount').text(res.down);
+	      alert("추추~ 완료");
+	    },
+	    error: function(xhr) {
+	      if (xhr.status === 409) {
+	        alert("하루에 한 번만 추천할 수 있습니다.");
+	      } else if (xhr.status === 401) {
+	        alert("로그인이 필요합니다.");
+	      } else {
+	        alert("본인 글은 안돼요~!");
+	      }
+	    }
+	  });
+	}
+
+
+	
+	
+
+</script>
+  
+  
+  
+ <script src="/js/login-status.js" defer></script>
+<style>
+body.logged-in .guest-state {
+  display: none;
+}
+body.logged-in .user-state {
+  display: inline-flex ;
+}
+body.logged-out .guest-state {
+  display: inline-flex ;
+}
+body.logged-out .user-state {
+  display: none ;
+}
+
+
+</style>
+<body class="container mt-5">
+<div th:replace="layout/header :: header"></div>
+
   <div th:replace="layout/header :: header"></div>
 
   <div class="container mt-5">

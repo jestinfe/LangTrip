@@ -29,7 +29,7 @@ public interface AuthService {
     
     void logout(String refreshToken);
     
-    void reissueAccessToken(HttpServletRequest request, HttpServletResponse response);
+    Long reissueAccessToken(HttpServletRequest request, HttpServletResponse response);
 
     boolean forgotPassword(ForgotPasswordRequestDTO dto);
 

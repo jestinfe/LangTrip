@@ -33,7 +33,6 @@ public class ReportDTO {
 	
 	private String actionStatus;
 	private String reportedUserStatus;
-	private String adminNewStatus;
 	
 	private int postId2;
 	private int courseId;

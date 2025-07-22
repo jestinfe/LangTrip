@@ -29,6 +29,71 @@
   justify-content: center;
 }
 */
+
+/* 테이블 전체 너비 고정 및 셀 너비 비율 유지 */
+.table {
+  table-layout: fixed; /* 셀 너비 강제 고정 */
+  width: 100%; /* 전체 영역 사용 */
+  word-break: break-word;
+}
+
+/* 각 열 너비 설정 (예시: 총 8개 열 기준) */
+.table th:nth-child(1), .table td:nth-child(1) { width: 7%; }  /* 번호 */
+.table th:nth-child(2), .table td:nth-child(2) { width: 12%; } /* 신고일 */
+.table th:nth-child(3), .table td:nth-child(3) { width: 10%; } /* 콘텐츠 유형 */
+.table th:nth-child(4), .table td:nth-child(4) { width: 25%; } /* 제목 */
+.table th:nth-child(5), .table td:nth-child(5) { width: 12%; } /* 피신고인 ID */
+.table th:nth-child(6), .table td:nth-child(6) { width: 12%; } /* 신고인 ID */
+.table th:nth-child(7), .table td:nth-child(7) { width: 14%; } /* 신고 사유 */
+.table th:nth-child(8), .table td:nth-child(8) { width: 8%; }  /* 처리상태 */
+
+:root {
+  --purple-accent: #6366f1;
+  --purple-accent-dark: #4f46e5;
+  --border-gray: #d1d5db;
+  --text-dark: #374151;
+}
+
+/* 제목 강조선 */
+h3 {
+  border-left: 4px solid var(--purple-accent);
+  padding-left: 12px;
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+/* 버튼 스타일 */
+.btn-primary {
+  background-color: var(--purple-accent);
+  border-color: var(--purple-accent);
+  font-weight: 500;
+}
+.btn-primary:hover {
+  background-color: var(--purple-accent-dark);
+  border-color: var(--purple-accent-dark);
+}
+
+/* input/select 포커스 시 강조 */
+.form-control:focus, .form-select:focus {
+  border-color: var(--purple-accent);
+  box-shadow: 0 0 0 0.2rem rgba(99, 102, 241, 0.15);
+}
+
+/* 밑줄 강조 링크 */
+.text-decoration-underline {
+  color: var(--purple-accent);
+}
+.text-decoration-underline:hover {
+  color: var(--purple-accent-dark);
+}
+
+/* 페이지네이션 강조 */
+.pagination .page-item.active .page-link {
+  background-color: var(--purple-accent);
+  border-color: var(--purple-accent);
+  color: #fff;
+}
+
 .modal-dialog {
   animation: none !important;
   transform: none !important;
@@ -49,7 +114,7 @@
 </div>
 
 <!-- 검색/필터 영역 -->
-<form th:action="@{/admin/report/reportList}" method="get" class="mb-4">
+<form th:action="@{/admin/report/report-list}" method="get" class="mb-4">
   <div class="row g-2 justify-content-md-end">
 
     <div class="col-12 col-md-auto">
@@ -143,7 +208,7 @@
 
   <!-- 맨 처음 페이지 ≪ -->
   <li class="page-item" th:classappend="${pResDTO.currentPage == 1} ? 'disabled' : ''">
-    <a class="page-link" th:href="@{/admin/report/reportList(
+    <a class="page-link" th:href="@{/admin/report/report-list(
       page=1,
       reporterId=${pReqDTO.reporterId},
       reportedUserId=${pReqDTO.reportedUserId},
@@ -154,7 +219,7 @@
 
   <!-- 이전 페이지 ＜ -->
   <li class="page-item" th:classappend="${pResDTO.currentPage == 1} ? 'disabled' : ''">
-    <a class="page-link" th:href="@{/admin/report/reportList(
+    <a class="page-link" th:href="@{/admin/report/report-list(
       page=${pResDTO.currentPage - 1},
       reporterId=${pReqDTO.reporterId},
       reportedUserId=${pReqDTO.reportedUserId},
@@ -167,7 +232,7 @@
   <li class="page-item"
       th:each="p : ${#numbers.sequence(pResDTO.startPage, pResDTO.endPage)}"
       th:classappend="${p == pResDTO.currentPage} ? 'active' : ''">
-    <a class="page-link" th:href="@{/admin/report/reportList(
+    <a class="page-link" th:href="@{/admin/report/report-list(
       page=${p},
       reporterId=${pReqDTO.reporterId},
       reportedUserId=${pReqDTO.reportedUserId},
@@ -178,7 +243,7 @@
 
   <!-- 다음 페이지 › -->
   <li class="page-item" th:classappend="${pResDTO.currentPage == pResDTO.totalPages} ? 'disabled' : ''">
-    <a class="page-link" th:href="@{/admin/report/reportList(
+    <a class="page-link" th:href="@{/admin/report/report-list(
       page=${pResDTO.currentPage + 1},
       reporterId=${pReqDTO.reporterId},
       reportedUserId=${pReqDTO.reportedUserId},
@@ -189,7 +254,7 @@
 
   <!-- 마지막 페이지 ≫ -->
   <li class="page-item" th:classappend="${pResDTO.currentPage == pResDTO.totalPages} ? 'disabled' : ''">
-    <a class="page-link" th:href="@{/admin/report/reportList(
+    <a class="page-link" th:href="@{/admin/report/report-list(
       page=${pResDTO.totalPages},
       reporterId=${pReqDTO.reporterId},
       reportedUserId=${pReqDTO.reportedUserId},
@@ -243,8 +308,8 @@
 <script th:inline="javascript">
 document.addEventListener('DOMContentLoaded', () => {
 
-const list = [[${pResDTO.list}]];
-console.log("🔍 pResDTO =", list);
+// const list = [[${pResDTO.list}]];
+// console.log("🔍 pResDTO =", list);
 
 const form = document.querySelector('form');
 const resetBtn = document.getElementById('resetBtn');
@@ -254,7 +319,7 @@ const reporterInput = document.getElementById('reporterId');
 const reportDetailModalEl = document.getElementById('reportDetailModal');
 const reportDetailModal = new bootstrap.Modal(reportDetailModalEl);
 resetBtn.addEventListener("click", () => {
-  location.href = '/admin/report/reportList';
+  location.href = '/admin/report/report-list';
 });
 
 document.getElementById('contentType').addEventListener('change', () => {

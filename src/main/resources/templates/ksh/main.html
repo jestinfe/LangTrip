@@ -1,53 +1,39 @@
-
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LangTrip - 당신의 언어 여행</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- 폰트 & CSS -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-   <link rel="stylesheet" th:href="@{/css/common.css}">
- 
-       
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+
+    <!-- ✅ JS가 HTML 파싱 이후 실행되도록 defer 사용 -->
+    <script src="/js/login-status.js" defer></script>
 </head>
-<body class="">
-    <!-- Header -->
-      <div th:replace="layout/header :: header"></div>
+<style>
+body.logged-in .guest-state {
+  display: none;
+}
+body.logged-in .user-state {
+  display: inline-flex ;
+}
+body.logged-out .guest-state {
+  display: inline-flex ;
+}
+body.logged-out .user-state {
+  display: none ;
+}
 
 
-    <!-- Hero Banner -->
-    <!-- <section class="hero">
-        <div class="hero-content">
-            <h1>누구나 만드는 외국어 강의,<br> 함께 배우는 즐거움</h1>
-            <p>강의를 올리고, 응원받고, 자유롭게 배우는 오픈 e러닝 플랫폼</p>
-            <div class="cta-buttons">
-                <a href="/courses" class="btn-secondary">강의 둘러보기</a>
-            </div>
-        </div>
-    </section> -->
+</style>
 
-<!--     Stats Section
-    <section class="stats-section">
-        <div class="stats-grid">
-            <div class="stat-item">
-                <div class="stat-number">65,123,345</div>
-                <div class="stat-label">전체 회원</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-number">222,345</div>
-                <div class="stat-label">강의</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-number">657,231</div>
-                <div class="stat-label">강사 회원</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-number">97%</div>
-                <div class="stat-label">만족도</div>
-            </div>
-        </div>
-    </section>
- -->
+<body class="logged-out">
+    <!-- ✅ 헤더 -->
+    <div th:replace="layout/header :: header"></div>
+
+    <!-- ✅ 메인 콘텐츠 -->
     <main class="main-content">
         <!-- 구독한 강사 영상 -->
         <section class="section">
@@ -80,6 +66,7 @@
                 <a href="/courses/popular" class="view-all">전체 보기</a>
             </div>
             <div class="course-grid">
+                <!-- 강의 카드 예시 -->
                 <div class="course-card">
                     <div class="course-thumbnail">🇯🇵</div>
                     <div class="course-info">
@@ -138,8 +125,7 @@
         </section>
     </main>
 
-    <!-- Footer -->
-      <div th:replace="layout/footer :: footer"></div>
-
+    <!-- ✅ 푸터 -->
+    <div th:replace="layout/footer :: footer"></div>
 </body>
 </html>
