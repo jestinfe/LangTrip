@@ -81,6 +81,7 @@ public class JwtAuthUtils {
         cookie.setSecure(false); // 개발환경에서는 false
         cookie.setPath("/");
         cookie.setMaxAge(30 * 60);
+        cookie.setAttribute("SameSite", "Lax"); // 명시적으로 SameSite 설정
         response.addCookie(cookie);
     }
     

@@ -5,12 +5,12 @@ import kr.co.sist.e_learning.admin.PageResponseDTO_donation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@Log4j2
 public class AdminDonationServiceImpl implements AdminDonationService {
 
     private final AdminDonationMapper adminDonationMapper;
@@ -31,11 +31,19 @@ public class AdminDonationServiceImpl implements AdminDonationService {
     }
 
     @Override
+    @Transactional
     public boolean deleteDonationMessage(String donationId) {
-        log.info("Attempting to delete message for donationId: {}", donationId);
-        int affectedRows = adminDonationMapper.updateDonationMessageDeleted(donationId);
-        log.info("deleteDonationMessage affectedRows: {}", affectedRows);
-        boolean success = affectedRows == 1;
-        return success;
+        String message = adminDonationMapper.selectMessageByDonationId(donationId); // 기존 메시지 조회
+
+        // delete_message 테이블에 이미 기록된 메시지가 있는지 확인
+        String existingDeletedMessage = adminDonationMapper.selectMessageByDonationId(donationId);
+
+        if (existingDeletedMessage == null) {
+            // 존재하지 않을 때만 새로 삽입
+            adminDonationMapper.insertDeletedMessage(donationId, message);
+        } 
+
+        int affectedRows = adminDonationMapper.updateDonationMessageDeleted(donationId); // donation 테이블 상태 업데이트
+        return affectedRows == 1;
     }
 }

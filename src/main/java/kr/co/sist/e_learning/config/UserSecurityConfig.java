@@ -40,10 +40,17 @@ public class UserSecurityConfig {
             			        "/login", "/signup", "/social_signup",
             			        "/forgot-username", "/forgot-password", "/reset-password",
             			        "/user/logout", "/user/login/**",
-            			        "/admin/**", // Permit all admin paths for UserSecurityConfig
+            			         // Permit all admin paths for UserSecurityConfig
             			        
             			        // 🔐 로그인 없이 접근 가능한 API 경로 추가
-            			        "/api/auth/**"
+            			        "/api/auth/email/**",
+                                "/api/auth/nickname/check",
+                                "/api/auth/nickname/find",
+                                "/api/auth/password/**",
+                                "/api/auth/signup",
+                                "/api/auth/socialSignup",
+                                "/api/auth/login/**",
+            			        "/api/auth/token/refresh" 
             				 ).permitAll()
                 .anyRequest().authenticated()
             )
@@ -54,6 +61,7 @@ public class UserSecurityConfig {
                 .successHandler(customOAuth2AuthenticationSuccessHandler)
             )
             .addFilterBefore(jwtAuthenticationFilter(jwtTokenProvider, jwtAuthUtils, authService), UsernamePasswordAuthenticationFilter.class)
+            
             .csrf(csrf -> csrf.disable());
 
         return http.build();
