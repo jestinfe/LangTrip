@@ -16,8 +16,7 @@
       #{content},
       SYSTIMESTAMP,
       0,
-      'A',
-       #{communityNotice, jdbcType=CHAR} 	
+      'A'
     )
   </insert>
 

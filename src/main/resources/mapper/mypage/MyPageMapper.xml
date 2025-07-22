@@ -5,7 +5,7 @@
 
 <mapper namespace="kr.co.sist.e_learning.mypage.MyPageMapper">
 
-	<!-- 통계자료 -->
+	<!-- 대시보드 요약 정보 조회 -->
 	<select id="selectMyPageSummary"
 	        parameterType="long"
 	        resultType="kr.co.sist.e_learning.mypage.MyPageDTO">
@@ -28,6 +28,7 @@
 	  FROM users u
 	  WHERE u.user_seq = #{userSeq}
 	</select>
+
 
 <!-- 총 후원액 합계 -->
 <select id="selectTotalDonationByUserSeq"

@@ -4,10 +4,10 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,14 +29,11 @@ public class MyPageController {
     @Autowired
     private FundingService fdSV;
 
-    private long getOrInitUserSeq(HttpSession session) {
-        Object raw = session.getAttribute("user_seq");
-        long userSeq;
-        if (raw == null) {
-            userSeq = 1001L; // 테스트용
-            session.setAttribute("user_seq", userSeq);
-        } else {
-            userSeq = (raw instanceof Long) ? (Long) raw : Long.parseLong(raw.toString());
+    private long getOrInitUserSeq(Authentication auth) {
+        Object raw = auth.getPrincipal();
+        Long userSeq = null;
+        if (raw instanceof Long) {
+            userSeq = (Long) raw;
         }
         return userSeq;
     }
@@ -46,8 +43,8 @@ public class MyPageController {
     /** 공통 진입점 (탭 파라미터 기반) */
     @GetMapping
     public String mypageMain(@RequestParam(value = "tab", required = false, defaultValue = "dashboard") String tab,
-                             HttpSession session, Model model) {
-    	long userSeq = getOrInitUserSeq(session);
+    		Authentication auth, Model model) {
+    	long userSeq = getOrInitUserSeq(auth);
 
         switch (tab) {
             case "my_info":
@@ -77,16 +74,16 @@ public class MyPageController {
 
     /** 대시보드 단독 접근용 (직접 경로 접근시) */
     @GetMapping("/dashboard")
-    public String dashboard(HttpSession session, Model model) {
-    	long userSeq = getOrInitUserSeq(session);
+    public String dashboard(Authentication auth, Model model) {
+    	long userSeq = getOrInitUserSeq(auth);
         model.addAttribute("myData", mpSV.getMyPageData(userSeq));
         return "mypage/dashboard";
     }
 
     /** 수강 내역 */
     @GetMapping("/lecture_history")
-    public String lectureHistory(HttpSession session, Model model) {
-    	long userSeq = getOrInitUserSeq(session);
+    public String lectureHistory(Authentication auth, Model model) {
+    	long userSeq = getOrInitUserSeq(auth);
         model.addAttribute("lectureList", mpSV.getLectureHistory(userSeq));
         model.addAttribute("myLectureList", mpSV.selectMyLectures(userSeq));
         return "mypage/lecture_history";
@@ -102,10 +99,8 @@ public class MyPageController {
 
     /** 내 정보 */
     @GetMapping("/my_info")
-    public String myInfo(HttpSession session, Model model) {
-    	long userSeq = getOrInitUserSeq(session);
-    	MyPageDTO user = mpSV.getUserInfo(userSeq);
-    	System.out.println("userDTO = " + user);
+    public String myInfo(Authentication auth, Model model) {
+    	long userSeq = getOrInitUserSeq(auth);
         System.out.println("uploadProfile 메서드 진입");
         model.addAttribute("myData", mpSV.getUserInfo(userSeq));
         return "mypage/my_info";
@@ -118,11 +113,12 @@ public class MyPageController {
     @PostMapping("/upload_profile")
     @ResponseBody
     public Map<String, Object> uploadProfile(@RequestParam("file") MultipartFile file,
-                                             HttpSession session) {
+    		Authentication auth) {
         Map<String, Object> result = new HashMap<>();
-        Object obj = session.getAttribute("user_seq");
 
-        if (!(obj instanceof Long userSeq) || file.isEmpty()) {
+        Object raw = auth.getPrincipal();
+        if (!(raw instanceof Long userSeq) || file.isEmpty()) {
+        	System.out.println("principal = " + auth.getPrincipal());
             result.put("success", false);
             result.put("message", "사용자 정보 또는 파일이 없습니다.");
             return result;
@@ -158,13 +154,14 @@ public class MyPageController {
     }
 
     /** 프로필 삭제 */
+    /** 프로필 삭제 */
     @PostMapping("/delete_profile")
     @ResponseBody
-    public Map<String, Object> deleteProfile(HttpSession session) {
+    public Map<String, Object> deleteProfile(Authentication auth) {
         Map<String, Object> result = new HashMap<>();
-        Object obj = session.getAttribute("user_seq");
 
-        if (!(obj instanceof Long userSeq)) {
+        Object raw = auth.getPrincipal();
+        if (!(raw instanceof Long userSeq)) {
             result.put("success", false);
             result.put("message", "사용자 정보 없음");
             return result;
@@ -191,6 +188,7 @@ public class MyPageController {
     }
 
 
+
     /** 비밀번호 변경 */
     @GetMapping("/reset_password")
     public String resetPassword() {
@@ -210,10 +208,10 @@ public class MyPageController {
     }
     
     @GetMapping("/subscriptions")
-    public String subscriptionPage(HttpSession session, Model model) {
+    public String subscriptionPage(Authentication auth, Model model) {
     	
     	//디버깅용//
-        long userSeq = getOrInitUserSeq(session);
+    	long userSeq = getOrInitUserSeq(auth);
         System.out.println("[Controller·/subscriptions] called, userSeq=" + userSeq);
         List<SubscriptionDTO> subscriptions = mpSV.getSubscriptions(userSeq);
         System.out.println("[Controller·/subscriptions] from service → subscriptions("
@@ -223,18 +221,19 @@ public class MyPageController {
     }
 
     @GetMapping("/wallet")
-    public String accountPage(Model model, HttpSession session) {
-        long userSeq = getOrInitUserSeq(session);
+    public String accountPage(Model model,Authentication auth) {
+    	long userSeq = getOrInitUserSeq(auth);
         FundingDTO accountInfo = fdSV.getAccountInfo(userSeq);
         model.addAttribute("accountInfo", accountInfo);
         return "mypage/wallet"; // 프래그먼트 지정
     }
 
     @GetMapping("/donation")
-    public String fundingPage(Model model, HttpSession session) {
-        long userSeq = getOrInitUserSeq(session);
+    public String fundingPage(Model model, Authentication auth) {
+    	long userSeq = getOrInitUserSeq(auth);
         List<FundingDTO> fundingList = fdSV.getUserFundings(userSeq);
         model.addAttribute("fundingList", fundingList);
+        model.addAttribute("donationType", "given"); // 추가된 라인
         return "mypage/donation";
     }
 

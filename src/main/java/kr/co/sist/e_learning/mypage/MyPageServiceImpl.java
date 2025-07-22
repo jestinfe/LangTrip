@@ -24,6 +24,10 @@ public class MyPageServiceImpl implements MyPageService {
         return mpDAO.getUserInfo(userSeq);
     }
 
+    @Override
+    public MyPageDTO getUserInfo(long userSeq) {
+        return mpDAO.getUserInfo(userSeq);
+    }
 
     @Override
     public String selectProfilePath(long userSeq) {

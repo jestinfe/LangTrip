@@ -21,7 +21,7 @@ public class MyPageDAOImpl implements MyPageDAO {
 
     @Override
     public MyPageDTO getUserInfo(long userSeq) {
-        return session.selectOne(nsMP + ".selectMyPageSummary", userSeq);
+    	return session.selectOne(nsMP + ".selectUserInfo", userSeq);
     }
     
     @Override
