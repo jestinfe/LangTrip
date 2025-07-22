@@ -113,19 +113,19 @@ public class MyPageController {
     @PostMapping("/upload_profile")
     @ResponseBody
     public Map<String, Object> uploadProfile(@RequestParam("file") MultipartFile file,
-    		Authentication auth) {
+                                             Authentication auth) {
         Map<String, Object> result = new HashMap<>();
 
         Object raw = auth.getPrincipal();
         if (!(raw instanceof Long userSeq) || file.isEmpty()) {
-        	System.out.println("principal = " + auth.getPrincipal());
+            System.out.println("principal = " + auth.getPrincipal());
             result.put("success", false);
             result.put("message", "사용자 정보 또는 파일이 없습니다.");
             return result;
         }
 
         try {
-            // 확장자 검사
+            // 확장자 체크
             String originalName = file.getOriginalFilename();
             String ext = originalName.substring(originalName.lastIndexOf(".") + 1).toLowerCase();
             if (!List.of("png", "jpg", "jpeg", "gif").contains(ext)) {
@@ -134,26 +134,30 @@ public class MyPageController {
                 return result;
             }
 
-            // 저장 경로 및 파일 이름
+            // 실제 파일 저장 경로
             String filename = "profile_" + userSeq + "." + ext;
-            File dest = new File(uploadDir, filename);
+            File uploadFolder = new File(uploadDir);
+            if (!uploadFolder.exists()) {
+                uploadFolder.mkdirs(); // 폴더 없으면 생성
+            }
+            File dest = new File(uploadFolder, filename);
             file.transferTo(dest);
 
-            // DB에 프로필 경로 업데이트
+            // DB에 저장되는 경로는 "/userprofile/파일명" 형식으로
             String dbPath = "/userprofile/" + filename;
             mpSV.updateUserProfile(userSeq, dbPath);
 
             result.put("success", true);
-            result.put("path", dbPath);
+            result.put("newPath", dbPath);
         } catch (Exception e) {
             e.printStackTrace();
             result.put("success", false);
             result.put("message", "업로드 중 오류 발생");
         }
+
         return result;
     }
 
-    /** 프로필 삭제 */
     /** 프로필 삭제 */
     @PostMapping("/delete_profile")
     @ResponseBody
@@ -168,14 +172,17 @@ public class MyPageController {
         }
 
         try {
+            // DB에서 경로 조회
             String profilePath = mpSV.selectProfilePath(userSeq);
-            if (profilePath != null) {
-                File file = new File(uploadDir + profilePath.replace("/userprofile", ""));
+            if (profilePath != null && !profilePath.isBlank()) {
+                // 경로: "/userprofile/profile_410.png" → 실제 파일 경로 계산
+                File file = new File(uploadDir, profilePath.replace("/userprofile/", ""));
                 if (file.exists()) {
                     file.delete();
                 }
             }
-            // DB에서 경로 제거
+
+            // DB 경로 null 처리
             mpSV.updateUserProfile(userSeq, null);
             result.put("success", true);
         } catch (Exception e) {
