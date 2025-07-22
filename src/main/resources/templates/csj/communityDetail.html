@@ -2,8 +2,6 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-   <meta name="_csrf"       th:content="${_csrf.token}"/>
-  <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
   <title>게시글 상세</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
@@ -64,13 +62,12 @@ body.logged-out .user-state {
 <body class="container mt-5">
 <div th:replace="layout/header :: header"></div>
 
-  <div th:replace="layout/header :: header"></div>
 
   <div class="container mt-5">
     <h3 class="board-title"><strong>강의 추천 게시판</strong></h3>
     <div class="post-title" th:text="${post.title}">제목</div>
 
-    <div class="text-end" th:if="${post != null and session.loginUser != null and session.loginUser.userSeq != null and post.userId != null and session.loginUser.userSeq == post.userId}">
+    <div class="text-end" th:if="${post != null and currentUserSeq != null and post.userId != null and currentUserSeq == post.userId}">
       <a th:href="@{/csj/community/delete(postId=${post.postId})}" onclick="return confirm('정말 삭제하시겠습니까?');" class="btn btn-outline-danger btn-sm">글 삭제</a>
     </div>
 
@@ -163,7 +160,7 @@ body.logged-out .user-state {
         <div th:if="${comment.parentId == null}" class="comment-item mb-2 border-bottom pb-2">
           <div class="d-flex justify-content-between align-items-center">
             <div>
-              <strong th:text="${comment.nickname}">닉네임</strong>
+              <strong><span th:text="${comment.nickname}">닉네임</span></strong>
               <span class="comment-meta" th:text="${#dates.format(comment.createdAt, 'yyyy-MM-dd HH:mm')}"></span>
             </div>
             <div>
@@ -179,7 +176,7 @@ body.logged-out .user-state {
             <div class="comment-item border-start ps-3 mb-2">
               <div class="d-flex justify-content-between align-items-center">
                 <div>
-                  <strong th:text="${reply.nickname}">닉네임</strong>
+                  <strong><span th:text="${reply.nickname}">닉네임</span></strong>
                   <span class="comment-meta" th:text="${#dates.format(reply.createdAt, 'yyyy-MM-dd HH:mm')}">대댓글 시간</span>
                 </div>
               </div>
@@ -205,12 +202,6 @@ body.logged-out .user-state {
 
   <!-- Script -->
   <script>
-  // 모든 AJAX 요청 전에 CSRF 헤더 자동 추가
-  $(document).ajaxSend(function(e, xhr, options) {
-    const token  = $("meta[name='_csrf']").attr("content");
-    const header = $("meta[name='_csrf_header']").attr("content");
-    xhr.setRequestHeader(header, token);
-  });
 
   function vote(postId, voteType) {
     $.ajax({
@@ -229,7 +220,7 @@ body.logged-out .user-state {
         } else if (xhr.status === 401) {
           alert("로그인이 필요합니다.");
         } else {
-          alert("추천 중 오류가 발생했습니다.");
+          alert("본인 글은 안돼요~!");
         }
       }
     });
@@ -251,7 +242,7 @@ body.logged-out .user-state {
         const html = `
           <div class="comment-item mb-2 border-bottom pb-2">
             <div class="d-flex justify-content-between align-items-center">
-              <div><strong>${comment.nickname}</strong> <span class="comment-meta">(${createdAt})</span></div>
+              <div><strong><span th:text="${comment.nickname}"></span></strong> <span class="comment-meta">(${createdAt})</span></div>
               <div><button class="btn btn-sm btn-light" onclick="showReplyForm(${comment.commentId})"><i class="bi bi-chat-dots"></i></button></div>
             </div>
             <div>${comment.content}</div>

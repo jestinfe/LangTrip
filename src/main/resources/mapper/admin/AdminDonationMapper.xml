@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.sist.e_learning.admin.donation.AdminDonationMapper">
+
+    <sql id="searchConditions">
+        <where>
+            <if test="search.searchKeyword != null and search.searchKeyword != ''">
+                <choose>
+                    <when test="search.searchType == 'sender'">
+                        AND sender_id LIKE CONCAT('%', #{search.searchKeyword}, '%')
+                    </when>
+                    <when test="search.searchType == 'recipient'">
+                        AND recipient_id LIKE CONCAT('%', #{search.searchKeyword}, '%')
+                    </when>
+                    <when test="search.searchType == 'lecture'">
+                        AND lecture_title LIKE CONCAT('%', #{search.searchKeyword}, '%')
+                    </when>
+                    <otherwise>
+                        AND (
+                            sender_id LIKE CONCAT('%', #{search.searchKeyword}, '%') OR
+                            recipient_id LIKE CONCAT('%', #{search.searchKeyword}, '%') OR
+                            lecture_title LIKE CONCAT('%', #{search.searchKeyword}, '%') OR
+                            message LIKE CONCAT('%', #{search.searchKeyword}, '%')
+                        )
+                    </otherwise>
+                </choose>
+            </if>
+            <if test="search.startDate != null and search.startDate != ''">
+                AND donation_date &gt;= #{search.startDate}
+            </if>
+            <if test="search.endDate != null and search.endDate != ''">
+                AND donation_date &lt;= CONCAT(#{search.endDate}, ' 23:59:59')
+            </if>
+        </where>
+    </sql>
+
+    <select id="selectDonations" resultType="kr.co.sist.e_learning.admin.donation.DonationVO">
+        SELECT
+            donation_id,
+            sender_id,
+            recipient_id,
+            lecture_title,
+            amount,
+            message,
+            donation_date,
+            message_deleted
+        FROM
+            donations
+        <include refid="searchConditions"/>
+        ORDER BY
+            donation_date DESC
+        LIMIT #{page.size} OFFSET #{page.offset}
+    </select>
+
+    <select id="countDonations" resultType="int">
+        SELECT
+            COUNT(*)
+        FROM
+            donations
+        <include refid="searchConditions"/>
+    </select>
+
+    <update id="updateDonationMessageDeleted">
+        UPDATE
+            donations
+        SET
+            message_deleted = TRUE,
+            message = '관리자에 의해 삭제된 메시지입니다.'
+        WHERE
+            donation_id = #{donationId}
+    </update>
+
+</mapper>
