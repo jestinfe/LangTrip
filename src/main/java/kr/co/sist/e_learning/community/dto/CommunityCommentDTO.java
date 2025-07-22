@@ -10,7 +10,7 @@ import lombok.Setter;
 public class CommunityCommentDTO {
 	    private int commentId;
 	    private Long postId2;
-	    private Integer userId2;
+	    private Long userId2;
 	    private String content;
 	    private Integer parentId; 
 	    private Timestamp createdAt;

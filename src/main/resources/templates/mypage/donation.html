@@ -4,13 +4,10 @@
 
     <!-- 드롭다운 메뉴 추가 -->
     <select th:field="*{donationType}" class="donation-filter form-select" onchange="filterDonations()">
-  <option value="given">내가 한 후원</option>
-  <option value="received">내가 받은 후원</option>
-</select>
-<div>
-<br>
-</div>
-
+      <option value="given">내가 한 후원</option>
+      <option value="received">내가 받은 후원</option>
+    </select>
+    <br><br>
 
     <div class="donation-card">
       <table class="donation-table">
