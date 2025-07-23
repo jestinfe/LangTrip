@@ -19,10 +19,5 @@ public class MainController {
 		return "main";
 	}
 	
-	@GetMapping("/course_list")
-	public String course_list(Model model) {
-		model.addAttribute("loggedIn", false); // or true if authenticated
-		return "user/course/course_list";
-	}
 }
 

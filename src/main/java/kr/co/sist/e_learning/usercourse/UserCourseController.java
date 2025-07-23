@@ -136,7 +136,7 @@ public class UserCourseController {
         model.addAttribute("category", category);
         model.addAttribute("difficulty", difficulty);
 
-        return "ksh/course_list";
+        return "user/course/course_list";
     }
 }
 
