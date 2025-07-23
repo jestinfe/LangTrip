@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LangTrip - 강의 목록</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <link rel="stylesheet" th:href="@{/css/course_list.css}">
+</head>
+<body class="">
+    <!-- Header -->
+    <div th:replace="~{layout/header :: header}"></div>
+
+    <main class="main-container">
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">전체 강의</h1>
+            </div>
+        </div>
+
+        <div class="search-filter-section">
+            <form id="filterForm" th:action="@{/courses}" method="get">
+                <div class="search-container">
+                    <input type="text" class="search-input" placeholder="원하는 강의를 검색해보세요..." id="searchKeyword" name="searchKeyword" th:value="${searchKeyword}" />
+                    <input type="hidden" name="searchType" value="title" /> <!-- Default search by title -->
+                    <span class="search-icon" onclick="document.getElementById('filterForm').submit()">🔍</span>
+                </div>
+                
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label class="filter-label">카테고리</label>
+                        <select class="filter-select" id="categoryFilter" name="category">
+                            <option value="" th:selected="${category == null or category == ''}">전체 카테고리</option>
+                            <option value="영어" th:selected="${category == '영어'}">영어</option>
+                            <option value="일본어" th:selected="${category == '일본어'}">일본어</option>
+                            <option value="중국어" th:selected="${category == '중국어'}">중국어</option>
+                            <!-- Add more categories as needed based on your DB -->
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label class="filter-label">난이도</label>
+                        <select class="filter-select" id="difficultyFilter" name="difficulty">
+                            <option value="" th:selected="${difficulty == null or difficulty == ''}">전체 난이도</option>
+                            <option value="초급" th:selected="${difficulty == '초급'}">초급</option>
+                            <option value="중급" th:selected="${difficulty == '중급'}">중급</option>
+                            <option value="고급" th:selected="${difficulty == '고급'}">고급</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label class="filter-label">정렬</label>
+                        <select class="filter-select" id="sortFilter" name="sort">
+                            <option value="uploadDate,desc" th:selected="${sort == 'uploadDate,desc'}">최신순</option>
+                            <option value="uploadDate,asc" th:selected="${sort == 'uploadDate,asc'}">오래된순</option>
+                            <option value="title,asc" th:selected="${sort == 'title,asc'}">제목 오름차순</option>
+                            <option value="title,desc" th:selected="${sort == 'title,desc'}">제목 내림차순</option>
+                            <option value="difficulty,asc" th:selected="${sort == 'difficulty,asc'}">난이도 낮은순</option>
+                            <option value="difficulty,desc" th:selected="${sort == 'difficulty,desc'}">난이도 높은순</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-buttons">
+                        <button type="submit" class="filter-btn">검색</button>
+                        <button type="button" class="clear-filters" onclick="clearFilters()">초기화</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- 강의 목록 -->
+        <div class="course-grid" id="courseGrid">
+            <div class="course-card" th:each="course : ${courseList}">
+                <div class="course-thumbnail">
+                    <img th:src="${(course.thumbnailPath != null and course.thumbnailName != null) ? (course.thumbnailPath + course.thumbnailName) : '/images/default_thumbnail.png'}" alt="Course Thumbnail" style="width:100%; height:100%; object-fit: cover;"/>
+                    <div class="course-level" th:text="${course.difficulty}"></div>
+                </div>
+                <div class="course-info">
+                    <span class="course-category" th:text="${course.category}"></span>
+                    <h3 class="course-title" th:text="${course.title}"></h3>
+                    <div class="course-instructor">
+                        <div class="instructor-avatar" th:text="${#strings.substring(course.instructorName, 0, 1)}"></div>
+                        <span class="instructor-name" th:text="${course.instructorName}"></span>
+                    </div>
+                    <div class="course-stats">
+                        <!-- Add actual stats if available in DTO -->
+                    </div>
+                    <div class="course-footer">
+                        <a th:href="@{/ui/user_lecture(seq=${course.courseSeq})}" class="enroll-btn">강의 보기</a>
+                    </div>
+                </div>
+            </div>
+            <div th:if="${#lists.isEmpty(courseList)}" class="empty-state">
+                <div class="empty-icon">📚</div>
+                <h3>검색 결과가 없습니다</h3>
+                <p>다른 검색어나 필터 조건을 시도해보세요.</p>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination" id="pagination" th:if="${totalPages > 0}">
+            <a th:if="${currentPage > 1}" th:href="@{/courses(page=${currentPage - 1}, pageSize=${pageSize}, searchType=${searchType}, searchKeyword=${searchKeyword}, sort=${sort}, category=${category}, difficulty=${difficulty})}">이전</a>
+            <th:block th:each="pageNum : ${#numbers.sequence(startPage, endPage)}">
+                <a th:href="@{/courses(page=${pageNum}, pageSize=${pageSize}, searchType=${searchType}, searchKeyword=${searchKeyword}, sort=${sort}, category=${category}, difficulty=${difficulty})}" 
+                   th:text="${pageNum}" 
+                   th:classappend="${pageNum == currentPage ? 'active' : ''}"></a>
+            </th:block>
+            <a th:if="${currentPage < totalPages}" th:href="@{/courses(page=${currentPage + 1}, pageSize=${pageSize}, searchType=${searchType}, searchKeyword=${searchKeyword}, sort=${sort}, category=${category}, difficulty=${difficulty})}">다음</a>
+        </div>
+          <div th:replace="layout/footer :: footer"></div>
+        
+    </main>
+    
+    <script>
+        function clearFilters() {
+            document.getElementById('searchKeyword').value = '';
+            document.getElementById('categoryFilter').value = '';
+            document.getElementById('difficultyFilter').value = '';
+            document.getElementById('sortFilter').value = 'uploadDate,desc'; // Reset to default sort
+            document.getElementById('filterForm').submit();
+        }
+    </script>
+</body>
+</html>

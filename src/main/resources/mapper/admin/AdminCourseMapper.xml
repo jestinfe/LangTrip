@@ -11,9 +11,7 @@
       c.USER_SEQ AS userSeq,
       c.TITLE AS title,
       c.INTRODUCTION AS introduction,
-      c.QUIZ_SEQ AS quizSeq,
       c.UPLOAD_DATE AS uploadDate,
-      c.VIDEO_SEQ AS videoSeq,
       c.IS_PUBLIC AS isPublic,
       u.NICKNAME AS userName,
       (SELECT COUNT(*) FROM VIDEO v WHERE v.COURSE_SEQ = c.COURSE_SEQ) AS videoCount,
@@ -67,22 +65,55 @@
     </where>
   </select>
 
-  <select id="selectAdminCourseDetail" parameterType="String" resultType="kr.co.sist.e_learning.admin.course.AdminCourseDTO">
+  <resultMap id="adminCourseDetailMap" type="kr.co.sist.e_learning.admin.course.AdminCourseDetailDTO">
+    <id property="courseSeq" column="COURSE_SEQ"/>
+    <result property="userSeq" column="USER_SEQ"/>
+    <result property="title" column="TITLE"/>
+    <result property="introduction" column="INTRODUCTION"/>
+    <result property="uploadDate" column="UPLOAD_DATE"/>
+    <result property="isPublic" column="IS_PUBLIC"/>
+    <result property="category" column="CATEGORY"/>
+    <result property="difficulty" column="DIFFICULTY"/>
+    <result property="thumbnailPath" column="THUMBNAIL_PATH"/>
+    <result property="thumbnailName" column="THUMBNAIL_NAME"/>
+    <result property="userName" column="USER_NAME"/>
+    <collection property="videos" ofType="kr.co.sist.e_learning.video.VideoDTO" select="selectVideosByCourseSeq" column="COURSE_SEQ"/>
+    <collection property="quizzes" ofType="kr.co.sist.e_learning.quiz.QuizListDTO" select="kr.co.sist.e_learning.quiz.QuizMapper.selectQuizListsWithQuizzesByCourseSeq" column="COURSE_SEQ"/>
+  </resultMap>
+
+  <select id="selectAdminCourseDetail" parameterType="String" resultMap="adminCourseDetailMap">
     SELECT
-      c.COURSE_SEQ AS courseSeq,
-      c.USER_SEQ AS userSeq,
-      c.TITLE AS title,
-      c.INTRODUCTION AS introduction,
-      c.QUIZ_SEQ AS quizSeq,
-      c.UPLOAD_DATE AS uploadDate,
-      c.VIDEO_SEQ AS videoSeq,
-      c.IS_PUBLIC AS isPublic,
-      u.NICKNAME AS userName,
-      (SELECT COUNT(*) FROM VIDEO v WHERE v.COURSE_SEQ = c.COURSE_SEQ) AS videoCount,
-      (SELECT COUNT(*) FROM QUIZ q WHERE q.COURSE_SEQ = c.COURSE_SEQ) AS quizCount
+      c.COURSE_SEQ,
+      c.USER_SEQ,
+      c.TITLE,
+      c.INTRODUCTION,
+      c.UPLOAD_DATE,
+      c.IS_PUBLIC,
+      c.CATEGORY,
+      c.DIFFICULTY,
+      c.THUMBNAIL_PATH,
+      c.THUMBNAIL_NAME,
+      u.NICKNAME AS USER_NAME
     FROM COURSE c
     JOIN USERS u ON c.USER_SEQ = u.USER_SEQ
     WHERE c.COURSE_SEQ = #{courseSeq}
+  </select>
+
+  <select id="selectVideosByCourseSeq" parameterType="String" resultType="kr.co.sist.e_learning.video.VideoDTO">
+    SELECT
+      VIDEO_SEQ AS videoSeq,
+      COURSE_SEQ AS courseSeq,
+      TITLE,
+      FILE_PATH AS filePath,
+      FILE_NAME AS fileName,
+      UPLOAD_DATE AS uploadDate,
+      DESCRIPTION,
+      IS_COMPLETED AS isCompleted,
+      VIDEO_ORDER AS videoOrder,
+      TYPE
+    FROM VIDEO
+    WHERE COURSE_SEQ = #{courseSeq}
+    ORDER BY VIDEO_ORDER ASC
   </select>
 
   <update id="updateCourseVisibility" parameterType="map">

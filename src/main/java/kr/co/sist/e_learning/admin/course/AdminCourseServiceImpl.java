@@ -1,11 +1,13 @@
 package kr.co.sist.e_learning.admin.course;
 
 import kr.co.sist.e_learning.pagination.PageResponseDTO;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class AdminCourseServiceImpl implements AdminCourseService {
@@ -14,18 +16,24 @@ public class AdminCourseServiceImpl implements AdminCourseService {
     private AdminCourseMapper adminCourseMapper;
 
     @Override
-    public PageResponseDTO<AdminCourseDTO> getAdminCourses(Map<String, Object> params) {
+    public PageResponseDTO<AdminCourseListDisplayDTO> getAdminCourses(Map<String, Object> params) {
         int page = (int) params.get("page");
         int pageSize = (int) params.get("pageSize");
 
-        List<AdminCourseDTO> list = adminCourseMapper.selectAdminCourses(params);
+        List<AdminCourseDTO> rawList = adminCourseMapper.selectAdminCourses(params);
+        List<AdminCourseListDisplayDTO> displayList = rawList.stream().map(raw -> {
+            AdminCourseListDisplayDTO displayDTO = new AdminCourseListDisplayDTO();
+            BeanUtils.copyProperties(raw, displayDTO);
+            return displayDTO;
+        }).collect(Collectors.toList());
+
         int totalCount = adminCourseMapper.countAdminCourses(params);
 
-        return new PageResponseDTO<>(list, totalCount, page, pageSize, 5);
+        return new PageResponseDTO<>(displayList, totalCount, page, pageSize, 5);
     }
 
     @Override
-    public AdminCourseDTO getAdminCourseDetail(String courseSeq) {
+    public AdminCourseDetailDTO getAdminCourseDetail(String courseSeq) {
         return adminCourseMapper.selectAdminCourseDetail(courseSeq);
     }
 

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import jakarta.servlet.http.HttpSession;
 import kr.co.sist.e_learning.course.CourseDTO;
 import kr.co.sist.e_learning.course.CourseService;
+import kr.co.sist.e_learning.pagination.PageResponseDTO;
 import kr.co.sist.e_learning.quiz.QuizListDTO;
 import kr.co.sist.e_learning.quiz.QuizService;
 import kr.co.sist.e_learning.video.VideoDTO;
@@ -94,11 +95,48 @@ public class UserCourseController {
 			System.out.println(uDTO.toString());
 		}
 		
-		result.put("courses", list);
+				result.put("courses", list);
 		return result;
 	}
 	
-	
-	
-	
+    @GetMapping("/courses")
+    public String listPublicCourses(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int pageSize,
+            @RequestParam(required = false) String searchType,
+            @RequestParam(required = false) String searchKeyword,
+            @RequestParam(required = false, defaultValue = "uploadDate,desc") String sort,
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) String difficulty,
+            Model model) {
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("page", page);
+        params.put("pageSize", pageSize);
+        params.put("searchType", searchType);
+        params.put("searchKeyword", searchKeyword);
+        params.put("sort", sort);
+        params.put("category", category);
+        params.put("difficulty", difficulty);
+        params.put("offset", (page - 1) * pageSize);
+        params.put("limit", pageSize);
+
+        PageResponseDTO<UserCourseListDisplayDTO> responseDTO = ucs.getPublicCourses(params);
+
+        model.addAttribute("courseList", responseDTO.getList());
+        model.addAttribute("currentPage", responseDTO.getPage());
+        model.addAttribute("totalPages", responseDTO.getTotalPages());
+        model.addAttribute("startPage", responseDTO.getStartPage());
+        model.addAttribute("endPage", responseDTO.getEndPage());
+        model.addAttribute("totalCount", responseDTO.getTotalCnt());
+        model.addAttribute("pageSize", pageSize);
+        model.addAttribute("searchType", searchType);
+        model.addAttribute("searchKeyword", searchKeyword);
+        model.addAttribute("sort", sort);
+        model.addAttribute("category", category);
+        model.addAttribute("difficulty", difficulty);
+
+        return "ksh/course_list";
+    }
 }
+

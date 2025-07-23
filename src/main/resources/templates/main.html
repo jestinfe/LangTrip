@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>LangTrip - 당신의 언어 여행</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- 폰트 & CSS -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+
+    <!-- ✅ JS가 HTML 파싱 이후 실행되도록 defer 사용 -->
+    <script src="/js/login-status.js" defer></script>
+</head>
+<style>
+body.logged-in .guest-state {
+  display: none;
+}
+body.logged-in .user-state {
+  display: inline-flex ;
+}
+body.logged-out .guest-state {
+  display: inline-flex ;
+}
+body.logged-out .user-state {
+  display: none ;
+}
+
+
+</style>
+
+<body class="logged-out">
+    <!-- ✅ 헤더 -->
+    <div th:replace="~{layout/header :: header}"></div>
+
+    <!-- ✅ 메인 콘텐츠 -->
+    <main class="main-content">
+        <!-- 구독한 강사 영상 -->
+        <section class="section">
+            <div class="subscribed-section">
+                <div class="section-header">
+                    <h2 class="section-title">내가 좋아한 크리에이터의 새 영상</h2>
+                    <a href="/instructors" class="view-all">전체 보기</a>
+                </div>
+                <div class="instructor-grid">
+                    <div class="instructor-card">
+                        <div class="instructor-avatar">🦜</div>
+                        <div class="instructor-name">후지코</div>
+                        <div class="instructor-subject">일본어 속어</div>
+                        <span class="new-video-count">새 영상 2개</span>
+                    </div>
+                    <div class="instructor-card">
+                        <div class="instructor-avatar">🦜</div>
+                        <div class="instructor-name">Chirpy</div>
+                        <div class="instructor-subject">영국식 영어</div>
+                        <span class="new-video-count">새 영상 1개</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 인기 강의 -->
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title">지금 인기 폭발! 외국어 강의</h2>
+                <a href="/courses/popular" class="view-all">전체 보기</a>
+            </div>
+            <div class="course-grid">
+                <!-- 강의 카드 예시 -->
+                <div class="course-card">
+                    <div class="course-thumbnail">🇯🇵</div>
+                    <div class="course-info">
+                        <span class="course-category">일본어</span>
+                        <h3 class="course-title">애니로 배우는 진짜 일본어 표현</h3>
+                        <p class="course-instructor">타카하시 유미</p>
+                        <div class="course-meta">
+                            <div class="course-rating">⭐ 4.9 (183)</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="course-card">
+                    <div class="course-thumbnail">🇪🇸</div>
+                    <div class="course-info">
+                        <span class="course-category">스페인어</span>
+                        <h3 class="course-title">라틴팝 가사로 배우는 스페인어</h3>
+                        <p class="course-instructor">Carlos Beats</p>
+                        <div class="course-meta">
+                            <div class="course-rating">⭐ 4.8 (152)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 최신 업로드 -->
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title">따끈따끈한 새 강의</h2>
+                <a href="/courses?sort=uploadDate,desc" class="view-all">전체 보기</a>
+            </div>
+            <div class="course-grid">
+                <div class="course-card" th:each="course : ${newCourses}">
+                    <div class="course-thumbnail">
+                        <img th:src="${(course.thumbnailPath != null and course.thumbnailName != null) ? (course.thumbnailPath + course.thumbnailName) : '/images/default_thumbnail.png'}" alt="Course Thumbnail" style="width:100%; height:100%; object-fit: cover;"/>
+                        <div class="course-level" th:text="${course.difficulty}"></div>
+                    </div>
+                    <div class="course-info">
+                        <span class="course-category" th:text="${course.category}"></span>
+                        <h3 class="course-title" th:text="${course.title}"></h3>
+                        <div class="course-instructor">
+                            <div class="instructor-avatar" th:text="${#strings.substring(course.instructorName, 0, 1)}"></div>
+                            <span class="instructor-name" th:text="${course.instructorName}"></span>
+                        </div>
+                        <div class="course-stats">
+                            <!-- Add actual stats if available in DTO -->
+                        </div>
+                        <div class="course-footer">
+                            <a th:href="@{/ui/user_lecture(seq=${course.courseSeq})}" class="enroll-btn">강의 보기</a>
+                        </div>
+                    </div>
+                </div>
+                <div th:if="${#lists.isEmpty(newCourses)}" style="text-align: center; color:#666; padding:1.5rem;">
+                    새로운 강의가 없습니다.
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ✅ 푸터 -->
+    <div th:replace="layout/footer :: footer"></div>
+</body>
+</html>

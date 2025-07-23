@@ -8,7 +8,11 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.security.web.context.SecurityContextHolderFilter;
+import org.springframework.security.web.context.SecurityContextRepository;
 
 import kr.co.sist.e_learning.admin.auth.CustomAdminDetailsService;
 
@@ -31,11 +35,17 @@ public class AdminSecurityConfig {
     }
 
     @Bean
+    public SecurityContextRepository securityContextRepository() {
+        return new HttpSessionSecurityContextRepository();
+    }
+
+    @Bean
     public SecurityFilterChain adminSecurity(HttpSecurity http) throws Exception {
         http
             .securityMatcher("/admin/**") // /admin/** 에만 적용
             .authorizeHttpRequests(auth -> auth
-                .anyRequest().permitAll() // Temporarily permit all requests under /admin/** for debugging
+                .requestMatchers("/admin/login", "/admin/login", "/admin/signup").permitAll()
+                .anyRequest().authenticated() // Temporarily permit all requests under /admin/** for debugging
             )
             .formLogin(form -> form
                 .loginPage("/admin/login")
@@ -49,7 +59,13 @@ public class AdminSecurityConfig {
                 .logoutUrl("/admin/logout")
                 .logoutSuccessHandler(customAdminLogoutSuccessHandler)
             )
-            .csrf(csrf -> csrf.disable()); // Temporarily disable CSRF entirely for AdminSecurityConfig
+            .csrf(csrf -> csrf.disable())
+            .sessionManagement(session -> session
+                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                .sessionFixation().migrateSession()
+            )
+            .securityContext(securityContext -> securityContext.securityContextRepository(securityContextRepository()))
+            .addFilterBefore(new DebugSecurityContextFilter(), SecurityContextHolderFilter.class);
 
         return http.build();
     }

@@ -269,4 +269,40 @@ WHERE quiz_seq IN (
 )
 </update>
 
+
+  <resultMap id="quizListWithQuizzesMap" type="kr.co.sist.e_learning.quiz.QuizListDTO">
+    <id property="quizListSeq" column="quiz_list_seq"/>
+    <result property="courseSeq" column="course_seq"/>
+    <result property="langCategory" column="lang_category"/>
+    <result property="title" column="title"/>
+    <result property="uploadDate" column="upload_date"/>
+    <collection property="quiz" ofType="kr.co.sist.e_learning.quiz.QuizDTO" resultMap="quizWithOptionsMap"/>
+  </resultMap>
+
+  <select id="selectQuizListsWithQuizzesByCourseSeq" parameterType="String" resultMap="quizListWithQuizzesMap">
+    SELECT
+      ql.quiz_list_seq,
+      ql.course_seq,
+      ql.lang_category,
+      ql.title,
+      ql.upload_date,
+      q.quiz_seq,
+      q.question,
+      q.correct_option,
+      q.quiz_order,
+      q.type,
+      qo.quiz_option_seq,
+      qo.option_order,
+      qo.content,
+      qo.image_name,
+      qo.image_addr
+    FROM quiz_list ql
+    LEFT JOIN quiz q ON ql.quiz_list_seq = q.quiz_list_seq AND q.is_delete = 'N'
+    LEFT JOIN quiz_option qo ON q.quiz_seq = qo.quiz_seq AND qo.is_delete = 'N'
+    WHERE ql.course_seq = #{courseSeq}
+    AND ql.is_delete = 'N'
+    ORDER BY ql.upload_date, q.quiz_order, qo.option_order
+  </select>
+
 </mapper>
+
