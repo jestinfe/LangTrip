@@ -286,6 +286,78 @@ public class MyPageController {
         return "mypage/wallet";
     }
 
+    @GetMapping("/settlement")
+    public String settlementPage(Model model, Authentication auth) {
+        long userSeq = getOrInitUserSeq(auth);
+        // 정산 가능 금액 조회
+        FundingDTO fundingInfo = fdSV.getAccountInfo(userSeq);
+        double availableSettlementAmount = (fundingInfo != null) ? fundingInfo.getDonationAvailable() : 0;
+        model.addAttribute("availableSettlementAmount", availableSettlementAmount);
+
+        // 진행 중인 정산 확인
+        SettlementRequestDTO pendingSettlement = mpSV.getPendingSettlementRequest(userSeq);
+        model.addAttribute("hasPendingSettlement", pendingSettlement != null);
+
+        // 정산 내역 조회
+        List<SettlementRequestDTO> settlementHistory = mpSV.getSettlementHistory(userSeq);
+        model.addAttribute("settlementHistory", settlementHistory);
+
+        return "mypage/settlement";
+    }
+
+    @PostMapping("/settlement/request")
+    @ResponseBody
+    public Map<String, Object> requestSettlement(Authentication auth) {
+        Map<String, Object> response = new HashMap<>();
+        long userSeq = getOrInitUserSeq(auth);
+
+        if (userSeq == 0) {
+            response.put("success", false);
+            response.put("message", "사용자 정보를 찾을 수 없습니다.");
+            return response;
+        }
+
+        // 계좌 등록 여부 확인
+        UserAccountDTO userAccount = mpSV.getUserAccount(userSeq);
+        if (userAccount == null) {
+            response.put("success", false);
+            response.put("message", "정산 신청을 위해 계좌 등록이 필요합니다.");
+            response.put("redirect", "/mypage/link_account");
+            return response;
+        }
+
+        try {
+            boolean result = mpSV.requestSettlement(userSeq);
+            if (result) {
+                response.put("success", true);
+                response.put("message", "정산 신청이 완료되었습니다.");
+            } else {
+                response.put("success", false);
+                response.put("message", "정산 신청에 실패했습니다. 진행 중인 정산이 있거나 정산 가능 금액이 부족합니다.");
+            }
+        } catch (Exception e) {
+            logger.error("Error requesting settlement for userSeq: {}", userSeq, e);
+            response.put("success", false);
+            response.put("message", "서버 오류가 발생했습니다.");
+        }
+        return response;
+    }
+
+    @GetMapping("/settlement/detail")
+    public String settlementDetailPage(@RequestParam("requestSeq") long requestSeq, Model model, Authentication auth) {
+        long userSeq = getOrInitUserSeq(auth);
+        SettlementRequestDTO settlement = mpSV.getSettlementDetail(requestSeq);
+
+        // 해당 정산 요청이 현재 사용자의 것인지 확인
+        if (settlement == null || settlement.getUserSeq() != userSeq) {
+            // 에러 처리 또는 목록 페이지로 리다이렉트
+            return "redirect:/mypage/settlement";
+        }
+
+        model.addAttribute("settlement", settlement);
+        return "mypage/settlement_detail";
+    }
+
     @GetMapping("/payments")
     public String paymentsPage(Model model, Authentication auth) {
         long userSeq = getOrInitUserSeq(auth);

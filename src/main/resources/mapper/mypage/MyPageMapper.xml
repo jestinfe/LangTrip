@@ -238,19 +238,21 @@
         parameterType="long"
         resultType="kr.co.sist.e_learning.mypage.RefundDTO">
   SELECT
-    refund_seq AS refundSeq,
-    payment_seq AS paymentSeq,
-    account_seq AS accountSeq,
-    wallet_seq AS walletSeq,
-    refund_amount AS refundAmount,
-    requested_at AS requestedAt,
-    processed_at AS processedAt,
-    status,
-    reason,
-    reject_reason AS rejectReason
-  FROM refund
-  WHERE wallet_seq IN (SELECT wallet_seq FROM mile_wallet WHERE user_seq = #{userSeq})
-  ORDER BY requested_at DESC
+    r.refund_seq AS refundSeq,
+    r.payment_seq AS paymentSeq,
+    r.account_seq AS accountSeq,
+    r.wallet_seq AS walletSeq,
+    r.refund_amount AS refundAmount,
+    r.requested_at AS requestedAt,
+    r.processed_at AS processedAt,
+    r.status,
+    r.reason,
+    r.reject_reason AS rejectReason,
+    p.name AS paymentName -- 결제 상품명 추가
+  FROM refund r
+  JOIN payments p ON r.payment_seq = p.payment_seq
+  WHERE r.wallet_seq IN (SELECT wallet_seq FROM mile_wallet WHERE user_seq = #{userSeq})
+  ORDER BY r.requested_at DESC
 </select>
 
   <!-- 구독 취소 -->
@@ -297,9 +299,82 @@
 
   <!-- 사용자 계좌 정보 삭제 -->
   <delete id="deleteUserAccount"
-          parameterType="long">
+          parameterType="long">s
     DELETE FROM user_account
     WHERE user_seq = #{userSeq}
   </delete>
+  
+  <!-- 정산 신청 삽입 -->
+  <insert id="insertSettlementRequest"
+          parameterType="kr.co.sist.e_learning.mypage.SettlementRequestDTO">
+   <selectKey resultType="long" keyProperty="requestSeq" order="BEFORE">
+    SELECT settlement_seq.NEXTVAL FROM DUAL
+  </selectKey>
+    INSERT INTO settlement_request (
+      request_seq, user_seq, wallet_seq, total_mile, status, requested_at, company_fee, paid_amount
+    )
+    VALUES (
+      #{requestSeq}, #{userSeq}, #{walletSeq}, #{totalMile}, #{status}, SYSDATE,#{companyFee, jdbcType=NUMERIC},
+    #{paidAmount, jdbcType=NUMERIC}
+    )
+  </insert>
+
+  <!-- 진행 중인 정산 신청 조회 -->
+  <select id="selectPendingSettlementRequest" parameterType="long" resultType="kr.co.sist.e_learning.mypage.SettlementRequestDTO">
+    SELECT
+        request_seq AS requestSeq,
+        user_seq AS userSeq,
+        wallet_seq AS walletSeq,
+        TOTAL_MILE AS totalMile,
+        status,
+        requested_at AS requestedAt,
+        processed_at AS processedAt,
+        company_fee AS companyFee,
+        PAID_AMOUNT AS paidAmount
+    FROM
+        settlement_request
+    WHERE
+        user_seq = #{userSeq}
+        AND status = 'PENDING'
+  </select>
+
+  <!-- 정산 내역 조회 -->
+  <select id="selectSettlementHistory"
+          parameterType="long"
+          resultType="kr.co.sist.e_learning.mypage.SettlementRequestDTO">
+    SELECT
+      request_seq AS requestSeq,
+      user_seq AS userSeq,
+      wallet_seq AS walletSeq,
+      total_mile AS totalMile,
+      status,
+      requested_at AS requestedAt,
+      processed_at AS processedAt,
+      company_fee AS companyFee,
+      paid_amount AS paidAmount,
+      reject_reason AS rejectReason
+    FROM settlement_request
+    WHERE user_seq = #{userSeq}
+    ORDER BY requested_at DESC
+  </select>
+
+  <!-- 정산 상세 내역 조회 -->
+  <select id="selectSettlementDetail"
+          parameterType="long"
+          resultType="kr.co.sist.e_learning.mypage.SettlementRequestDTO">
+    SELECT
+      request_seq AS requestSeq,
+      user_seq AS userSeq,
+      wallet_seq AS walletSeq,
+      total_mile AS totalMile,
+      status,
+      requested_at AS requestedAt,
+      processed_at AS processedAt,
+      company_fee AS companyFee,
+      paid_amount AS paidAmount,
+      reject_reason AS rejectReason
+    FROM settlement_request
+    WHERE request_seq = #{requestSeq}
+  </select>
 
 </mapper>

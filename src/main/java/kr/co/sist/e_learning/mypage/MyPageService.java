@@ -21,6 +21,10 @@ public interface MyPageService {
     List<PaymentsDTO> getRefundablePayments(long userSeq);
     boolean requestRefund(long userSeq, RefundRequestDTO refundRequestDTO);
     List<RefundDTO> getRefundHistory(long userSeq);
+    boolean requestSettlement(long userSeq);
+    SettlementRequestDTO getPendingSettlementRequest(long userSeq);
+    List<SettlementRequestDTO> getSettlementHistory(long userSeq);
+    SettlementRequestDTO getSettlementDetail(long requestSeq);
 }
     
     
