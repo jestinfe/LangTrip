@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 
 @Mapper
@@ -15,5 +16,9 @@ public interface UserCourseMapper {
 
 	public List<UserCourseDTO> selectUserCourseByPage(Map<String, Object> paramMap);
 
-	public int selectUserCourseCount(String userId); 
+	public int selectUserCourseCount(String userId);
+
+    List<UserCourseListDisplayDTO> selectPublicCourses(Map<String, Object> params);
+    int countPublicCourses(Map<String, Object> params);
+    List<UserCourseListDisplayDTO> selectNewCourses(@Param("limit") int limit);
 }

@@ -5,7 +5,7 @@ import kr.co.sist.e_learning.pagination.PageResponseDTO;
 import java.util.Map;
 
 public interface AdminCourseService {
-    PageResponseDTO<AdminCourseDTO> getAdminCourses(Map<String, Object> params);
-    AdminCourseDTO getAdminCourseDetail(String courseSeq);
+    PageResponseDTO<AdminCourseListDisplayDTO> getAdminCourses(Map<String, Object> params);
+    AdminCourseDetailDTO getAdminCourseDetail(String courseSeq);
     void updateCourseVisibility(String courseSeq, String isPublic);
 }

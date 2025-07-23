@@ -8,23 +8,23 @@
         <if test="search.searchKeyword != null and search.searchKeyword != ''">
             <choose>
                 <when test="search.searchType == 'sender'">
-                    AND u1.nickname LIKE CONCAT('%', #{search.searchKeyword}, '%')
+                    AND u1.nickname LIKE '%' || #{search.searchKeyword} || '%'
                 </when>
                 <when test="search.searchType == 'recipient'">
-                    AND u2.nickname LIKE CONCAT('%', #{search.searchKeyword}, '%')
+                    AND u2.nickname LIKE '%' || #{search.searchKeyword} || '%'
                 </when>
                 <when test="search.searchType == 'lecture'">
-                    AND c.title LIKE CONCAT('%', #{search.searchKeyword}, '%')
+                    AND c.title LIKE '%' || #{search.searchKeyword} || '%'
                 </when>
                 <when test="search.searchType == 'message'">
-                    AND d.message LIKE CONCAT('%', #{search.searchKeyword}, '%')
+                    AND d.message LIKE '%' || #{search.searchKeyword} || '%'
                 </when>
                 <otherwise>
                     AND (
-                        u1.nickname LIKE CONCAT('%', #{search.searchKeyword}, '%') OR
-                        u2.nickname LIKE CONCAT('%', #{search.searchKeyword}, '%') OR
-                        c.title LIKE CONCAT('%', #{search.searchKeyword}, '%') OR
-                        d.message LIKE CONCAT('%', #{search.searchKeyword}, '%')
+                        u1.nickname LIKE '%' || #{search.searchKeyword} || '%' OR
+                        u2.nickname LIKE '%' || #{search.searchKeyword} || '%' OR
+                        c.title LIKE '%' || #{search.searchKeyword} || '%' OR
+                        d.message LIKE '%' || #{search.searchKeyword} || '%'
                     )
                 </otherwise>
             </choose>
@@ -41,10 +41,10 @@
 <select id="selectDonations" resultType="kr.co.sist.e_learning.admin.donation.DonationVO">
     SELECT
         d.donation_seq AS donationId,
-        ws1.user_seq AS senderId,
-        u1.nickname AS senderNickname,
-        ws2.user_seq AS recipientId,
-        u2.nickname AS recipientNickname,
+        ws1.user_seq AS sender_seq,
+        u1.nickname AS senderId,
+        ws2.user_seq AS recipient_seq,
+        u2.nickname AS recipientId,
         c.title AS lectureTitle,
         d.donation_amount AS amount,
         d.message,
@@ -61,7 +61,7 @@
     JOIN
         mile_wallet ws2 ON d.wallet_seq = ws2.wallet_seq
     JOIN
-        users u2 ON ws2.user_seq = u2.user_seq
+        users u2 ON c.user_seq = u2.user_seq
     <include refid="searchConditions"/>
     ORDER BY
         d.created_at DESC
@@ -94,7 +94,23 @@
             message_deleted = 'Y',
             message = '관리자에 의해 삭제된 메시지입니다.'
         WHERE
-            donation_seq = '#{donationId}'
+            donation_seq = #{donationId}
     </update>
+
+    <select id="selectMessageByDonationId" resultType="String">
+        SELECT
+            message
+        FROM
+            donations
+        WHERE
+            donation_seq = #{donationId}
+    </select>
+
+    <insert id="insertDeletedMessage">
+        INSERT INTO delete_message (donation_seq, message)
+        VALUES (#{donationId},  #{message, jdbcType=VARCHAR})
+    </insert>
+    
+   
 
 </mapper>

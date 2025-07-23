@@ -10,6 +10,6 @@ import java.util.Map;
 public interface AdminCourseMapper {
     List<AdminCourseDTO> selectAdminCourses(Map<String, Object> params);
     int countAdminCourses(Map<String, Object> params);
-    AdminCourseDTO selectAdminCourseDetail(@Param("courseSeq") String courseSeq);
+    AdminCourseDetailDTO selectAdminCourseDetail(@Param("courseSeq") String courseSeq);
     void updateCourseVisibility(@Param("courseSeq") String courseSeq, @Param("isPublic") String isPublic);
 }

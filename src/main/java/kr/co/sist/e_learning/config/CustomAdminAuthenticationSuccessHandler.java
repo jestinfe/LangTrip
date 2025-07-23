@@ -6,20 +6,24 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import kr.co.sist.e_learning.admin.log.AdminLogDTO;
+import kr.co.sist.e_learning.admin.log.AdminLogService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.RequestCache;
 import org.springframework.security.web.savedrequest.SavedRequest;
 import org.springframework.stereotype.Component;
-
-import kr.co.sist.e_learning.admin.log.AdminLogDTO;
-import kr.co.sist.e_learning.admin.log.AdminLogService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Component
 public class CustomAdminAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
+
+    private static final Logger logger = LoggerFactory.getLogger(CustomAdminAuthenticationSuccessHandler.class);
 
     @Autowired
     private AdminLogService logService;
@@ -28,6 +32,10 @@ public class CustomAdminAuthenticationSuccessHandler implements AuthenticationSu
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
             Authentication authentication) throws IOException, ServletException {
         
+        logger.info("Admin login successful for user: {}", authentication.getName());
+        logger.info("SecurityContextHolder Authentication: {}", SecurityContextHolder.getContext().getAuthentication());
+        logger.info("Session ID: {}", request.getSession(false) != null ? request.getSession(false).getId() : "No session");
+
         String adminId = authentication.getName();
         String details = getRequestDetails(request);
 
@@ -46,11 +54,6 @@ public class CustomAdminAuthenticationSuccessHandler implements AuthenticationSu
         SavedRequest savedRequest = requestCache.getRequest(request, response);
         
         String redirectUrl = "/admin/dashboard";
-
-        if (savedRequest != null) {
-            redirectUrl = savedRequest.getRedirectUrl();
-            requestCache.removeRequest(request, response);
-        }
 
         response.sendRedirect(redirectUrl);
     }
