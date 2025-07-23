@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -44,8 +45,14 @@ public class AdminSecurityConfig {
         http
             .securityMatcher("/admin/**") // /admin/** 경로에만 적용
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/admin/login", "/admin/login", "/admin/signup").permitAll()
-                .anyRequest().authenticated() // Temporarily permit all requests under /admin/** for debugging
+                    // 로그인/가입 페이지는 모두에게 열어두고
+                    .requestMatchers("/admin/login", "/admin/signup").permitAll()
+
+                    // 📌 클릭 카운트 API는 인증 없이 허용
+                    .requestMatchers(HttpMethod.POST, "/admin/ad/click/**").permitAll()
+
+                    // 그 외 /admin/** 경로는 모두 인증 필요
+                    .anyRequest().authenticated()
             )
             .formLogin(form -> form
                 .loginPage("/admin/login") // 로그인 페이지 설정

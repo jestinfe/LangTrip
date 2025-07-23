@@ -20,4 +20,14 @@ public interface MyPageMapper {
     int deleteUserAccount(long userSeq);
     List<LectureHistoryDTO> selectLectureHistory(long userSeq);
     List<LectureHistoryDTO> selectMyLectures(long userSeq);
+    List<PaymentsDTO> selectPaymentHistory(long userSeq);
+    List<PaymentsDTO> selectRefundablePayments(long userSeq);
+    int updatePaymentStatus(Map<String, Object> paramMap);
+    int insertRefund(RefundDTO refundDTO);
+    PaymentsDTO selectPaymentByPaymentSeq(String paymentSeq);
+    List<RefundDTO> selectRefundHistory(long userSeq);
+    int insertSettlementRequest(SettlementRequestDTO settlementRequestDTO);
+    SettlementRequestDTO selectPendingSettlementRequest(long userSeq);
+    List<SettlementRequestDTO> selectSettlementHistory(long userSeq);
+    SettlementRequestDTO selectSettlementDetail(long requestSeq);
 }

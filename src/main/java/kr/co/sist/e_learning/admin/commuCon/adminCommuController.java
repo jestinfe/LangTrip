@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 
 @Controller
-@RequestMapping("/adminDash")
+@RequestMapping("/admin/Dash")
 public class adminCommuController {
 
 
@@ -17,6 +17,6 @@ public class adminCommuController {
     public String listAllPosts() {
 //        List<CommunityPostDTO> posts = commuService.findAllPosts();
 //        model.addAttribute("posts", posts);
-        return "adminDash/admincommunity";
+        return "admin/Dash/admincommunity";
     }
 }

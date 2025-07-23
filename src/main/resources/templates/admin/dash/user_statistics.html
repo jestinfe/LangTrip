@@ -65,6 +65,12 @@
   border-radius: 10px;
 }
 
+.chart-item--full {
+  flex: 1 1 100%; 
+  max-width: 1200px;  /* 최대 너비 */
+  margin: 0 auto;     /* 좌우 중앙 정렬 */
+}
+
 .chart-item canvas {
   width: 100% !important;
   height: 300px !important;
@@ -72,25 +78,17 @@
 </style>
 </head>
 <body>
-
-<!-- 사이드바 -->
-<!-- <div class="sidebar">
-  <h2><i class="fa-solid fa-chart-line"></i> 관리자 대시보드</h2>
-  <a href="/adminDash/user_statistics" class="active"><i class="fa-solid fa-users"></i> 회원 통계</a>
-  <a href="/adminDash/instructor_statistics"><i class="fa-solid fa-user-tie"></i> 강사 통계</a>
-  <a href="/adminDash/courses"><i class="fa-solid fa-book"></i> 강의 관리</a>
-  <a href="/adminDash/subscriptions"><i class="fa-solid fa-bell"></i> 구독 관리</a>
-  <a href="/adminDash/payments"><i class="fa-solid fa-credit-card"></i> 결제 관리</a>
-  <a href="/adminDash/admincommunity"><i class="fa-solid fa-comments"></i> 커뮤니티</a>
-  <a href="/adminDash/reports"><i class="fa-solid fa-triangle-exclamation"></i> 신고 처리</a>
-  <a href="/adminDash/support"><i class="fa-solid fa-phone-volume"></i> 고객 지원</a>
-</div> -->
   <div th:replace="~{/layout/admin_sidebar :: sidebar}"></div>
 
 
 <!-- 메인 콘텐츠 -->
 <main class="main-content">
   <h2>📊 관리자 대시보드</h2>
+
+ 	<div class="chart-item chart-item--full">
+     <h5 class="chart-title">⌚️ 시간별 접속 통계</h5>
+     <canvas id="hourlyAccessChart"></canvas>
+  	</div>
 
   <div class="chart-grid">
     <div class="chart-item">
@@ -107,8 +105,25 @@
       <h3>📤 탈퇴 사유 통계</h3>
       <canvas id="reasonBarChart"></canvas>
     </div>
+    
+    <div class="chart-item">
+	  <h3>📚 카테고리별 강의 등록 수</h3>
+	  <canvas id="courseCategoryChart"></canvas>
+	</div>
+    
+    <div class="chart-item">
+	  <h3>📊 난이도별 강의 등록 수</h3>
+	  <canvas id="courseDifficultyChart"></canvas>
+	</div>
+
+    <div class="chart-item">
+      <h3>📈 광고별 클릭 횟수</h3>
+      <canvas id="adClickChart"></canvas>
+    </div>
+    
   </div>
 </main>
+
 
 <!-- Font Awesome CDN (최하단에 넣기) -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/js/all.min.js"></script>

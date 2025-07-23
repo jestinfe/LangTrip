@@ -17,5 +17,16 @@ public interface MyPageService {
     public boolean linkUserAccount(UserAccountDTO userAccountDTO);
 
     public boolean unlinkUserAccount(long userSeq);
+    List<PaymentsDTO> getPaymentHistory(long userSeq);
+    List<PaymentsDTO> getRefundablePayments(long userSeq);
+    boolean requestRefund(long userSeq, RefundRequestDTO refundRequestDTO);
+    List<RefundDTO> getRefundHistory(long userSeq);
+    boolean requestSettlement(long userSeq);
+    SettlementRequestDTO getPendingSettlementRequest(long userSeq);
+    List<SettlementRequestDTO> getSettlementHistory(long userSeq);
+    SettlementRequestDTO getSettlementDetail(long requestSeq);
 }
+    
+    
+
 

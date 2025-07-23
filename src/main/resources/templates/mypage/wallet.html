@@ -4,7 +4,7 @@
         <!-- header는 항상 출력 -->
         <div class="wallet-header">
             <h2 class="wallet-title">💳 내 지갑</h2>
-            <button class="settlement-button" th:if="${accountInfo != null}" onclick="location.href='/wallet/settlement'">📊 정산</button>
+            <button class="settlement-button" th:if="${accountInfo != null}" onclick="location.href='/mypage/settlement'">📊 정산</button>
         </div>
 
         <!-- 지갑 정보가 없는 경우 -->
@@ -37,7 +37,7 @@
         <!-- 버튼 영역 -->
         <div class="wallet-actions" th:if="${accountInfo != null}">
             <button class="wallet-button" onclick="location.href='/mypage/link_account'">🏦 계좌 연동하기</button>
-            <button class="wallet-button" onclick="location.href='/wallet/cards'">💳 결제 내역</button>
+            <button class="wallet-button" onclick="location.href='/mypage/payments'">💳 결제 내역</button>
         </div>
     </div>
 </div>
