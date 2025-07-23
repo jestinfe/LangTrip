@@ -4,7 +4,7 @@
 
 <mapper namespace="kr.co.sist.e_learning.admin.dash.AdminDashDAO">
 
-<select id="getHourlyAccessStats" resultMap="hourlyAccessResultMap">
+<select id="getHourlyAccessStats" resultType="kr.co.sist.e_learning.admin.dash.AdminDashDTO">
     SELECT TO_CHAR(log_time, 'HH24') AS hour, COUNT(*) AS accessCount
     FROM ADMIN_LOG
     GROUP BY TO_CHAR(log_time, 'HH24')

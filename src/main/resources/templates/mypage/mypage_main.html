@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-  
   <meta charset="UTF-8">
   <title>마이페이지</title>
 
@@ -47,28 +46,39 @@
       <!-- 콘텐츠 영역 -->
       <div class="content-area" id="content-area"></div>
 
-		<!-- 광고 영역 -->
-      <div class="ad-area" id="ad-area"></div>
-      
-	 </div>
+      <!-- 광고 영역 -->
+      <div class="ad-container">
+        <!-- 첫 번째 광고 영역 -->
+        <div class="ad-area" id="ad-area"></div>
+        <!-- 두 번째 광고 영역 (오른쪽) -->
+        <div class="ad-area" id="ad-area-2"></div>
+      </div>
+    </div>
   </div>
 
- <!-- ================= 광고 + AJAX 로드 스크립트 ================= -->
+<!-- ================= 광고 + AJAX 로드 스크립트 ================= -->
 <script th:inline="javascript">
 /*<![CDATA[*/
   
   // 1) Thymeleaf 치환된 배너 리스트
-  var banners = /*[[${bannerList}]]*/ [];
+  var banners1 = /*[[${bannerList1}]]*/ []; // 1~5번 광고
+  var banners2 = /*[[${bannerList2}]]*/ []; // 6~10번 광고
 
   // 2) 통계 호출
-  function recordView(id)  { fetch('/admin/ad/view/'+id,  { method:'POST' }); }
-  function recordClick(id) { fetch('/admin/ad/click/'+id, { method:'POST' }); }
+  function recordView(id)  { 
+    fetch('/admin/ad/view/'+id,  { method: 'POST' }); 
+  }
+  
+  function recordClick(id) { 
+    fetch('/admin/ad/click/'+id, { method: 'POST' }); 
+  }
 
   // 3) 광고 DOM 생성 (한 번)
   function renderAds() {
-    var container = document.getElementById('ad-area');
-    container.innerHTML = '';
-    banners.forEach(function(b, i) {
+    // 첫 번째 광고 영역 (배너 1~5)
+    var container1 = document.getElementById('ad-area');
+    container1.innerHTML = '';
+    banners1.forEach(function(b, i) {
       var item = document.createElement('div');
       item.className = 'ad-item';
       item.dataset.bannerId = b.bannerId;
@@ -76,73 +86,125 @@
       var link = document.createElement('a');
       link.href = b.linkUrl;
       link.target = '_blank';
-      link.addEventListener('click', function(){ recordClick(b.bannerId); });
+      link.addEventListener('click', function() {
+        recordClick(b.bannerId);
+      });
 
       var img = document.createElement('img');
       img.src = b.imageUrl;
       img.alt = b.title;
       img.style.width = '100%';
       img.style.display = 'block';
-      img.onload = function(){ recordView(b.bannerId); };
+      
+      img.onload = function() { 
+        recordView(b.bannerId); 
+      };
 
       link.appendChild(img);
       item.appendChild(link);
-      container.appendChild(item);
+      container1.appendChild(item);
+    });
+
+    // 두 번째 광고 영역 (배너 6~10)
+    var container2 = document.getElementById('ad-area-2');
+    container2.innerHTML = '';
+    banners2.forEach(function(b, i) {
+      var item = document.createElement('div');
+      item.className = 'ad-item';
+      item.dataset.bannerId = b.bannerId;
+
+      var link = document.createElement('a');
+      link.href = b.linkUrl;
+      link.target = '_blank';
+      link.addEventListener('click', function() {
+        recordClick(b.bannerId);
+      });
+
+      var img = document.createElement('img');
+      img.src = b.imageUrl;
+      img.alt = b.title;
+      img.style.width = '100%';
+      img.style.display = 'block';
+      
+      img.onload = function() { 
+        recordView(b.bannerId); 
+      };
+
+      link.appendChild(img);
+      item.appendChild(link);
+      container2.appendChild(item);
     });
   }
 
   // 4) 광고 순환 초기화 (한 번)
-  var _currentAd = 0;
-  function startAdRotation() {
-    var ads = document.querySelectorAll('.ad-area .ad-item');
-    if (!ads.length) return;
-    // 첫 광고 보여주기
-    ads[_currentAd].classList.add('active');
-    recordView(ads[_currentAd].dataset.bannerId);
+  var _currentAd1 = 0;
+  var _currentAd2 = 0;
 
-    setInterval(function(){
-      ads[_currentAd].classList.remove('active');
-      _currentAd = (_currentAd + 1) % ads.length;
-      ads[_currentAd].classList.add('active');
-      recordView(ads[_currentAd].dataset.bannerId);
-    }, 7000);
+  function startAdRotation() {
+    var ads1 = document.querySelectorAll('#ad-area .ad-item');
+    var ads2 = document.querySelectorAll('#ad-area-2 .ad-item');
+    
+    if (!ads1.length && !ads2.length) return;
+    
+    // 첫 번째 광고 영역 슬라이드
+    ads1[_currentAd1].classList.add('active');
+    recordView(ads1[_currentAd1].dataset.bannerId);
+
+    setInterval(function() {
+      ads1[_currentAd1].classList.remove('active');
+      _currentAd1 = (_currentAd1 + 1) % ads1.length;
+      ads1[_currentAd1].classList.add('active');
+      recordView(ads1[_currentAd1].dataset.bannerId);
+    }, 7000); // 7초마다 광고 순환
+    
+    // 두 번째 광고 영역 슬라이드
+    ads2[_currentAd2].classList.add('active');
+    recordView(ads2[_currentAd2].dataset.bannerId);
+
+    setInterval(function() {
+      ads2[_currentAd2].classList.remove('active');
+      _currentAd2 = (_currentAd2 + 1) % ads2.length;
+      ads2[_currentAd2].classList.add('active');
+      recordView(ads2[_currentAd2].dataset.bannerId);
+    }, 7000); // 7초마다 광고 순환
   }
 
-  // 5) AJAX 콘텐츠 로드 (광고 재렌더 금지!)
+  // 5) AJAX 콘텐츠 로드 (광고 재렌더 금지! 광고는 이미 그려져 있습니다)
   function loadContent(url) {
     fetch(url)
-      .then(r=>r.text())
-      .then(html=>{
+      .then(r => r.text())
+      .then(html => {
         document.getElementById('content-area').innerHTML = html;
-        history.replaceState(null,'','/mypage?tab='+url.split('/').pop());
+        history.replaceState(null, '', '/mypage?tab=' + url.split('/').pop());
         // fragment 후처리
-        if (url.includes('dashboard') && window.drawCharts)           setTimeout(drawCharts, 50);
-        if (url.includes('instroductor_course') && window.initInstroductorCourse) setTimeout(initInstroductorCourse, 50);
-        // **renderAds() 호출은 제거** — 광고는 이미 그려져 있습니다.
+        if (url.includes('dashboard') && window.drawCharts) 
+          setTimeout(drawCharts, 50);
+        if (url.includes('instroductor_course') && window.initInstroductorCourse) 
+          setTimeout(initInstroductorCourse, 50);
       })
-      .catch(e=>console.error('내용 로드 실패:', e));
+      .catch(e => console.error('내용 로드 실패:', e));
   }
 
   // 6) 사이드바 클릭 바인딩
   function initSidebarClick() {
-    document.querySelector('.sidebar').addEventListener('click', function(e){
+    document.querySelector('.sidebar').addEventListener('click', function(e) {
       var a = e.target.closest('a');
       if (!a) return;
       var href = a.getAttribute('href');
       if (href.startsWith('/mypage')) {
         e.preventDefault();
-        var tab = new URL(href, location.origin).searchParams.get('tab')||href.split('/').pop();
-        loadContent('/mypage/'+tab);
+        var tab = new URL(href, location.origin).searchParams.get('tab') || href.split('/').pop();
+        loadContent('/mypage/' + tab);
       }
     });
   }
 
   // 7) 초깃값 세팅: 광고 렌더 → 슬라이드 시작 → 콘텐츠 AJAX 로드 → 사이드바 바인딩
-  document.addEventListener('DOMContentLoaded', function(){
+  document.addEventListener('DOMContentLoaded', function() {
     renderAds();        // 광고 DOM 만들고
-    startAdRotation();  // 슬라이드/통계 시작
-    var init = new URL(location.href).searchParams.get('tab')||'dashboard';
-    loadContent('/mypage/'+init);
+    startAdRotation();  // 슬라이드 시작
+    var init = new URL(location.href).searchParams.get('tab') || 'dashboard';
+    loadContent('/mypage/' + init);
     initSidebarClick();
   });
 
@@ -150,7 +212,6 @@
   window.loadContent = loadContent;
 /*]]>*/
 </script>
-
 
   <!-- 기타 스크립트 -->
   <script th:src="@{/js/donation.js}"></script>

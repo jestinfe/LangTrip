@@ -33,6 +33,7 @@ public class AdminDashController {
     @GetMapping("/admin/api/user_stats")
     public Map<String, Object> getUserStats() {
     	Map<String, Object> stats = new HashMap<>();
+    	stats.put("hourlyStats", adSV.getHourlyAccessStats());
         stats.put("dailySignup", adSV.getDailySignupStats());
         stats.put("signupPath", adSV.getSignupPathStats());
         stats.put("unsignReason", adSV.getUnsignReasonStats());
@@ -41,12 +42,5 @@ public class AdminDashController {
         stats.put("adClickStats", adSV.getAdClickStats()); 
         return stats;
     	}
-    
-    @ResponseBody
-    @GetMapping("/admin/api/hourly_access_stats")
-    public Map<String, Object> getHourlyAccessStats() {
-        List<AdminDashDTO> hourlyStats = adSV.getHourlyAccessStats();  // 서비스에서 호출
-        return Map.of("hourlyStats", hourlyStats);  // 데이터 반환
-    }
     
 }

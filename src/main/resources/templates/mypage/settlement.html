@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>정산 신청</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .info-box {
+            background-color: #e0f7fa;
+            border: 1px solid #b2ebf2;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 1.1em;
+            color: #006064;
+        }
+        .button-group {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .settlement-button {
+            padding: 12px 25px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s ease;
+        }
+        .settlement-button:hover:not(:disabled) {
+            background-color: #45a049;
+        }
+        .settlement-button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        .settlement-button.disabled-tooltip {
+            position: relative;
+        }
+        .settlement-button.disabled-tooltip:hover:before {
+            content: attr(data-tooltip);
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #333;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            white-space: nowrap;
+            font-size: 0.8em;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 30px;
+        }
+        th, td {
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background-color: #ecf0f1;
+            color: #2c3e50;
+            font-weight: bold;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        tr:hover {
+            background-color: #f1f1f1;
+            cursor: pointer;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 50px;
+            color: #777;
+            font-size: 18px;
+            background-color: #f8f8f8;
+            border-radius: 8px;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .status-pending { background-color: #fff3e0; color: #ff6f00; }
+        .status-completed { background-color: #e8f5e9; color: #2e7d32; }
+        .status-rejected { background-color: #ffebee; color: #c62828; }
+        
+         .back-button {
+            background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+            border: none;
+            border-radius: 16px;
+            width: 56px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #475569;
+            font-size: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .back-button:hover {
+            background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 정산 신청 및 내역</h1>
+<button class="back-button" onclick="goToWalletPage()">←</button>
+<br>
+        <div class="info-box">
+            정산 가능 금액: <span th:text="${#numbers.formatDecimal(availableSettlementAmount, 0, 'COMMA', 0, 'POINT')} + 'Mile'">0M</span>
+        </div>
+
+        <div class="button-group">
+            <button id="requestSettlementBtn" class="settlement-button"
+                    th:disabled="${hasPendingSettlement}"
+                    th:attr="data-tooltip=${hasPendingSettlement ? '진행 중인 정산이 있습니다.' : ''}"
+                    onclick="requestSettlement()">
+                정산 신청
+            </button>
+        </div>
+
+        <h2>정산 내역</h2>
+        <div th:if="${#lists.isEmpty(settlementHistory)}" class="empty-state">
+            <p>정산 내역이 없습니다.</p>
+        </div>
+
+        <div th:unless="${#lists.isEmpty(settlementHistory)}">
+            <table>
+                <thead>
+                    <tr>
+                        <th>신청일</th>
+                        <th>금액</th>
+                        <th>상태</th>
+                        <th>처리일자</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="settlement : ${settlementHistory}" th:onclick="|location.href='/mypage/settlement/detail?requestSeq=${settlement.requestSeq}'|">
+                        <td th:text="${#dates.format(settlement.requestedAt, 'yyyy-MM-dd HH:mm')}"></td>
+                        <td th:text="${#numbers.formatDecimal(settlement.paidAmount, 0, 'COMMA', 0, 'POINT')} + '원'"></td>
+                        <td>
+                            <span class="status-badge"
+                                  th:classappend="${settlement.status == 'PENDING' ? 'status-pending' :
+                                                  (settlement.status == 'COMPLETED' ? 'status-completed' :
+                                                  (settlement.status == 'REJECTED' ? 'status-rejected' : ''))}"
+                                  th:text="${settlement.status}"></span>
+                        </td>
+                        <td th:text="${settlement.processedAt != null ? #dates.format(settlement.processedAt, 'yyyy-MM-dd HH:mm') : '-'}"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        function requestSettlement() {
+            // 1. 계좌 등록 여부 확인
+            fetch('/mypage/link_account')
+                .then(response => response.text())
+                .then(html => {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    const linkedAccountSection = doc.querySelector('.linked-account-section');
+                    const isLinked = linkedAccountSection !== null;
+
+                    if (!isLinked) {
+                        if (confirm("정산 신청을 위해 계좌 등록이 필요합니다.\n계좌 등록 페이지로 이동하시겠습니까?")) {
+                            window.location.href = "/mypage/link_account";
+                        }
+                        return;
+                    }
+
+                    // 2. 정산 신청 요청
+                    if (confirm("정산 신청을 하시겠습니까?")) {
+                        fetch('/mypage/settlement/request', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({})
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                alert(data.message);
+                                location.reload(); // 페이지 새로고침하여 상태 업데이트
+                            } else {
+                                alert(data.message);
+                                if (data.redirect) {
+                                    window.location.href = data.redirect;
+                                }
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error requesting settlement:', error);
+                            alert('정산 신청 중 오류가 발생했습니다.');
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error checking account linkage:', error);
+                    alert('계좌 연동 여부를 확인하는 데 실패했습니다.');
+                });
+        }
+        
+        function goToWalletPage() {
+            window.location.href = "/mypage?tab=wallet";
+        }
+    </script>
+</body>
+</html>

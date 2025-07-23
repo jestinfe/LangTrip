@@ -13,16 +13,15 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class RefundDTO {
-    private String refundSeq;
-    private String paymentSeq;
-    private String accountSeq;
+public class SettlementRequestDTO {
+    private Long requestSeq;
+    private Long userSeq;
     private Long walletSeq;
-    private Double refundAmount;
+    private Double totalMile;
+    private String status;
     private Timestamp requestedAt;
     private Timestamp processedAt;
-    private String status;
-    private String reason;
-    private String rejectReason;
-    private String paymentName; // 결제 상품명 추가
+    private Double companyFee;
+    private Double paidAmount;
+    private String rejectReason; // 반려 사유 추가
 }

@@ -19,10 +19,10 @@ public class AdBannerServiceImpl implements AdBannerService {
     }
 
     @Override
-    @Transactional
-    public void recordView(Long bannerId) {
-        mapper.incrementView(bannerId);
+    public List<AdBannerEntity> getNext5Banners() {
+        return mapper.findNext5();
     }
+    
 
     @Override
     @Transactional

@@ -1,34 +1,64 @@
 @charset "UTF-8";
 
-/* 광고 영역: 고정 폭, 스크롤 가능 */
-
-/* 기본적으로 모든 배너 숨김 */
-.ad-area .ad-item {
-  display: none;
-}
-
-/* 보여줄 배너에 active 클래스만 보이도록 */
-.ad-area .ad-item.active {
-  display: block;
-}
-
-.ad-area {
-  flex: 0 0 260px;    
-  box-sizing: border‑box;
+/* 광고 영역 */
+.ad-container {
+  display: flex;
+  flex-direction: column; /* 광고 두 개가 세로로 쌓이도록 설정 */
+  gap: 16px;
+  width: 300px;  /* 광고 영역 고정 너비 */
+  background-color: #fff;
+  box-shadow: 2px 0 6px rgba(0, 0, 0, 0.04); /* 그림자 효과 */
   padding: 16px;
-  background: #fff;
-  border-left: 1px solid #e0e0e0;
-  overflow: hidden;
+  border-radius: 10px;
 }
 
-/* 개별 배너 스타일 */
+/* 첫 번째 광고 영역 (1~5번 광고) */
+.ad-area {
+  display: flex;
+  flex-direction: column; /* 세로로 배치 */
+  gap: 16px;
+  background-color: #fff;
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 2px 0 6px rgba(0, 0, 0, 0.04);
+  height: auto; /* 높이는 자동으로 맞춰짐 */
+  overflow-y: hidden; /* 넘치지 않도록 숨기기 */
+}
+
+/* 두 번째 광고 영역 (6~10번 광고) */
+#ad-area-2 {
+  display: flex;
+  flex-direction: column; /* 세로로 배치 */
+  gap: 16px;
+  background-color: #fff;
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 2px 0 6px rgba(0, 0, 0, 0.04);
+  height: auto; /* 높이는 자동으로 맞춰짐 */
+  overflow-y: hidden; /* 넘치지 않도록 숨기기 */
+}
+
+/* 개별 배너 이미지 스타일 */
 .ad-item img {
-  width: 100%;
+  width: 100%;       /* 너비 고정 */
+  height: 200px;     /* 고정된 높이 설정 */
+  object-fit: cover; /* 이미지 비율 유지하며 잘림 */
   display: block;
   border-radius: 4px;
   cursor: pointer;
-  transition: transform .2s;
+  transition: transform 0.2s;
 }
+
 .ad-item img:hover {
   transform: scale(1.02);
+}
+
+/* 배너가 보여지는 영역 */
+.ad-item {
+  display: none; /* 기본적으로 배너 숨기기 */
+}
+
+.ad-item.active {
+  display: block; /* active 클래스가 있을 경우 배너 표시 */
+  padding: 10px;
 }

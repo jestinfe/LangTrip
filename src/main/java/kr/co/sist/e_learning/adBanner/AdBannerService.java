@@ -4,6 +4,6 @@ import java.util.List;
 
 public interface AdBannerService {
     List<AdBannerEntity> getTop5Banners();
-    void recordView(Long bannerId);
+    List<AdBannerEntity> getNext5Banners(); 
     void recordClick(Long bannerId);
 }

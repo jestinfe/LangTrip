@@ -26,4 +26,8 @@ public interface MyPageMapper {
     int insertRefund(RefundDTO refundDTO);
     PaymentsDTO selectPaymentByPaymentSeq(String paymentSeq);
     List<RefundDTO> selectRefundHistory(long userSeq);
+    int insertSettlementRequest(SettlementRequestDTO settlementRequestDTO);
+    SettlementRequestDTO selectPendingSettlementRequest(long userSeq);
+    List<SettlementRequestDTO> selectSettlementHistory(long userSeq);
+    SettlementRequestDTO selectSettlementDetail(long requestSeq);
 }

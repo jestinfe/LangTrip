@@ -32,15 +32,15 @@ public class MyPageController {
     private static final Logger logger = LoggerFactory.getLogger(MyPageController.class);
 
     // ─── 서비스 주입 ─────────────────────────
-    private final AdBannerService bannerService;
+    private final AdBannerService abSV;
     private final MyPageService mpSV;
     private final FundingService fdSV;
 
     @Autowired
-    public MyPageController(AdBannerService bannerService,
+    public MyPageController(AdBannerService abSV,
                             MyPageService mpSV,
                             FundingService fdSV) {
-        this.bannerService = bannerService;
+        this.abSV = abSV;
         this.mpSV = mpSV;
         this.fdSV = fdSV;
     }
@@ -73,8 +73,11 @@ public class MyPageController {
         model.addAttribute("tab", tab);
 
         // ▶ 광고 배너 목록 추가
-        List<AdBannerEntity> banners = bannerService.getTop5Banners();
-        model.addAttribute("bannerList", banners);
+        List<AdBannerEntity> top5Banners = abSV.getTop5Banners();
+        List<AdBannerEntity> next5Banners = abSV.getNext5Banners();
+        
+        model.addAttribute("bannerList1", top5Banners);
+        model.addAttribute("bannerList2", next5Banners);
 
         // fragment별 데이터
         switch (tab) {
@@ -132,30 +135,12 @@ public class MyPageController {
         return "mypage/lecture_history";
     }
 
-    /**
-     * 구독 목록 fragment
-     */
-    @GetMapping("/subscriptions")
-    public String subscriptionPage(Authentication auth, Model model) {
-        long userSeq = getOrInitUserSeq(auth);
-        model.addAttribute("subscriptionList", mpSV.getSubscriptions(userSeq));
-        return "mypage/subscriptions";
-    }
-
     /** 내 정보 fragment **/
     @GetMapping("/my_info")
     public String myInfo(Authentication auth, Model model) {
         long userSeq = getOrInitUserSeq(auth);
         model.addAttribute("myData", mpSV.getUserInfo(userSeq));
         return "mypage/my_info";
-    }
-
-    /** 내 지갑 fragment **/
-    @GetMapping("/wallet")
-    public String wallet(Authentication auth, Model model) {
-        long userSeq = getOrInitUserSeq(auth);
-        model.addAttribute("accountInfo", fdSV.getAccountInfo(userSeq));
-        return "mypage/wallet";
     }
     
     /**
@@ -300,6 +285,95 @@ public class MyPageController {
         return "mypage/leave";
     }
 
+    @GetMapping("/subscriptions")
+    public String subscriptionPage(Authentication auth, Model model) {
+        long userSeq = getOrInitUserSeq(auth);
+        List<SubscriptionDTO> subscriptions = mpSV.getSubscriptions(userSeq);
+        model.addAttribute("subscriptionList", subscriptions);
+        return "mypage/subscriptions";
+    }
+
+
+    @GetMapping("/wallet")
+    public String accountPage(Model model, Authentication auth) {
+        long userSeq = getOrInitUserSeq(auth);
+        FundingDTO accountInfo = fdSV.getAccountInfo(userSeq);
+        model.addAttribute("accountInfo", accountInfo);
+        return "mypage/wallet";
+    }
+
+    @GetMapping("/settlement")
+    public String settlementPage(Model model, Authentication auth) {
+        long userSeq = getOrInitUserSeq(auth);
+        // 정산 가능 금액 조회
+        FundingDTO fundingInfo = fdSV.getAccountInfo(userSeq);
+        double availableSettlementAmount = (fundingInfo != null) ? fundingInfo.getDonationAvailable() : 0;
+        model.addAttribute("availableSettlementAmount", availableSettlementAmount);
+
+        // 진행 중인 정산 확인
+        SettlementRequestDTO pendingSettlement = mpSV.getPendingSettlementRequest(userSeq);
+        model.addAttribute("hasPendingSettlement", pendingSettlement != null);
+
+        // 정산 내역 조회
+        List<SettlementRequestDTO> settlementHistory = mpSV.getSettlementHistory(userSeq);
+        model.addAttribute("settlementHistory", settlementHistory);
+
+        return "mypage/settlement";
+    }
+
+    @PostMapping("/settlement/request")
+    @ResponseBody
+    public Map<String, Object> requestSettlement(Authentication auth) {
+        Map<String, Object> response = new HashMap<>();
+        long userSeq = getOrInitUserSeq(auth);
+
+        if (userSeq == 0) {
+            response.put("success", false);
+            response.put("message", "사용자 정보를 찾을 수 없습니다.");
+            return response;
+        }
+
+        // 계좌 등록 여부 확인
+        UserAccountDTO userAccount = mpSV.getUserAccount(userSeq);
+        if (userAccount == null) {
+            response.put("success", false);
+            response.put("message", "정산 신청을 위해 계좌 등록이 필요합니다.");
+            response.put("redirect", "/mypage/link_account");
+            return response;
+        }
+
+        try {
+            boolean result = mpSV.requestSettlement(userSeq);
+            if (result) {
+                response.put("success", true);
+                response.put("message", "정산 신청이 완료되었습니다.");
+            } else {
+                response.put("success", false);
+                response.put("message", "정산 신청에 실패했습니다. 진행 중인 정산이 있거나 정산 가능 금액이 부족합니다.");
+            }
+        } catch (Exception e) {
+            logger.error("Error requesting settlement for userSeq: {}", userSeq, e);
+            response.put("success", false);
+            response.put("message", "서버 오류가 발생했습니다.");
+        }
+        return response;
+    }
+
+    @GetMapping("/settlement/detail")
+    public String settlementDetailPage(@RequestParam("requestSeq") long requestSeq, Model model, Authentication auth) {
+        long userSeq = getOrInitUserSeq(auth);
+        SettlementRequestDTO settlement = mpSV.getSettlementDetail(requestSeq);
+
+        // 해당 정산 요청이 현재 사용자의 것인지 확인
+        if (settlement == null || settlement.getUserSeq() != userSeq) {
+            // 에러 처리 또는 목록 페이지로 리다이렉트
+            return "redirect:/mypage/settlement";
+        }
+
+        model.addAttribute("settlement", settlement);
+        return "mypage/settlement_detail";
+    }
+    
     @GetMapping("/payments")
     public String paymentsPage(Model model, Authentication auth) {
         long userSeq = getOrInitUserSeq(auth);

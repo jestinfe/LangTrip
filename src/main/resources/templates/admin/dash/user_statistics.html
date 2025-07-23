@@ -65,6 +65,12 @@
   border-radius: 10px;
 }
 
+.chart-item--full {
+  flex: 1 1 100%; 
+  max-width: 1200px;  /* 최대 너비 */
+  margin: 0 auto;     /* 좌우 중앙 정렬 */
+}
+
 .chart-item canvas {
   width: 100% !important;
   height: 300px !important;
@@ -79,10 +85,10 @@
 <main class="main-content">
   <h2>📊 관리자 대시보드</h2>
 
-	<div class="chart-item">
-	  <h3>⏰ 시간별 접속 통계</h3>
-	  <canvas id="hourlyAccessChart"></canvas>
-	</div>
+ 	<div class="chart-item chart-item--full">
+     <h5 class="chart-title">⌚️ 시간별 접속 통계</h5>
+     <canvas id="hourlyAccessChart"></canvas>
+  	</div>
 
   <div class="chart-grid">
     <div class="chart-item">
