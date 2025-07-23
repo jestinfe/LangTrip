@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -283,6 +284,67 @@ public class MyPageController {
         FundingDTO accountInfo = fdSV.getAccountInfo(userSeq);
         model.addAttribute("accountInfo", accountInfo);
         return "mypage/wallet";
+    }
+
+    @GetMapping("/payments")
+    public String paymentsPage(Model model, Authentication auth) {
+        long userSeq = getOrInitUserSeq(auth);
+        List<PaymentsDTO> paymentList = mpSV.getPaymentHistory(userSeq);
+        model.addAttribute("paymentList", paymentList);
+        return "mypage/payments";
+    }
+
+    @PostMapping("/refund/request")
+    @ResponseBody
+    public Map<String, Object> requestRefund(@RequestBody RefundRequestDTO refundRequestDTO, Authentication auth) {
+        Map<String, Object> response = new HashMap<>();
+        long userSeq = getOrInitUserSeq(auth);
+
+        if (userSeq == 0) {
+            response.put("success", false);
+            response.put("message", "사용자 정보를 찾을 수 없습니다.");
+            return response;
+        }
+
+        // 계좌 등록 여부 확인
+        UserAccountDTO userAccount = mpSV.getUserAccount(userSeq);
+        if (userAccount == null) {
+            response.put("success", false);
+            response.put("message", "환불 신청을 위해 계좌 등록이 필요합니다.");
+            response.put("redirect", "/mypage/link_account");
+            return response;
+        }
+
+        try {
+            boolean result = mpSV.requestRefund(userSeq, refundRequestDTO);
+            if (result) {
+                response.put("success", true);
+                response.put("message", "환불 신청이 성공적으로 접수되었습니다.");
+            } else {
+                response.put("success", false);
+                response.put("message", "환불 신청에 실패했습니다. 결제 정보 또는 후원 이력을 확인해주세요.");
+            }
+        } catch (Exception e) {
+            logger.error("Error requesting refund for userSeq: {}", userSeq, e);
+            response.put("success", false);
+            response.put("message", "서버 오류가 발생했습니다.");
+        }
+        return response;
+    }
+
+    @GetMapping("/refund/refundable-payments")
+    @ResponseBody
+    public List<PaymentsDTO> getRefundablePayments(Authentication auth) {
+        long userSeq = getOrInitUserSeq(auth);
+        return mpSV.getRefundablePayments(userSeq);
+    }
+
+    @GetMapping("/refund/history")
+    public String refundHistoryPage(Model model, Authentication auth) {
+        long userSeq = getOrInitUserSeq(auth);
+        List<RefundDTO> refundList = mpSV.getRefundHistory(userSeq);
+        model.addAttribute("refundList", refundList);
+        return "mypage/refund_history";
     }
 
     @GetMapping("/donation")

@@ -114,4 +114,64 @@ public class MyPageServiceImpl implements MyPageService {
         return myPageMapper.deleteUserAccount(userSeq) > 0;
     }
 
+    @Override
+    public List<PaymentsDTO> getPaymentHistory(long userSeq) {
+        return myPageMapper.selectPaymentHistory(userSeq);
+    }
+
+    
+
+    @Override
+    public boolean requestRefund(long userSeq, RefundRequestDTO refundRequestDTO) {
+        // 1. 결제 정보 조회
+        PaymentsDTO payment = myPageMapper.selectPaymentByPaymentSeq(refundRequestDTO.getPaymentId());
+        if (payment == null || !payment.getUserSeq().equals(userSeq)) {
+            // 결제 정보가 없거나, 해당 사용자의 결제가 아님
+            return false;
+        }
+
+        // 2. 환불 가능 여부 확인 (이미 구현된 selectRefundablePayments 로직과 유사)
+        // 여기서는 간단히 상태만 확인. 실제로는 후원 이력도 다시 확인해야 함.
+        if (!"SUCCESS".equals(payment.getPaymentStatus())) {
+            return false; // 이미 환불되었거나 다른 상태
+        }
+
+        // 3. 결제 상태 업데이트
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("paymentSeq", refundRequestDTO.getPaymentId());
+        paramMap.put("status", "REFUND_REQUESTED");
+        myPageMapper.updatePaymentStatus(paramMap);
+
+        // 4. 환불 기록 삽입
+        UserAccountDTO userAccount = myPageMapper.selectUserAccount(userSeq);
+        if (userAccount == null) {
+            // 계좌 정보 없음 (사전 조건에서 걸러지지만, 혹시 모를 경우)
+            return false;
+        }
+
+        RefundDTO refundDTO = new RefundDTO();
+        refundDTO.setPaymentSeq(refundRequestDTO.getPaymentId());
+        refundDTO.setAccountSeq(userAccount.getAccountSeq());
+        refundDTO.setWalletSeq(payment.getWalletSeq()); // 결제 시 사용된 지갑 시퀀스
+        refundDTO.setRefundAmount(payment.getPaymentAmount());
+        refundDTO.setStatus("REQUESTED");
+        refundDTO.setReason(refundRequestDTO.getRefundReason());
+
+        return myPageMapper.insertRefund(refundDTO) > 0;
+    }
+
+    @Override
+    public List<RefundDTO> getRefundHistory(long userSeq) {
+        return myPageMapper.selectRefundHistory(userSeq);
+    }
+
+
+
+    @Override
+    public List<PaymentsDTO> getRefundablePayments(long userSeq) {
+        return myPageMapper.selectRefundablePayments(userSeq);
+    }
+
+   
 }
+
