@@ -12,7 +12,7 @@ import java.util.Date;
 public class JwtTokenProvider {
 
     private final String secretKey = "mySuperSecretKeyThatIsAtLeast32BytesLong!";
-    private final long accessTokenValidity = 1000 * 60 * 5; // 5분
+    private final long accessTokenValidity = 1000 * 60 * 30; // 30분
     private final long refreshTokenValidity = 1000 * 60 * 60 * 24 * 7; // 7일
 
     private Key getSigningKey() {
@@ -66,8 +66,12 @@ public class JwtTokenProvider {
                 .build()
                 .parseClaimsJws(token);
             return true;
+        } catch (ExpiredJwtException e) {
+            // 만료된 토큰은 여기서 다시 던져서 JwtAuthenticationFilter에서 처리하도록 함
+            System.out.println("[JWT] Expired token detected in validateToken: " + e.getMessage()); // 추가된 로그
+            throw e; 
         } catch (JwtException | IllegalArgumentException e) {
-            // 🔍 예외 로그 남기기
+            // 다른 JWT 관련 예외나 잘못된 인자 예외는 유효하지 않은 토큰으로 간주
             System.out.println("[JWT] Invalid token: " + e.getMessage());
             return false;
         }

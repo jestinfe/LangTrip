@@ -42,7 +42,14 @@ public class UserSecurityConfig {
             			        "/user/logout", "/user/login/**",
             			        
             			        // 🔐 로그인 없이 접근 가능한 API 경로 추가
-            			        "/api/auth/**"
+            			        "/api/auth/email/**",
+                                "/api/auth/nickname/check",
+                                "/api/auth/nickname/find",
+                                "/api/auth/password/**",
+                                "/api/auth/signup",
+                                "/api/auth/socialSignup",
+                                "/api/auth/login/**",
+            			        "/api/auth/token/refresh" 
             				 ).permitAll()
                 .anyRequest().authenticated()
             )

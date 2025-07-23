@@ -20,28 +20,31 @@ public class AdminDonationController {
     @GetMapping
     public String donationList(Model model,
                                DonationSearchDTO searchDTO,
-                               @ModelAttribute PageRequestDTO_donation pageRequestDTO) {
-        
+                               @ModelAttribute PageRequestDTO_donation pageRequestDTO,
+                               @RequestParam(value = "async", required = false, defaultValue = "false") boolean async) {
+
         PageResponseDTO_donation<DonationVO> responseDTO = adminDonationService.getDonationList(searchDTO, pageRequestDTO);
         model.addAttribute("pageResponse", responseDTO);
         model.addAttribute("searchDTO", searchDTO);
-        model.addAttribute("totalDonations", responseDTO.getTotalCnt()); // For displaying total count
 
-        
+        if (async) {
+            return "admin/donation/donation_list_fragment :: donationList"; // Thymeleaf fragment
+        }
+
         return "admin/donation/admin_donation";
     }
 
     @PostMapping("/deleteMessage/{donationId}")
     @ResponseBody
     public ResponseEntity<String> deleteMessage(@PathVariable String donationId) {
-        log.info("Received request to delete message for donationId: {}", donationId);
+       
 
         boolean success = adminDonationService.deleteDonationMessage(donationId);
         if (success) {
-            log.info("Message deleted successfully for donationId: {}", donationId);
+          
             return ResponseEntity.ok("Message deleted successfully");
         } else {
-            log.warn("Failed to delete message for donationId: {}", donationId);
+            
             return ResponseEntity.badRequest().body("Failed to delete message");
         }
     }

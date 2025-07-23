@@ -100,8 +100,9 @@
     .then(() => {
      successCount++;
       if (successCount === total) {
+    	  const quizCourseSeq = document.getElementById("courseSeq").value;
         // 모든 응답 저장 완료 시 이동
-        window.location.href = '/quiz/quizCompleted/' + quizListSeq;
+        window.location.href = '/quiz/quizCompleted/' + quizListSeq+"?courseSeq="+quizCourseSeq;
       }
     })
     .catch(err => {
