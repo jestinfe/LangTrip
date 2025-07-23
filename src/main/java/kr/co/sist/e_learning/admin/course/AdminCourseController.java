@@ -38,7 +38,7 @@ public class AdminCourseController {
         params.put("offset", (page - 1) * pageSize);
         params.put("limit", pageSize);
 
-        PageResponseDTO<AdminCourseDTO> responseDTO = adminCourseService.getAdminCourses(params);
+        PageResponseDTO<AdminCourseListDisplayDTO> responseDTO = adminCourseService.getAdminCourses(params);
 
         model.addAttribute("courseList", responseDTO.getList());
         model.addAttribute("currentPage", responseDTO.getPage());
@@ -61,7 +61,7 @@ public class AdminCourseController {
 
     @GetMapping("/{courseSeq}")
     public String adminCourseDetail(@PathVariable String courseSeq, Model model) {
-        AdminCourseDTO course = adminCourseService.getAdminCourseDetail(courseSeq);
+        AdminCourseDetailDTO course = adminCourseService.getAdminCourseDetail(courseSeq);
         model.addAttribute("course", course);
         return "admin/course/course_detail";
     }

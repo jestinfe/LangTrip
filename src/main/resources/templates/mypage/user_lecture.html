@@ -1,0 +1,116 @@
+<!-- templates/mypage/course_detail.html -->
+<div th:fragment="content">
+	<div class="container-fluid">
+		<div class="row">
+			<div class="main-content">
+				<div class="content-wrapper">
+					<div class="lecture-section">
+						<div class="lecture-header">
+							<a href="javascript:history.back()" class="btn btn-success">← 내 강의실</a>
+						</div>
+						
+						<div id="courseDataSector"></div>
+
+						<div class="course-info">
+							<h2 th:text="${courseData.courseTitle}"></h2>
+							<div class="course-meta">
+								<span th:text="|강의번호: ${courseData.courseSeq}|"></span>
+								<span th:text="|등록일: ${#dates.format(courseData.uploadDate, 'yyyy년 M월 d일 HH:mm')}|"></span>
+								<span>강의수: 5개</span>
+							</div>
+						</div>
+
+						<!-- 등록된 영상 -->
+						<div class="video-section">
+							<div th:if="${videoList.isEmpty()}" class="lecture-empty">
+								등록된 강의가 없습니다.
+								<div style="margin-top: 20px; font-size: 14px; color: #999;">
+									강사님이 강의를 아직 등록하지 않았습니다.
+								</div>
+							</div>
+
+							<div th:if="${videoList != null and !videoList.isEmpty()}">
+								<h3>등록된 강의 영상 목록</h3>
+								<div class="video-tree">
+									<div th:each="video : ${videoList}" class="video-node inactive">
+										<button type="button" class="circle-button"
+											th:onclick="'location.href=\'/video/watch?videoSeq=' + ${video.videoSeq} + '\''">
+											<i class="fa-solid" th:classappend="${video.type == 'video' ? 'fa-star' : 'fa-book'}"></i>
+										</button>
+									</div>
+								</div>
+							</div>
+
+							<div th:if="${quizList != null and !quizList.isEmpty()}">
+								<h3>등록된 퀴즈</h3>
+								<div class="video-tree">
+									<div th:each="quiz : ${quizList}" class="video-node inactive">
+										<button type="button" class="start-quiz-button"
+											th:id="|quiz-btn-${quiz.quizListSeq}|"
+											th:data-quiz-id="${quiz.quizListSeq}"
+											th:data-course-id="${courseData.courseSeq}">
+											<i class="fa-solid fa-book"></i>
+										</button>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<!-- 우측 사이드 패널 -->
+						<div class="right-panel">
+							<div class="side-panel">
+								<h5>📚 후원</h5>
+								<p class="mb-3">강사님께 후원해보세요.</p>
+								<a class="btn btn-outline-primary btn-sm w-100 mb-2"
+								   th:href="'/funding/donate?courseSeq=' + ${courseData.courseSeq}">
+									후원하기
+								</a>
+							</div>
+
+							<div class="side-panel">
+								<h5>📊 강의 통계</h5>
+								<p class="mb-3">강의 진행 현황을 확인하세요.</p>
+								<div style="background: #e3f2fd; padding: 15px; border-radius: 12px; margin-bottom: 15px;">
+									<div style="font-size: 14px; color: #4a90e2;">전체 진도율</div>
+									<div style="font-size: 24px; font-weight: 700; color: #4a90e2;">85%</div>
+								</div>
+								<div style="background: #e8f5e8; padding: 15px; border-radius: 12px;">
+									<div style="font-size: 14px; color: #4CAF50;">완료된 강의</div>
+									<div style="font-size: 24px; font-weight: 700; color: #4CAF50;">4/5</div>
+								</div>
+							</div>
+						</div> <!-- end of right-panel -->
+
+					</div> <!-- end of lecture-section -->
+				</div> <!-- end of content-wrapper -->
+			</div> <!-- end of main-content -->
+		</div>
+	</div>
+
+	<!-- 챗봇 모달 -->
+	<div class="chatbot-modal" id="chatbotModal">
+		<div class="chatbot-container">
+			<div class="chatbot-header">
+				<h4>🤖 학습 도우미</h4>
+				<button class="chatbot-close" onclick="toggleChatbot()">×</button>
+			</div>
+			<div class="chatbot-messages" id="chatbotMessages">
+				<div class="message bot">안녕하세요! 학습 도우미입니다. 무엇을 도와드릴까요?</div>
+			</div>
+			<div class="chatbot-input">
+				<div class="chatbot-input-group">
+					<input type="text" id="chatbotInput" placeholder="메시지를 입력하세요..." onkeypress="handleChatbotEnter(event)">
+					<button class="chatbot-send" onclick="sendChatbotMessage()">전송</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- 프로필 캐릭터 (챗봇 버튼) -->
+	<div class="profile-icon" onclick="toggleChatbot()">
+		<img src="/images/mascot2.png" alt="마스코트" onerror="this.src='fallback.png'">
+	</div>
+
+	<!-- 별도 JS 파일 또는 간단한 JS 호출 -->
+	<script th:src="@{/js/user_lecture.js}"></script>
+</div>

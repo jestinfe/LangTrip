@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
+	<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <!-- Chart.js 전역 로드 -->
   <script src="/js/chart.umd.js"></script>
   <!-- drawCharts 함수 정의 파일 -->
@@ -18,7 +19,11 @@
   <link rel="stylesheet" th:href="@{/css/mypage.css}">
   <link rel="stylesheet" th:href="@{/css/lecture.css}">
   <link rel="stylesheet" th:href="@{/css/subscription.css}">
+
   <link rel="stylesheet" th:href="@{/css/link_account.css}">
+
+  <link rel="stylesheet" th:href="@{/css/instroductor_course.css}">
+
   
   
   <meta charset="UTF-8">
@@ -34,6 +39,13 @@
 
           if (url.includes("dashboard") && typeof window.drawCharts === 'function') {
             setTimeout(() => window.drawCharts(), 50);
+          }
+          
+          // ✅ instroductor_course 처리
+          if (url.includes("instroductor_course") && typeof window.initInstroductorCourse === 'function') {
+            setTimeout(() => window.initInstroductorCourse(), 50);
+          }else{
+        	  console.log("fail");
           }
         })
         .catch(err => console.error("내용 로드 실패:", err));
@@ -144,4 +156,6 @@ body.logged-out .user-state {
   </div>
 </body>
 <script th:src="@{/js/donation.js}"></script>
+<script th:src="@{/js/instroductor_course.js}"></script>
+ <script th:src="@{/js/chatbot.js}"></script>
 </html>

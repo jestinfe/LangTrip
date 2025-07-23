@@ -9,11 +9,11 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface CourseMapper {
 	
-	 void insertCourse(CourseDTO cDTO);
-	 public List<CourseDTO> searchCourseById(String userId);
+	 public int insertCourse(CourseDTO cDTO);
+	 public List<CourseDTO> searchCourseById(Long userSeq);
 	 public CourseDTO searchCourseByCourseId(String courseSeq);
 	 public List<CourseDTO> searchCourseByPage(Map<String, Object> paramMap);
-	 public int searchCourseCount(String userId);
+	 public int searchCourseCount(Long userSeq);
 	 public int updateCourseByCourseSeq(CourseDTO cDTO);
 	 public int deleteCourseByCourseSeq(String courseSeq);
 }

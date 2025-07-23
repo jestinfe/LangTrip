@@ -3,6 +3,7 @@ package kr.co.sist.e_learning.usercourse;
 import java.util.List;
 import java.util.Map;
 
+import kr.co.sist.e_learning.pagination.PageResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -36,6 +37,20 @@ public class UserCourseServiceImpl implements UserCourseService{
 		return userCourseCount;
 	}
 
-	
+    @Override
+    public PageResponseDTO<UserCourseListDisplayDTO> getPublicCourses(Map<String, Object> params) {
+        int page = (int) params.get("page");
+        int pageSize = (int) params.get("pageSize");
+
+        List<UserCourseListDisplayDTO> list = ucm.selectPublicCourses(params);
+        int totalCount = ucm.countPublicCourses(params);
+
+        return new PageResponseDTO<>(list, totalCount, page, pageSize, 5);
+    }
+
+    @Override
+    public List<UserCourseListDisplayDTO> getNewCourses(int limit) {
+        return ucm.selectNewCourses(limit);
+    }
 
 }

@@ -1,0 +1,88 @@
+<!-- 내 강의실 Fragment -->
+<div th:fragment="content">
+  <div class="lecture-section">
+    <h1 class="main-title">내 강의실</h1>
+
+    <!-- 강의 등록 폼 -->
+    <form id="lecture-register" enctype="multipart/form-data">
+      <div class="lecture-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="category">카테고리</label>
+            <select id="category" name="category" class="form-control">
+              <option value="">카테고리 선택</option>
+              <option value="영어">영어</option>
+              <option value="일본어">일본어</option>
+              <option value="중국어">중국어</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="level">난이도</label>
+            <select id="level" name="difficulty" class="form-control">
+              <option value="">난이도 선택</option>
+              <option value="초급">초급</option>
+              <option value="중급">중급</option>
+              <option value="고급">고급</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="courseTitle">강의명</label>
+            <input type="text" name="courseTitle" id="courseTitle" class="form-control" placeholder="강의명을 입력하세요">
+          </div>
+        </div>
+
+        <!-- 썸네일 업로드 -->
+        <div class="form-group thumnail-group">
+          <label for="thumbnail">썸네일 이미지</label>
+          <input type="file" name="thumbnail" id="thumbnail" class="form-control" accept="image/*">
+        </div>
+
+        <div class="form-group description-group">
+          <label for="description">강의 설명</label>
+          <textarea id="description" name="introduction" class="form-control" rows="3" placeholder="강의 설명을 입력하세요"></textarea>
+        </div>
+
+        <button type="button" class="btn-register" id="lectureBtn" onclick="registerLecture()">강의 등록</button>
+      </div>
+    </form>
+
+    <div class="lecture-list" id="lectureList">
+    </div>
+    <div class="pagination" id="pagination" style="text-align: center; margin-top: 20px;"></div>
+
+    <div class="lecture-empty" id="lectureEmpty">
+      강의실이 비어있습니다.<br> 새로운 강의를 등록해보세요!
+    </div>
+  </div>
+  <!-- 프로필 캐릭터 (챗봇 버튼) -->
+	<div class="profile-icon" onclick="toggleChatbot()">
+		<img src="/images/mascot2.png" alt="마스코트"
+			onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHZpZXdCb3g9IjAgMCA1MCA1MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjUiIGN5PSIyNSIgcj0iMjUiIGZpbGw9IiM0YTkwZTIiLz4KPHN2ZyB3aWR0aD0iMzAiIGhlaWdodD0iMzAiIHZpZXdCb3g9IjAgMCAzMCAzMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMTUiIGN5PSIxNSIgcj0iMTUiIGZpbGw9IndoaXRlIi8+CjxjaXJjbGUgY3g9IjEwIiBjeT0iMTIiIHI9IjIiIGZpbGw9IiMzMzMiLz4KPGNpcmNsZSBjeD0iMjAiIGN5PSIxMiIgcj0iMiIgZmlsbD0iIzMzMyIvPgo8cGF0aCBkPSJNMTAgMjBRMTUgMjUgMjAgMjAiIHN0cm9rZT0iIzMzMyIgc3Ryb2tlLXdpZHRoPSIyIiBmaWxsPSJub25lIi8+Cjwvc3ZnPgo8L3N2Zz4K'">
+	</div>
+
+	<!-- 챗봇 모달 -->
+	<div class="chatbot-modal" id="chatbotModal">
+		<div class="chatbot-container">
+			<div class="chatbot-header">
+				<h4>🤖 학습 도우미</h4>
+				<button class="chatbot-close" onclick="toggleChatbot()">×</button>
+			</div>
+			<div class="chatbot-messages" id="chatbotMessages">
+				<div class="message bot">안녕하세요! 학습 도우미입니다. 무엇을 도와드릴까요?</div>
+			</div>
+			<div class="chatbot-input">
+				<div class="chatbot-input-group">
+					<input type="text" id="chatbotInput" placeholder="메시지를 입력하세요..."
+						onkeypress="handleChatbotEnter(event)">
+					<button class="chatbot-send" onclick="sendChatbotMessage()">전송</button>
+				</div>
+			</div>
+		</div>
+	</div>
+  <!-- 반드시 JS는 이 아래 -->
+  <script th:src="@{/js/instroductor_course.js}"></script>
+  
+  
+</div>

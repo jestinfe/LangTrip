@@ -22,8 +22,7 @@ public class CourseDTO {
 	private String difficulty;
 	private String thumbnailPath;
 	private String thumbnailName;
-	private String userId;
-
+	private Long userSeq;
 	// videoDTO
 //	private int videoSeq; // PK
 ////	private int courseSeq; // 강의 번호 (FK)

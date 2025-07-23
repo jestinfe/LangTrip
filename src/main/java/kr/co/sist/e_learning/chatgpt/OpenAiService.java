@@ -24,7 +24,7 @@ public class OpenAiService {
 	  @Value("${api_url}")
 	  private String api_url;
 
-	public String askChatGpt(String userMessage) throws Exception {
+	  public String askChatGpt(String userMessage) throws Exception {
 
 		HttpClient client = HttpClient.newHttpClient();
 

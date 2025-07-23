@@ -8,6 +8,9 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,67 +43,74 @@ public class CourseController {
 	@Autowired
 	private QuizService qs;
 	
-	@GetMapping("ui/instroductor_course")
-	public String myLecture(HttpSession session) {
-		
-		if(session.getAttribute("userId") == null) {
-			session.setAttribute("userId", "test123");
-		}
-		
-		
-		
-		return "ui/instroductor_course";
-	}
+//	@GetMapping("ui/instroductor_course")
+//	public String myLecture(HttpSession session) {
+//		
+//		if(session.getAttribute("userSeq") == null) {
+//			session.setAttribute("userSeq", "test123");
+//		}
+//		
+//		
+//		
+//		return "ui/instroductor_course";
+//	}
+	
 	
 	
 	
 	
 	
 	@GetMapping("/ui/my_lecture")
-	@ResponseBody
-	public Map<String, Object> instroductorPage(HttpSession session,
+	public ResponseEntity<?> instroductorPage(Authentication authentication,
 			@RequestParam(defaultValue = "1") int page,
-			@RequestParam(defaultValue = "5") int limit) {
-		String userId = (String) session.getAttribute("userId");
-		if(session.getAttribute(userId) == null) {
-			userId = "test123";
-			session.setAttribute("userId", userId);
+			@RequestParam(defaultValue = "4") int limit) {
+		
+		Object principal = authentication.getPrincipal();
+		Long userSeq = null;
+		if(principal instanceof Long) {
+			userSeq = (Long)principal;
 		}
 		
 		int offset = (page - 1)*limit;
 		
 		Map<String, Object> param = new HashMap<String, Object>();
-		param.put("userId", userId);
+		param.put("userSeq", userSeq);
 		param.put("offset", offset);
 		param.put("limit", limit);
 		
 		List<CourseDTO> courseList = cs.selectCourseByPage(param);
-		int totalCount = cs.selectCourseCount(userId);
+		int totalCount = cs.selectCourseCount(userSeq);
 		
 		Map<String, Object> result = new HashMap<String, Object>();
 		result.put("courseList", courseList);
 	    result.put("totalCount", totalCount);
 	    result.put("page", page);
 	    result.put("limit", limit);
+	    result.put("msg", "pagination");
 		
-		return result;
+		return ResponseEntity.ok(result);
 	}
 
-	@PostMapping("/ui/instroductor_course")
-	@ResponseBody
-	public Map<String, Object> instroductorPage(@RequestParam("thumbnail") MultipartFile mf,
+	
+	@PostMapping("/ui/register_course")
+	public ResponseEntity<?> registerCourse(@RequestParam("thumbnail") MultipartFile mf,
 			@ModelAttribute CourseDTO cDTO,
-			HttpSession session)throws Exception{
-		
-		System.out.println(mf + " / " + cDTO);
+			Authentication authentication)throws Exception{
+		System.out.println("아 되냐? 여기까진?");
+		Object principal = authentication.getPrincipal();
+		Long userSeq = null;
+		if(principal instanceof Long) {
+			userSeq = (Long) principal;
+		}
+		System.out.println("사용자 seq : "  + userSeq);
 		
 		String thumbNail="";
 		
 		if(mf.getContentType().startsWith("image") && !mf.isEmpty()) {
 			int maxSize=1024*1024*5;
-			if(mf.getSize()>maxSize) {
-				throw new Exception("업로드한 파일의 크기는 최대 5MByte까지 입니다.");
-			}//end if
+//			if(mf.getSize()>maxSize) {
+//				throw new Exception("업로드한 파일의 크기는 최대 5MByte까지 입니다.");
+//			}//end if
 			String originalFileName = mf.getOriginalFilename();
 			
 			File dir = new File(saveDir2);
@@ -128,49 +138,50 @@ public class CourseController {
 		
 		
 		}
-		String userId = (String)session.getAttribute("userId");
-		cDTO.setUserId(userId);
+//		String userSeq = (String)session.getAttribute("userSeq");
+//		cDTO.setUserSeq(userSeq);
+		cDTO.setUserSeq(userSeq);
 		
 		cDTO.setThumbnailName(thumbNail);
 		cDTO.setThumbnailPath("/upload/img/"+thumbNail);
 		cDTO.setUploadDate(new Date());
 		System.out.println("썸네일: " + cDTO.getThumbnailName());
-		System.out.println("유저 아이디 : "+cDTO.getUserId());
+		System.out.println("유저 아이디 : "+cDTO.getUserSeq());
 		System.out.println("썸네일 패스 : " + cDTO.getThumbnailPath());
 		
 		System.out.println("카테고리:" + cDTO.getCategory());
 		System.out.println("난이도:" + cDTO.getDifficulty());
 		System.out.println("제목: " + cDTO.getCourseTitle());
 		System.out.println("설명: " + cDTO.getIntroduction());
+		cDTO.setFlag("T");
+		int result = cs.addCourse(cDTO);
+		if (result == 0) {
+		    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+		                         .body(Map.of("msg", "DB 삽입 실패"));
+		}
 		
-		Map<String, Object> result = new HashMap<String, Object>();
-		cs.addCourse(cDTO);
-		result.put("msg", "성공");
-		result.put("courseData", cDTO);
-		return result;
+		return ResponseEntity.ok(Map.of("msg", "영상 등록 완료", "courseData", cDTO));
 	}
 	
+	
 	@GetMapping("/upload/upload_course")
-	public String showCourseForm(@RequestParam("seq") String courseSeq, Model model, HttpSession session) {
+	public String showCourseForm(@RequestParam("seq") String courseSeq, Model model) {
+		System.out.println("📌 강의 이동 요청 수신: " + courseSeq);
+		
 		CourseDTO cDTO = cs.selectCourseData(courseSeq);
 		List<VideoDTO> videoList = vs.searchVideoByCourseSeq(courseSeq);
 		QuizListDTO qlDTO = new QuizListDTO();
 		
-		String userSeq = (String) session.getAttribute("user_seq");
-    	if (userSeq == null) {
-    	    userSeq = "test123";
-    	    session.setAttribute("user_seq", userSeq); 
-    	}
 		
 //		List<QuizListDTO> quizList = qs.searchQuizByCourseSeq(courseSeq);
 		List<QuizListDTO> quizList = qs.searchDistinctQuizLists(courseSeq);
 		
 		
-			System.out.println(cDTO.getUserId()+"님의 "+cDTO.getUserId());
-			System.out.println(cDTO.getUserId()+"님의 "+cDTO.getCourseTitle());
-			System.out.println(cDTO.getUserId()+"님의 "+cDTO.getDifficulty());
-			System.out.println(cDTO.getUserId()+"님의 "+cDTO.getUploadDate());
-			System.out.println(cDTO.getUserId()+"님의 "+cDTO.getCourseSeq());
+			System.out.println(cDTO.getUserSeq()+"님의 "+cDTO.getUserSeq());
+			System.out.println(cDTO.getUserSeq()+"님의 "+cDTO.getCourseTitle());
+			System.out.println(cDTO.getUserSeq()+"님의 "+cDTO.getDifficulty());
+			System.out.println(cDTO.getUserSeq()+"님의 "+cDTO.getUploadDate());
+			System.out.println(cDTO.getUserSeq()+"님의 "+cDTO.getCourseSeq());
 			System.out.println("-------------------------------------------");
 		
 			if(videoList.isEmpty()) {
@@ -178,9 +189,9 @@ public class CourseController {
 			}else {
 			for(VideoDTO vDTO : videoList) {
 				
-				System.out.println(cDTO.getUserId()+"님의 "+vDTO.getType());
-				System.out.println(cDTO.getUserId()+"님의 "+vDTO.getFileName());
-				System.out.println(cDTO.getUserId()+"님의 "+vDTO.getCourseSeq());
+				System.out.println(cDTO.getUserSeq()+"님의 "+vDTO.getType());
+				System.out.println(cDTO.getUserSeq()+"님의 "+vDTO.getFileName());
+				System.out.println(cDTO.getUserSeq()+"님의 "+vDTO.getCourseSeq());
 				}
 			}
 		model.addAttribute("courseData", cDTO);
