@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.sist.e_learning.adBanner.AdBannerMapper">
+
+  <!-- resultMap 정의: viewCount 제거, clickCount만 남김 -->
+  <resultMap id="BannerResult" type="kr.co.sist.e_learning.adBanner.AdBannerEntity">
+    <id     property="bannerId"   column="banner_id"/>
+    <result property="title"      column="title"/>
+    <result property="imageUrl"   column="image_url"/>
+    <result property="linkUrl"    column="link_url"/>
+    <result property="clickCount" column="click_count"/>
+    <result property="createdAt"  column="created_at"/>
+    <result property="updatedAt"  column="updated_at"/>
+  </resultMap>
+
+  <!-- 1) 상위 5개 배너 조회 -->
+  <select id="findTop5" resultMap="BannerResult">
+    SELECT banner_id,
+           title,
+           image_url,
+           link_url,
+           click_count,
+           created_at,
+           updated_at
+      FROM ad_banner
+     ORDER BY created_at DESC
+    FETCH FIRST 5 ROWS ONLY
+  </select>
+
+  <!-- 2) 단건 조회 -->
+  <select id="findById" parameterType="long" resultMap="BannerResult">
+    SELECT banner_id,
+           title,
+           image_url,
+           link_url,
+           click_count,
+           created_at,
+           updated_at
+      FROM ad_banner
+     WHERE banner_id = #{bannerId}
+  </select>
+
+  <!-- 3) 클릭 수 증가 -->
+  <update id="incrementClick" parameterType="long">
+    UPDATE ad_banner
+       SET click_count = click_count + 1,
+           updated_at  = SYSTIMESTAMP
+     WHERE banner_id = #{bannerId}
+  </update>
+
+</mapper>

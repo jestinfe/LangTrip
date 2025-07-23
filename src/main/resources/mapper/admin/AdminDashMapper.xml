@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="kr.co.sist.e_learning.admin.dash.AdminDashDAO">
+
+<select id="getHourlyAccessStats" resultMap="hourlyAccessResultMap">
+    SELECT TO_CHAR(log_time, 'HH24') AS hour, COUNT(*) AS accessCount
+    FROM ADMIN_LOG
+    GROUP BY TO_CHAR(log_time, 'HH24')
+</select>
+	
+  <!-- 일별 가입 통계 -->
+  <select id="getDailySignupStats" resultType="kr.co.sist.e_learning.admin.dash.AdminDashDTO">
+    SELECT TO_CHAR(created_at, 'MM-DD') AS regDate,
+           COUNT(*) AS dailyCount  <!-- count -> dailyCount로 변경 -->
+    FROM users
+    GROUP BY TO_CHAR(created_at, 'MM-DD')
+    ORDER BY regDate
+  </select>
+
+
+  <!-- 유입 경로 통계 -->
+  <select id="getSignupPathStats" resultType="kr.co.sist.e_learning.admin.dash.AdminDashDTO">
+    SELECT signup_path AS signupPath,
+           COUNT(*) AS dailyCount  <!-- count -> dailyCount로 변경 -->
+    FROM users
+    WHERE signup_path IS NOT NULL
+    GROUP BY signup_path
+  </select>
+
+  <!-- 탈퇴 사유 통계 -->
+  <select id="getUnsignReasonStats" resultType="kr.co.sist.e_learning.admin.dash.AdminDashDTO">
+    SELECT unsign_path AS unsignPath,
+           COUNT(*) AS unsignCount
+    FROM users
+    WHERE unsign_path IS NOT NULL
+    GROUP BY unsign_path
+  </select>
+
+  <!-- 카테고리별 강의 등록 수 -->
+  <select id="getCourseCategoryStats" resultType="kr.co.sist.e_learning.admin.dash.AdminDashDTO">
+    SELECT category AS category, COUNT(*) AS courseCount
+    FROM course
+    WHERE category IN ('영어', '일본어', '중국어') 
+    GROUP BY category
+    ORDER BY courseCount DESC
+  </select>
+
+
+  <!-- 난이도별 강의 등록 수 -->
+	<select id="getCourseDifficultyStats" resultType="kr.co.sist.e_learning.admin.dash.AdminDashDTO">
+	    SELECT difficulty AS difficulty, COUNT(*) AS difficultyCount
+	    FROM course
+	    GROUP BY difficulty
+	    ORDER BY difficultyCount DESC
+	</select>
+
+  <!-- 광고 클릭 통계 -->
+  <select id="getAdClickStats" resultType="kr.co.sist.e_learning.admin.dash.AdminDashDTO">
+    SELECT banner_id AS bannerId,
+           title AS title,
+           click_count AS clickCount
+    FROM ad_banner
+    ORDER BY created_at DESC
+    FETCH FIRST 5 ROWS ONLY
+  </select>
+
+</mapper>

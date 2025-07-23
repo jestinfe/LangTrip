@@ -18,7 +18,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
-import kr.co.sist.e_learning.mypage.UserAccountDTO;
+import kr.co.sist.e_learning.adBanner.AdBannerEntity;
+import kr.co.sist.e_learning.adBanner.AdBannerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,43 +31,75 @@ public class MyPageController {
 
     private static final Logger logger = LoggerFactory.getLogger(MyPageController.class);
 
-    @Autowired
-    private MyPageService mpSV;
+    // ─── 서비스 주입 ─────────────────────────
+    private final AdBannerService bannerService;
+    private final MyPageService mpSV;
+    private final FundingService fdSV;
 
     @Autowired
-    private FundingService fdSV;
+    public MyPageController(AdBannerService bannerService,
+                            MyPageService mpSV,
+                            FundingService fdSV) {
+        this.bannerService = bannerService;
+        this.mpSV = mpSV;
+        this.fdSV = fdSV;
+    }
 
     @Value("${file.upload-dir.root}")
     private String uploadDirRoot;
 
     @Value("${upload.path.profile}")
     private String uploadPathWeb;
-    
-    
+
     private long getOrInitUserSeq(Authentication auth) {
         Object raw = auth.getPrincipal();
-        Long userSeq = null;
-        if (raw instanceof Long) {
-            userSeq = (Long) raw;
+        if (raw instanceof Long userSeq) {
+            return userSeq;
         }
-        return userSeq;
+        return 0L;
     }
 
+    /**
+     * 마이페이지 메인 진입
+     * - tab, 광고 배너, fragment 데이터 초기화
+     */
     @GetMapping
-    public String mypageMain(@RequestParam(value = "tab", required = false, defaultValue = "dashboard") String tab,
-                             Authentication auth, Model model) {
+    public String mypage(@RequestParam(value = "tab", defaultValue = "dashboard") String tab,
+                         Authentication auth,
+                         Model model) {
         long userSeq = getOrInitUserSeq(auth);
 
+        // 기존 tab 속성
+        model.addAttribute("tab", tab);
+
+        // ▶ 광고 배너 목록 추가
+        List<AdBannerEntity> banners = bannerService.getTop5Banners();
+        model.addAttribute("bannerList", banners);
+
+        // fragment별 데이터
         switch (tab) {
             case "my_info":
                 model.addAttribute("myData", mpSV.getUserInfo(userSeq));
                 break;
             case "lecture_history":
                 model.addAttribute("lectureList", mpSV.getLectureHistory(userSeq));
+                model.addAttribute("myLectureList", mpSV.selectMyLectures(userSeq));
                 break;
             case "subscriptions":
-                List<SubscriptionDTO> subs = mpSV.getSubscriptions(userSeq);
-                model.addAttribute("subscriptionList", subs);
+                model.addAttribute("subscriptionList", mpSV.getSubscriptions(userSeq));
+                break;
+            case "wallet":
+                model.addAttribute("accountInfo", fdSV.getAccountInfo(userSeq));
+                break;
+            case "payments":
+                model.addAttribute("paymentList", mpSV.getPaymentHistory(userSeq));
+                break;
+            case "refund_history":
+                model.addAttribute("refundList", mpSV.getRefundHistory(userSeq));
+                break;
+            case "donation":
+                model.addAttribute("fundingList", fdSV.getUserFundings(userSeq));
+                model.addAttribute("donationType", "given");
                 break;
             case "dashboard":
             default:
@@ -74,23 +107,13 @@ public class MyPageController {
                 break;
         }
 
-        model.addAttribute("currentTab", tab);
+        // 메인 뷰
         return "mypage/mypage_main";
     }
 
-    
-    @GetMapping("/instroductor_course")
-    public String instructorCoursePage() {
-        return "mypage/instroductor_course"; // fragment화된 HTML 파일 경로
-    }
-    
-    @GetMapping("/user_course")
-    public String userCoursePage() {
-    	
-    	return "mypage/user_course";
-    }
-    
-    
+    /**
+     * 대시보드 fragment
+     */
     @GetMapping("/dashboard")
     public String dashboard(Authentication auth, Model model) {
         long userSeq = getOrInitUserSeq(auth);
@@ -98,6 +121,9 @@ public class MyPageController {
         return "mypage/dashboard";
     }
 
+    /**
+     * 강의 이력 fragment
+     */
     @GetMapping("/lecture_history")
     public String lectureHistory(Authentication auth, Model model) {
         long userSeq = getOrInitUserSeq(auth);
@@ -106,12 +132,17 @@ public class MyPageController {
         return "mypage/lecture_history";
     }
 
-    @PostMapping("/unsubscribe")
-    public boolean cancelSubscription(HttpSession session, @RequestParam Long instructorId) {
-        Long userSeq = (Long) session.getAttribute("user_seq");
-        return mpSV.cancelSubscription(userSeq, instructorId);
+    /**
+     * 구독 목록 fragment
+     */
+    @GetMapping("/subscriptions")
+    public String subscriptionPage(Authentication auth, Model model) {
+        long userSeq = getOrInitUserSeq(auth);
+        model.addAttribute("subscriptionList", mpSV.getSubscriptions(userSeq));
+        return "mypage/subscriptions";
     }
 
+    /** 내 정보 fragment **/
     @GetMapping("/my_info")
     public String myInfo(Authentication auth, Model model) {
         long userSeq = getOrInitUserSeq(auth);
@@ -119,41 +150,43 @@ public class MyPageController {
         return "mypage/my_info";
     }
 
-
+    /** 내 지갑 fragment **/
+    @GetMapping("/wallet")
+    public String wallet(Authentication auth, Model model) {
+        long userSeq = getOrInitUserSeq(auth);
+        model.addAttribute("accountInfo", fdSV.getAccountInfo(userSeq));
+        return "mypage/wallet";
+    }
+    
+    /**
+     * 프로필 업로드
+     */
     @PostMapping("/upload_profile")
     @ResponseBody
-    public Map<String, Object> uploadProfile(@RequestParam("file") MultipartFile file, Authentication auth) {
+    public Map<String, Object> uploadProfile(@RequestParam("file") MultipartFile file,
+                                             Authentication auth) {
         Map<String, Object> result = new HashMap<>();
-
         Object raw = auth.getPrincipal();
         if (!(raw instanceof Long userSeq) || file.isEmpty()) {
             result.put("success", false);
             result.put("message", "사용자 정보 또는 파일이 없습니다.");
             return result;
         }
-
         try {
             String originalName = file.getOriginalFilename();
-            String ext = originalName.substring(originalName.lastIndexOf(".") + 1).toLowerCase();
+            String ext = originalName.substring(originalName.lastIndexOf('.') + 1).toLowerCase();
             if (!List.of("png", "jpg", "jpeg", "gif").contains(ext)) {
                 result.put("success", false);
                 result.put("message", "이미지 파일만 업로드 가능합니다.");
                 return result;
             }
-
             String filename = "profile_" + userSeq + "." + ext;
             File uploadFolder = new File(uploadDirRoot + "/userprofile");
-            if (!uploadFolder.exists()) {
-                uploadFolder.mkdirs();
-            }
-
+            if (!uploadFolder.exists()) uploadFolder.mkdirs();
             File dest = new File(uploadFolder, filename);
             file.transferTo(dest);
-
-            // DB에는 웹 접근용 경로 저장
             String dbPath = uploadPathWeb + "/" + filename;
             mpSV.updateUserProfile(userSeq, dbPath);
-
             result.put("success", true);
             result.put("newPath", dbPath);
         } catch (Exception e) {
@@ -161,10 +194,12 @@ public class MyPageController {
             result.put("success", false);
             result.put("message", "업로드 중 오류 발생");
         }
-
         return result;
     }
-    
+
+    /**
+     * 프로필 삭제
+     */
     @PostMapping("/delete_profile")
     @ResponseBody
     public Map<String, Object> deleteProfile(Authentication auth) {
@@ -175,16 +210,12 @@ public class MyPageController {
             result.put("message", "사용자 정보 없음");
             return result;
         }
-
         try {
             String profilePath = mpSV.selectProfilePath(userSeq);
             if (profilePath != null && !profilePath.isBlank()) {
                 File file = new File(uploadDirRoot + "/userprofile", profilePath.replace("/userprofile/", ""));
-                if (file.exists()) {
-                    file.delete();
-                }
+                if (file.exists()) file.delete();
             }
-
             mpSV.updateUserProfile(userSeq, null);
             result.put("success", true);
         } catch (Exception e) {
@@ -192,14 +223,18 @@ public class MyPageController {
             result.put("success", false);
             result.put("message", "삭제 중 오류 발생");
         }
-
         return result;
     }
 
+    @GetMapping("/instroductor_course")
+    public String instructorCoursePage() {
+        return "mypage/instroductor_course";
+    }
 
-
-
-    
+    @GetMapping("/user_course")
+    public String userCoursePage() {
+        return "mypage/user_course";
+    }
 
     @GetMapping("/reset_password")
     public String resetPassword() {
@@ -230,18 +265,16 @@ public class MyPageController {
                                      Model model) {
         long userSeq = getOrInitUserSeq(auth);
         logger.info("Attempting to link account for userSeq: {}", userSeq);
-        UserAccountDTO userAccountDTO = new UserAccountDTO();
-        userAccountDTO.setUserSeq(userSeq);
-        userAccountDTO.setBankCode(bank);
-        userAccountDTO.setAccountNum(account);
-        userAccountDTO.setHolderName(owner);
+        UserAccountDTO dto = new UserAccountDTO();
+        dto.setUserSeq(userSeq);
+        dto.setBankCode(bank);
+        dto.setAccountNum(account);
+        dto.setHolderName(owner);
 
-        if (mpSV.linkUserAccount(userAccountDTO)) {
+        if (mpSV.linkUserAccount(dto)) {
             model.addAttribute("message", "계좌가 성공적으로 연동되었습니다.");
-            logger.info("Account linked successfully for userSeq: {}", userSeq);
         } else {
             model.addAttribute("message", "계좌 연동에 실패했습니다.");
-            logger.warn("Account linking failed for userSeq: {}", userSeq);
         }
         return "redirect:/mypage/link_account";
     }
@@ -257,33 +290,14 @@ public class MyPageController {
         return "redirect:/mypage/link_account";
     }
 
-    private String maskAccountNumber(String accountNumber) {
-        if (accountNumber == null || accountNumber.length() < 4) {
-            return accountNumber;
-        }
-        return accountNumber.substring(0, accountNumber.length() - 4).replaceAll(".", "*") + accountNumber.substring(accountNumber.length() - 4);
+    private String maskAccountNumber(String acct) {
+        if (acct == null || acct.length() < 4) return acct;
+        return acct.substring(0, acct.length() - 4).replaceAll(".", "*") + acct.substring(acct.length() - 4);
     }
 
     @GetMapping("/leave")
     public String leave() {
         return "mypage/leave";
-    }
-
-    @GetMapping("/subscriptions")
-    public String subscriptionPage(Authentication auth, Model model) {
-        long userSeq = getOrInitUserSeq(auth);
-        List<SubscriptionDTO> subscriptions = mpSV.getSubscriptions(userSeq);
-        model.addAttribute("subscriptionList", subscriptions);
-        return "mypage/subscriptions";
-    }
-
-
-    @GetMapping("/wallet")
-    public String accountPage(Model model, Authentication auth) {
-        long userSeq = getOrInitUserSeq(auth);
-        FundingDTO accountInfo = fdSV.getAccountInfo(userSeq);
-        model.addAttribute("accountInfo", accountInfo);
-        return "mypage/wallet";
     }
 
     @GetMapping("/payments")
@@ -294,40 +308,33 @@ public class MyPageController {
         return "mypage/payments";
     }
 
+    
     @PostMapping("/refund/request")
     @ResponseBody
-    public Map<String, Object> requestRefund(@RequestBody RefundRequestDTO refundRequestDTO, Authentication auth) {
+    public Map<String, Object> requestRefund(@RequestBody RefundRequestDTO refundRequestDTO,
+                                             Authentication auth) {
         Map<String, Object> response = new HashMap<>();
         long userSeq = getOrInitUserSeq(auth);
-
         if (userSeq == 0) {
             response.put("success", false);
-            response.put("message", "사용자 정보를 찾을 수 없습니다.");
+            response.put("message", "사용자 정보 없음");
             return response;
         }
-
-        // 계좌 등록 여부 확인
         UserAccountDTO userAccount = mpSV.getUserAccount(userSeq);
         if (userAccount == null) {
             response.put("success", false);
-            response.put("message", "환불 신청을 위해 계좌 등록이 필요합니다.");
+            response.put("message", "계좌 등록 필요");
             response.put("redirect", "/mypage/link_account");
             return response;
         }
-
         try {
             boolean result = mpSV.requestRefund(userSeq, refundRequestDTO);
-            if (result) {
-                response.put("success", true);
-                response.put("message", "환불 신청이 성공적으로 접수되었습니다.");
-            } else {
-                response.put("success", false);
-                response.put("message", "환불 신청에 실패했습니다. 결제 정보 또는 후원 이력을 확인해주세요.");
-            }
+            response.put("success", result);
+            response.put("message", result ? "환불 신청 접수" : "환불 신청 실패");
         } catch (Exception e) {
-            logger.error("Error requesting refund for userSeq: {}", userSeq, e);
+            logger.error("Refund error for userSeq {}", userSeq, e);
             response.put("success", false);
-            response.put("message", "서버 오류가 발생했습니다.");
+            response.put("message", "서버 오류");
         }
         return response;
     }
@@ -335,23 +342,19 @@ public class MyPageController {
     @GetMapping("/refund/refundable-payments")
     @ResponseBody
     public List<PaymentsDTO> getRefundablePayments(Authentication auth) {
-        long userSeq = getOrInitUserSeq(auth);
-        return mpSV.getRefundablePayments(userSeq);
+        return mpSV.getRefundablePayments(getOrInitUserSeq(auth));
     }
 
     @GetMapping("/refund/history")
     public String refundHistoryPage(Model model, Authentication auth) {
-        long userSeq = getOrInitUserSeq(auth);
-        List<RefundDTO> refundList = mpSV.getRefundHistory(userSeq);
-        model.addAttribute("refundList", refundList);
+        model.addAttribute("refundList", mpSV.getRefundHistory(getOrInitUserSeq(auth)));
         return "mypage/refund_history";
     }
 
     @GetMapping("/donation")
     public String fundingPage(Model model, Authentication auth) {
         long userSeq = getOrInitUserSeq(auth);
-        List<FundingDTO> fundingList = fdSV.getUserFundings(userSeq);
-        model.addAttribute("fundingList", fundingList);
+        model.addAttribute("fundingList", fdSV.getUserFundings(userSeq));
         model.addAttribute("donationType", "given");
         return "mypage/donation";
     }
