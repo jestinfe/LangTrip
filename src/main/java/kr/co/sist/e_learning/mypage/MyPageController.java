@@ -71,6 +71,19 @@ public class MyPageController {
         return "mypage/mypage_main";
     }
 
+    
+    @GetMapping("/instroductor_course")
+    public String instructorCoursePage() {
+        return "mypage/instroductor_course"; // fragment화된 HTML 파일 경로
+    }
+    
+    @GetMapping("/user_course")
+    public String userCoursePage() {
+    	
+    	return "mypage/user_course";
+    }
+    
+    
     @GetMapping("/dashboard")
     public String dashboard(Authentication auth, Model model) {
         long userSeq = getOrInitUserSeq(auth);

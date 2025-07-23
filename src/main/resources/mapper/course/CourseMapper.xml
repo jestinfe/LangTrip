@@ -3,7 +3,7 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
   
-  <mapper namespace="kr.co.sist.course.CourseMapper">
+  <mapper namespace="kr.co.sist.e_learning.course.CourseMapper">
   <insert id="insertCourse" parameterType="CourseDTO">
   <selectKey keyProperty="courseSeq" resultType="String" order="BEFORE">
       SELECT 'course_seq' || LPAD(course_seq.NEXTVAL, 3, '0') FROM dual
@@ -17,7 +17,8 @@
   category,
   thumbnail_path,
   thumbnail_name,
-  user_id
+  user_seq,
+  flag
   ) values(
   	#{courseSeq},
   	#{courseTitle},
@@ -27,7 +28,8 @@
   	#{category},
   	#{thumbnailPath},
   	#{thumbnailName},
-  	#{userId}
+  	#{userSeq},
+  	#{flag}		
   )
   </insert>
   
@@ -55,25 +57,25 @@
       #{videoOrder}
     )
   </insert>
- <select id="searchCourseById" resultType="CourseDTO" parameterType="String">
- select title as courseTitle, introduction, upload_date, user_id, thumbnail_path, thumbnail_name, category, course_seq, difficulty, is_public 
+ <select id="searchCourseById" resultType="CourseDTO" parameterType="Long">
+ select title as courseTitle, introduction, upload_date, user_seq, thumbnail_path, thumbnail_name, category, course_seq, difficulty, is_public 
   from course 
-  where user_id = #{userId}
+  where user_seq = #{userSeq}
  </select>
  <select id="searchCourseByCourseId" resultType="CourseDTO" parameterType="String">
  select course_seq, title as courseTitle, introduction,
-upload_date, user_id, thumbnail_path, thumbnail_name,
+upload_date, user_seq, thumbnail_path, thumbnail_name,
 category, difficulty, is_public from course where course_seq = #{courseSeq}
  </select>
  <select id="searchCourseByPage" parameterType="map" resultType="CourseDTO">
- SELECT title as courseTitle, introduction, upload_date, user_id, thumbnail_path, thumbnail_name, category, course_seq, difficulty, is_public
+ SELECT title as courseTitle, introduction, upload_date, user_seq, thumbnail_path, thumbnail_name, category, course_seq, difficulty, is_public
   FROM course
-  WHERE user_id = #{userId}
+  WHERE user_seq = #{userSeq}
   ORDER BY upload_date asc
   OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
  </select>
-  <select id="searchCourseCount" parameterType="String" resultType="int">
-  select count(*) from course where user_id = #{userId} 
+  <select id="searchCourseCount" parameterType="Long" resultType="int">
+  select count(*) from course where user_seq = #{userSeq} 
   </select>
   <update id="updateCourseByCourseSeq" parameterType="CourseDTO">
   update course 

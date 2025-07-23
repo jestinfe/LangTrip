@@ -1,0 +1,55 @@
+<!-- templates/mypage/user_courses.html -->
+<div th:fragment="content">
+
+	<!-- 헤더 섹션 -->
+	<div class="header-section">
+		<h1 class="main-title">내 강의실 / 수강한 강의</h1>
+		<p class="subtitle">수강 중인 강의들을 확인하고 학습을 이어가세요</p>
+	</div>
+
+	<!-- 필터 -->
+	<div class="filter-section">
+		<div class="filter-row">
+			<div class="filter-group">
+				<label for="categoryFilter">카테고리</label>
+				<select id="categoryFilter" class="filter-select" onchange="filtercourses()">
+					<option value="">전체</option>
+					<option value="영어">영어</option>
+					<option value="일본어">일본어</option>
+					<option value="중국어">중국어</option>
+				</select>
+			</div>
+			<div class="filter-group">
+				<label for="difficultyFilter">난이도</label>
+				<select id="difficultyFilter" class="filter-select" onchange="filtercourses()">
+					<option value="">전체</option>
+					<option value="초급">초급</option>
+					<option value="중급">중급</option>
+					<option value="고급">고급</option>
+				</select>
+			</div>
+			<div class="filter-group search-group">
+				<label for="searchInput">강의명 검색</label>
+				<input type="text" id="searchInput" class="search-input" placeholder="강의명을 입력하세요" oninput="filtercourses()">
+			</div>
+		</div>
+	</div>
+
+	<!-- 강의 목록 -->
+	<div class="course-grid" id="courseGrid"></div>
+
+	<!-- 빈 상태 -->
+	<div class="empty-state" id="emptyState" style="display: none;">
+		<div class="empty-icon">📚</div>
+		<div class="empty-title">수강 중인 강의가 없습니다</div>
+		<div class="empty-description">새로운 강의를 찾아서 학습을 시작해보세요!</div>
+	</div>
+
+	<!-- 페이지네이션 -->
+	<div class="pagination-container">
+		<div class="pagination" id="pagination"></div>
+	</div>
+
+	<!-- JS는 외부 파일로 분리 권장 -->
+	<script th:src="@{/js/user_course.js}"></script>
+</div>

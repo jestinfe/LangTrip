@@ -17,15 +17,17 @@ public class CourseServiceImpl implements CourseService {
 	
 	
 	@Override
-	public void addCourse(CourseDTO cDTO) {
-		cm.insertCourse(cDTO);
+	public int addCourse(CourseDTO cDTO) {
+		int result = cm.insertCourse(cDTO);
+		
+		return result;
 	}
 
 
 	@Override
-	public List<CourseDTO> selectCourse(String userId) {
+	public List<CourseDTO> selectCourse(Long userSeq) {
 		
-		return cm.searchCourseById(userId);
+		return cm.searchCourseById(userSeq);
 	}
 
 
@@ -44,8 +46,8 @@ public class CourseServiceImpl implements CourseService {
 
 
 	@Override
-	public int selectCourseCount(String userId) {
-		return cm.searchCourseCount(userId);
+	public int selectCourseCount(Long userSeq) {
+		return cm.searchCourseCount(userSeq);
 	}
 
 

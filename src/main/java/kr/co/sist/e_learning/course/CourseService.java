@@ -7,11 +7,11 @@ import jakarta.servlet.http.HttpSession;
 
 public interface CourseService {
 	
-	void addCourse(CourseDTO cDTO);
-	public List<CourseDTO> selectCourse(String userId);
+	public int addCourse(CourseDTO cDTO);
+	public List<CourseDTO> selectCourse(Long userSeq);
 	public CourseDTO selectCourseData(String courseSeq);
 	public List<CourseDTO> selectCourseByPage(Map<String, Object> param);
-	public int selectCourseCount(String userId);
+	public int selectCourseCount(Long userSeq);
 	public int modifyCourse(CourseDTO cDTO);
 	public int removeCourse(String courseSeq);
 }
