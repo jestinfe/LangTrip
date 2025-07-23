@@ -1,0 +1,54 @@
+<div class="table-section-wrapper" th:fragment="paymentList">
+    <div class="table-header">
+        <h3>결제 내역</h3>
+        <div class="table-stats">총 <span th:text="${totalCount ?: 0}">0</span>건</div>
+    </div>
+    <div class="table-container">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>결제번호</th>
+                    <th>사용자 ID</th>
+                    <th>강의명</th>
+                    <th>결제 금액</th>
+                    <th>결제 수단</th>
+                    <th>결제 상태</th>
+                    <th>결제일</th>
+                    <th>액션</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="payment : ${paymentList}">
+                    <td th:text="${payment.paymentId}"></td>
+                    <td th:text="${payment.userId}"></td>
+                    <td th:text="${payment.lectureTitle}"></td>
+                    <td th:text="${#numbers.formatInteger(payment.amount, 3, 'COMMA')}"></td>
+                    <td th:text="${payment.method}"></td>
+                    <td th:text="${payment.status}"></td>
+                    <td th:text="${#temporals.format(payment.paymentDate, 'yyyy-MM-dd HH:mm:ss')}"></td>
+                    <td>
+                        <button class="btn btn-info btn-sm"><i class="fas fa-eye"></i> 상세</button>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(paymentList)}">
+                    <td colspan="8" style="text-align:center; padding:2rem; color:#666;">
+                        결제 내역이 없습니다.
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination">
+        <a th:if="${page > 1}"
+           th:href="@{/admin/payments(viewType='payment', paymentType=${paymentType}, searchKeyword=${searchKeyword}, startDate=${startDate}, endDate=${endDate}, page=${page - 1}, pageSize=${pageSize})}">이전</a>
+        <th:block th:each="pageNum : ${#numbers.sequence(startPage, endPage)}">
+            <a th:href="@{/admin/payments(viewType='payment', paymentType=${paymentType}, searchKeyword=${searchKeyword}, startDate=${startDate}, endDate=${endDate}, page=${pageNum}, pageSize=${pageSize})}"
+               th:text="${pageNum}"
+               th:classappend="${pageNum == page} ? 'active' : ''">1</a>
+        </th:block>
+        <a th:if="${page < totalPages}"
+           th:href="@{/admin/payments(viewType='payment', paymentType=${paymentType}, searchKeyword=${searchKeyword}, startDate=${startDate}, endDate=${endDate}, page=${page + 1}, pageSize=${pageSize})}">다음</a>
+    </div>
+</div>

@@ -23,7 +23,7 @@
           <td th:text="${donation.senderId}"></td>
           <td th:text="${donation.recipientId}"></td>
           <td th:text="${donation.lectureTitle}"></td>
-          <td th:text="|₩ ${#numbers.formatInteger(donation.amount, 3, 'COMMA')}|"></td>
+          <td th:text="| ${#numbers.formatInteger(donation.amount, 3, 'COMMA')} M|"></td>
           <td th:classappend="${donation.messageDeleted} ? 'deleted-message' : ''"
               th:text="${donation.messageDeleted} ? '관리자에 의해 삭제된 메시지입니다.' : ${donation.message}"
               style="text-align: left; white-space: pre-wrap;"></td>

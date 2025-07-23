@@ -1,31 +1,43 @@
 <div th:fragment="content">
-  <div class="wallet-section">
-    <h2 class="wallet-title">💳 내 지갑</h2>
+    <div class="wallet-section">
 
-    <div class="wallet-card">
-      <table class="wallet-table">
-        <tr>
-          <th>총 마일</th>
-          <td th:text="${accountInfo.totalMiles} + ' M'">0 M</td>
-        </tr>
-        <tr>
-          <th>후원 가능 마일</th>
-          <td th:text="${accountInfo.donationAvailable} + ' M'">0 M</td>
-        </tr>
-        <tr>
-          <th>후원한 마일</th>
-          <td th:text="${accountInfo.donatedMiles} + ' M'">0 M</td>
-        </tr>
-        <tr>
-          <th>후원받은 마일</th>
-          <td th:text="${accountInfo.receivedMiles} + ' M'">0 M</td>
-        </tr>
-      </table>
-    </div>
+        <!-- header는 항상 출력 -->
+        <div class="wallet-header">
+            <h2 class="wallet-title">💳 내 지갑</h2>
+            <button class="settlement-button" th:if="${accountInfo != null}" onclick="location.href='/wallet/settlement'">📊 정산</button>
+        </div>
 
-    <div class="wallet-actions">
-      <button class="wallet-button" onclick="location.href='/wallet/link-account'">🏦 계좌 연동하기</button>
-      <button class="wallet-button" onclick="location.href='/wallet/cards'">💳 카드 정보 보기</button>
+        <!-- 지갑 정보가 없는 경우 -->
+        <div class="wallet-card" th:if="${accountInfo == null}" style="display: flex; justify-content: center; align-items: center; height: 150px;">
+            <p style="color: gray; font-size: 16px;">⚠️ 지갑에 대한 정보가 없습니다.</p>
+        </div>
+
+        <!-- 지갑 정보가 있는 경우 -->
+        <div class="wallet-card" th:if="${accountInfo != null}">
+            <table class="wallet-table">
+                <tr>
+                    <th>총 마일</th>
+                    <td th:text="${accountInfo.totalMiles} + ' M'">0 M</td>
+                </tr>
+                <tr>
+                    <th>후원 가능 마일</th>
+                    <td th:text="${accountInfo.donationAvailable} + ' M'">0 M</td>
+                </tr>
+                <tr>
+                    <th>후원한 마일</th>
+                    <td th:text="${accountInfo.donatedMiles} + ' M'">0 M</td>
+                </tr>
+                <tr>
+                    <th>후원받은 마일</th>
+                    <td th:text="${accountInfo.receivedMiles} + ' M'">0 M</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- 버튼 영역 -->
+        <div class="wallet-actions" th:if="${accountInfo != null}">
+            <button class="wallet-button" onclick="location.href='/mypage/link_account'">🏦 계좌 연동하기</button>
+            <button class="wallet-button" onclick="location.href='/wallet/cards'">💳 결제 내역</button>
+        </div>
     </div>
-  </div>
 </div>

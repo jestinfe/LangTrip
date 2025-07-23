@@ -17,11 +17,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import kr.co.sist.e_learning.mypage.UserAccountDTO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import jakarta.servlet.http.HttpSession;
 
 @Controller
 @RequestMapping("/mypage")
 public class MyPageController {
+
+    private static final Logger logger = LoggerFactory.getLogger(MyPageController.class);
 
     @Autowired
     private MyPageService mpSV;
@@ -113,51 +119,51 @@ public class MyPageController {
     }
 
 
-@PostMapping("/upload_profile")
-@ResponseBody
-public Map<String, Object> uploadProfile(@RequestParam("file") MultipartFile file, Authentication auth) {
-    Map<String, Object> result = new HashMap<>();
+    @PostMapping("/upload_profile")
+    @ResponseBody
+    public Map<String, Object> uploadProfile(@RequestParam("file") MultipartFile file, Authentication auth) {
+        Map<String, Object> result = new HashMap<>();
 
-    Object raw = auth.getPrincipal();
-    if (!(raw instanceof Long userSeq) || file.isEmpty()) {
-        result.put("success", false);
-        result.put("message", "사용자 정보 또는 파일이 없습니다.");
-        return result;
-    }
-
-    try {
-        String originalName = file.getOriginalFilename();
-        String ext = originalName.substring(originalName.lastIndexOf(".") + 1).toLowerCase();
-        if (!List.of("png", "jpg", "jpeg", "gif").contains(ext)) {
+        Object raw = auth.getPrincipal();
+        if (!(raw instanceof Long userSeq) || file.isEmpty()) {
             result.put("success", false);
-            result.put("message", "이미지 파일만 업로드 가능합니다.");
+            result.put("message", "사용자 정보 또는 파일이 없습니다.");
             return result;
         }
 
-        String filename = "profile_" + userSeq + "." + ext;
-        File uploadFolder = new File(uploadDirRoot + "/userprofile");
-        if (!uploadFolder.exists()) {
-            uploadFolder.mkdirs();
+        try {
+            String originalName = file.getOriginalFilename();
+            String ext = originalName.substring(originalName.lastIndexOf(".") + 1).toLowerCase();
+            if (!List.of("png", "jpg", "jpeg", "gif").contains(ext)) {
+                result.put("success", false);
+                result.put("message", "이미지 파일만 업로드 가능합니다.");
+                return result;
+            }
+
+            String filename = "profile_" + userSeq + "." + ext;
+            File uploadFolder = new File(uploadDirRoot + "/userprofile");
+            if (!uploadFolder.exists()) {
+                uploadFolder.mkdirs();
+            }
+
+            File dest = new File(uploadFolder, filename);
+            file.transferTo(dest);
+
+            // DB에는 웹 접근용 경로 저장
+            String dbPath = uploadPathWeb + "/" + filename;
+            mpSV.updateUserProfile(userSeq, dbPath);
+
+            result.put("success", true);
+            result.put("newPath", dbPath);
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.put("success", false);
+            result.put("message", "업로드 중 오류 발생");
         }
 
-        File dest = new File(uploadFolder, filename);
-        file.transferTo(dest);
-
-        // DB에는 웹 접근용 경로 저장
-        String dbPath = uploadPathWeb + "/" + filename;
-        mpSV.updateUserProfile(userSeq, dbPath);
-
-        result.put("success", true);
-        result.put("newPath", dbPath);
-    } catch (Exception e) {
-        e.printStackTrace();
-        result.put("success", false);
-        result.put("message", "업로드 중 오류 발생");
+        return result;
     }
-
-    return result;
-}
-
+    
     @PostMapping("/delete_profile")
     @ResponseBody
     public Map<String, Object> deleteProfile(Authentication auth) {
@@ -189,14 +195,72 @@ public Map<String, Object> uploadProfile(@RequestParam("file") MultipartFile fil
         return result;
     }
 
+
+
+
+    
+
     @GetMapping("/reset_password")
     public String resetPassword() {
         return "mypage/reset_password";
     }
 
     @GetMapping("/link_account")
-    public String linkAccount() {
+    public String linkAccount(Authentication auth, Model model) {
+        long userSeq = getOrInitUserSeq(auth);
+        UserAccountDTO accountInfo = mpSV.getUserAccount(userSeq);
+        if (accountInfo != null) {
+            model.addAttribute("linked", true);
+            model.addAttribute("bank", accountInfo.getBankCode());
+            model.addAttribute("maskedAccount", maskAccountNumber(accountInfo.getAccountNum()));
+            model.addAttribute("holderName", accountInfo.getHolderName());
+            model.addAttribute("linkedAt", accountInfo.getCreatedAt());
+        } else {
+            model.addAttribute("linked", false);
+        }
         return "mypage/link_account";
+    }
+
+    @PostMapping("/link-account")
+    public String linkAccountProcess(@RequestParam("bank") String bank,
+                                     @RequestParam("account") String account,
+                                     @RequestParam("owner") String owner,
+                                     Authentication auth,
+                                     Model model) {
+        long userSeq = getOrInitUserSeq(auth);
+        logger.info("Attempting to link account for userSeq: {}", userSeq);
+        UserAccountDTO userAccountDTO = new UserAccountDTO();
+        userAccountDTO.setUserSeq(userSeq);
+        userAccountDTO.setBankCode(bank);
+        userAccountDTO.setAccountNum(account);
+        userAccountDTO.setHolderName(owner);
+
+        if (mpSV.linkUserAccount(userAccountDTO)) {
+            model.addAttribute("message", "계좌가 성공적으로 연동되었습니다.");
+            logger.info("Account linked successfully for userSeq: {}", userSeq);
+        } else {
+            model.addAttribute("message", "계좌 연동에 실패했습니다.");
+            logger.warn("Account linking failed for userSeq: {}", userSeq);
+        }
+        return "redirect:/mypage/link_account";
+    }
+
+    @PostMapping("/unlink-account")
+    public String unlinkAccountProcess(Authentication auth, Model model) {
+        long userSeq = getOrInitUserSeq(auth);
+        if (mpSV.unlinkUserAccount(userSeq)) {
+            model.addAttribute("message", "계좌 연동이 해제되었습니다.");
+        } else {
+            model.addAttribute("message", "계좌 연동 해제에 실패했습니다.");
+        }
+        return "redirect:/mypage/link_account";
+    }
+
+    private String maskAccountNumber(String accountNumber) {
+        if (accountNumber == null || accountNumber.length() < 4) {
+            return accountNumber;
+        }
+        return accountNumber.substring(0, accountNumber.length() - 4).replaceAll(".", "*") + accountNumber.substring(accountNumber.length() - 4);
     }
 
     @GetMapping("/leave")
@@ -211,6 +275,7 @@ public Map<String, Object> uploadProfile(@RequestParam("file") MultipartFile fil
         model.addAttribute("subscriptionList", subscriptions);
         return "mypage/subscriptions";
     }
+
 
     @GetMapping("/wallet")
     public String accountPage(Model model, Authentication auth) {
