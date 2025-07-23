@@ -12,5 +12,10 @@ public interface MyPageService {
     List<LectureHistoryDTO> selectMyLectures(long userSeq);
     List<SubscriptionDTO> getSubscriptions(Long userSeq);
     boolean cancelSubscription(Long userSeq, Long instructorId);
+    UserAccountDTO getUserAccount(long userSeq);
+
+    public boolean linkUserAccount(UserAccountDTO userAccountDTO);
+
+    public boolean unlinkUserAccount(long userSeq);
 }
 

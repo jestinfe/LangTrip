@@ -297,7 +297,7 @@ public class AuthServiceImpl implements AuthService {
 
         if (refreshToken == null) {
             log.warn("Refresh Token is null. Cannot reissue access token.");
-            throw new RuntimeException("Refresh Token 없음");
+            return null; // 예외 대신 null 반환
         }
 
         RefreshTokenEntity token = refreshTokenRepository.findByRefreshToken(refreshToken)

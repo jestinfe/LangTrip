@@ -17,11 +17,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import kr.co.sist.e_learning.mypage.UserAccountDTO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import jakarta.servlet.http.HttpSession;
 
 @Controller
 @RequestMapping("/mypage")
 public class MyPageController {
+
+    private static final Logger logger = LoggerFactory.getLogger(MyPageController.class);
 
     @Autowired
     private MyPageService mpSV;
@@ -182,8 +188,61 @@ public Map<String, Object> uploadProfile(@RequestParam("file") MultipartFile fil
     }
 
     @GetMapping("/link_account")
-    public String linkAccount() {
+    public String linkAccount(Authentication auth, Model model) {
+        long userSeq = getOrInitUserSeq(auth);
+        UserAccountDTO accountInfo = mpSV.getUserAccount(userSeq);
+        if (accountInfo != null) {
+            model.addAttribute("linked", true);
+            model.addAttribute("bank", accountInfo.getBankCode());
+            model.addAttribute("maskedAccount", maskAccountNumber(accountInfo.getAccountNum()));
+            model.addAttribute("holderName", accountInfo.getHolderName());
+            model.addAttribute("linkedAt", accountInfo.getCreatedAt());
+        } else {
+            model.addAttribute("linked", false);
+        }
         return "mypage/link_account";
+    }
+
+    @PostMapping("/link-account")
+    public String linkAccountProcess(@RequestParam("bank") String bank,
+                                     @RequestParam("account") String account,
+                                     @RequestParam("owner") String owner,
+                                     Authentication auth,
+                                     Model model) {
+        long userSeq = getOrInitUserSeq(auth);
+        logger.info("Attempting to link account for userSeq: {}", userSeq);
+        UserAccountDTO userAccountDTO = new UserAccountDTO();
+        userAccountDTO.setUserSeq(userSeq);
+        userAccountDTO.setBankCode(bank);
+        userAccountDTO.setAccountNum(account);
+        userAccountDTO.setHolderName(owner);
+
+        if (mpSV.linkUserAccount(userAccountDTO)) {
+            model.addAttribute("message", "계좌가 성공적으로 연동되었습니다.");
+            logger.info("Account linked successfully for userSeq: {}", userSeq);
+        } else {
+            model.addAttribute("message", "계좌 연동에 실패했습니다.");
+            logger.warn("Account linking failed for userSeq: {}", userSeq);
+        }
+        return "redirect:/mypage/link_account";
+    }
+
+    @PostMapping("/unlink-account")
+    public String unlinkAccountProcess(Authentication auth, Model model) {
+        long userSeq = getOrInitUserSeq(auth);
+        if (mpSV.unlinkUserAccount(userSeq)) {
+            model.addAttribute("message", "계좌 연동이 해제되었습니다.");
+        } else {
+            model.addAttribute("message", "계좌 연동 해제에 실패했습니다.");
+        }
+        return "redirect:/mypage/link_account";
+    }
+
+    private String maskAccountNumber(String accountNumber) {
+        if (accountNumber == null || accountNumber.length() < 4) {
+            return accountNumber;
+        }
+        return accountNumber.substring(0, accountNumber.length() - 4).replaceAll(".", "*") + accountNumber.substring(accountNumber.length() - 4);
     }
 
     @GetMapping("/leave")

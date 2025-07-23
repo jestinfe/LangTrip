@@ -5,13 +5,14 @@
     box-sizing: border-box;
 }
 
-body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    line-height: 1.6;
-    color: #1e293b;
-    background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 50%, #7dd3fc 100%);
-    min-height: 100vh;
-}
+ body { 
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; 
+            line-height: 1.6; 
+            color: #1e293b; 
+            background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 50%, #7dd3fc 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
 
 /* Header */
 .header {

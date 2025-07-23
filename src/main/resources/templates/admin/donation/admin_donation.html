@@ -146,7 +146,6 @@
     <div class="modal-content">
       <div class="modal-header">
         <h2>후원 상세 정보</h2>
-        <span class="close-button" onclick="closeModal()">&times;</span>
       </div>
       <div class="modal-body">
         <p><strong>후원번호:</strong> <span id="modalDonationId"></span></p>
@@ -389,6 +388,11 @@ document.addEventListener('DOMContentLoaded', function() {
         pageSizeSelect.value = savedPageSize;
     }
 }); // DOMContentLoaded 끝
+
+function closeModal() {
+    const modal = document.getElementById('detailModal'); // 모달 요소 가져오기
+    modal.style.display = 'none'; // 모달 숨기기
+}
 </script>
 
 </body>
