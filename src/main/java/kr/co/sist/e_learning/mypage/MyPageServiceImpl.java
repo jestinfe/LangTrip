@@ -4,59 +4,66 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import kr.co.sist.e_learning.util.EncryptionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+
+import kr.co.sist.e_learning.util.EncryptionUtil;
+
 
 @Service
 public class MyPageServiceImpl implements MyPageService {
 
+    @Autowired
+    @Qualifier("myPageDAOImpl")
+    private MyPageDAO mpDAO;
+
+    @Autowired
+    private LectureHistoryDAO lctDAO;
+    
     @Autowired
     private MyPageMapper myPageMapper;
 
     // 대시보드 요약 정보
     @Override
     public MyPageDTO getMyPageData(long userSeq) {
-        return myPageMapper.selectMyPageSummary(userSeq);
+        return mpDAO.getUserInfo(userSeq);
     }
 
     @Override
     public MyPageDTO getUserInfo(long userSeq) {
-        return myPageMapper.selectUserInfo(userSeq);
+        return mpDAO.getUserInfo(userSeq);
     }
 
     @Override
     public String selectProfilePath(long userSeq) {
-        return myPageMapper.selectProfilePath(userSeq);
+        return mpDAO.selectProfilePath(userSeq);
     }
     
     //프로필 이미지 업로드
     @Override
     public void updateUserProfile(long userSeq, String newPath) {
-    	Map<String, Object> paramMap = new HashMap<>();
-    	paramMap.put("userSeq", userSeq);
-    	paramMap.put("profile", newPath);
-    	myPageMapper.updateProfile(paramMap);
+       mpDAO.updateProfile(userSeq, newPath);
     }
     
     // 수강 내역
     @Override
     public List<LectureHistoryDTO> getLectureHistory(long userSeq) {
-        return myPageMapper.selectLectureHistory(userSeq);
+        return lctDAO.getLectureHistory(userSeq);
     }
     
     //내 강의
     @Override
     public List<LectureHistoryDTO> selectMyLectures(long userSeq) {
-        return myPageMapper.selectMyLectures(userSeq);
+        return lctDAO.selectMyLectures(userSeq);
     }
-    	
+       
     
     // 구독 목록
     @Override
     public List<SubscriptionDTO> getSubscriptions(Long userSeq) {
         System.out.println("[Service] getSubscriptions(userSeq=" + userSeq + ")");
-        List<SubscriptionDTO> list = myPageMapper.selectSubscriptions(userSeq);
+        List<SubscriptionDTO> list = mpDAO.selectSubscriptions(userSeq);
         System.out.println("[Service] selectSubscriptions → size=" + list.size() + ", list=" + list);
         return list;
     }
@@ -68,7 +75,7 @@ public class MyPageServiceImpl implements MyPageService {
         Map<String, Object> paramMap = new HashMap<>();
         paramMap.put("userSeq", userSeq);
         paramMap.put("instructorId", instructorId);
-        int deleted = myPageMapper.deleteSubscription(paramMap);
+        int deleted = mpDAO.deleteSubscription(paramMap);
         boolean result = deleted > 0;
         System.out.println("[Service] deleteSubscription → deleted=" + deleted + ", result=" + result);
         return result;

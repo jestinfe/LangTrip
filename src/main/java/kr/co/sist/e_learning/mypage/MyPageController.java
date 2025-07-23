@@ -119,51 +119,51 @@ public class MyPageController {
     }
 
 
-@PostMapping("/upload_profile")
-@ResponseBody
-public Map<String, Object> uploadProfile(@RequestParam("file") MultipartFile file, Authentication auth) {
-    Map<String, Object> result = new HashMap<>();
+    @PostMapping("/upload_profile")
+    @ResponseBody
+    public Map<String, Object> uploadProfile(@RequestParam("file") MultipartFile file, Authentication auth) {
+        Map<String, Object> result = new HashMap<>();
 
-    Object raw = auth.getPrincipal();
-    if (!(raw instanceof Long userSeq) || file.isEmpty()) {
-        result.put("success", false);
-        result.put("message", "사용자 정보 또는 파일이 없습니다.");
-        return result;
-    }
-
-    try {
-        String originalName = file.getOriginalFilename();
-        String ext = originalName.substring(originalName.lastIndexOf(".") + 1).toLowerCase();
-        if (!List.of("png", "jpg", "jpeg", "gif").contains(ext)) {
+        Object raw = auth.getPrincipal();
+        if (!(raw instanceof Long userSeq) || file.isEmpty()) {
             result.put("success", false);
-            result.put("message", "이미지 파일만 업로드 가능합니다.");
+            result.put("message", "사용자 정보 또는 파일이 없습니다.");
             return result;
         }
 
-        String filename = "profile_" + userSeq + "." + ext;
-        File uploadFolder = new File(uploadDirRoot + "/userprofile");
-        if (!uploadFolder.exists()) {
-            uploadFolder.mkdirs();
+        try {
+            String originalName = file.getOriginalFilename();
+            String ext = originalName.substring(originalName.lastIndexOf(".") + 1).toLowerCase();
+            if (!List.of("png", "jpg", "jpeg", "gif").contains(ext)) {
+                result.put("success", false);
+                result.put("message", "이미지 파일만 업로드 가능합니다.");
+                return result;
+            }
+
+            String filename = "profile_" + userSeq + "." + ext;
+            File uploadFolder = new File(uploadDirRoot + "/userprofile");
+            if (!uploadFolder.exists()) {
+                uploadFolder.mkdirs();
+            }
+
+            File dest = new File(uploadFolder, filename);
+            file.transferTo(dest);
+
+            // DB에는 웹 접근용 경로 저장
+            String dbPath = uploadPathWeb + "/" + filename;
+            mpSV.updateUserProfile(userSeq, dbPath);
+
+            result.put("success", true);
+            result.put("newPath", dbPath);
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.put("success", false);
+            result.put("message", "업로드 중 오류 발생");
         }
 
-        File dest = new File(uploadFolder, filename);
-        file.transferTo(dest);
-
-        // DB에는 웹 접근용 경로 저장
-        String dbPath = uploadPathWeb + "/" + filename;
-        mpSV.updateUserProfile(userSeq, dbPath);
-
-        result.put("success", true);
-        result.put("newPath", dbPath);
-    } catch (Exception e) {
-        e.printStackTrace();
-        result.put("success", false);
-        result.put("message", "업로드 중 오류 발생");
+        return result;
     }
-
-    return result;
-}
-
+    
     @PostMapping("/delete_profile")
     @ResponseBody
     public Map<String, Object> deleteProfile(Authentication auth) {
@@ -194,6 +194,11 @@ public Map<String, Object> uploadProfile(@RequestParam("file") MultipartFile fil
 
         return result;
     }
+
+
+
+
+    
 
     @GetMapping("/reset_password")
     public String resetPassword() {
@@ -270,6 +275,7 @@ public Map<String, Object> uploadProfile(@RequestParam("file") MultipartFile fil
         model.addAttribute("subscriptionList", subscriptions);
         return "mypage/subscriptions";
     }
+
 
     @GetMapping("/wallet")
     public String accountPage(Model model, Authentication auth) {
