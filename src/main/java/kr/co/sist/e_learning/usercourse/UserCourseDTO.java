@@ -14,7 +14,7 @@ import lombok.ToString;
 @ToString
 public class UserCourseDTO {
 	private int enrollSeq;
-	private String userId;
+	private Long userSeq;
 	private String courseSeq;
 	private Date enrollDate;
 	private String status;

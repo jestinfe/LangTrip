@@ -18,6 +18,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import kr.co.sist.e_learning.mypage.UserAccountDTO;
+import kr.co.sist.e_learning.usercourse.UserCourseDTO;
+import kr.co.sist.e_learning.usercourse.UserCourseService;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,6 +44,8 @@ public class MyPageController {
     @Value("${upload.path.profile}")
     private String uploadPathWeb;
     
+    @Autowired
+    private UserCourseService ucs;
     
     private long getOrInitUserSeq(Authentication auth) {
         Object raw = auth.getPrincipal();
@@ -84,9 +89,37 @@ public class MyPageController {
     }
     
     @GetMapping("/user_course")
-    public String userCoursePage() {
-    	
-    	return "mypage/user_course";
+    public String showUserCourse(
+            Authentication authentication,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "5") int limit,
+            Model model
+            ) {
+
+        long userSeq = getOrInitUserSeq(authentication);
+        System.out.println("user_course 진입");
+        System.out.println("USERSEQ : "+ userSeq);
+        System.err.println("로그야 좀 떠라 시발");
+        System.out.println("페이지, 리미트" + page+" " + limit);
+        int offset = (page - 1) * limit;
+        Map<String, Object> param = new HashMap<>();
+        param.put("userSeq", userSeq);
+        param.put("offset", offset);
+        param.put("limit", limit);
+//
+        List<UserCourseDTO> courseList = ucs.searchUserCourseByPage(param);
+        for(UserCourseDTO uDTO : courseList) {
+        	System.out.println(uDTO.toString());
+        }
+//        
+        int totalCount = ucs.searchUserCourseCount(userSeq);
+
+        model.addAttribute("courses", courseList);
+        model.addAttribute("totalCount", totalCount);
+        model.addAttribute("page", page);
+        model.addAttribute("limit", limit);
+
+        return "mypage/user_course"; 
     }
     
     
@@ -279,6 +312,7 @@ public class MyPageController {
 
     @GetMapping("/wallet")
     public String accountPage(Model model, Authentication auth) {
+    	System.out.println("지갑 공간");
         long userSeq = getOrInitUserSeq(auth);
         FundingDTO accountInfo = fdSV.getAccountInfo(userSeq);
         model.addAttribute("accountInfo", accountInfo);

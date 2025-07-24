@@ -10,13 +10,13 @@ import org.apache.ibatis.annotations.Param;
 @Mapper
 public interface UserCourseMapper {
 
-	void insertUserCourse(UserCourseDTO ucDTO); // 사용자가 수강 눌렀을떄 사용자 수강 테이블에 추가
+	public int insertUserCourse(UserCourseDTO ucDTO); // 사용자가 수강 눌렀을떄 사용자 수강 테이블에 추가
 
-	public List<UserCourseDTO> selectUserCoursesByUserId(String userId);
+	public List<UserCourseDTO> selectUserCoursesByUserSeq(Long userId);
 
 	public List<UserCourseDTO> selectUserCourseByPage(Map<String, Object> paramMap);
 
-	public int selectUserCourseCount(String userId);
+	public int selectUserCourseCount(Long userId);
 
     List<UserCourseListDisplayDTO> selectPublicCourses(Map<String, Object> params);
     int countPublicCourses(Map<String, Object> params);

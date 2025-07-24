@@ -23,7 +23,7 @@
   <link rel="stylesheet" th:href="@{/css/link_account.css}">
 
   <link rel="stylesheet" th:href="@{/css/instroductor_course.css}">
-
+<!-- <link rel="stylesheet" th:href="@{/css/user_registered_course.css}"> -->
   
   
   <meta charset="UTF-8">
@@ -45,8 +45,15 @@
           if (url.includes("instroductor_course") && typeof window.initInstroductorCourse === 'function') {
             setTimeout(() => window.initInstroductorCourse(), 50);
           }else{
-        	  console.log("fail");
+        	  console.log("fail instroductorCourse");
           }
+          
+          // ✅ user_course 처리
+//           if (url.includes("user_course") && typeof window.initUserCourse === 'function') {
+//             setTimeout(() => window.initUserCourse(), 50);
+//           }else{
+//         	  console.log("fail userCourse");
+//           }
         })
         .catch(err => console.error("내용 로드 실패:", err));
     }
@@ -157,5 +164,6 @@ body.logged-out .user-state {
 </body>
 <script th:src="@{/js/donation.js}"></script>
 <script th:src="@{/js/instroductor_course.js}"></script>
- <script th:src="@{/js/chatbot.js}"></script>
+<script th:src="@{/js/chatbot.js}"></script>
+
 </html>

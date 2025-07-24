@@ -1,6 +1,5 @@
 <!-- templates/mypage/user_courses.html -->
 <div th:fragment="content">
-
 	<!-- 헤더 섹션 -->
 	<div class="header-section">
 		<h1 class="main-title">내 강의실 / 수강한 강의</h1>
@@ -11,8 +10,8 @@
 	<div class="filter-section">
 		<div class="filter-row">
 			<div class="filter-group">
-				<label for="categoryFilter">카테고리</label>
-				<select id="categoryFilter" class="filter-select" onchange="filtercourses()">
+				<label for="categoryFilter">카테고리</label> <select id="categoryFilter"
+					class="filter-select" onchange="filtercourses()">
 					<option value="">전체</option>
 					<option value="영어">영어</option>
 					<option value="일본어">일본어</option>
@@ -20,8 +19,9 @@
 				</select>
 			</div>
 			<div class="filter-group">
-				<label for="difficultyFilter">난이도</label>
-				<select id="difficultyFilter" class="filter-select" onchange="filtercourses()">
+				<label for="difficultyFilter">난이도</label> <select
+					id="difficultyFilter" class="filter-select"
+					onchange="filtercourses()">
 					<option value="">전체</option>
 					<option value="초급">초급</option>
 					<option value="중급">중급</option>
@@ -29,27 +29,82 @@
 				</select>
 			</div>
 			<div class="filter-group search-group">
-				<label for="searchInput">강의명 검색</label>
-				<input type="text" id="searchInput" class="search-input" placeholder="강의명을 입력하세요" oninput="filtercourses()">
+				<label for="searchInput">강의명 검색</label> <input type="text"
+					id="searchInput" class="search-input" placeholder="강의명을 입력하세요"
+					oninput="filtercourses()">
 			</div>
 		</div>
 	</div>
 
 	<!-- 강의 목록 -->
-	<div class="course-grid" id="courseGrid"></div>
 
 	<!-- 빈 상태 -->
-	<div class="empty-state" id="emptyState" style="display: none;">
-		<div class="empty-icon">📚</div>
-		<div class="empty-title">수강 중인 강의가 없습니다</div>
-		<div class="empty-description">새로운 강의를 찾아서 학습을 시작해보세요!</div>
+	<div th:if="${#lists.isEmpty(courses)}">
+		<div class="empty-state">
+			<div class="empty-icon">📚</div>
+			<div class="empty-title">수강 중인 강의가 없습니다</div>
+			<div class="empty-description">새로운 강의를 찾아서 학습을 시작해보세요!</div>
+		</div>
 	</div>
+	<div class="course-grid" th:unless="${#lists.isEmpty(courses)}">
+		<div th:each="course : ${courses}" class="course-card">
+			<div class="card-thumbnail">
+				<img th:src="${course.thumbnailPath}" alt="썸네일"
+					onerror="this.src='/img/default.png'" />
+				<div class="card-content">
+					<div class="card-badges">
+						<span class="badge badge-category" th:text="${course.category}"></span>
+						<span class="badge badge-difficulty badge-${course.difficulty}"
+							th:text="${course.difficulty}"></span>
+					</div>
+					<h3 class="card-title" th:text="${course.courseTitle}">강의 제목</h3>
+					<p class="card-description" th:text="${course.introduction}">강의
+						설명</p>
+					<div class="card-stats">
+						<div class="stat-item">
+							<span>📅 수강시작:</span> <span th:text="${course.enrollDate}"></span>
 
-	<!-- 페이지네이션 -->
-	<div class="pagination-container">
-		<div class="pagination" id="pagination"></div>
+							<!--                     <span th:text="${#temporals.format(course.enrollDate, 'yyyy-MM-dd')}"></span> -->
+						</div>
+						<div class="stat-item">
+							<span>🕒 최근학습:</span>
+							<!--                     <span th:text="${#temporals.format(course.lastStudied, 'yyyy-MM-dd')}"></span> -->
+						</div>
+					</div>
+					<div class="card-actions">
+						<a
+							th:href="@{/ui/user_registered_course(seq=${course.courseSeq})}"
+							class="btn btn-primary">학습 하기</a>
+						<!--                    th:text="${course.progress > 0 ? '학습 계속하기' : '학습 시작'}"></a> -->
+						<!--                 <a th:href="@{/course/detail/{seq}(seq=${course.courseSeq})}" class="btn btn-outline">강의 정보</a> -->
+					</div>
+
+
+				</div>
+			</div>
+		</div>
+
 	</div>
+<div class="pagination" th:if="${totalCount > limit}">
+    <ul class="pagination-list">
+        <!-- 이전 페이지 -->
+        <li th:if="${page > 1}">
+            <a th:href="@{/mypage/user_course(page=${page - 1}, limit=${limit})}">이전</a>
+        </li>
 
-	<!-- JS는 외부 파일로 분리 권장 -->
-	<script th:src="@{/js/user_course.js}"></script>
+        <!-- 페이지 번호 목록 -->
+        <li th:each="i : ${#numbers.sequence(1, T(java.lang.Math).ceil(totalCount / (double)limit).intValue())}"
+            th:classappend="${i == page} ? 'active'">
+            <a th:href="@{/mypage/user_course(page=${i}, limit=${limit})}" th:text="${i}">1</a>
+        </li>
+
+        <!-- 다음 페이지 -->
+        <li th:if="${page * limit < totalCount}">
+            <a th:href="@{/mypage/user_course(page=${page + 1}, limit=${limit})}">다음</a>
+        </li>
+    </ul>
+</div>	
+
 </div>
+
+
