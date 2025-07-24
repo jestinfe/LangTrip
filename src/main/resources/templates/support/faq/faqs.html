@@ -5,49 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" th:href="@{/css/common.css}">
-<link rel="stylesheet" href="/support_static/support_design/faqs_design.css">
+<link rel="stylesheet" href="/css/faqs_design.css">
 <title>templates/support/faq/faqs.html</title>
-<style type="text/css">
-.faq-type-title {
-  font-size: 32px;
-  font-weight: 700;
-  color: #8e3efe;
-  text-shadow: 0 0 3px rgba(255, 255, 255, 0.3);
-  margin-top: 50px;
-  margin-bottom: 20px;
-  border-left: 6px solid #bd8ffd;
-  padding-left: 20px;
-}
 
-
-
-
-
-
-
-
-
-
-body.logged-in .guest-state {
-  display: none;
-}
-body.logged-in .user-state {
-  display: inline-flex ;
-}
-body.logged-out .guest-state {
-  display: inline-flex ;
-}
-body.logged-out .user-state {
-  display: none ;
-}
-
-
-</style>
-
-
- <script src="/js/login-status.js" defer></script>
 </head>
-<body>
+<body
+style="background: linear-gradient( to bottom, rgba(204,169,254, 0.9), rgba(204,169,254, 0.1),  rgba(204,169,254, 0.1), white, white) !important;"
+>
 
 <div th:replace="layout/header :: header"></div>
 	<div class="parent-container"
@@ -62,7 +26,7 @@ body.logged-out .user-state {
 					style="font-size: 28px; color: #000000; margin: 0px; margin-bottom: -5px; border: none; display: flex">
 					<div>
 						<a th:href="@{/support}"><img
-							th:src="@{/support_static/support_images/symbol_support.png}"
+							th:src="@{/images/symbol_support.png}"
 							style="width: 32px; height: 32px; margin-right: 15px; margin-top: 8px;" /></a>
 					</div>
 					<div>
@@ -80,9 +44,9 @@ body.logged-out .user-state {
 			style="height: 90px; margin-top: 40px; margin-bottom: 20px; box-shadow: 0 0 6px rgba(0, 0, 0, 0.4) !important;">
 			<div class="title-div" style="margin-top: -5px">
 				<div class="div-1">
-					<div>
-						<img th:src="@{/support_static/support_images/symbol_faq.png}"
-							style="width: 50px; height: 50px;"/>
+					<div >
+						<img th:src="@{/images/symbol_faq.png}"
+							style="width: 60px; height: 60px; border: none;  margin-bottom:-12px"/>
 					</div>
 				</div>
 				<div class="div-2" style="margin-left: -90px">자주 묻는 질문</div>
@@ -96,68 +60,9 @@ body.logged-out .user-state {
 
 		</div>
 		<!-- child-div -->
-		<style>
-		.faq-menu {
-			  margin: 20px auto;
-			  text-align: center;
-			}
-			
-			.faq-menu a {
-			  margin: 0 12px;
-			  font-weight: bold;
-			  color: #8e3efe;
-			  cursor: pointer;
-			  text-decoration: none;
-			}
-			
-			.faq-menu a:hover {
-			  color: #bd8ffd;
-			  border-bottom: 2px solid #bd8ffd;
-			  padding-bottom: 2px;
-			}
-		
-		</style>
-
-	<style>
-	.faq-menu > a {
-		margin: 48px;
-		font-size: 40px;
-	} 
-	
-	</style>
-	
-<!-- 				<div class="faq-menu" style="font-size: 32px; margin-top:40px; margin-bottom: 20px; "> -->
-<!-- 				  <a href="#faq-type1" onclick="scrollToFaq(event, 'faq-type1')">결제</a> -->
-<!-- 				  <a href="#faq-type2" onclick="scrollToFaq(event, 'faq-type2')">강좌</a> -->
-<!-- 				  <a href="#faq-type3" onclick="scrollToFaq(event, 'faq-type3')">학습</a> -->
-<!-- 				  <a href="#faq-type4" onclick="scrollToFaq(event, 'faq-type4')">계정</a> -->
-<!-- 				  <a href="#faq-type5" onclick="scrollToFaq(event, 'faq-type5')">기타</a> -->
-<!-- 				</div> -->
 
 
-<!-- 				<div class="faq-menu" style="font-size: 32px; margin-top:40px; margin-bottom: 20px;"> -->
-<!-- 				  <a th:each="type, iterStat : ${faqtypeList}" -->
-<!-- 				     th:href="'#faq-type' + ${iterStat.index + 1}" -->
-<!-- 				     th:onclick="'scrollToFaq(event, \'faq-type' + ${iterStat.index + 1} + '\')'" -->
-<!-- 				     th:text="${type.faqtype_name}">faqtype_name</a> -->
-<!-- 				</div> -->
 
-<!-- 				<div class="faq-menu" style="font-size: 32px; margin-top:40px; margin-bottom: 20px;"> -->
-<!-- 				  <a th:each="type, iterStat : ${faqtypeList}" -->
-<!-- 				     th:href="'#faq-type' + ${iterStat.index + 1}" -->
-<!-- 				     th:onclick="'scrollToFaq(event, \'faq-type' + ${iterStat.index + 1} + '\')'" -->
-<!-- 				     style="display: inline-flex; align-items: center; gap: 12px; text-decoration: none;"> -->
-				
-<!-- 				    아이콘 이미지 추가 -->
-<!-- 				    <img th:src="@{|/support_static/support_images/symbol_faqType_${iterStat.index + 1}.png|}" -->
-<!-- 				         onerror="this.onerror=null; this.src='/support_static/support_images/symbol_faq.png';" -->
-<!-- 				         style="width: 32px; height: 32px;" /> -->
-				
-<!-- 				    FAQ 타입 이름 -->
-<!-- 				    <span th:text="${type.faqtype_name}">faqtype_name</span> -->
-				
-<!-- 				  </a> -->
-<!-- 				</div> -->
 
 					<div class="faq-menu" style="font-size: 32px; margin-top:48px; margin-bottom: 10px;">
 					
@@ -170,16 +75,16 @@ body.logged-out .user-state {
 					  <a th:each="type, iterStat : ${faqtypeList}"
 					     th:href="'#faq-type' + ${iterStat.index + 1}"
 					     th:onclick="'scrollToFaq(event, \'faq-type' + ${iterStat.index + 1} + '\')'"
-					     style="display: inline-flex; flex-direction: column; margin-top: -10px;
+					     style="display: inline-flex; flex-direction: column; margin-top: 5px;
 					     align-items: center; text-decoration: none;">
 					
 					    <!-- 아이콘 이미지 (상단) -->
-					    <img th:src="@{|/support_static/support_images/symbol_faqType_${iterStat.index + 1}.png|}"
-					         onerror="this.onerror=null; this.src='/support_static/support_images/symbol_faq.png';"
-					         style="width: 80px; height: 80px; margin-bottom: 10px;" />
+					    <img th:src="@{|/images/symbol_faqType_${iterStat.index + 1}.png|}"
+					         onerror="this.onerror=null; this.src='/images/symbol_faq.png';"
+					         style="width: 60px; height: 60px; margin-bottom: 15px;" />
 					
 					    <!-- 텍스트 (하단) -->
-					    <span th:text="${type.faqtype_name}" style="font-size: 30px">faqtype_name</span>
+					    <span th:text="${type.faqtype_name}" style="font-size: 40px">faqtype_name</span>
 					
 					  </a>
 					  
@@ -202,8 +107,11 @@ body.logged-out .user-state {
 	</div>
 	<!-- parent-container -->
 
-<script src="/support_static/support_js/faq_ready.js"></script>
-<script src="/support_static/support_js/support_ready.js"></script>
+<!-- <script src="/js/faq_ready.js"></script> -->
+<!-- <script src="/js/support_ready.js"></script> -->
+<script src="/js/support_center.js"></script>
+
+
 
 
 

@@ -4,6 +4,8 @@ import java.util.List;
 
 public interface SupportService {
 
+	public List<FaqDTO> searchTop3Faq();
+
 	public boolean addNotice(NoticeDTO dto);// 단일 Notice 추가
 
 	public boolean addFaq(FaqDTO dto);// 단일 Faq 추가
@@ -19,8 +21,10 @@ public interface SupportService {
 	public List<FaqDTO> searchAllFaq();// 전체 Faq 조회
 
 	public List<FeedbackDTO> searchAllFeedback();// 전체 Feedback 조회
+
 	public List<FeedbackDTO> searchTotalFeedback();// 전체 Feedback 조회
 
+	public int editFaqStatusInactive(String id);
 	// ---------------------------------------------------------------------
 
 	public NoticeDTO searchOneNotice(String id);// 상세 Notice 조회
@@ -60,7 +64,7 @@ public interface SupportService {
 	public boolean editFeedbackStatus(String id);
 
 	public boolean editFeedbackStep(String id);
-	
+
 	public boolean editFeedbackRefuse(String id);
 
 	public boolean editFeedbackStepFinished(String id);
@@ -93,8 +97,6 @@ public interface SupportService {
 
 	public List<FaqtypeDTO> selectActiveFaqTypes();
 
-	public List<FaqDTO> searchTop3Faq();
-
 	public List<FaqDTO> selectFaqByType(String typeId);
 
 	public List<FaqtypeDTO> searchAllFaqtype();
@@ -106,7 +108,5 @@ public interface SupportService {
 	public int searchMaxFaqHits();
 
 	public int searchMaxFeedbackSends();
-	
-	
 
 }

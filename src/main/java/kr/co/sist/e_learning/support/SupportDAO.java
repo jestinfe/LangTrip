@@ -28,6 +28,8 @@ public interface SupportDAO {
 
 	int updateNoticeStatusInactive(String id);// delete 대체=비활성(완료)
 
+	int updateFaqStatusInactive(String id);// delete 대체=비활성(완료)
+
 	int updateNoticeStatusActive(String id);// delete 대체=활성(완료)
 
 	NoticeDTO selectOneNoticeById(String id);
@@ -40,7 +42,7 @@ public interface SupportDAO {
 
 	FaqDTO selectOneFaqById(String id);
 
-	int updateFaqById(FaqDTO faq);// 통합 update(완료)
+	int updateFaqById(FaqDTO faq);
 
 	boolean increaseFaqHits(String id);// (완료)
 
@@ -69,6 +71,7 @@ public interface SupportDAO {
 	boolean insertFeedbackDTO(FeedbackDTO dto);
 
 	List<FeedbackDTO> selectAllFeedbackDTO();
+
 	List<FeedbackDTO> selectTotalFeedbackDTO();
 
 	FeedbackDTO selectOneFeedbackById(String id);
@@ -76,6 +79,7 @@ public interface SupportDAO {
 	boolean updateFeedbackStatus(String id);// delete 대체(완료)
 
 	boolean updateFeedbackStep(String feedback_id);
+
 	boolean updateFeedbackStepRefuse(String feedback_id);
 
 	boolean updateFeedbackStepFinished(String feedback_id);
@@ -87,5 +91,7 @@ public interface SupportDAO {
 	int selectMaxFaqHits();
 
 	int selectMaxFeedbackSends();
+
+	List<FaqDTO> selectFaqsByKeyword(String keyword);
 
 }

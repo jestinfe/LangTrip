@@ -1,4 +1,0 @@
-$(function() {
-	searchSuggest();
-	autoSlider();
-});//ready
