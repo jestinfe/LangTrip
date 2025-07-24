@@ -9,7 +9,6 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import  kr.co.sist.e_learning.user.*;
 import kr.co.sist.e_learning.adBanner.AdBannerEntity;
 import kr.co.sist.e_learning.adBanner.AdBannerService;
 import org.slf4j.Logger;
@@ -152,25 +152,11 @@ public class MyPageController {
 
         // 인증된 사용자 정보 가져오기
         Object principal = auth.getPrincipal();
-
-        // 디버깅 로그 추가: 인증된 사용자 정보 확인
-        logger.debug("인증된 사용자 정보: " + principal);
-
-        if (!(principal instanceof UserDetails userDetails)) {
-            result.put("success", false);
-            result.put("message", "사용자 정보가 올바르지 않습니다.");
-            logger.error("사용자 정보가 올바르지 않습니다. principal: " + principal); // 에러 로그
-            return result;
-        }
-
-        // userSeq 가져오기
-        long userSeq = getOrInitUserSeq(auth);
-        logger.debug("사용자 Seq: " + userSeq); // 디버깅 로그
+        long userSeq = (Long) principal;  // userSeq 가져오기
 
         if (file.isEmpty()) {
             result.put("success", false);
             result.put("message", "파일이 없습니다.");
-            logger.warn("파일이 선택되지 않았습니다.");
             return result;
         }
 
@@ -181,18 +167,14 @@ public class MyPageController {
             if (!List.of("png", "jpg", "jpeg", "gif").contains(ext)) {
                 result.put("success", false);
                 result.put("message", "허용되지 않은 확장자입니다.");
-                logger.warn("잘못된 확장자 파일이 업로드되었습니다: " + ext);
                 return result;
             }
 
-            // 저장 디렉토리 생성
-            File dir = new File(uploadDirRoot);
+            // 저장할 디렉토리 경로 설정 (uploadDirRoot 경로에 community 폴더 추가)
+            File dir = new File(uploadDirRoot + "/userprofile");  // ${file.upload-dir.profile} 경로 사용
             if (!dir.exists()) {
-                boolean dirCreated = dir.mkdirs();
-                if (dirCreated) {
-                    logger.info("디렉토리 생성됨: " + dir.getAbsolutePath());
-                } else {
-                    logger.error("디렉토리 생성 실패: " + dir.getAbsolutePath());
+                boolean dirCreated = dir.mkdirs();  // 디렉토리 생성
+                if (!dirCreated) {
                     result.put("success", false);
                     result.put("message", "디렉토리 생성 실패");
                     return result;
@@ -200,17 +182,12 @@ public class MyPageController {
             }
 
             // 기존 이미지 삭제
-            String oldPath = mpSV.selectProfilePath(userSeq); // 예: /images/userprofile/abc_user001.png
-            if (oldPath != null && oldPath.startsWith("/images/userprofile/")) {
-                String oldFileName = oldPath.replace("/images/userprofile/", "");
+            String oldPath = mpSV.selectProfilePath(userSeq);
+            if (oldPath != null && oldPath.startsWith("/userprofile/")) {
+                String oldFileName = oldPath.replace("/userprofile/", "");
                 File oldFile = new File(dir, oldFileName);
                 if (oldFile.exists()) {
-                    boolean deleted = oldFile.delete();
-                    if (deleted) {
-                        logger.info("기존 파일 삭제됨: " + oldFile.getAbsolutePath());
-                    } else {
-                        logger.warn("기존 파일 삭제 실패: " + oldFile.getAbsolutePath());
-                    }
+                    oldFile.delete();  // 기존 파일 삭제
                 }
             }
 
@@ -219,38 +196,24 @@ public class MyPageController {
             String newFileName = uuid + "_" + userSeq + "." + ext;
             File destFile = new File(dir, newFileName);
 
-            // 파일을 서버에 저장
-            try {
-                file.transferTo(destFile);
-                logger.info("파일 저장됨: " + destFile.getAbsolutePath());
-            } catch (Exception e) {
-                result.put("success", false);
-                result.put("message", "파일 저장 중 오류 발생");
-                logger.error("파일 저장 중 오류 발생: " + e.getMessage(), e);
-                return result;
-            }
-            
-            // DB 경로 업데이트
-            String webPath = uploadPathWeb + "/" + newFileName;  // 상대 경로
-            try {
-                mpSV.updateUserProfile(userSeq, webPath);
-                logger.info("DB 경로 업데이트됨: " + webPath);
-            } catch (Exception e) {
-                result.put("success", false);
-                result.put("message", "DB 업데이트 중 오류 발생");
-                logger.error("DB 업데이트 중 오류 발생: " + e.getMessage(), e);
-                return result;
-            }
-            
-	        } catch (Exception e) {
-	            result.put("success", false);
-	            result.put("message", "업로드 중 오류 발생");
-	            logger.error("업로드 중 오류 발생", e); // 에러 로그
-	        }
-	
-	        result.put("success", true);
-	        return result;
+            // 파일 서버에 저장
+            file.transferTo(destFile);
+
+            // DB 경로 업데이트 (웹 경로로 설정)
+            String webPath = "/userprofile/" + newFileName;  // 상대 경로 (웹 접근용)
+            mpSV.updateUserProfile(userSeq, webPath);
+
+            // 결과 반환
+            result.put("success", true);
+            result.put("newPath", webPath);  // {"newPath": "/userprofile/filename.jpg"}
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", "업로드 중 오류 발생");
+        }
+
+        return result;
     }
+
 
     @GetMapping("/instroductor_course")
     public String instructorCoursePage() {
@@ -262,9 +225,9 @@ public class MyPageController {
         return "mypage/user_course";
     }
 
-    @GetMapping("/reset_password")
+    @GetMapping("/reset-password")
     public String resetPassword() {
-        return "mypage/reset_password";
+        return "user/login/reset-password";
     }
 
     @GetMapping("/link_account")

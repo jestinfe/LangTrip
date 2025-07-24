@@ -24,11 +24,10 @@ function uploadProfile() {
             console.log("서버 응답:", data); // 디버깅 로그
             if (data.success) {
                 // 3. 서버 응답이 성공적일 경우, 이미지 업데이트
-                document.getElementById('profilePreview').src = data.newPath;
+                document.getElementById('profilePreview').src = "http://localhost:8080" + data.newPath + "?t=" + new Date().getTime();
                 alert("프로필 이미지가 변경되었습니다.");
             } else {
                 // 4. 서버 응답이 실패한 경우
-                console.error("업로드 실패:", data.message); // 디버깅 로그
                 alert("업로드 실패: " + data.message);
             }
         })

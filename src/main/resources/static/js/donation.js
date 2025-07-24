@@ -11,7 +11,12 @@ function filterDonations() {
   const donationType = document.querySelector('.donation-filter').value;
 
   fetch(`/api/donation/donations?type=${donationType}`)
-    .then(response => response.json())
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('후원 내역을 불러오는 데 실패했습니다.');
+      }
+      return response.json();
+    })
     .then(data => {
       const tbody = document.querySelector('.donation-table tbody');
       const noDonationsMessage = document.getElementById('noDonationsMessage');
@@ -28,7 +33,7 @@ function filterDonations() {
           const tr = document.createElement('tr');
 
           // 메시지 처리 (null일 경우 기본 값)
-          const message = donation.message ? donation.message : '';
+          const message = donation.message ? donation.message : '메시지가 없습니다.';
 
           // 날짜 처리 (null일 경우 기본 값으로 '날짜 없음' 처리)
           let date = donation.createdAt ? new Date(donation.createdAt) : null;
@@ -48,5 +53,6 @@ function filterDonations() {
       console.error('Error fetching donations:', error);
       const noDonationsMessage = document.getElementById('noDonationsMessage');
       noDonationsMessage.style.display = 'block'; // 오류 발생 시 메시지 표시
+      alert('후원 내역을 불러오는 데 문제가 발생했습니다. 나중에 다시 시도해주세요.');
     });
 }
