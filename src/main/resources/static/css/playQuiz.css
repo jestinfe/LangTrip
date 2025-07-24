@@ -1,7 +1,7 @@
 @charset "UTF-8";
 body {
   background-color: #f9fafb;
-  font-family: 'Segoe UI', sans-serif;
+  font-family: 'Roboto', sans-serif;
   margin: 0;
   padding: 0;
 }
@@ -37,6 +37,7 @@ body {
 .option-btn:hover {
   background-color: #f0f8ff;
   border-color: #3db9ff;
+  color: #333; /* Darker text color on hover */
 }
 
 .option-btn.selected {
@@ -63,6 +64,7 @@ body {
 .card-option:hover {
   border-color: #3db9ff;
   background-color: #f0f8ff;
+  color: #333; /* Darker text color on hover */
 }
 
 .card-option.selected {
@@ -74,25 +76,29 @@ body {
 .speech-bubble {
   background: #3db9ff;
   color: #fff;
-  padding: 14px 24px;
-  border-radius: 20px 20px 20px 0;
+  padding: 18px 28px; /* Increased padding */
+  border-radius: 25px; /* More rounded */
   font-size: 18px;
   font-weight: bold;
   display: inline-block;
   max-width: 70%;
-  margin-left: 20px;
+  margin-left: 0px; /* 마스코트와의 간격 조정 */
   position: relative;
   text-align: left;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Subtle shadow */
+  margin-top: 0px; /* 말풍선 자체를 위로 올림 */
+  top: 80px; /* 말풍선을 확실히 아래로 내림 */
 }
 
 .speech-bubble::before {
   content: '';
   position: absolute;
-  left: -10px;
-  top: 10px;
+  left: -15px; /* Adjust position for new tail */
+  top: 30px; /* 꼬리 위치 조정 */
   border-width: 10px;
   border-style: solid;
-  border-color: transparent #3db9ff transparent transparent;
+  border-color: transparent #3db9ff transparent transparent; /* Keep color */
+  transform: rotate(0deg); /* 꼬리 각도 조정 */
 }
 
 .bottom-navbar {
@@ -100,13 +106,15 @@ body {
   bottom: 0;
   left: 0;
   right: 0;
-  padding: 10px 20px;
+  padding: 15px 20px; /* Increased padding for height */
   background-color: #ffffff;
   border-top: 1px solid #e0e0e0;
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between; /* Align items to the start (left) */
+  align-items: center;
   box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.05);
   z-index: 1000;
+  min-height: 66px; /* Fixed minimum height */
 }
 
 .btn-info {
@@ -117,15 +125,59 @@ body {
   font-size: 16px;
   font-weight: bold;
   color: white;
+  margin-left: auto;
 }
 
 .btn-info:hover {
-  background-color: #1daeff;
+  background-color: #2a90cc; /* Darker blue on hover */
+  color: white !important;
+}
+
+.btn-info:active {
+  background-color: #2a90cc !important; /* Keep same as hover or default */
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.exit-quiz-btn {
+  background-color: transparent; /* 배경색 투명 */
+  color: #ff4b4b; /* X 글자색 빨간색 */
+  border-radius: 50%; /* Make it round */
+  width: 40px; /* Adjust size as needed */
+  height: 40px;
+  font-size: 20px;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-decoration: none; /* Remove underline for link-like button */
+  transition: background-color 0.2s ease;
+  outline: none !important; /* Remove outline on focus */
+  box-shadow: none !important; /* Remove box-shadow on focus */
+  border: none !important; /* Remove border on focus */
+}
+
+.exit-quiz-btn:focus,
+.exit-quiz-btn:active {
+  outline: none !important; /* Ensure no outline on focus/active */
+  box-shadow: none !important; /* Ensure no box-shadow on focus/active */
+  border: none !important; /* Ensure no border on focus/active */
+}
+
+.exit-quiz-btn:hover {
+  background-color: transparent; /* hover 시 배경색 없음 */
+  color: #cc0000; /* 더 진한 빨간색 */
 }
 
 .mascot {
-  width: 120px;
+  width: 220px; /* Adjusted size */
   margin-bottom: 10px;
+  position: relative;
+  top: 40px; /* 마스코트 이미지를 아래로 내림 */
+}
+
+.mascot-speech-container {
+  margin-top: -40px; /* 마스코트와 말풍선 전체를 위로 올림 */
 }
 
 .progress {
@@ -149,12 +201,226 @@ body {
   padding-right: 10px;
 }
 
+/* 수평 정렬을 위한 추가 스타일 */
+.d-flex.justify-content-between.align-items-center.p-2 > .w-100.px-3 {
+  margin-top: 8px; /* X 버튼과 프로그레스 바의 수평을 맞추기 위한 조정 */
+}
+
+.d-flex.justify-content-between.align-items-center.p-2 > #progressText {
+  margin-top: 5px; /* X 버튼과 진행률 텍스트의 수평을 맞추기 위한 조정 */
+}
+
 .container {
   background-color: white;
   border-radius: 20px;
-  padding: 30px;
+  padding: 15px 30px 30px 30px;
   max-width: 720px;
   margin: auto;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   text-align: center;
+}
+
+.options-container {
+  margin-top: 30px; /* 보기 컨테이너 위치 조정 */
+}
+
+
+
+#feedbackMessageContainer {
+  flex-grow: 1;
+  font-weight: bold;
+  padding-left: 10px; /* Adjust to align with quiz content */
+  margin-bottom: -10px; /* Move up slightly */
+}
+
+/* Feedback styles */
+.bottom-navbar.correct-feedback {
+  background-color: #c0f0c0; /* Darker lime green background for correct */
+}
+
+.bottom-navbar.correct-feedback #submitBtn {
+  background-color: #58CC02; /* Duolingo-like vibrant green for the button */
+}
+
+.bottom-navbar.correct-feedback #submitBtn:hover,
+.bottom-navbar.correct-feedback #submitBtn:active {
+  background-color: #4CAF50 !important; /* Slightly darker green on hover/active */
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.bottom-navbar.incorrect-feedback {
+  background-color: #f8d7da; /* Red background for incorrect */
+}
+
+.bottom-navbar.incorrect-feedback #submitBtn {
+  background-color: #dc3545; /* Darker red for the button */
+}
+
+.bottom-navbar.incorrect-feedback #submitBtn:hover {
+  background-color: #c82333 !important; /* Even darker red on hover */
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.bottom-navbar.incorrect-feedback #submitBtn:active {
+  background-color: #b02a37 !important; /* Slightly darker red for active state */
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.option-btn.selected-correct,
+.card-option.selected-correct {
+  border-color: #28a745; /* Green for correct */
+  background-color: #e6ffe6;
+}
+
+.option-btn.selected-incorrect,
+.card-option.selected-incorrect {
+  border-color: #dc3545; /* Red for incorrect */
+  background-color: #ffe6e6;
+}
+
+
+
+.feedback-message {
+  text-align: left; /* Align text to left */
+  font-size: 1.2em;
+  /* Removed margin-top and margin-bottom to prevent height changes */
+}
+
+
+.correct-feedback-message {
+  color: #2E8B57; /* Darker green for correct feedback message */
+}
+
+
+
+
+
+
+
+
+
+.incorrect-feedback-message {
+  color: #DC3545; /* Red for incorrect feedback message */
+}
+
+/* Custom Exit Quiz Modal Styles */
+
+
+
+
+.custom-modal-overlay {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1000; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgba(0,0,0,0.6); /* Darker overlay */
+    justify-content: center;
+    align-items: center;
+}
+
+.custom-modal-content {
+    background-color: #fff;
+    padding: 15px 30px 30px 30px;
+    border-radius: 20px; /* More rounded */
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+    width: 85%;
+    max-width: 420px;
+    text-align: center;
+    position: relative;
+    transform: translateY(-50px); /* Start slightly above center */
+    opacity: 0;
+    animation: slideIn 0.4s forwards cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Smooth animation */
+}
+
+@keyframes slideIn {
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.modal-header-close {
+    text-align: right;
+    margin-bottom: 5px;
+}
+
+.close-button {
+    color: #aaa;
+    font-size: 30px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.close-button:hover,
+.close-button:focus {
+    color: #333;
+}
+
+.modal-body-content {
+    margin-bottom: 25px;
+}
+
+.modal-mascot-img {
+    width: 150px; /* Adjust size as needed */
+    height: auto;
+    margin-bottom: 10px;
+}
+
+.modal-message {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.modal-sub-message {
+    font-size: 1em;
+    color: #666;
+}
+
+.modal-footer-buttons {
+    display: flex;
+    justify-content: space-around;
+    gap: 15px;
+}
+
+.modal-button {
+    flex: 1;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 30px; /* Pill shape */
+    font-size: 1.1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+.modal-button:active {
+    transform: scale(0.98);
+}
+
+.cancel-button {
+    background-color: #e0e0e0;
+    color: #555;
+}
+
+.cancel-button:hover {
+    background-color: #d0d0d0;
+}
+
+.exit-button {
+    background-color: #ff4b4b; /* Duolingo red */
+    color: white;
+}
+
+.exit-button:hover {
+    background-color: #e63946;
 }

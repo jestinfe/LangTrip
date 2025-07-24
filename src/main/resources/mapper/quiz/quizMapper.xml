@@ -12,10 +12,10 @@
   </selectKey>
 
   INSERT INTO QUIZ_LIST (
-    quiz_list_seq, course_seq, lang_category, title, upload_date, is_delete
+    quiz_list_seq, course_seq, lang_category, title, upload_date, is_delete, user_seq, modify_date
   ) VALUES (
     #{quizListSeq, jdbcType=VARCHAR}, #{courseSeq, jdbcType=VARCHAR}, #{langCategory,  jdbcType=VARCHAR},
-    #{title,  jdbcType=VARCHAR}, SYSDATE, 'N'
+    #{title,  jdbcType=VARCHAR}, SYSDATE, 'N', #{userSeq, jdbcType=NUMERIC}, NULL
   )
 </insert>
 
@@ -44,7 +44,7 @@ INSERT INTO quiz (
 		image_name, image_addr, is_delete
 	) VALUES (
 	'QO' || TO_CHAR(SYSDATE, 'YYYYMMDD') || LPAD(quiz_option_seq.NEXTVAL, 4, '0'),
-	#{quizSeq, jdbcType=VARCHAR}, #{optionOrder, jdbcType=VARCHAR}, #{content, jdbcType=VARCHAR},
+	#{quizSeq, jdbcType=VARCHAR}, #{optionOrder, jdbcType=NUMERIC}, #{content, jdbcType=VARCHAR},
 	#{imageName, jdbcType=VARCHAR}, #{imageAddr, jdbcType=VARCHAR}, 'N'
 	)
 </insert>
@@ -110,11 +110,13 @@ ORDER BY
     <result property="langCategory" column="lang_category"/>
     <result property="title" column="title"/>
     <result property="uploadDate" column="upload_date"/>
+    <result property="userSeq" column="user_seq"/>
+    <result property="modifyDate" column="modify_date"/>
 </resultMap>
 
 <!-- 퀴즈 버튼 눌렀을 때 시작 전 리스트 정보 (어떤 외국어? 제목은?)-->
 <select id="selectQuizListInfo" parameterType="String" resultMap="quizListDTOMap" flushCache="true" useCache="false">
-SELECT quiz_list_seq, course_seq, upload_date, lang_category, title
+SELECT quiz_list_seq, course_seq, upload_date, lang_category, title, user_seq
 FROM quiz_list
 WHERE quiz_list_seq = #{quizListSeq, jdbcType=VARCHAR}
 AND is_delete = 'N'
@@ -218,7 +220,7 @@ AND is_delete = 'N'
 <!-- 퀴즈 리스트 정보 수정용 -->
 <update id="updateQuizList">
 UPDATE quiz_list
-SET title = #{title, jdbcType=VARCHAR}, lang_category = #{langCategory, jdbcType=VARCHAR}
+SET title = #{title, jdbcType=VARCHAR}, lang_category = #{langCategory, jdbcType=VARCHAR}, modify_date = SYSDATE
 WHERE quiz_list_seq = #{quizListSeq, jdbcType=VARCHAR}
 </update>
 
@@ -270,40 +272,4 @@ WHERE quiz_seq IN (
 )
 </update>
 
-
-  <resultMap id="quizListWithQuizzesMap" type="kr.co.sist.e_learning.quiz.QuizListDTO">
-    <id property="quizListSeq" column="quiz_list_seq"/>
-    <result property="courseSeq" column="course_seq"/>
-    <result property="langCategory" column="lang_category"/>
-    <result property="title" column="title"/>
-    <result property="uploadDate" column="upload_date"/>
-    <collection property="quiz" ofType="kr.co.sist.e_learning.quiz.QuizDTO" resultMap="quizWithOptionsMap"/>
-  </resultMap>
-
-  <select id="selectQuizListsWithQuizzesByCourseSeq" parameterType="String" resultMap="quizListWithQuizzesMap">
-    SELECT
-      ql.quiz_list_seq,
-      ql.course_seq,
-      ql.lang_category,
-      ql.title,
-      ql.upload_date,
-      q.quiz_seq,
-      q.question,
-      q.correct_option,
-      q.quiz_order,
-      q.type,
-      qo.quiz_option_seq,
-      qo.option_order,
-      qo.content,
-      qo.image_name,
-      qo.image_addr
-    FROM quiz_list ql
-    LEFT JOIN quiz q ON ql.quiz_list_seq = q.quiz_list_seq AND q.is_delete = 'N'
-    LEFT JOIN quiz_option qo ON q.quiz_seq = qo.quiz_seq AND qo.is_delete = 'N'
-    WHERE ql.course_seq = #{courseSeq}
-    AND ql.is_delete = 'N'
-    ORDER BY ql.upload_date, q.quiz_order, qo.option_order
-  </select>
-
 </mapper>
-

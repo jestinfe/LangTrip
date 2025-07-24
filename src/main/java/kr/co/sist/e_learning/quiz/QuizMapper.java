@@ -31,7 +31,7 @@ public interface QuizMapper {
 	public void insertQuizResponse(QuizResponseDTO qrDTO);
 	
 	//<select id="existsQuizResponse" resultType="boolean">
-	public boolean existsQuizResponse(@Param("quizSeq") String quizSeq, @Param("userSeq") String userSeq);
+	public boolean existsQuizResponse(@Param("quizSeq") String quizSeq, @Param("userSeq") Long userSeq);
 
 	//<select id="QuizCorrectChk" resultType="kr.co.sist.elearning.quiz.QuizStatusDTO">
 	public QuizStatusDTO QuizCorrectChk(QuizStatusDTO qsDTO);
