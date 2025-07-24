@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>영상 상세</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/admin_sidebar.css}">
+    <link rel="stylesheet" th:href="@{/css/account_detail.css}">
+    <style>
+        .video-container {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        video {
+            width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <div th:replace="layout/admin_sidebar :: sidebar"></div>
+
+    <div class="main-content">
+        <div class="breadcrumb">
+            <a href="/admin/dashboard"><i class="fas fa-home"></i> Dashboard</a>
+            <span>/</span>
+            <a href="/admin/courses">강의 관리</a>
+            <span>/</span>
+            <a th:href="@{/admin/courses/{courseSeq}(courseSeq=${video.courseSeq})}">상세조회</a>
+            <span>/</span>
+            <span>영상 상세</span>
+        </div>
+
+        <div class="page-header">
+            <h1><i class="fas fa-video"></i> 영상 상세</h1>
+            <div class="admin-info">
+                <span>영상 제목: <strong th:text="${video.title}"></strong></span>
+            </div>
+        </div>
+
+        <div class="detail-section">
+            <div class="section-header">
+                <i class="fas fa-play-circle"></i> 영상 재생
+            </div>
+            <div class="section-content">
+                <div class="video-container">
+                    <video controls>
+                        <source th:src="@{${video.filePath}}" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+            </div>
+        </div>
+
+        <div class="action-buttons" style="margin-top: 20px;">
+            <a th:href="@{/admin/courses/{courseSeq}(courseSeq=${video.courseSeq})}" class="btn btn-outline"><i class="fas fa-arrow-left"></i> 강의 상세로 돌아가기</a>
+        </div>
+    </div>
+</body>
+</html>

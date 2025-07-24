@@ -149,7 +149,7 @@
     document.getElementById("loginBtn").addEventListener("click", handleLoginAttempt);
 
     function onCaptchaSuccess() {
-        console.log("캡챠 완료됨");
+        document.getElementById("loginForm").submit();
     }
 </script>
 </body>

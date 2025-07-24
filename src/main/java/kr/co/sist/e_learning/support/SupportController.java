@@ -6,6 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -206,6 +207,7 @@ public class SupportController {
 	// 공지사항 관리 : 전체 조회 (support_admin_notices.html)
 //	@GetMapping("/support/admin/notice")
 	@GetMapping("/admin/support")
+	@PreAuthorize("hasAnyRole('SUPPORT', 'SUPER')")
 	public String supportNotcieAdmin(Model model) {
 
 		List<NoticeDTO> noticeList = supportService.searchAllNoticeAdmin();
@@ -217,6 +219,7 @@ public class SupportController {
 
 	// 공지사항 관리 : 상세 조회 (support_admin_notice_detail.html)
 	@GetMapping("/support/admin/notice/{id}")
+	@PreAuthorize("hasAnyRole('SUPPORT', 'SUPER')")
 	public String noticeDetailAdmin(@PathVariable("id") String id, Model model) {
 		NoticeDTO notice = supportService.searchOneNotice(id);
 		model.addAttribute("notice", notice);
@@ -226,6 +229,7 @@ public class SupportController {
 	// --------------------
 
 	@GetMapping("/support/admin/notice/edit/{id}")
+	@PreAuthorize("hasAnyRole('SUPPORT', 'SUPER')")
 	public String editNoticeAdminPage(@PathVariable("id") String id, Model model) {
 		NoticeDTO notice = supportService.searchOneNotice(id); // 해당 공지 조회
 		model.addAttribute("notice", notice);
@@ -233,6 +237,7 @@ public class SupportController {
 	}
 
 	@PostMapping("/support/admin/notice/update/{id}")
+	@PreAuthorize("hasAnyRole('SUPPORT', 'SUPER')")
 	public String updateNotice(@PathVariable("id") String id, NoticeDTO notice, RedirectAttributes redirectAttributes) {
 		notice.setNotice_id(id); // URL에서 넘어온 ID를 DTO에 명시적으로 설정
 
@@ -248,6 +253,7 @@ public class SupportController {
 	// --------------------
 
 	@PostMapping("/support/admin/notice/delete/{id}")
+	@PreAuthorize("hasAnyRole('SUPPORT', 'SUPER')")
 	public String deleteNoticeAdmin(@PathVariable("id") String id) {
 		supportService.editNoticeStatusInactive(id); // 상태 업데이트(비활성)
 		return "redirect:/support/admin/notice";
@@ -255,6 +261,7 @@ public class SupportController {
 	}
 
 	@PostMapping("/support/admin/notice/active/{id}")
+	@PreAuthorize("hasAnyRole('SUPPORT', 'SUPER')")
 	public String activeNoticeAdmin(@PathVariable("id") String id) {
 		supportService.editNoticeStatusActive(id); // 상태 업데이트(활성)
 		return "redirect:/support/admin/notice";
@@ -264,6 +271,7 @@ public class SupportController {
 	// --------------------
 
 	@PostMapping("/support/admin/notice/fix/{id}")
+	@PreAuthorize("hasAnyRole('SUPPORT', 'SUPER')")
 	public String fixNoticeAdmin(@PathVariable("id") String id) {
 
 		boolean flag = supportService.editNoticeFixFlag(id, "Y"); // 고정으로 설정
@@ -277,6 +285,7 @@ public class SupportController {
 	}
 
 	@PostMapping("/support/admin/notice/unfix/{id}")
+	@PreAuthorize("hasAnyRole('SUPPORT', 'SUPER')")
 	public String unfixNoticeAdmin(@PathVariable("id") String id) {
 		boolean flag = supportService.editNoticeFixFlag(id, "N"); // 고정 해제
 		if (flag) {
@@ -291,6 +300,7 @@ public class SupportController {
 
 	// FAQ 관리 (support_admin.html)
 	@GetMapping("/support/admin/faq")
+	@PreAuthorize("hasAnyRole('SUPPORT', 'SUPER')")
 	public String supportFaqAdmin() {
 		return "support/admin/support_admin_faq";
 	}
@@ -299,6 +309,7 @@ public class SupportController {
 
 	// 관련 통계 : 현황 조회(support_admin_feedback.html)
 	@GetMapping("/support/admin/feedback")
+	@PreAuthorize("hasAnyRole('SUPPORT', 'SUPER')")
 	public String supportAdminFeedback(Model model) {
 
 		Map<String, Integer> typeCountMap = new HashMap<>();
@@ -425,6 +436,7 @@ public class SupportController {
 
 	// 피드백 관리 : 현황 조회(support_admin_feedback.html)
 	@GetMapping("/support/admin/feedback2")
+	@PreAuthorize("hasAnyRole('SUPPORT', 'SUPER')")
 	public String supportAdminFeedback2(Model model) {
 
 		List<FeedbackDTO> newFeedbackList = supportService.searchAllNewFeedback();
@@ -438,6 +450,7 @@ public class SupportController {
 
 	// 피드백 관리 : 전체 조회 (support_admin_feedback2.html)
 	@GetMapping("/support/admin/feedbacks")
+	@PreAuthorize("hasAnyRole('SUPPORT', 'SUPER')")
 	public String supportAdminFeedbacks(Model model) {
 
 		List<FeedbackDTO> feedbackList = supportService.searchAllFeedback();
@@ -447,6 +460,7 @@ public class SupportController {
 	}
 
 	@GetMapping("/support/admin/feedback_detail/{id}")
+	@PreAuthorize("hasAnyRole('SUPPORT', 'SUPER')")
 	public String getFeedbackDetailFragment(@PathVariable String id, Model model) {
 		FeedbackDTO feedback = supportService.searchOneFeedback(id);
 		model.addAttribute("feedback", feedback);
@@ -455,6 +469,7 @@ public class SupportController {
 
 	@PostMapping("/support/admin/feedback/stepUpdate")
 	@ResponseBody
+	@PreAuthorize("hasAnyRole('SUPPORT', 'SUPER')")
 	public String updateStep(@RequestParam("id") String id) {
 		boolean success = supportService.editFeedbackStep(id);
 		return success ? "success" : "fail";
@@ -462,6 +477,7 @@ public class SupportController {
 
 	@PostMapping("/support/admin/feedback/refuse")
 	@ResponseBody
+	@PreAuthorize("hasAnyRole('SUPPORT', 'SUPER')")
 	public String feedbackRefuse(@RequestParam("id") String id) {
 		boolean success = supportService.editFeedbackRefuse(id);
 		return success ? "success" : "fail";

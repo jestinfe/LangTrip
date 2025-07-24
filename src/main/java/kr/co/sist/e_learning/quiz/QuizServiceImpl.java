@@ -289,7 +289,7 @@ public class QuizServiceImpl implements QuizService {
     	        quizMapper.updateQuiz(quiz);
 
     	        // 2-2. 기존 보기 삭제
-    	        quizMapper.deleteOptionsByQuizSeq(quiz.getQuizSeq());
+    	        quizMapper.deleteOptionsByQuizBySeq(quiz.getQuizSeq());
 
     	        // 2-3. 보기 다시 등록
     	        int optionOrder = 1;

@@ -20,6 +20,8 @@ public class QuizListDTO {
 	 private Date uploadDate;	//생성일
 	 private String status;       //상태 -> 학습전/학습중(중도포기)/학습완료
 	 private String isDelete;       //상태 -> 학습전/학습중(중도포기)/학습완료
+	 private String userSeq;
+	 private Date modifyDate;
 	 //퀴즈묶음
 	 private List<QuizDTO> quiz = new ArrayList<>();
 	 

@@ -7,6 +7,35 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" th:href="@{/css/admin_sidebar.css}">
     <link rel="stylesheet" th:href="@{/css/account_detail.css}"> <!-- Assuming account_detail.css has relevant detail page styles -->
+    <style>
+        .form-group textarea {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            min-height: 120px;
+            resize: vertical;
+        }
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        .admin-table th, .admin-table td {
+            padding: 1rem 1.5rem;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .admin-table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+        .admin-table tbody tr:hover {
+            background-color: #f1f3f5;
+        }
+    </style>
 </head>
 <body>
     <div th:replace="layout/admin_sidebar :: sidebar"></div>
@@ -84,7 +113,7 @@
                         <tbody>
                             <tr th:each="video : ${course.videos}">
                                 <td th:text="${video.videoOrder}"></td>
-                                <td th:text="${video.title}"></td>
+                                <td><a th:href="@{/admin/courses/videos/{videoSeq}(videoSeq=${video.videoSeq})}" th:text="${video.title}"></a></td>
                                 <td th:text="${video.fileName}"></td>
                                 <td th:text="${video.description}"></td>
                                 <td th:text="${#dates.format(video.uploadDate, 'yyyy-MM-dd')}"></td>
@@ -107,7 +136,7 @@
                     <table class="admin-table">
                         <thead>
                             <tr>
-                                <th>순서</th>
+                                <th>퀴즈ID</th>
                                 <th>제목</th>
                                 <th>언어</th>
                                 <th>생성일</th>
@@ -117,7 +146,7 @@
                         <tbody>
                             <tr th:each="quizList : ${course.quizzes}">
                                 <td th:text="${quizList.quizListSeq}"></td>
-                                <td th:text="${quizList.title}"></td>
+                                <td><a th:href="@{/admin/courses/quizzes/{quizListSeq}(quizListSeq=${quizList.quizListSeq})}" th:text="${quizList.title}"></a></td>
                                 <td th:text="${quizList.langCategory}"></td>
                                 <td th:text="${#dates.format(quizList.uploadDate, 'yyyy-MM-dd')}"></td>
                                 <td th:text="${quizList.quiz != null ? quizList.quiz.size() : 0}"></td>

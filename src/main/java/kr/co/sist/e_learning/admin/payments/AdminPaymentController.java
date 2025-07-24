@@ -2,6 +2,7 @@ package kr.co.sist.e_learning.admin.payments;
 
 import kr.co.sist.e_learning.payment.PaymentMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +21,7 @@ public class AdminPaymentController {
     }
 
     @GetMapping("/admin/payments")
+    @PreAuthorize("hasAnyRole('PAYMENT', 'SUPER')")
     public String adminPayments(
             @RequestParam(value = "viewType", defaultValue = "payment") String viewType,
             @RequestParam(value = "paymentType", defaultValue = "all") String paymentType,

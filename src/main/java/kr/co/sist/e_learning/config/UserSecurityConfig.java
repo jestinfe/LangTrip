@@ -50,7 +50,7 @@ public class UserSecurityConfig {
                                 "/api/auth/socialSignup",
                                 "/api/auth/login/**",
             			        "/api/auth/token/refresh",
-            			        "/courses/**", "/csj/**", "support/**"
+            			        "/courses/**", "/csj/**", "/support/**"
             			        
             				 ).permitAll()
                 .anyRequest().authenticated()

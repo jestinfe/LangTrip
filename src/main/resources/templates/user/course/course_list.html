@@ -7,6 +7,141 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" th:href="@{/css/common.css}">
     <link rel="stylesheet" th:href="@{/css/course_list.css}">
+<style>
+/* Pagination Styles */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin: 40px 0 20px 0;
+    padding: 20px 0;
+    border-top: 1px solid #e5e7eb;
+}
+
+.pagination a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    height: 40px;
+    padding: 0 12px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #6b7280;
+    text-decoration: none;
+    background-color: #ffffff;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    transition: all 0.2s ease-in-out;
+}
+
+.pagination a:hover {
+    background-color: #f9fafb;
+    border-color: #9ca3af;
+    color: #374151;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.pagination a.active {
+    background-color: #3b82f6;
+    border-color: #3b82f6;
+    color: #ffffff;
+    font-weight: 600;
+    cursor: default;
+}
+
+.pagination a.active:hover {
+    background-color: #2563eb;
+    border-color: #2563eb;
+    transform: none;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+}
+
+/* Previous/Next buttons styling */
+.pagination a:first-child,
+.pagination a:last-child {
+    font-weight: 500;
+    padding: 0 16px;
+}
+
+.pagination a:first-child:before {
+    margin-right: 6px;
+}
+
+.pagination a:last-child:after {
+    margin-left: 6px;
+}
+
+/* Disabled state for previous/next buttons */
+.pagination a:first-child:only-of-type,
+.pagination a:last-child:only-of-type {
+    opacity: 1;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .pagination {
+        gap: 4px;
+        margin: 30px 0 15px 0;
+        padding: 15px 10px;
+    }
+    
+    .pagination a {
+        min-width: 36px;
+        height: 36px;
+        padding: 0 8px;
+        font-size: 13px;
+    }
+    
+    .pagination a:first-child,
+    .pagination a:last-child {
+        padding: 0 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .pagination {
+        gap: 2px;
+        flex-wrap: wrap;
+    }
+    
+    .pagination a {
+        min-width: 32px;
+        height: 32px;
+        padding: 0 6px;
+        font-size: 12px;
+    }
+    
+    .pagination a:first-child,
+    .pagination a:last-child {
+        padding: 0 10px;
+        font-size: 12px;
+    }
+}
+
+/* Optional: Add ellipsis styling if you plan to implement it later */
+.pagination .ellipsis {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    height: 40px;
+    color: #9ca3af;
+    font-weight: 500;
+}
+
+/* Focus states for accessibility */
+.pagination a:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+}
+.course-title {
+    text-align: center;
+}
+
+</style>
 </head>
 <body class="">
     <!-- Header -->
@@ -80,7 +215,6 @@
                     <span class="course-category" th:text="${course.category}"></span>
                     <h3 class="course-title" th:text="${course.title}"></h3>
                     <div class="course-instructor">
-                        <div class="instructor-avatar" th:text="${#strings.substring(course.instructorName, 0, 1)}"></div>
                         <span class="instructor-name" th:text="${course.instructorName}"></span>
                     </div>
                     <div class="course-stats">

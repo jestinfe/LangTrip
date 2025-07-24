@@ -1,6 +1,7 @@
 package kr.co.sist.e_learning.admin.log;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +17,7 @@ public class AdminLogController {
     private AdminLogService adminLogService;
 
     @GetMapping("/admin/log")
+    @PreAuthorize("hasAnyRole('LOG', 'SUPER')")
     public String adminLogPage(@RequestParam(name = "pageSize", defaultValue = "10") int pageSize,
                                @RequestParam(name = "orderBy", defaultValue = "logTime") String orderBy,
                                @RequestParam(name = "sort", defaultValue = "desc") String sort,

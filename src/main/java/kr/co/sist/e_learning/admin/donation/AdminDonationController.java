@@ -5,6 +5,7 @@ import kr.co.sist.e_learning.admin.PageResponseDTO_donation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +19,7 @@ public class AdminDonationController {
     private final AdminDonationService adminDonationService;
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('DONATION', 'SUPER')")
     public String donationList(Model model,
                                DonationSearchDTO searchDTO,
                                @ModelAttribute PageRequestDTO_donation pageRequestDTO,
@@ -36,6 +38,7 @@ public class AdminDonationController {
 
     @PostMapping("/deleteMessage/{donationId}")
     @ResponseBody
+    @PreAuthorize("hasAnyRole('DONATION', 'SUPER')")
     public ResponseEntity<String> deleteMessage(@PathVariable String donationId) {
        
 

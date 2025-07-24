@@ -1,7 +1,11 @@
 package kr.co.sist.e_learning.admin.course;
 
 import kr.co.sist.e_learning.pagination.PageResponseDTO;
+import kr.co.sist.e_learning.quiz.QuizListDTO;
+import kr.co.sist.e_learning.video.VideoDTO;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +22,7 @@ public class AdminCourseController {
     private AdminCourseService adminCourseService;
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('COURSE', 'SUPER')")
     public String listAdminCourses(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int pageSize,
@@ -60,6 +65,7 @@ public class AdminCourseController {
     }
 
     @GetMapping("/{courseSeq}")
+    @PreAuthorize("hasAnyRole('COURSE', 'SUPER')")
     public String adminCourseDetail(@PathVariable String courseSeq, Model model) {
         AdminCourseDetailDTO course = adminCourseService.getAdminCourseDetail(courseSeq);
         model.addAttribute("course", course);
@@ -67,9 +73,26 @@ public class AdminCourseController {
     }
 
     @PostMapping("/{courseSeq}/toggleVisibility")
+    @PreAuthorize("hasAnyRole('COURSE', 'SUPER')")
     public String toggleCourseVisibility(@PathVariable String courseSeq, @RequestParam String isPublic, RedirectAttributes ra) {
         adminCourseService.updateCourseVisibility(courseSeq, isPublic);
         ra.addFlashAttribute("message", "Course visibility updated successfully!");
         return "redirect:/admin/courses/" + courseSeq;
+    }
+
+    @GetMapping("/videos/{videoSeq}")
+    @PreAuthorize("hasAnyRole('COURSE', 'SUPER')")
+    public String adminVideoDetail(@PathVariable String videoSeq, Model model) {
+        VideoDTO video = adminCourseService.getVideoBySeq(videoSeq);
+        model.addAttribute("video", video);
+        return "admin/course/video_detail";
+    }
+
+    @GetMapping("/quizzes/{quizListSeq}")
+    @PreAuthorize("hasAnyRole('COURSE', 'SUPER')")
+    public String adminQuizDetail(@PathVariable String quizListSeq, Model model) {
+        QuizListDTO quizList = adminCourseService.getQuizListBySeq(quizListSeq);
+        model.addAttribute("quizList", quizList);
+        return "admin/course/quiz_detail";
     }
 }

@@ -12,10 +12,10 @@
   </selectKey>
 
   INSERT INTO QUIZ_LIST (
-    quiz_list_seq, course_seq, lang_category, title, upload_date, is_delete
+    quiz_list_seq, course_seq, lang_category, title, upload_date, is_delete, user_seq, modify_date
   ) VALUES (
     #{quizListSeq, jdbcType=VARCHAR}, #{courseSeq, jdbcType=VARCHAR}, #{langCategory,  jdbcType=VARCHAR},
-    #{title,  jdbcType=VARCHAR}, SYSDATE, 'N'
+    #{title,  jdbcType=VARCHAR}, SYSDATE, 'N', #{userSeq, jdbcType=NUMERIC}, NULL
   )
 </insert>
 
@@ -110,11 +110,13 @@ ORDER BY
     <result property="langCategory" column="lang_category"/>
     <result property="title" column="title"/>
     <result property="uploadDate" column="upload_date"/>
+    <result property="userSeq" column="user_seq"/>
+    <result property="modifyDate" column="modify_date"/>
 </resultMap>
 
 <!-- 퀴즈 버튼 눌렀을 때 시작 전 리스트 정보 (어떤 외국어? 제목은?)-->
 <select id="selectQuizListInfo" parameterType="String" resultMap="quizListDTOMap" flushCache="true" useCache="false">
-SELECT quiz_list_seq, course_seq, upload_date, lang_category, title
+SELECT quiz_list_seq, course_seq, upload_date, lang_category, title, user_seq
 FROM quiz_list
 WHERE quiz_list_seq = #{quizListSeq, jdbcType=VARCHAR}
 AND is_delete = 'N'
@@ -218,7 +220,7 @@ AND is_delete = 'N'
 <!-- 퀴즈 리스트 정보 수정용 -->
 <update id="updateQuizList">
 UPDATE quiz_list
-SET title = #{title, jdbcType=VARCHAR}, lang_category = #{langCategory, jdbcType=VARCHAR}
+SET title = #{title, jdbcType=VARCHAR}, lang_category = #{langCategory, jdbcType=VARCHAR}, modify_date = SYSDATE
 WHERE quiz_list_seq = #{quizListSeq, jdbcType=VARCHAR}
 </update>
 
@@ -271,38 +273,87 @@ WHERE quiz_seq IN (
 </update>
 
 
-  <resultMap id="quizListWithQuizzesMap" type="kr.co.sist.e_learning.quiz.QuizListDTO">
-    <id property="quizListSeq" column="quiz_list_seq"/>
-    <result property="courseSeq" column="course_seq"/>
-    <result property="langCategory" column="lang_category"/>
-    <result property="title" column="title"/>
-    <result property="uploadDate" column="upload_date"/>
-    <collection property="quiz" ofType="kr.co.sist.e_learning.quiz.QuizDTO" resultMap="quizWithOptionsMap"/>
+  
+
+<resultMap id="quizListWithDetailsMap" type="kr.co.sist.e_learning.quiz.QuizListDTO">
+    <id property="quizListSeq" column="QUIZ_LIST_SEQ"/>
+    <result property="courseSeq" column="COURSE_SEQ"/>
+    <result property="title" column="TITLE"/>
+    <result property="langCategory" column="LANG_CATEGORY"/>
+    <result property="uploadDate" column="UPLOAD_DATE"/>
+    <result property="isDelete" column="IS_DELETE"/>
+    <result property="userSeq" column="USER_SEQ"/>
+    <result property="modifyDate" column="MODIFY_DATE"/>
+    <collection property="quiz" ofType="kr.co.sist.e_learning.quiz.QuizDTO" select="selectQuizzesByQuizListSeq" column="QUIZ_LIST_SEQ"/>
   </resultMap>
 
-  <select id="selectQuizListsWithQuizzesByCourseSeq" parameterType="String" resultMap="quizListWithQuizzesMap">
+  <resultMap id="quizWithOptionsMenu" type="kr.co.sist.e_learning.quiz.QuizDTO">
+      <id property="quizSeq" column="QUIZ_SEQ"/>
+      <result property="quizListSeq" column="QUIZ_LIST_SEQ"/>
+      <result property="courseSeq" column="COURSE_SEQ"/>
+      <result property="correctOption" column="CORRECT_OPTION"/>
+      <result property="question" column="QUESTION"/>
+      <result property="quizOrder" column="QUIZ_ORDER"/>
+      <result property="uploadDate" column="UPLOAD_DATE"/>
+      <result property="isDelete" column="IS_DELETE"/>
+      <result property="type" column="TYPE"/>
+      <collection property="options" ofType="kr.co.sist.e_learning.quiz.QuizOptionDTO" select="selectQuizOptionsByQuizSeq" column="QUIZ_SEQ"/>
+  </resultMap>
+
+  <select id="selectQuizzesByQuizListSeq" parameterType="String" resultMap="quizWithOptionsMenu">
     SELECT
-      ql.quiz_list_seq,
-      ql.course_seq,
-      ql.lang_category,
-      ql.title,
-      ql.upload_date,
-      q.quiz_seq,
-      q.question,
-      q.correct_option,
-      q.quiz_order,
-      q.type,
-      qo.quiz_option_seq,
-      qo.option_order,
-      qo.content,
-      qo.image_name,
-      qo.image_addr
-    FROM quiz_list ql
-    LEFT JOIN quiz q ON ql.quiz_list_seq = q.quiz_list_seq AND q.is_delete = 'N'
-    LEFT JOIN quiz_option qo ON q.quiz_seq = qo.quiz_seq AND qo.is_delete = 'N'
-    WHERE ql.course_seq = #{courseSeq}
-    AND ql.is_delete = 'N'
-    ORDER BY ql.upload_date, q.quiz_order, qo.option_order
+        q.QUIZ_SEQ,
+        q.QUIZ_LIST_SEQ,
+        q.COURSE_SEQ,
+        q.CORRECT_OPTION,
+        q.QUESTION,
+        q.QUIZ_ORDER,
+        q.UPLOAD_DATE,
+        q.IS_DELETE,
+        q.TYPE
+    FROM QUIZ q
+    WHERE q.QUIZ_LIST_SEQ = #{quizListSeq}
+  </select>
+
+  <select id="selectQuizOptionsByQuizSeq" parameterType="String" resultType="kr.co.sist.e_learning.quiz.QuizOptionDTO">
+    SELECT
+        qo.QUIZ_OPTION_SEQ as quizOptionSeq,
+        qo.QUIZ_SEQ as quizSeq,
+        qo.OPTION_ORDER as optionOrder,
+        qo.CONTENT,
+        qo.IMAGE_NAME as imageName,
+        qo.IMAGE_ADDR as imageAddr,
+        qo.IS_DELETE as isDelete
+    FROM QUIZ_OPTION qo
+    WHERE qo.QUIZ_SEQ = #{quizSeq}
+  </select>
+
+  <select id="selectQuizListsWithQuizzesByCourseSeq" parameterType="String" resultMap="quizListWithDetailsMap">
+    SELECT
+      ql.QUIZ_LIST_SEQ,
+      ql.COURSE_SEQ,
+      ql.TITLE,
+      ql.LANG_CATEGORY,
+      ql.UPLOAD_DATE,
+      ql.IS_DELETE,
+      ql.USER_SEQ,
+      ql.MODIFY_DATE
+    FROM QUIZ_LIST ql
+    WHERE ql.COURSE_SEQ = #{courseSeq}
+  </select>
+
+  <select id="selectQuizListBySeq" parameterType="String" resultMap="quizListWithDetailsMap">
+    SELECT
+      ql.QUIZ_LIST_SEQ,
+      ql.COURSE_SEQ,
+      ql.TITLE,
+      ql.LANG_CATEGORY,
+      ql.UPLOAD_DATE,
+      ql.IS_DELETE,
+      ql.USER_SEQ,
+      ql.MODIFY_DATE
+    FROM QUIZ_LIST ql
+    WHERE ql.QUIZ_LIST_SEQ = #{quizListSeq}
   </select>
 
 </mapper>

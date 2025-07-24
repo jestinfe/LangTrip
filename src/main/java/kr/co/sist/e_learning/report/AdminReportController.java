@@ -1,6 +1,7 @@
 package kr.co.sist.e_learning.report;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,6 +26,7 @@ public class AdminReportController {
 	}
 	
 	@GetMapping("/report-list")
+	@PreAuthorize("hasAnyRole('REPORT', 'SUPER')")
 	public String reportList(@ModelAttribute UsrAndRptPageRequestDTO pReqDTO, Model model) {
 		UsrAndRptPageResponseDTO<ReportDTO> pResDTO = reportService.getReports(pReqDTO);
 		model.addAttribute("pResDTO", pResDTO);

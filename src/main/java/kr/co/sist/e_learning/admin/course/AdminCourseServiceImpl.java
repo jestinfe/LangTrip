@@ -9,11 +9,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import kr.co.sist.e_learning.quiz.QuizListDTO;
+import kr.co.sist.e_learning.quiz.QuizMapper;
+import kr.co.sist.e_learning.video.VideoDTO;
+
 @Service
 public class AdminCourseServiceImpl implements AdminCourseService {
 
     @Autowired
     private AdminCourseMapper adminCourseMapper;
+    @Autowired
+    private QuizMapper quizMapper;
 
     @Override
     public PageResponseDTO<AdminCourseListDisplayDTO> getAdminCourses(Map<String, Object> params) {
@@ -40,5 +46,15 @@ public class AdminCourseServiceImpl implements AdminCourseService {
     @Override
     public void updateCourseVisibility(String courseSeq, String isPublic) {
         adminCourseMapper.updateCourseVisibility(courseSeq, isPublic);
+    }
+
+    @Override
+    public VideoDTO getVideoBySeq(String videoSeq) {
+        return adminCourseMapper.selectVideoBySeq(videoSeq);
+    }
+
+    @Override
+    public QuizListDTO getQuizListBySeq(String quizListSeq) {
+        return quizMapper.selectQuizListBySeq(quizListSeq);
     }
 }

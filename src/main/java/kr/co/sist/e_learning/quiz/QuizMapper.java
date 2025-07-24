@@ -52,7 +52,7 @@ public interface QuizMapper {
 	public void deleteQuizByListSeq(@Param("quizListSeq") String quizListSeq);
 
 	//<delete id="deleteOptionsByQuizSeq" parameterType="String">
-	public void deleteOptionsByQuizSeq(@Param("quizSeq") String quizSeq);
+	public void deleteOptionsByQuizBySeq(@Param("quizSeq") String quizSeq);
 	
 	//<update id="softDeleteQuizList">
 	public void softDeleteQuizList(@Param("quizListSeq") String quizListSeq);
@@ -70,4 +70,8 @@ public interface QuizMapper {
 	public List<QuizListDTO> selectDistinctQuizLists(String courseSeq);
 	
 	List<QuizListDTO> selectQuizListsWithQuizzesByCourseSeq(String courseSeq);
+
+    List<QuizDTO> selectQuizzesByQuizListSeq(String quizListSeq);
+    List<QuizOptionDTO> selectQuizOptionsByQuizSeq(String quizSeq);
+    QuizListDTO selectQuizListBySeq(String quizListSeq);
 }
