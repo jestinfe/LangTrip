@@ -1,4 +1,4 @@
-package kr.co.sist.e_learning.community.controller;
+	package kr.co.sist.e_learning.community.controller;
 
 import kr.co.sist.e_learning.community.dto.CommunityCommentDTO;
 import kr.co.sist.e_learning.community.dto.CommunityPostDTO;
