@@ -19,7 +19,6 @@
   <!-- 마이페이지 전용 스타일 -->
   <link rel="stylesheet" th:href="@{/css/mypage.css}">
   <link rel="stylesheet" th:href="@{/css/lecture.css}">
-  <link rel="stylesheet" th:href="@{/css/subscription.css}">
   <link rel="stylesheet" th:href="@{/css/link_account.css}">
   <link rel="stylesheet" th:href="@{/css/instroductor_course.css}">
 
@@ -34,9 +33,9 @@
   </style>
 </head>
 <body class="mypage">
+    <th:block th:replace="~{layout/header :: header}"/>
   <div class="container">
     <!-- 헤더 -->
-    <th:block th:replace="~{layout/header :: header}"/>
 
     <!-- 3단 레이아웃: sidebar / content / ad-area -->
     <div class="main-content">
@@ -211,11 +210,15 @@
   // 외부 호출 허용 (필요시)
   window.loadContent = loadContent;
 /*]]>*/
+
+
+
 </script>
 
   <!-- 기타 스크립트 -->
   <script th:src="@{/js/donation.js}"></script>
   <script th:src="@{/js/instroductor_course.js}"></script>
   <script th:src="@{/js/chatbot.js}"></script>
+  <script th:src="@{/js/uploadProfile.js}"></script>
 </body>
 </html>
