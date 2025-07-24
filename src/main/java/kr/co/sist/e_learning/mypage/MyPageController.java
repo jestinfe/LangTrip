@@ -4,10 +4,12 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,7 +25,6 @@ import kr.co.sist.e_learning.adBanner.AdBannerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jakarta.servlet.http.HttpSession;
 
 @Controller
 @RequestMapping("/mypage")
@@ -56,7 +57,7 @@ public class MyPageController {
         if (raw instanceof Long userSeq) {
             return userSeq;
         }
-        return 0L;
+        return 1001L;
     }
 
     /**
@@ -87,9 +88,6 @@ public class MyPageController {
             case "lecture_history":
                 model.addAttribute("lectureList", mpSV.getLectureHistory(userSeq));
                 model.addAttribute("myLectureList", mpSV.selectMyLectures(userSeq));
-                break;
-            case "subscriptions":
-                model.addAttribute("subscriptionList", mpSV.getSubscriptions(userSeq));
                 break;
             case "wallet":
                 model.addAttribute("accountInfo", fdSV.getAccountInfo(userSeq));
@@ -151,64 +149,107 @@ public class MyPageController {
     public Map<String, Object> uploadProfile(@RequestParam("file") MultipartFile file,
                                              Authentication auth) {
         Map<String, Object> result = new HashMap<>();
-        Object raw = auth.getPrincipal();
-        if (!(raw instanceof Long userSeq) || file.isEmpty()) {
+
+        // 인증된 사용자 정보 가져오기
+        Object principal = auth.getPrincipal();
+
+        // 디버깅 로그 추가: 인증된 사용자 정보 확인
+        logger.debug("인증된 사용자 정보: " + principal);
+
+        if (!(principal instanceof UserDetails userDetails)) {
             result.put("success", false);
-            result.put("message", "사용자 정보 또는 파일이 없습니다.");
+            result.put("message", "사용자 정보가 올바르지 않습니다.");
+            logger.error("사용자 정보가 올바르지 않습니다. principal: " + principal); // 에러 로그
             return result;
         }
+
+        // userSeq 가져오기
+        long userSeq = getOrInitUserSeq(auth);
+        logger.debug("사용자 Seq: " + userSeq); // 디버깅 로그
+
+        if (file.isEmpty()) {
+            result.put("success", false);
+            result.put("message", "파일이 없습니다.");
+            logger.warn("파일이 선택되지 않았습니다.");
+            return result;
+        }
+
         try {
+            // 확장자 검사
             String originalName = file.getOriginalFilename();
-            String ext = originalName.substring(originalName.lastIndexOf('.') + 1).toLowerCase();
+            String ext = originalName.substring(originalName.lastIndexOf(".") + 1).toLowerCase();
             if (!List.of("png", "jpg", "jpeg", "gif").contains(ext)) {
                 result.put("success", false);
-                result.put("message", "이미지 파일만 업로드 가능합니다.");
+                result.put("message", "허용되지 않은 확장자입니다.");
+                logger.warn("잘못된 확장자 파일이 업로드되었습니다: " + ext);
                 return result;
             }
-            String filename = "profile_" + userSeq + "." + ext;
-            File uploadFolder = new File(uploadDirRoot + "/userprofile");
-            if (!uploadFolder.exists()) uploadFolder.mkdirs();
-            File dest = new File(uploadFolder, filename);
-            file.transferTo(dest);
-            String dbPath = uploadPathWeb + "/" + filename;
-            mpSV.updateUserProfile(userSeq, dbPath);
-            result.put("success", true);
-            result.put("newPath", dbPath);
-        } catch (Exception e) {
-            e.printStackTrace();
-            result.put("success", false);
-            result.put("message", "업로드 중 오류 발생");
-        }
-        return result;
-    }
 
-    /**
-     * 프로필 삭제
-     */
-    @PostMapping("/delete_profile")
-    @ResponseBody
-    public Map<String, Object> deleteProfile(Authentication auth) {
-        Map<String, Object> result = new HashMap<>();
-        Object raw = auth.getPrincipal();
-        if (!(raw instanceof Long userSeq)) {
-            result.put("success", false);
-            result.put("message", "사용자 정보 없음");
-            return result;
-        }
-        try {
-            String profilePath = mpSV.selectProfilePath(userSeq);
-            if (profilePath != null && !profilePath.isBlank()) {
-                File file = new File(uploadDirRoot + "/userprofile", profilePath.replace("/userprofile/", ""));
-                if (file.exists()) file.delete();
+            // 저장 디렉토리 생성
+            File dir = new File(uploadDirRoot);
+            if (!dir.exists()) {
+                boolean dirCreated = dir.mkdirs();
+                if (dirCreated) {
+                    logger.info("디렉토리 생성됨: " + dir.getAbsolutePath());
+                } else {
+                    logger.error("디렉토리 생성 실패: " + dir.getAbsolutePath());
+                    result.put("success", false);
+                    result.put("message", "디렉토리 생성 실패");
+                    return result;
+                }
             }
-            mpSV.updateUserProfile(userSeq, null);
-            result.put("success", true);
-        } catch (Exception e) {
-            e.printStackTrace();
-            result.put("success", false);
-            result.put("message", "삭제 중 오류 발생");
-        }
-        return result;
+
+            // 기존 이미지 삭제
+            String oldPath = mpSV.selectProfilePath(userSeq); // 예: /images/userprofile/abc_user001.png
+            if (oldPath != null && oldPath.startsWith("/images/userprofile/")) {
+                String oldFileName = oldPath.replace("/images/userprofile/", "");
+                File oldFile = new File(dir, oldFileName);
+                if (oldFile.exists()) {
+                    boolean deleted = oldFile.delete();
+                    if (deleted) {
+                        logger.info("기존 파일 삭제됨: " + oldFile.getAbsolutePath());
+                    } else {
+                        logger.warn("기존 파일 삭제 실패: " + oldFile.getAbsolutePath());
+                    }
+                }
+            }
+
+            // 새 파일명 생성
+            String uuid = UUID.randomUUID().toString();
+            String newFileName = uuid + "_" + userSeq + "." + ext;
+            File destFile = new File(dir, newFileName);
+
+            // 파일을 서버에 저장
+            try {
+                file.transferTo(destFile);
+                logger.info("파일 저장됨: " + destFile.getAbsolutePath());
+            } catch (Exception e) {
+                result.put("success", false);
+                result.put("message", "파일 저장 중 오류 발생");
+                logger.error("파일 저장 중 오류 발생: " + e.getMessage(), e);
+                return result;
+            }
+            
+            // DB 경로 업데이트
+            String webPath = uploadPathWeb + "/" + newFileName;  // 상대 경로
+            try {
+                mpSV.updateUserProfile(userSeq, webPath);
+                logger.info("DB 경로 업데이트됨: " + webPath);
+            } catch (Exception e) {
+                result.put("success", false);
+                result.put("message", "DB 업데이트 중 오류 발생");
+                logger.error("DB 업데이트 중 오류 발생: " + e.getMessage(), e);
+                return result;
+            }
+            
+	        } catch (Exception e) {
+	            result.put("success", false);
+	            result.put("message", "업로드 중 오류 발생");
+	            logger.error("업로드 중 오류 발생", e); // 에러 로그
+	        }
+	
+	        result.put("success", true);
+	        return result;
     }
 
     @GetMapping("/instroductor_course")
@@ -284,15 +325,6 @@ public class MyPageController {
     public String leave() {
         return "mypage/leave";
     }
-
-    @GetMapping("/subscriptions")
-    public String subscriptionPage(Authentication auth, Model model) {
-        long userSeq = getOrInitUserSeq(auth);
-        List<SubscriptionDTO> subscriptions = mpSV.getSubscriptions(userSeq);
-        model.addAttribute("subscriptionList", subscriptions);
-        return "mypage/subscriptions";
-    }
-
 
     @GetMapping("/wallet")
     public String accountPage(Model model, Authentication auth) {
