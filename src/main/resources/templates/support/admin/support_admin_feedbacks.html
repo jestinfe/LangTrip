@@ -6,10 +6,10 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <link rel="stylesheet" href="/css/admin_sidebar.css">
 
-<link rel="stylesheet" href="/support_static/support_design/admin_feedback_design.css">
+<link rel="stylesheet" href="/css/admin_feedback_design.css">
 
 
-<title>templates/support/admin/support_admin_feedbacks.html</title>
+<title>templates/admin/support/support_admin_feedbacks.html</title>
 <script
 	src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
 </head>
@@ -19,7 +19,7 @@
 .feedback-header {
 	display: grid;
 /*  	grid-template-columns: 80px 200px 0.8fr 100px 80px 100px 80px 100px 80px;  */
- 	grid-template-columns: 40px 120px 40px 360px 240px 320px 200px 60px 60px; 
+ 	grid-template-columns: 40px 120px 60px 500px 240px 320px 200px 60px 60px; 
 	padding: 12px 16px;
 	align-items: center;
 	border-bottom: 1px solid #eee;
@@ -37,7 +37,7 @@
 .feedback-row {
 	display: grid;
 /*  	grid-template-columns: 80px 200px 0.8fr 100px 80px 100px 80px 100px 80px;  */
- 	grid-template-columns: 40px 120px 40px 360px 240px 320px 200px 60px 60px; 
+ 	grid-template-columns: 40px 120px 60px 500px 240px 320px 200px 60px 60px; 
 	padding: 12px 16px;
 	align-items: center;
 	background: #fff;
@@ -78,45 +78,9 @@
 
 
 	
-	
-				<div class="child-div" style="height: 90px; border:none !important;
-		box-shadow: none; width: 100%; margin-left: 600px; background:transparent;
-			margin-top: -20px;
-		">
-			<div class="title-div" style="border:none !important;">
-			
-				<div class="div-1" style="border:none !important; margin-right:-20px; ">
-					<div >
-						<img th:src="@{/support_static/support_images/symbol_support.png}"
-							style="width: 50px; height: 50px; border:none !important; margin-right: 50px;" />
-					</div>
-				</div>
-				
-				<div class="div-2" style="border:none !important;">지원센터 관리</div>
-				
-				<div class="div-3" style="border: none; display: flex; flex-direction: row; width: 400px; margin-left: 40px;">
-					<div style="margin-right: 50px; ">
-						<a th:href="@{/support/admin/feedback}" style="color: #cca9fe !important">관련 통계</a>
-					</div>
-					<div style="margin-right: 50px;">
-						<a th:href="@{/support/admin/notice}" style="color: #cca9fe !important">공지사항 관리</a>
-					</div>
-					<div style="margin-right: 50px;">
-						<a th:href="@{/support/admin/faq}" style="color: #cca9fe !important">FAQ 관리</a>
-					</div>
-					<div style="margin-right: 50px;">
-						<a th:href="@{/support/admin/feedback2}">피드백 관리</a>
-					</div>
-				</div><!-- div-3 -->
-				
-				<div class="div-4" style="border:none !important; color: #5701d0; flex: 10">
-					<span><a href="/support/admin/notice"></a></span>
-				</div>
-				
-			</div>
-		</div>
-		<!-- child-div -->
-	
+	<div class="child-div" style="height: auto; width: 100%; box-shadow: none; margin-left: 600px; background-color: transparent; border:none !important;">
+		<div th:replace="/support/admin/support_admin_submenu :: subMenu"></div>
+	</div><!-- child-div -->
 	
 	
 	
@@ -124,14 +88,15 @@
 	
 		
 		<div class="child-div"
-			style="height: auto; width: 100%; box-shadow: 0 0 6px rgba(0, 0, 0, 0.4) !important; margin-left: 600px;">
+			style="height: auto; width: 100%; box-shadow: none; margin-left: 720px; background-color: transparent; border:none;"> 
 
 			<div class="title-div"
-				style="border-bottom: none; border: 1px solid none; margin-left: 20px; margin-bottom: -10px;">
+				style="border-bottom: none; border:none; margin-left: 20px; margin-bottom: -10px;">
 				<div class="div-1" style="flex:5; border:none">
-					<div class="div-2" style="font-size: 30px; border:none">
-						피드백 관리 <span style="opacity : 0.4; font-size: 28px"> > </span>
-						<span style="color: #5701d0">전체 조회</span>
+					<div class="div-2" style="font-size: 36px; border:none">
+						전체 피드백 관리
+<!-- 						<span style="opacity : 0.4; font-size: 36px"> > </span> -->
+<!-- 						<span style="color: #5701d0">전체 조회</span> -->
 					</div>
 				</div>
 			</div>
@@ -145,9 +110,9 @@
 <!-- 				</div> -->
 <!-- 			</div> -->
 
-			<form th:action="@{/support/admin/notice}" method="get">
+			<form th:action="@{/admin/support/notice}" method="get">
 				<div class="child-div"
-					style="height: auto; width: 99%; box-shadow: 0 0 0px rgba(0, 0, 0, 0.0)">
+					style="height: auto; width: 99%; box-shadow: 0 0 0px rgba(0, 0, 0, 0.0); border:none;">
 
 
 
@@ -178,23 +143,23 @@
 
 
 
-<div class="child-div" style="width: 97%; margin-left: 22px; margin-top: -10px; box-shadow: none; height: auto">
+<div class="child-div" style="width: 1200px; margin-left: 22px; margin-top: -10px; box-shadow: none; height: auto">
     <div class="feedback-header">
         <div class="notice-cell" style="color: white">ID</div>
         <div class="notice-cell" style="color: white; ">일시</div>
         <div class="notice-cell" style="color: white">구분</div>
-        <div class="notice-cell" style="color: white; text-align: left;">피드백</div>
+        <div class="notice-cell" style="color: white; text-align: left; margin-left: 20px;">피드백</div>
 <!--         <div class="notice-cell" style="color: white">작성자</div> -->
         <div class="notice-cell" style="color: white; text-align: left;">이메일</div>
         <div class="notice-cell" style="color: white;">상태</div>
-        <div class="notice-cell" style="color: white">상태</div>
-        <div class="notice-cell" style="color: white">단계</div>
-        <div class="notice-cell" style="color: white">스타일</div>
+<!--         <div class="notice-cell" style="color: white">상태</div> -->
+<!--         <div class="notice-cell" style="color: white">단계</div> -->
+<!--         <div class="notice-cell" style="color: white">스타일</div> -->
     </div>
 
 
     <div class="feedback-row row-bordered" th:each="fb : ${feedbackList}" th:attr="data-step=${fb.feedback_step}">
-        <a th:href="@{/support/admin/feedback_detail/{id}(id=${fb.feedback_id})}" style="display: contents;">
+        <a th:href="@{/admin/support/feedback_detail/{id}(id=${fb.feedback_id})}" style="display: contents;">
             <div class="notice-cell" th:text="${fb.feedback_id}"></div>
             <div class="notice-cell" th:text="${#dates.format(fb.feedback_created_date, 'yyyy-MM-dd')}"></div>
 <!-- 실명/익명 구분 마킹 -->
@@ -215,7 +180,7 @@
             
             
             
-            <div class="notice-cell" th:text="${fb.feedback_title}" style="text-align: left;"></div>
+            <div class="notice-cell" th:text="${fb.feedback_title}" style="text-align: left; margin-left: 20px;"></div>
 <!--             <div class="notice-cell" th:text="${fb.user_id}"></div> -->
             <div class="notice-cell" th:text="${fb.email}" style="text-align: left;"></div>
 <!--             <div class="notice-cell" th:text="${fb.feedback_content}"></div> -->
@@ -249,9 +214,9 @@
 </div>
 
 
-            <div class="notice-cell" th:text="${fb.feedback_status}"></div>
-            <div class="notice-cell" th:text="${fb.feedback_step}"></div>
-            <div class="notice-cell" th:text="${fb.feedback_style}"></div>
+<!--             <div class="notice-cell" th:text="${fb.feedback_status}"></div> -->
+<!--             <div class="notice-cell" th:text="${fb.feedback_step}"></div> -->
+<!--             <div class="notice-cell" th:text="${fb.feedback_style}"></div> -->
            
             
             
@@ -391,7 +356,7 @@
 
 				$.ajax({
 					type : "POST",
-					url : "/support/admin/feedback/stepUpdate",
+					url : "/admin/support/feedback/stepUpdate",
 					data : {
 						id : id
 					},
@@ -418,7 +383,7 @@
 
 				$.ajax({
 					type : "POST",
-					url : "/support/admin/feedback/refuse",
+					url : "/admin/support/feedback/refuse",
 					data : {
 						id : id
 					},

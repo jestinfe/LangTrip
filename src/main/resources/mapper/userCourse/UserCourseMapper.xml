@@ -7,21 +7,17 @@
 	<insert id="insertUserCourse" parameterType="UserCourseDTO">
 		insert into course_enrollment(
 		enroll_seq,
-		user_id,
+		user_seq,
 		course_seq,
-		enroll_date,
-		status,
-		progress
+		enroll_date
 		)values(
 		enroll_seq.nextval,
-		#{userId},
+		#{userSeq},
 		#{courseSeq},
-		sysdate,
-		#{status},
-		#{progress}
+		sysdate
 		)
 	</insert>
-	<select id="selectUserCoursesByUserId" parameterType="String"
+	<select id="selectUserCoursesByuserSeq" parameterType="Long"
 		resultType="UserCourseDTO">
 		SELECT
 		c.course_seq,
@@ -38,22 +34,25 @@
 		JOIN
 		course c ON ce.course_seq = c.course_seq
 		WHERE
-		ce.user_id = #{userId}
+		ce.user_seq = #{userSeq}
+	</select>
+	<select id="selectAlreadyEnrollCourse" parameterType="String" resultType="int">
+	select count(*) from course_enrollment where course_seq = #{courseSeq}
 	</select>
 	<select id="selectUserCourseByPage" parameterType="map"
 		resultType="UserCourseDTO">
-		SELECT c.title AS courseTitle, c.introduction, c.upload_date,
+		SELECT e.enroll_seq, e.user_seq, c.title AS courseTitle, c.introduction, c.upload_date,
 		c.thumbnail_path, c.thumbnail_name, c.category, c.course_seq,
 		c.difficulty, c.is_public, e.enroll_date
 		FROM course_enrollment e
 		JOIN course c ON e.course_seq = c.course_seq
-		WHERE e.user_id = #{userId}
+		WHERE e.user_seq = #{userSeq}
 		ORDER BY e.enroll_date ASC
 		OFFSET #{offset}  ROWS FETCH NEXT #{limit} ROWS ONLY
 	</select>
-	<select id="selectUserCourseCount" parameterType="String"
+	<select id="selectUserCourseCount" parameterType="Long"
 		resultType="int">
-		select count(*) from course_enrollment where user_id = #{userId}
+		select count(*) from course_enrollment where user_seq = #{userSeq}
 	</select>
 
   <resultMap id="userCourseListDisplayMap" type="kr.co.sist.e_learning.usercourse.UserCourseListDisplayDTO">
@@ -66,7 +65,7 @@
     <result property="thumbnailPath" column="THUMBNAIL_PATH"/>
     <result property="thumbnailName" column="THUMBNAIL_NAME"/>
     <result property="instructorName" column="INSTRUCTOR_NAME"/>
-    <result property="userId" column="USER_ID"/>
+    <result property="userSeq" column="user_seq"/>
   </resultMap>
 
   <select id="selectPublicCourses" parameterType="map" resultMap="userCourseListDisplayMap">
@@ -80,7 +79,7 @@
       c.THUMBNAIL_PATH,
       c.THUMBNAIL_NAME,
       u.NICKNAME AS INSTRUCTOR_NAME,
-      u.USER_ID
+      u.user_seq
     FROM COURSE c
     JOIN USERS u ON c.USER_SEQ = u.USER_SEQ
     WHERE c.IS_PUBLIC = 'Y'
@@ -147,7 +146,7 @@
       c.THUMBNAIL_PATH,
       c.THUMBNAIL_NAME,
       u.NICKNAME AS INSTRUCTOR_NAME,
-      u.USER_ID
+      u.user_seq
     FROM COURSE c
     JOIN USERS u ON c.USER_SEQ = u.USER_SEQ
     WHERE c.IS_PUBLIC = 'Y'

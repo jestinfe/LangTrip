@@ -27,6 +27,17 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Value("${upload.path.community}")      // /community
     private String communityPath;
+    
+    @Value("${upload.path.courseImg}")      // /community
+    private String courseImg;
+    
+    @Value("${upload.path.courseVideo}")      // /community
+    private String courseVideo;
+    
+    
+
+    @Value("${upload.path.quiz}")           // /upload/img/quiz
+    private String quizImagePath;
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
@@ -37,6 +48,17 @@ public class WebConfig implements WebMvcConfigurer {
         // 커뮤니티 이미지 URL: /community/xxx.jpg → 로컬 경로: {uploadRootDir}/community
         registry.addResourceHandler(communityPath + "/**")
                 .addResourceLocations("file:///" + uploadRootDir + "/community/");
+        // 커뮤니티 이미지 URL: /community/xxx.jpg → 로컬 경로: {uploadRootDir}/community
+        
+        registry.addResourceHandler(communityPath + "/**")
+        .addResourceLocations("file:///" + uploadRootDir + "/courseImg/");
+        // 커뮤니티 이미지 URL: /community/xxx.jpg → 로컬 경로: {uploadRootDir}/community
+        registry.addResourceHandler(communityPath + "/**")
+        .addResourceLocations("file:///" + uploadRootDir + "/courseVideo/");
+
+        // 퀴즈 이미지 URL: /upload/img/quiz/xxx.png → 로컬 경로: {uploadRootDir}/quiz
+        registry.addResourceHandler(quizImagePath + "/**")
+                .addResourceLocations("file:///" + uploadRootDir + "/quiz/");
 
         // 기본 static 이미지 경로 (클래스패스)
         registry.addResourceHandler("/images/**")

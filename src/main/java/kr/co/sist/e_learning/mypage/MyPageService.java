@@ -10,8 +10,6 @@ public interface MyPageService {
     void updateUserProfile(long userSeq, String newPath);
     List<LectureHistoryDTO> getLectureHistory(long userSeq);
     List<LectureHistoryDTO> selectMyLectures(long userSeq);
-    List<SubscriptionDTO> getSubscriptions(Long userSeq);
-    boolean cancelSubscription(Long userSeq, Long instructorId);
     UserAccountDTO getUserAccount(long userSeq);
 
     public boolean linkUserAccount(UserAccountDTO userAccountDTO);

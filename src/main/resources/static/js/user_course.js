@@ -2,15 +2,25 @@
         const limit = 5; // 그리드 형태로 3x3 배치
         let allCourses = []; // 전체 강의 데이터
         let filteredCourses = []; // 필터링된 강의 데이터
-
+		console.log("📦 user_course.js loaded");
         // 페이지 로드시 강의 목록 불러오기
-        window.addEventListener("DOMContentLoaded", () => {
-            loadCourses(1);
-        });
+//        window.addEventListener("DOMContentLoaded", () => {
+//            loadCourses(1);
+//        });
+window.initUserCourse = function () {
+  console.log("📌 USer_course fragment loaded");
+
+  const list = document.getElementById("courseGrid");
+  if (list) {
+    loadCourses(1);
+  } else {
+    console.warn("❌ coursegrid not found in DOM");
+  }
+};
 
         // 수강 중인 강의 목록 로드
         async function loadCourses(page = 1) {
-        	currentPage = page;
+           currentPage = page;
             try {
                 const response = await axios.get(`/user/showUserCourses?page=${page}&limit=${limit}`);
                 allCourses = response.data.courses;
@@ -109,7 +119,7 @@
             const year = date.getFullYear();
             const month = date.getMonth() + 1; // 월은 0부터 시작함
             const day = date.getDate();
-           	
+              
             return `${year}년 ${month}월 ${day}일`;
         }
 

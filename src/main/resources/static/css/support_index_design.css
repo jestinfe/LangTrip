@@ -221,7 +221,7 @@ input::placeholder {
 		    left: 0;
 		    width: 100%;
 		    background: #ffffff;
-		    border: 1px solid #5701d0 !important;
+		    border: 3px solid #5701d0 !important;
 		    border-top: none;
 		    border-radius: 0 0 8px 8px;
 		    box-shadow: 0px 4px 8px rgba(0,0,0,0.1);
@@ -456,4 +456,118 @@ margin-top: 15px; font-size: 24px; color: #5701d0;
 
 .centerSymbol > img {
 	height: 100%;
+}
+
+/* ----------------------------------------------------------------------------------------- */
+
+.scroll-container {
+	  width: 800px;
+	  height: 120px;
+	  overflow: hidden;
+	}
+	
+	#slider {
+	  display: flex;
+	  flex-direction: column;
+/* 	  animation: scroll-up 45s linear infinite; */
+	  animation: scroll-up 32s linear infinite;
+	  padding-top: 30px;
+	  
+	}
+	
+	.slide {
+ 	  margin-top: 10px; 
+ 	  margin-bottom: 10px; 
+	  
+	  height: 50px;
+	  box-sizing: border-box;
+/* 	  border-bottom: 1px solid #ddd !important;  */
+	  background-color: transparent;
+	  
+	  display: flex; 
+	  flex-direction: row;
+	  width: 100%;
+	  
+/* 	  border: 1px solid rgba(181,87,254, 0.4) !important; */
+	  
+	}
+	.slide:hover{
+		background-color: rgba(154,67,254, 0.1);
+	}
+	
+	@keyframes scroll-up {
+	  0% { transform: translateY(0); }
+	  100% { transform: translateY(-700px); } /* 총 슬라이드 수 * 높이 */
+	}
+
+  
+  .faqToolLeft > .faqToolLeftTitle {
+	font-size: 32px;
+	font-weight: bold;
+	color: #9a43fe;
+	
+  }
+  .faqToolLeft > .faqToolLeftInfo {
+	font-size: 18px;
+	color: rgb(155, 155, 155);
+  }
+  
+  .plusDiv{
+  border:1px solid red !important;
+  font-size: 36px;
+/*   font-weight: bold; */
+  color: #9a43fe;
+  width: 40px;
+  }
+  
+  .countDiv{
+/*   border:1px solid red !important; */
+  font-size: 36px;
+/*   font-weight: bold;  */
+  color: #9a43fe;
+  width: 40px;
+  }
+  
+  .rankDiv{
+  width :60px;;
+/*   border: 1px solid tranparent !important; */
+/*   border: 1px solid red !important; */
+  color: #9a43fe;
+  font-size: 30px;
+  margin-left: 40px;
+  margin-right: -20px;
+  }
+  
+  .topFaqtypeDiv{
+  width :auto;
+/*   border: 1px solid tranparent !important; */
+/*   border: 1px solid red !important; */
+  margin-left: 40px;
+  border: 1px solid #9a43fe !important;
+  border-radius: 8px; 
+  color: #9a43fe;
+  height: 100%;
+  font-size: 24px;
+  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
+  padding: 5px !important;
+  
+  
+  }
+  
+  .topFaqDiv{
+  width :auto;
+/*   border: 1px solid tranparent !important; */
+/*   border: 1px solid red !important; */
+  font-size: 30px;
+  margin-left: 36px;
+   color: #9a43fe;
+  }
+  
+  .suggestItem.hovered {
+  background-color: rgba(87,1,208, 0.2);
+  color: rgb(87,1,208);
 }

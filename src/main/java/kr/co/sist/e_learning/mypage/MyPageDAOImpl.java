@@ -36,23 +36,5 @@ public class MyPageDAOImpl implements MyPageDAO {
         map.put("profile", profile);
         session.update(nsMP + ".updateProfile", map);
     }
-
-  
-    @Override
-    public List<SubscriptionDTO> selectSubscriptions(Long userSeq) {
-        System.out.println("[DAO] selectSubscriptions(userSeq=" + userSeq + ")");
-        List<SubscriptionDTO> list = session.selectList(nsMP + ".selectSubscriptions", userSeq);
-        System.out.println("[DAO] session.selectList → size=" + list.size() + ", list=" + list);
-        return list;
-    }
-
-    @Override
-    public int deleteSubscription(Map<String, Object> paramMap) {
-        System.out.println("[DAO] deleteSubscription(paramMap=" + paramMap + ")");
-        int count = session.delete(nsMP + ".deleteSubscription", paramMap);
-        System.out.println("[DAO] session.delete → count=" + count);
-        return count;
-    }
-    
     
 }

@@ -1,6 +1,7 @@
 package kr.co.sist.e_learning.quiz;
 
 import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,13 +16,13 @@ public class QuizListDTO {
 	
 	 private String quizListSeq; //pk
 	 private String courseSeq;   //fk
+	 private Long userSeq;   //fk
 	 private String langCategory;//언어 분류 (영어,중국어,일본어)
 	 private String title;       //퀴즈묶음제목
 	 private Date uploadDate;	//생성일
 	 private String status;       //상태 -> 학습전/학습중(중도포기)/학습완료
-	 private String isDelete;       //상태 -> 학습전/학습중(중도포기)/학습완료
-	 private String userSeq;
-	 private Date modifyDate;
+	 private String isDelete;       // 삭제 여부 Y / N
+	 private LocalDateTime modifyDate;       // 퀴즈 목록 수정일 TIMESTAMP DEFAULT NULL
 	 //퀴즈묶음
 	 private List<QuizDTO> quiz = new ArrayList<>();
 	 

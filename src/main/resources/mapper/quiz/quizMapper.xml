@@ -44,7 +44,7 @@ INSERT INTO quiz (
 		image_name, image_addr, is_delete
 	) VALUES (
 	'QO' || TO_CHAR(SYSDATE, 'YYYYMMDD') || LPAD(quiz_option_seq.NEXTVAL, 4, '0'),
-	#{quizSeq, jdbcType=VARCHAR}, #{optionOrder, jdbcType=VARCHAR}, #{content, jdbcType=VARCHAR},
+	#{quizSeq, jdbcType=VARCHAR}, #{optionOrder, jdbcType=NUMERIC}, #{content, jdbcType=VARCHAR},
 	#{imageName, jdbcType=VARCHAR}, #{imageAddr, jdbcType=VARCHAR}, 'N'
 	)
 </insert>
@@ -357,4 +357,3 @@ WHERE quiz_seq IN (
   </select>
 
 </mapper>
-

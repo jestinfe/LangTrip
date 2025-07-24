@@ -240,7 +240,7 @@ function drawAdClickChart(stats) {
   const clicks = stats.map(i => i.clickCount);  // 클릭 수
 
   new Chart(document.getElementById('adClickChart'), {
-    type: 'bar',
+    type: 'line',
     data: {
       labels: labels,
       datasets: [{

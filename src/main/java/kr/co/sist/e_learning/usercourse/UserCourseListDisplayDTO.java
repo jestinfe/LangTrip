@@ -19,5 +19,5 @@ public class UserCourseListDisplayDTO {
     private String thumbnailPath;
     private String thumbnailName;
     private String instructorName; // Assuming this will come from a join with USERS table
-    private String userId; // Instructor's user ID
+    private Long userSeq; // Instructor's user ID
 }

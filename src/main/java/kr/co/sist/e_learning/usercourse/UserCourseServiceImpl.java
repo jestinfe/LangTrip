@@ -15,13 +15,14 @@ public class UserCourseServiceImpl implements UserCourseService{
 	private UserCourseMapper ucm;
 
 	@Override
-	public void addUserCourse(UserCourseDTO ucDTO) {
-		ucm.insertUserCourse(ucDTO);
+	public int addUserCourse(UserCourseDTO ucDTO) {
+		int result = ucm.insertUserCourse(ucDTO);
+		return result;
 	}
 
 	@Override
-	public List<UserCourseDTO> searchUserCourseByUserId(String userId) {
-		List<UserCourseDTO> list =  ucm.selectUserCoursesByUserId(userId);
+	public List<UserCourseDTO> searchUserCourseByUserId(Long userId) {
+		List<UserCourseDTO> list =  ucm.selectUserCoursesByUserSeq(userId);
 		return list;
 	}
 
@@ -32,7 +33,7 @@ public class UserCourseServiceImpl implements UserCourseService{
 	}
 
 	@Override
-	public int searchUserCourseCount(String userId) {
+	public int searchUserCourseCount(Long userId) {
 		int userCourseCount=ucm.selectUserCourseCount(userId);
 		return userCourseCount;
 	}
@@ -52,5 +53,12 @@ public class UserCourseServiceImpl implements UserCourseService{
     public List<UserCourseListDisplayDTO> getNewCourses(int limit) {
         return ucm.selectNewCourses(limit);
     }
+
+	@Override
+	public int selectAlreadyEnrollCourse(String courseSeq) {
+		int result = 0;
+		result = ucm.selectAlreadyEnrollCourse(courseSeq);
+		return result;
+	}
 
 }

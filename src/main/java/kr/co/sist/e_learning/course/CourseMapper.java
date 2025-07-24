@@ -16,4 +16,7 @@ public interface CourseMapper {
 	 public int searchCourseCount(Long userSeq);
 	 public int updateCourseByCourseSeq(CourseDTO cDTO);
 	 public int deleteCourseByCourseSeq(String courseSeq);
+	 public CourseDTO selectUserSeqByCourseSeq(String courseSeq);
+	 public int updateVideoCount(String courseSeq);
+	 public int updateQuizCount(String courseSeq);
 }

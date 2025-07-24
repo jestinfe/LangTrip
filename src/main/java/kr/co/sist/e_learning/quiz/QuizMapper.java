@@ -31,7 +31,7 @@ public interface QuizMapper {
 	public void insertQuizResponse(QuizResponseDTO qrDTO);
 	
 	//<select id="existsQuizResponse" resultType="boolean">
-	public boolean existsQuizResponse(@Param("quizSeq") String quizSeq, @Param("userSeq") String userSeq);
+	public boolean existsQuizResponse(@Param("quizSeq") String quizSeq, @Param("userSeq") Long userSeq);
 
 	//<select id="QuizCorrectChk" resultType="kr.co.sist.elearning.quiz.QuizStatusDTO">
 	public QuizStatusDTO QuizCorrectChk(QuizStatusDTO qsDTO);
@@ -52,7 +52,7 @@ public interface QuizMapper {
 	public void deleteQuizByListSeq(@Param("quizListSeq") String quizListSeq);
 
 	//<delete id="deleteOptionsByQuizSeq" parameterType="String">
-	public void deleteOptionsByQuizBySeq(@Param("quizSeq") String quizSeq);
+	public void deleteOptionsByQuizSeq(@Param("quizSeq") String quizSeq);
 	
 	//<update id="softDeleteQuizList">
 	public void softDeleteQuizList(@Param("quizListSeq") String quizListSeq);
@@ -71,7 +71,5 @@ public interface QuizMapper {
 	
 	List<QuizListDTO> selectQuizListsWithQuizzesByCourseSeq(String courseSeq);
 
-    List<QuizDTO> selectQuizzesByQuizListSeq(String quizListSeq);
-    List<QuizOptionDTO> selectQuizOptionsByQuizSeq(String quizSeq);
-    QuizListDTO selectQuizListBySeq(String quizListSeq);
+	public QuizListDTO selectQuizListBySeq(String quizListSeq);
 }

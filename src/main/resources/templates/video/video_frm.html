@@ -527,7 +527,7 @@
         </h2>
         <p class="video-desc" th:text="${videoData.description}">영상 설명</p>
         <div class="video-wrapper">
-          <video class="video-element" th:src="@{|/upload/video/${videoData.fileName}|}" controls></video>
+          <video class="video-element" th:src="@{${videoData.filePath}}" controls></video>
         </div>
       </div>
       

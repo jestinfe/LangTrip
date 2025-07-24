@@ -84,8 +84,7 @@ public class AdminSecurityConfig {
             .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
                 .sessionFixation().migrateSession()
-            )
-            .securityContext(securityContext -> securityContext.securityContextRepository(securityContextRepository()));
+            );
             
 
         return http.build();

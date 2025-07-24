@@ -54,7 +54,7 @@ public class SupportServiceImpl extends SupportServiceAbstract {
 	public List<FeedbackDTO> searchAllFeedback() {
 		return sDAO.selectAllFeedbackDTO();
 	}
-	
+
 	@Override
 	public List<FeedbackDTO> searchTotalFeedback() {
 		return sDAO.selectTotalFeedbackDTO();
@@ -161,6 +161,11 @@ public class SupportServiceImpl extends SupportServiceAbstract {
 	}
 
 	@Override
+	public int editFaqStatusInactive(String id) {
+		return sDAO.updateFaqStatusInactive(id);
+	}
+
+	@Override
 	public int editNoticeStatusActive(String id) {
 		return sDAO.updateNoticeStatusActive(id);
 	}
@@ -237,7 +242,7 @@ public class SupportServiceImpl extends SupportServiceAbstract {
 	public boolean editFeedbackStep(String id) {
 		return sDAO.updateFeedbackStep(id);
 	}
-	
+
 	@Override
 	public boolean editFeedbackRefuse(String id) {
 		return sDAO.updateFeedbackStepRefuse(id);
@@ -354,6 +359,11 @@ public class SupportServiceImpl extends SupportServiceAbstract {
 		return updated > 0;
 	}
 
+	public boolean updateFaq(FaqDTO faq) {
+		int updated = sDAO.updateFaqById(faq);
+		return updated > 0;
+	}
+
 	public List<FaqtypeDTO> searchAllFaqtype() {
 		return sDAO.selectAllFaqtype();
 	};
@@ -365,5 +375,9 @@ public class SupportServiceImpl extends SupportServiceAbstract {
 	public int searchMaxFeedbackSends() {
 		return sDAO.selectMaxFeedbackSends();
 	};
+
+	public List<FaqDTO> findFaqsByKeyword(String keyword) {
+		return sDAO.selectFaqsByKeyword(keyword);
+	}
 
 }

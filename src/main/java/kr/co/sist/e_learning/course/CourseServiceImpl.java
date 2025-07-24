@@ -64,5 +64,28 @@ public class CourseServiceImpl implements CourseService {
 		
 		return  cm.deleteCourseByCourseSeq(courseSeq);
 	}
+
+
+	@Override
+	public CourseDTO selectUserSeqByCourseSeq(String courseSeq) {
+		
+		return cm.searchCourseByCourseId(courseSeq);
+	}
+
+
+	@Override
+	public int updateVideoCount(String courseSeq) {
+		int result = 0;
+		result = cm.updateVideoCount(courseSeq);
+		return result;
+	}
+
+
+	@Override
+	public int updateQuizCount(String courseSeq) {
+		int result = 0;
+		result = cm.updateQuizCount(courseSeq);
+		return result;
+	}
 	
 }

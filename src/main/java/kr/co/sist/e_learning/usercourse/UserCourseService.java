@@ -9,11 +9,11 @@ import org.springframework.stereotype.Service;
 
 public interface UserCourseService {
 	
-	public void addUserCourse(UserCourseDTO ucDTO);
-	public List<UserCourseDTO> searchUserCourseByUserId(String userId);
+	public int addUserCourse(UserCourseDTO ucDTO);
+	public List<UserCourseDTO> searchUserCourseByUserId(Long userId);
 	public List<UserCourseDTO> searchUserCourseByPage(Map<String, Object> param);
-	public int searchUserCourseCount(String userId);
-
+	public int searchUserCourseCount(Long userId);
+	public int selectAlreadyEnrollCourse(String courseSeq);
     PageResponseDTO<UserCourseListDisplayDTO> getPublicCourses(Map<String, Object> params);
     List<UserCourseListDisplayDTO> getNewCourses(int limit);
 }

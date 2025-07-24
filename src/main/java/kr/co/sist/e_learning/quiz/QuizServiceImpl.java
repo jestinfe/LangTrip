@@ -23,49 +23,57 @@ public class QuizServiceImpl implements QuizService {
     @Autowired
     private QuizMapper quizMapper;
 
-    @Value("${upload.saveDirQuiz}")
-    private String saveDir;
+    //이미지 실제 저장 경로 루트 (C:/dev/workspace/e_learning_uploads)
+//    @Value("${file.upload-dir.root}")
+//    private String uploadDirRoot;
     
-    // 강의실 전체 퀴즈 목록
-    @Override
-    public List<QuizListDTO> getAllQuizList(String userSeq) {
-    	
-    	List<QuizListDTO> quizList = quizMapper.selectQuizListTable();
-
-        for (QuizListDTO q : quizList) {
-            int total = quizMapper.selectQuizWithOptions(q.getQuizListSeq()).size();
-
-            QuizStatusDTO param = new QuizStatusDTO();
-            param.setQuizListSeq(q.getQuizListSeq());
-            param.setUserSeq(userSeq);
-
-            QuizStatusDTO statusDTO = quizMapper.QuizCorrectChk(param);
-            int response = statusDTO.getTotalCnt();
-
-            if (response == 0) {
-                q.setStatus("학습전");
-            } else if (response < total) {
-                q.setStatus("학습중");
-            } else if (response == total) {
-                q.setStatus("학습완료");
-            } else {
-                throw new IllegalStateException("응답 수 > 총 퀴즈 수: " + response + " > " + total);
-            }
-            
-        }
-
-        return quizList;
-    }
+    //세부 업로드 경로 (서버 저장용) (file.upload-dir.quiz=${file.upload-dir.root}/quiz)
+    @Value("${file.upload-dir.quiz}")
+    private String quizUploadDir;
+    
+    //세부 URL 매핑 경로 (웹 접근용) (upload.path.quiz=/quiz)
+    @Value("${upload.path.quiz}")
+    private String uploadPathWeb;
+    
+    
+//    // 강의실 전체 퀴즈 목록
+//    @Override
+//    public List<QuizListDTO> getAllQuizList(String userSeq) {
+//    	
+//    	List<QuizListDTO> quizList = quizMapper.selectQuizListTable();
+//
+//        for (QuizListDTO q : quizList) {
+//            int total = quizMapper.selectQuizWithOptions(q.getQuizListSeq()).size();
+//
+//            QuizStatusDTO param = new QuizStatusDTO();
+//            param.setQuizListSeq(q.getQuizListSeq());
+//            param.setUserSeq(userSeq);
+//
+//            QuizStatusDTO statusDTO = quizMapper.QuizCorrectChk(param);
+//            int response = statusDTO.getTotalCnt();
+//
+//            if (response == 0) {
+//                q.setStatus("학습전");
+//            } else if (response < total) {
+//                q.setStatus("학습중");
+//            } else if (response == total) {
+//                q.setStatus("학습완료");
+//            } else {
+//                throw new IllegalStateException("응답 수 > 총 퀴즈 수: " + response + " > " + total);
+//            }
+//            
+//        }
+//
+//        return quizList;
+//    }
     
     //단일 퀴즈의 상세 정보 : 시작 전 모달창 정보 (퀴즈 제목/외국어 종류/상태)
     @Override
-    public QuizListDTO getQuizListInfo(String quizListSeq) {
+    public QuizListDTO getQuizListInfo(String quizListSeq, Long userSeq) {
        
     	//퀴즈 기본 정보(제목,언어,상태) 조회
     	QuizListDTO quizListDTO = quizMapper.selectQuizListInfo(quizListSeq);
         
-        String userSeq = "user001";
-
         List<QuizDTO> quizList = quizMapper.selectQuizWithOptions(quizListSeq);
       
         // 응답 수 조회
@@ -103,10 +111,7 @@ public class QuizServiceImpl implements QuizService {
     @Override
     public void addQuiz(QuizListDTO quizListDTO, List<MultipartFile> imageFiles) throws Exception {
     	
-    	  // ✅ 필수값 누락 방지 (NOT NULL 임시값)
-        if (quizListDTO.getCourseSeq() == null || quizListDTO.getCourseSeq().isBlank()) {
-            quizListDTO.setCourseSeq("COURSE001"); // 또는 "0" 등 규칙에 맞게 설정
-        }
+    	 System.out.println("addQuiz 서비스 진입");
     	
         // 1. 퀴즈 묶음 등록
         quizMapper.insertQuizList(quizListDTO);
@@ -120,18 +125,25 @@ public class QuizServiceImpl implements QuizService {
             // 2. 퀴즈 등록
             quizMapper.insertQuiz(quiz);
 
+            // 저장 경로 설정
+            File saveDir = new File(quizUploadDir);
+            if (!saveDir.exists()) {
+            	saveDir.mkdirs();
+            }//end if
+            
             // 3. 보기 등록
             int optionOrder = 1;
             for (QuizOptionDTO option : quiz.getOptions()) {
                 option.setQuizSeq(quiz.getQuizSeq());
                 option.setOptionOrder(optionOrder++);
 
-                if (option.getFileIndex() != null && imageFiles != null) {
+                if (imageFiles != null && option.getFileIndex() != null && option.getFileIndex() < imageFiles.size()) {
                     MultipartFile file = imageFiles.get(option.getFileIndex());
 
                     // 확장자 추출 및 검증
                     String originalName = file.getOriginalFilename();
                     String ext = originalName.substring(originalName.lastIndexOf('.') + 1).toLowerCase();
+                   
                     if (!List.of("jpg", "jpeg", "png", "gif").contains(ext)) {
                         throw new IllegalArgumentException("지원되지 않는 이미지 형식입니다.");
                     }
@@ -140,31 +152,29 @@ public class QuizServiceImpl implements QuizService {
                     String uuid = UUID.randomUUID().toString();
                     String fileName = uuid + "_" + System.currentTimeMillis() + "." + ext;
 
-                    // 저장 경로 설정
-                    File savePath = new File(saveDir, fileName);
-//                    if (!savePath.getParentFile().exists()) {
-//                        savePath.getParentFile().mkdirs();
-//                    }
+                    File saveFile = new File(quizUploadDir, fileName);
                     try {
-                    	file.transferTo(savePath);
+                    	file.transferTo(saveFile);
                     } catch (IOException e) {
                     	// 예외 던지기
                     	throw new IOException("이미지 파일 저장 실패: " + originalName, e); 
                     }
                     
                     option.setImageName(fileName);
-                    option.setImageAddr(saveDir);
+                    option.setImageAddr(uploadPathWeb+"/"+fileName);
                 }
 
+                System.out.println("addQuiz 서비스 : 퀴즈 등록 전");
                 quizMapper.insertQuizOption(option);
+                System.out.println("addQuiz 서비스 : 퀴즈 등록 완료");
             }
-        }
+        }//end for
     }//addQuiz
     
     
     //퀴즈 가져오기
     @Override
-    public Map<String, Object> getQuizList(String quizListSeq, String userSeq) {
+    public Map<String, Object> getQuizList(String quizListSeq, Long userSeq) {
        
     	Map<String, Object> result = new HashMap<>();
 
@@ -241,7 +251,7 @@ public class QuizServiceImpl implements QuizService {
     
     //퀴즈 학습완료 화면
     @Override
-    public Map<String, Object> getQuizCompletionStats(String userSeq, String quizListSeq) {
+    public Map<String, Object> getQuizCompletionStats(Long userSeq, String quizListSeq) {
        
     	QuizStatusDTO status = quizMapper.QuizCorrectChk(new QuizStatusDTO(userSeq, quizListSeq));
 
@@ -259,13 +269,24 @@ public class QuizServiceImpl implements QuizService {
     //퀴즈 수정할때 db 정보 불러오기
     @Override
     public QuizListDTO getQuizListForModify(String quizListSeq) {
-        // 1. 퀴즈 묶음 기본 정보 (제목, 언어 등)
+    	System.out.println("서비스 getQuizListForModify() 진입");
+    	
+    	// 1. 퀴즈 묶음 기본 정보 (제목, 언어 등)
         QuizListDTO quizListDTO = quizMapper.selectQuizListInfo(quizListSeq);
-
+        System.out.println("quizListDTO: " + quizListDTO);
+        
         // 2. 퀴즈 + 보기 전체 정보 세팅
         List<QuizDTO> quizList = quizMapper.selectQuizWithOptions(quizListSeq);
+        for (QuizDTO quiz : quizList) {
+            for (QuizOptionDTO option : quiz.getOptions()) {
+                if (option.getImageName() != null && !option.getImageName().isBlank()) {
+                    option.setImageAddr(uploadPathWeb + "/" + option.getImageName());
+                }
+            }
+        }
         quizListDTO.setQuiz(quizList);
-
+        System.out.println("quizList size: " + quizList.size());
+        
         return quizListDTO;
     }
     
@@ -273,62 +294,82 @@ public class QuizServiceImpl implements QuizService {
     @Override
     @Transactional
     public void updateQuiz(String quizListSeq, String quizJson, List<MultipartFile> imageFiles) throws Exception {
-    	  ObjectMapper mapper = new ObjectMapper();
+    		
+    		System.out.println("서비스 updateQuiz() 진입");
+    	
+    		ObjectMapper mapper = new ObjectMapper();
     	    QuizListDTO parsed = mapper.readValue(quizJson, QuizListDTO.class);
 
-    	    // 1. 퀴즈 리스트 메타 정보 수정
+    	    //퀴즈 리스트 수정
     	    quizMapper.updateQuizList(parsed.getTitle(), parsed.getLangCategory(), quizListSeq);
 
-    	    // 2. 퀴즈 순회
+    	    // 파일 업로드용 디렉토리 준비 
+    	    File saveDir = new File(quizUploadDir);
+    	    if (!saveDir.exists()) {
+    	        saveDir.mkdirs();
+    	    }
+    	    
+    	    //퀴즈 순회
     	    for (int i = 0; i < parsed.getQuiz().size(); i++) {
     	        QuizDTO quiz = parsed.getQuiz().get(i);
     	        quiz.setQuizListSeq(quizListSeq);
     	        quiz.setQuizOrder(i + 1);
 
-    	        // 2-1. 퀴즈 정보 수정
+    	        //퀴즈 정보 수정 update
     	        quizMapper.updateQuiz(quiz);
 
-    	        // 2-2. 기존 보기 삭제
-    	        quizMapper.deleteOptionsByQuizBySeq(quiz.getQuizSeq());
+    	        //기존 보기 전체 삭제 delete
+    	        quizMapper.deleteOptionsByQuizSeq(quiz.getQuizSeq());
 
-    	        // 2-3. 보기 다시 등록
+    	        //보기 다시 등록
     	        int optionOrder = 1;
     	        for (QuizOptionDTO option : quiz.getOptions()) {
     	            option.setQuizSeq(quiz.getQuizSeq());
     	            option.setOptionOrder(optionOrder++);
-
+    	            
     	            // 새 이미지가 선택된 경우
-    	            if (option.getFileIndex() != null && imageFiles != null && option.getFileIndex() < imageFiles.size()) {
+    	            if (imageFiles != null && option.getFileIndex() != null && option.getFileIndex() < imageFiles.size()) {
     	                MultipartFile file = imageFiles.get(option.getFileIndex());
 
     	                String originalName = file.getOriginalFilename();
     	                String ext = originalName.substring(originalName.lastIndexOf('.') + 1).toLowerCase();
     	                if (!List.of("jpg", "jpeg", "png", "gif").contains(ext)) {
     	                    throw new IllegalArgumentException("지원되지 않는 이미지 형식입니다.");
-    	                }
+    	                }//end if
 
     	                String uuid = UUID.randomUUID().toString();
     	                String fileName = uuid + "_" + System.currentTimeMillis() + "." + ext;
-
+    	                
     	                File savePath = new File(saveDir, fileName);
-    	                file.transferTo(savePath);
+    	                try {
+    	                	file.transferTo(savePath);
+                        } catch (IOException e) {
+                        	// 예외 던지기
+                        	throw new IOException("이미지 파일 저장 실패: " + originalName, e); 
+                        }//end catch
 
     	                option.setImageName(fileName);
-    	                option.setImageAddr(saveDir);
-    	            }
+    	                option.setImageAddr(uploadPathWeb+"/"+fileName);
+    	            }//end if
+    	            
     	            // 새 이미지 업로드 안 한 경우, 기존 정보 유지
     	            else if (option.getImageName() != null && !option.getImageName().isBlank()) {
-    	                option.setImageName(option.getImageName());
-    	                option.setImageAddr(saveDir);
+    	            	//DTO가 imageAddr을 기존에 들고 있는 게 아닐 수도 있음
+    	            	String fileName = option.getImageName();
+    	                option.setImageAddr(uploadPathWeb+"/"+fileName);
     	            } else {
     	                // 완전히 삭제된 경우
     	                option.setImageName(null);
     	                option.setImageAddr(null);
-    	            }
-
+    	            }//end if
+    	            
+    	            System.out.println("서비스 updateQuiz() 수정 전");
     	            quizMapper.insertQuizOption(option);
-    	        }
-    	}
+    	            System.out.println("서비스 updateQuiz() 수정 완료!");
+    	            
+    	        }//end for
+    	        
+    	}//end for
     }
     
     //퀴즈 soft delete
@@ -358,27 +399,27 @@ public class QuizServiceImpl implements QuizService {
 	}
     
     //퀴즈 정답 알려주기
-//    @Override
-//    public Map<String, Object> processSubmitAnswer(QuizResponseDTO qrDTO) {
-//        // 정답 여부 판별 + 응답 저장
-//        QuizDTO quiz = quizMapper.selectQuiz(qrDTO.getQuizSeq());
-//        boolean isCorrect = qrDTO.getSelectOption() == quiz.getCorrectOption();
-//
-//        qrDTO.setCorrectCheck(isCorrect ? "Y" : "N");
-//        qrDTO.setCourseSeq(quiz.getCourseSeq());
-//        qrDTO.setQuizListSeq(quiz.getQuizListSeq());
-//
-//        quizMapper.insertQuizResponse(qrDTO); 
-//
-//        // 정답 보기 내용
-//        String correctContent = quizMapper.selectCorrectContent(qrDTO.getQuizSeq());
-//
-//        Map<String, Object> result = new HashMap<>();
-//        result.put("correct", isCorrect);
-//        result.put("correctOption", quiz.getCorrectOption());
-//        result.put("correctContent", correctContent);
-//
-//        return result;
-//    }
+    @Override
+    public Map<String, Object> processSubmitAnswer(QuizResponseDTO qrDTO) {
+        // 정답 여부 판별 + 응답 저장
+        QuizDTO quiz = quizMapper.selectQuiz(qrDTO.getQuizSeq());
+        boolean isCorrect = qrDTO.getSelectOption() == quiz.getCorrectOption();
+
+        qrDTO.setCorrectCheck(isCorrect ? "Y" : "N");
+        qrDTO.setCourseSeq(quiz.getCourseSeq());
+        qrDTO.setQuizListSeq(quiz.getQuizListSeq());
+
+        quizMapper.insertQuizResponse(qrDTO); 
+
+        // 정답 보기 내용
+        String correctContent = quizMapper.selectCorrectContent(qrDTO.getQuizSeq());
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("correct", isCorrect);
+        result.put("correctOption", quiz.getCorrectOption());
+        result.put("correctContent", correctContent);
+
+        return result;
+    }
     
 }//class

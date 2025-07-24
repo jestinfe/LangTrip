@@ -13,7 +13,7 @@ public class FaqDTO {
 	private String faq_content;
 	private Date faq_created_date;
 	private int faq_hits;
-	private Date faq_lasted_modified_date;
+	private Date faq_last_modified_date;
 	private String faq_status;
 
 	public String getFaq_id() {
@@ -72,12 +72,12 @@ public class FaqDTO {
 		this.faq_hits = faq_hits;
 	}
 
-	public Date getFaq_lasted_modified_date() {
-		return faq_lasted_modified_date;
+	public Date getFaq_last_modified_date() {
+		return faq_last_modified_date;
 	}
 
-	public void setFaq_lasted_modified_date(Date faq_lasted_modified_date) {
-		this.faq_lasted_modified_date = faq_lasted_modified_date;
+	public void setFaq_last_modified_date(Date faq_last_modified_date) {
+		this.faq_last_modified_date = faq_last_modified_date;
 	}
 
 	public String getFaq_status() {
@@ -92,8 +92,8 @@ public class FaqDTO {
 	public String toString() {
 		return "FaqDTO [faq_id=" + faq_id + ", faqtype_id=" + faqtype_id + ", faqtype_name=" + faqtype_name
 				+ ", faq_title=" + faq_title + ", faq_content=" + faq_content + ", faq_created_date=" + faq_created_date
-				+ ", faq_hits=" + faq_hits + ", faq_lasted_modified_date=" + faq_lasted_modified_date + ", faq_status="
+				+ ", faq_hits=" + faq_hits + ", faq_last_modified_date=" + faq_last_modified_date + ", faq_status="
 				+ faq_status + "]";
 	}
 
-}// class
+}

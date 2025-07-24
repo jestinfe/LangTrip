@@ -6,10 +6,11 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <link rel="stylesheet" href="/css/admin_sidebar.css">
 
-<link rel="stylesheet" href="/support_static/support_design/admin_notice_detail_design.css">
+<link rel="stylesheet" href="/css/admin_notice_detail_design.css">
+<link rel="stylesheet" href="/css/admin_notices_design.css">
 
 
-<title>templates/support/admin/support_admin_notice.html</title>
+<title>templates/admin/support/support_admin_notice.html</title>
 <script
 	src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
 </head>
@@ -21,35 +22,9 @@
 		border:none; padding-right: 320px; min-width: 1800px; 
 		">
 
-		<div class="child-div" style="height: 90px; border:none !important;
-		box-shadow: none; width: 100%; margin-left: 600px; background:transparent;
-			margin-top: -20px;
-		">
-			<div class="title-div" style="border:none !important;">
-			
-				<div class="div-1" style="border:none !important; margin-right:-20px; ">
-					<div >
-						<img th:src="@{/support_static/support_images/symbol_support.png}"
-							style="width: 50px; height: 50px; border:none !important; margin-right: 50px;" />
-					</div>
-				</div>
-				
-				<div class="div-2" style="border:none !important;">지원센터 관리</div>
-				
-				<div class="div-3" style="border:none; display: flex; flex-direction:row;
-					width: 400px;">
-					<div style="color:#5701d0; margin-right: 50px;"><a th:href="@{/support/admin/notice}">공지사항</a></div>
-					<div style=" margin-right: 50px;"><a th:href="@{/support/admin/faq}" style="color:#cca9fe !important">FAQ</a></div>
-					<div><a th:href="@{/support/admin/feedback}" style="color:#cca9fe !important">피드백</a></div>
-				</div>
-				
-				<div class="div-4" style="border:none !important; color: #5701d0; flex: 10">
-					<span><a href="/support/admin/notice"></a></span>
-				</div>
-				
-			</div>
-		</div>
-		<!-- child-div -->
+	<div class="child-div" style="height: auto; width: 100%; box-shadow: none; margin-left: 600px; background-color: transparent; border:none !important;">
+		<div th:replace="/support/admin/support_admin_submenu :: subMenu"></div>
+	</div><!-- child-div -->
 		
 	
 		
@@ -187,21 +162,14 @@
 				
 <!-- 					<div class="div-2" style="font-size: 30px; border:none"> -->
 <!-- 						<input type="button" value="삭제" class="noticeDeleteButton" -->
-<!-- 				th:onclick="'if(confirm(\'정말 삭제하시겠습니까?\')) location.href=\'' + @{/support/admin/notice/delete/{id}(id=${notice.notice_id})} + '\''" /> -->
+<!-- 				th:onclick="'if(confirm(\'정말 삭제하시겠습니까?\')) location.href=\'' + @{/admin/support/notice/delete/{id}(id=${notice.notice_id})} + '\''" /> -->
 
 <!-- 					</div> -->
 
-<th:block th:if="${notice.notice_status} == 'A' ">
-				<form th:action="@{/support/admin/notice/delete/{id}(id=${notice.notice_id})}" method="post" onsubmit="return confirm('해당 공지를 게시 중지할까요?')">
-				    <input type="submit" value="게시 중지" class="noticeDeleteButton"  />
+				<form th:action="@{/admin/support/notice/delete/{id}(id=${notice.notice_id})}" method="post" onsubmit="return confirm('해당 공지를 삭제할까요?')">
+				    <input type="submit" value="삭제" class="noticeDeleteButton"  />
 				</form>
-</th:block>
-<th:block th:if="${notice.notice_status} == 'I' ">
-				<form th:action="@{/support/admin/notice/active/{id}(id=${notice.notice_id})}" method="post" onsubmit="return confirm('해당 공지를 다시 게시할까요?')">
-				    <input type="submit" value="다시 게시" class="noticeDeleteButton" style="background-color: #0184d0"  />
-				</form>
-</th:block>
-				<form th:action="@{/support/admin/notice/edit/{id}(id=${notice.notice_id})}">
+				<form th:action="@{/admin/support/notice/edit/{id}(id=${notice.notice_id})}">
 				    <input type="submit" value="수정" class="noticeEditButton"  />
 				</form>
 

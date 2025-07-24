@@ -23,6 +23,9 @@ public class CourseDTO {
 	private String thumbnailPath;
 	private String thumbnailName;
 	private Long userSeq;
+	private int videoCount;
+	private int quizCount;
+	private int contentCount;
 	// videoDTO
 //	private int videoSeq; // PK
 ////	private int courseSeq; // 강의 번호 (FK)

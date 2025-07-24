@@ -301,13 +301,13 @@
                 success: function(res){
                     $('#loadingDiv').hide();
                     $('.submit-btn').prop('disabled', false).text('업로드');
-                    
+                    console.log("응답 결과:", res); // ✅ 디버깅용
                     if(res.status === 'success'){
                         const courseSeq = res.cDTO.courseSeq;
                         alert(res.msg);
                         window.location.href = '/upload/upload_course?seq='+courseSeq;
                     }else{
-                        alert(res.msg);
+                        alert("이런개시발"+res.msg);
                     }
                 },
                 error: function(xhr, status, err){
