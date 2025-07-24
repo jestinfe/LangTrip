@@ -88,7 +88,7 @@
                       th:classappend="${settlement.status == 'PENDING' ? 'status-pending' :
                                       (settlement.status == 'COMPLETED' ? 'status-completed' :
                                       (settlement.status == 'REJECTED' ? 'status-rejected' : ''))}"
-                      th:text="${settlement.status}"></span>
+                      th:text="${@settlementStatusConverter.convert(settlement.status)}"></span>
             </div>
             <div class="detail-item" th:if="${settlement.status == 'REJECTED'}">
                 <strong>거절 사유:</strong> <span th:text="${settlement.rejectReason}"></span>

@@ -114,15 +114,15 @@
         </p>
         
         <div class="details">
-            <div class="details-row">
-                <span class="details-label">결제 금액</span>
-                <span class="details-value" th:text="${#numbers.formatInteger(paymentAmount, 0, 'COMMA')} + '원'">0원</span>
-            </div>
-            <div class="details-row">
-                <span class="details-label">충전된 마일</span>
-                <span class="details-value" th:text="${#numbers.formatInteger(mileAmount, 0, 'COMMA')} + ' 마일'">0 마일</span>
-            </div>
-        </div>
+    <div class="details-row">
+        <span class="details-label">결제 금액</span>
+        <span class="details-value" id="paymentAmount">0원</span> <!-- ✅ id 추가 -->
+    </div>
+    <div class="details-row">
+        <span class="details-label">충전된 마일</span>
+        <span class="details-value" id="mileAmount">0 마일</span> <!-- ✅ id 추가 -->
+    </div>
+</div>
 
         <div class="actions">
             <!-- "후원하러 가기" 버튼을 클릭하면 POST 요청으로 데이터 전송 -->
@@ -135,18 +135,40 @@
     </div>
 
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         const currentUrl = window.location.href;
-        // URL에서 lectureNo를 query string으로 추출
         const lectureNo = new URL(currentUrl).searchParams.get('lectureNo');
-        
+
+        // ✅ localStorage에서 결제 정보 가져오기
+        const paymentAmount = localStorage.getItem('paymentAmount');
+        const mileAmount = localStorage.getItem('mileAmount');
+
+        // ✅ 금액 포맷 함수
+        function formatWithComma(num) {
+            return Number(num).toLocaleString('ko-KR');
+        }
+
+        // ✅ 화면에 출력
+        document.getElementById('paymentAmount').textContent = paymentAmount
+            ? formatWithComma(paymentAmount) + '원'
+            : '0원';
+
+        document.getElementById('mileAmount').textContent = mileAmount
+            ? formatWithComma(mileAmount) + ' 마일'
+            : '0 마일';
+
+        // ✅ lectureNo가 있을 경우 숨은 필드에 설정
         if (lectureNo) {
-            // lectureNo 값을 폼의 숨겨진 입력 필드에 넣기
             document.getElementById('lectureNoInput').value = lectureNo;
         } else {
             alert('강의 정보를 찾을 수 없습니다.');
         }
+
+        // ✅ 사용 후 localStorage 값 제거 (선택)
+        localStorage.removeItem('paymentAmount');
+        localStorage.removeItem('mileAmount');
     });
     </script>
+
 </body>
 </html>

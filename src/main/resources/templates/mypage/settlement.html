@@ -143,7 +143,7 @@
 <button class="back-button" onclick="goToWalletPage()">←</button>
 <br>
         <div class="info-box">
-            정산 가능 금액: <span th:text="${#numbers.formatDecimal(availableSettlementAmount, 0, 'COMMA', 0, 'POINT')} + 'Mile'">0M</span>
+            정산 가능 금액: <span th:text="${#numbers.formatDecimal(availableSettlementAmount, 0, 'COMMA', 0, 'POINT')} + 'M'">0M</span>
         </div>
 
         <div class="button-group">
@@ -179,7 +179,7 @@
                                   th:classappend="${settlement.status == 'PENDING' ? 'status-pending' :
                                                   (settlement.status == 'COMPLETED' ? 'status-completed' :
                                                   (settlement.status == 'REJECTED' ? 'status-rejected' : ''))}"
-                                  th:text="${settlement.status}"></span>
+                                  th:text="${@settlementStatusConverter.convert(settlement.status)}"></span>
                         </td>
                         <td th:text="${settlement.processedAt != null ? #dates.format(settlement.processedAt, 'yyyy-MM-dd HH:mm') : '-'}"></td>
                     </tr>

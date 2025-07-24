@@ -153,10 +153,11 @@
                                                   (refund.status == 'APPROVED' ? 'status-approved' :
                                                   (refund.status == 'REJECTED' ? 'status-rejected' :
                                                   (refund.status == 'COMPLETED' ? 'status-completed' : '')))}"
-                                  th:text="${refund.status}"></span>
+                                  th:text="${@paymentStatusConverter.convert(refund.status)}"></span>
                         </td>
                         <td th:text="${refund.reason}"></td>
-                        <td th:text="${refund.rejectReason != null ? refund.rejectReason : '-'}"></td>
+                      
+                        <td th:text="${refund.rejectReason != 'null' ? refund.rejectReason : '-'}"></td>
                     </tr>
                 </tbody>
             </table>

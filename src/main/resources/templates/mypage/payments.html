@@ -468,11 +468,16 @@
                     <tbody>
                         <tr th:each="payment : ${paymentList}">
                             <td><strong th:text="${payment.paymentSeq}"></strong></td>
-                            <td th:text="${#strings.isEmpty(payment.name) ? 'CANCELLED' : payment.name}"></td>
-                            <td class="amount" th:text="${payment.paymentAmount != null ? #numbers.formatDecimal(payment.paymentAmount, 0, 'COMMA', 0, 'POINT') + '원' : 'CANCELLED'}"></td>
-                            <td th:text="${payment.method == 'easy' ? '간편결제' : payment.method}"></td>
+                            <td th:text="${#strings.isEmpty(payment.name) ? '결제 취소' : payment.name}"></td>
+                            <td class="amount" 
+    th:text="${payment.paymentAmount != null and payment.paymentAmount != 'payment_canceled' 
+              ? #numbers.formatDecimal(payment.paymentAmount, 0, 'COMMA', 0, 'POINT') + '원' 
+              : '결제 취소'}">
+</td>
+<td th:text="${payment.method == 'easy' ? '간편결제' : (payment.method == 'payment_canceled' ? '결제 취소' : payment.method)}"></td>
+                            
                             <td>
-                                <span class="status-badge status-success" th:text="${payment.paymentStatus}"></span>
+                                <span class="status-badge status-success" th:text="${@paymentStatusConverter.convert(payment.paymentStatus)}"></span>
                             </td>
                             <td th:text="${#dates.format(payment.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
                             <td>
@@ -578,8 +583,8 @@
                             	    paymentItem.className = 'payment-item';
                             	    paymentItem.innerHTML = `
                             	        <p><strong>결제 번호:</strong> ${payment.paymentSeq}</p>
-                            	        <p><strong>상품명:</strong> ${payment.name || 'CANCELLED'}</p>
-                            	        <p><strong>결제 금액:</strong> ${payment.paymentAmount?.toLocaleString() || 'CANCELLED'}원</p>
+                            	        <p><strong>상품명:</strong> ${payment.name || 'payment_canceled'}</p>
+                            	        <p><strong>결제 금액:</strong> ${payment.paymentAmount?.toLocaleString() || 'payment_canceled'}원</p>
                             	        <p><strong>결제 수단:</strong> ${payment.method === 'easy' ? '간편결제' : payment.method}</p>
                             	        <p><strong>결제일:</strong> ${new Date(payment.createdAt).toLocaleString()}</p>
                             	    `;

@@ -21,7 +21,7 @@ public class PaymentDaoImpl implements PaymentDao {
     public void insertPayment(PaymentRequestDTO paymentRequestDTO) {
         // null 방지: 문자열 컬럼들
         if (paymentRequestDTO.getPaymentStatus() == null) {
-            paymentRequestDTO.setPaymentStatus("SUCCESS");
+            paymentRequestDTO.setPaymentStatus("payment_success");
         }
         if (paymentRequestDTO.getMethod() == null) {
             paymentRequestDTO.setMethod("");

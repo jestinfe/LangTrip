@@ -161,7 +161,7 @@
     p.mile_amount AS mileAmount
   FROM payments p
   WHERE p.user_seq = #{userSeq}
-    AND p.payment_status = 'SUCCESS'
+    AND p.payment_status = 'payment_success'
     AND NOT EXISTS (
       SELECT 1
       FROM donations d
@@ -277,7 +277,7 @@
 
   <!-- 사용자 계좌 정보 삭제 -->
   <delete id="deleteUserAccount"
-          parameterType="long">s
+          parameterType="long">
     DELETE FROM user_account
     WHERE user_seq = #{userSeq}
   </delete>
@@ -313,7 +313,7 @@
         settlement_request
     WHERE
         user_seq = #{userSeq}
-        AND status = 'PENDING'
+        AND status = 'settlement_requested'
   </select>
 
   <!-- 정산 내역 조회 -->
@@ -354,5 +354,19 @@
     FROM settlement_request
     WHERE request_seq = #{requestSeq}
   </select>
+  
+  <select id="countRefundByUserSeq" parameterType="long" resultType="int">
+    SELECT COUNT(*)
+FROM refund r
+JOIN mile_wallet w ON r.wallet_seq = w.wallet_seq
+WHERE w.user_seq = #{userSeq}
+</select>
+
+<select id="countSettlementByUserSeq" parameterType="long" resultType="int">
+    SELECT COUNT(*)
+    FROM settlement_request
+    WHERE user_seq = #{userSeq}
+</select>
+  
 
 </mapper>

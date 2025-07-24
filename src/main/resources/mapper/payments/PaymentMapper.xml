@@ -52,73 +52,8 @@
 </insert>
    
 
-    <select id="selectAdminPaymentList" parameterType="kr.co.sist.e_learning.admin.payments.AdminPaymentSearchDTO" resultType="kr.co.sist.e_learning.admin.payments.AdminPaymentListDTO">
-        SELECT
-            p.payment_seq AS paymentId,
-            u.user_seq AS userId,
-            l.title AS lectureTitle,
-            p.amount AS amount,
-            p.method,
-            p.status AS status,
-            p.created_at AS paymentDate
-        FROM
-            payments p
-        JOIN
-            users u ON p.user_seq = u.user_seq
-        LEFT JOIN
-            lectures l ON p.lecture_seq = l.lecture_seq
-        <where>
-            <if test="paymentType != null and paymentType != 'all'">
-                AND p.method = #{paymentType}
-            </if>
-            <if test="searchKeyword != null and searchKeyword != ''">
-                AND (u.user_id LIKE &apos;%&apos; || #{searchKeyword} || &apos;%&apos; OR l.lecture_title LIKE &apos;%&apos; || #{searchKeyword} || &apos;%&apos;)
-            </if>
-            <if test="startDate != null and startDate != ''">
-                AND p.created_at >= TO_DATE(#{startDate}, &apos;YYYY-MM-DD&apos;)
-            </if>
-            <if test="endDate != null and endDate != ''">
-                AND p.created_at &lt;= <![CDATA[TO_DATE(#{endDate} || ' 23:59:59', 'YYYY-MM-DD HH24:MI:SS')]]>
-            </if>
-        </where>
-        ORDER BY
-            p.created_at DESC
-        OFFSET #{startRow} ROWS FETCH NEXT #{pageSize} ROWS ONLY
-    </select>
+   
 
-    <select id="selectAdminPaymentCount" parameterType="kr.co.sist.e_learning.admin.payments.AdminPaymentSearchDTO" resultType="int">
-        SELECT
-            COUNT(*)
-        FROM
-            payments p
-        JOIN
-            users u ON p.user_seq = u.user_seq
-        LEFT JOIN
-            lectures l ON p.lecture_seq = l.lecture_seq
-        <where>
-            <if test="paymentType != null and paymentType != 'all'">
-                AND p.method = #{paymentType}
-            </if>
-            <if test="searchKeyword != null and searchKeyword != ''">
-                AND (u.user_id LIKE &apos;%&apos; || #{searchKeyword} || &apos;%&apos; OR l.lecture_title LIKE &apos;%&apos; || #{searchKeyword} || &apos;%&apos;)
-            </if>
-            <if test="startDate != null and startDate != ''">
-                AND p.created_at >= TO_DATE(#{startDate}, &apos;YYYY-MM-DD&apos;)
-            </if>
-            <if test="endDate != null and endDate != ''">
-                AND p.created_at &lt;= <![CDATA[TO_DATE(#{endDate} || ' 23:59:59', 'YYYY-MM-DD HH24:MI:SS')]]>
-            </if>
-        </where>
-    </select>
-
-    <select id="selectAdminMileageStats" resultType="kr.co.sist.e_learning.admin.payments.AdminMileageStatsDTO">
-        SELECT
-            NVL(SUM(CASE WHEN type = &apos;CHARGE&apos; THEN amount ELSE 0 END), 0) AS chargedMileage,
-            NVL(SUM(CASE WHEN type = &apos;DONATE&apos; THEN amount ELSE 0 END), 0) AS donatedMileage,
-            NVL(SUM(CASE WHEN type = &apos;RECEIVE&apos; THEN amount ELSE 0 END), 0) AS receivedMileage,
-            NVL(SUM(amount), 0) AS availableMileage
-        FROM
-            mile_wallet
-    </select>
+    
 
 </mapper>

@@ -40,8 +40,7 @@ public class PaymentRestController {
             paymentService.savePayment(paymentRequestDTO);
 
             // 결제 금액과 마일 정보를 세션에 저장
-            session.setAttribute("paymentAmount", paymentRequestDTO.getPaymentAmount());
-            session.setAttribute("mileAmount", paymentRequestDTO.getMileAmount());
+           
          
 
             // 결제 성공 응답 반환
@@ -89,4 +88,3 @@ public class PaymentRestController {
         }
     }
 }
-

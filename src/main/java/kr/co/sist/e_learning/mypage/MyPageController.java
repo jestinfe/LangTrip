@@ -8,6 +8,7 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import  kr.co.sist.e_learning.user.*;
 import kr.co.sist.e_learning.adBanner.AdBannerEntity;
@@ -49,6 +51,8 @@ public class MyPageController {
         this.mpSV = mpSV;
         this.fdSV = fdSV;
     }
+    
+  
 
     @Value("${file.upload-dir.root}")
     private String uploadDirRoot;
@@ -291,7 +295,7 @@ public class MyPageController {
                                      @RequestParam("account") String account,
                                      @RequestParam("owner") String owner,
                                      Authentication auth,
-                                     Model model) {
+                                     RedirectAttributes redirectAttributes) {
         long userSeq = getOrInitUserSeq(auth);
         logger.info("Attempting to link account for userSeq: {}", userSeq);
         UserAccountDTO dto = new UserAccountDTO();
@@ -301,23 +305,38 @@ public class MyPageController {
         dto.setHolderName(owner);
 
         if (mpSV.linkUserAccount(dto)) {
-            model.addAttribute("message", "계좌가 성공적으로 연동되었습니다.");
+            redirectAttributes.addFlashAttribute("message", "계좌가 성공적으로 연동되었습니다.");
         } else {
-            model.addAttribute("message", "계좌 연동에 실패했습니다.");
+            redirectAttributes.addFlashAttribute("message", "계좌 연동에 실패했습니다.");
         }
         return "redirect:/mypage/link_account";
     }
 
     @PostMapping("/unlink-account")
-    public String unlinkAccountProcess(Authentication auth, Model model) {
+    @ResponseBody
+    public Map<String, String> unlinkAccountProcess(Authentication auth) {
         long userSeq = getOrInitUserSeq(auth);
-        if (mpSV.unlinkUserAccount(userSeq)) {
-            model.addAttribute("message", "계좌 연동이 해제되었습니다.");
-        } else {
-            model.addAttribute("message", "계좌 연동 해제에 실패했습니다.");
+        Map<String, String> result = new HashMap<>();
+
+        try {
+            boolean success = mpSV.unlinkUserAccount(userSeq);
+            result.put("message", success ? "계좌 연동이 해제되었습니다." : "계좌 연동 해제에 실패했습니다.");
+        } catch (IllegalStateException e) {
+            result.put("message", e.getMessage());
+        } catch (DataIntegrityViolationException e) {
+            result.put("message", "계좌에 연결된 정산/환불 정보로 인해 해제가 불가능합니다.");
+        } catch (Exception e) {
+            result.put("message", "알 수 없는 오류가 발생했습니다.");
         }
-        return "redirect:/mypage/link_account";
+
+        return result;
     }
+
+
+
+    
+    
+
 
     private String maskAccountNumber(String acct) {
         if (acct == null || acct.length() < 4) return acct;
@@ -343,7 +362,7 @@ public class MyPageController {
         long userSeq = getOrInitUserSeq(auth);
         // 정산 가능 금액 조회
         FundingDTO fundingInfo = fdSV.getAccountInfo(userSeq);
-        double availableSettlementAmount = (fundingInfo != null) ? fundingInfo.getDonationAvailable() : 0;
+        double availableSettlementAmount = (fundingInfo != null) ? fundingInfo.getReceivedMiles() : 0;
         model.addAttribute("availableSettlementAmount", availableSettlementAmount);
 
         // 진행 중인 정산 확인

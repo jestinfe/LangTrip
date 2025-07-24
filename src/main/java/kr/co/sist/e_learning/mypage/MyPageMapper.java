@@ -28,4 +28,6 @@ public interface MyPageMapper {
     SettlementRequestDTO selectPendingSettlementRequest(long userSeq);
     List<SettlementRequestDTO> selectSettlementHistory(long userSeq);
     SettlementRequestDTO selectSettlementDetail(long requestSeq);
+    int countRefundByUserSeq(long userSeq);
+    int countSettlementByUserSeq(long userSeq);
 }
