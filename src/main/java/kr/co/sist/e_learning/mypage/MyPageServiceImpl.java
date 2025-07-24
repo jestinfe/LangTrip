@@ -41,16 +41,20 @@ public class MyPageServiceImpl implements MyPageService {
 
     @Override
     public String selectProfilePath(long userSeq) {
-    	return mpDAO.selectProfilePath(userSeq);
-
+        String profilePath = mpDAO.selectProfilePath(userSeq);
+        if (profilePath == null || profilePath.isEmpty()) {
+            throw new RuntimeException("프로필 경로가 존재하지 않습니다.");
+        }
+        return profilePath;
     }
     
-    //프로필 이미지 업로드
     @Override
     public void updateUserProfile(long userSeq, String newPath) {
-    	  mpDAO.updateProfile(userSeq, newPath);
-
-     }
+        if (newPath == null || newPath.isEmpty()) {
+            throw new IllegalArgumentException("프로필 경로가 유효하지 않습니다.");
+        }
+        mpDAO.updateProfile(userSeq, newPath);
+    }
 
     
     // 수강 내역
@@ -67,31 +71,6 @@ public class MyPageServiceImpl implements MyPageService {
     	return lctDAO.selectMyLectures(userSeq);
 
     }
-    	
-    
-    // 구독 목록
-    @Override
-    public List<SubscriptionDTO> getSubscriptions(Long userSeq) {
-        System.out.println("[Service] getSubscriptions(userSeq=" + userSeq + ")");
-        List<SubscriptionDTO> list = mpDAO.selectSubscriptions(userSeq);
-        System.out.println("[Service] selectSubscriptions → size=" + list.size() + ", list=" + list);
-        return list;
-    }
-
-
-    // 구독 취소
-    @Override
-    public boolean cancelSubscription(Long userSeq, Long instructorId) {
-        System.out.println("[Service] cancelSubscription(userSeq=" + userSeq + ", instructorId=" + instructorId + ")");
-        Map<String, Object> paramMap = new HashMap<>();
-        paramMap.put("userSeq", userSeq);
-        paramMap.put("instructorId", instructorId);
-        int deleted = mpDAO.deleteSubscription(paramMap);
-        boolean result = deleted > 0;
-        System.out.println("[Service] deleteSubscription → deleted=" + deleted + ", result=" + result);
-        return result;
-    }
-
     
     @Override
     public UserAccountDTO getUserAccount(long userSeq) {
