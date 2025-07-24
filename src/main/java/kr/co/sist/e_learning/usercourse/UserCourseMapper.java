@@ -11,7 +11,7 @@ import org.apache.ibatis.annotations.Param;
 public interface UserCourseMapper {
 
 	public int insertUserCourse(UserCourseDTO ucDTO); // 사용자가 수강 눌렀을떄 사용자 수강 테이블에 추가
-
+	public int selectAlreadyEnrollCourse(String courseSeq);
 	public List<UserCourseDTO> selectUserCoursesByUserSeq(Long userId);
 
 	public List<UserCourseDTO> selectUserCourseByPage(Map<String, Object> paramMap);

@@ -36,6 +36,9 @@
 		WHERE
 		ce.user_seq = #{userSeq}
 	</select>
+	<select id="selectAlreadyEnrollCourse" parameterType="String" resultType="int">
+	select count(*) from course_enrollment where course_seq = #{courseSeq}
+	</select>
 	<select id="selectUserCourseByPage" parameterType="map"
 		resultType="UserCourseDTO">
 		SELECT e.enroll_seq, e.user_seq, c.title AS courseTitle, c.introduction, c.upload_date,

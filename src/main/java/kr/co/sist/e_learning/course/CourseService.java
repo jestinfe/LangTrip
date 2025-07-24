@@ -14,4 +14,7 @@ public interface CourseService {
 	public int selectCourseCount(Long userSeq);
 	public int modifyCourse(CourseDTO cDTO);
 	public int removeCourse(String courseSeq);
+	 public CourseDTO selectUserSeqByCourseSeq(String courseSeq);
+	 public int updateVideoCount(String courseSeq);
+	 public int updateQuizCount(String courseSeq);
 }

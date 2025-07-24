@@ -32,6 +32,10 @@
   	#{flag}		
   )
   </insert>
+  <select id="selectUserSeqByCourseSeq" parameterType="String" resultType="CourseDTO">
+  select user_seq from course where course_seq=#{courseSeq}
+  
+  </select>
   
   
   <insert id="insertVideo" parameterType="VideoDTO">
@@ -65,17 +69,17 @@
  <select id="searchCourseByCourseId" resultType="CourseDTO" parameterType="String">
  select course_seq, title as courseTitle, introduction,
 upload_date, user_seq, thumbnail_path, thumbnail_name,
-category, difficulty, is_public from course where course_seq = #{courseSeq}
+category, difficulty, is_public, video_count, quiz_count,  (video_count + quiz_count) AS content_count from course where course_seq = #{courseSeq}
  </select>
  <select id="searchCourseByPage" parameterType="map" resultType="CourseDTO">
  SELECT title as courseTitle, introduction, upload_date, user_seq, thumbnail_path, thumbnail_name, category, course_seq, difficulty, is_public
   FROM course
-  WHERE user_seq = #{userSeq}
+  WHERE user_seq = #{userSeq} and is_public = 'Y'
   ORDER BY upload_date asc
   OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
  </select>
   <select id="searchCourseCount" parameterType="Long" resultType="int">
-  select count(*) from course where user_seq = #{userSeq} 
+  select count(*) from course where user_seq = #{userSeq} AND is_public = 'Y'
   </select>
   <update id="updateCourseByCourseSeq" parameterType="CourseDTO">
   update course 
@@ -89,7 +93,16 @@ category, difficulty, is_public from course where course_seq = #{courseSeq}
   where course_seq = #{courseSeq}
   	  
   </update>
-  <delete id="deleteCourseByCourseSeq" parameterType="String">
-  delete from course where course_seq = #{courseSeq}
-  </delete>
+  <update id="deleteCourseByCourseSeq" parameterType="String">
+  update course set is_public = 'N' where course_seq=#{courseSeq}
+  </update>
+  
+  <update id="updateVideoCount" parameterType="String">
+  update course set video_count = video_count+1 where course_seq=#{courseSeq}
+  </update>
+  
+  <update id="updateQuizCount" parameterType="String">
+  update course set quiz_count = quiz_count+1 where course_seq=#{courseSeq}
+  </update>
+  
   </mapper>

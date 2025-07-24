@@ -256,10 +256,10 @@ public class MyPageController {
     }
 
 
-    @GetMapping("/user_course")
-    public String userCoursePage() {
-        return "mypage/user_course";
-    }
+//    @GetMapping("/user_course")
+//    public String userCoursePage() {
+//        return "mypage/user_course";
+//    }
 
     @GetMapping("/reset_password")
     public String resetPassword() {

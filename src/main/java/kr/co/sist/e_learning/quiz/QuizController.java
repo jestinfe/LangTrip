@@ -24,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.http.HttpSession;
+import kr.co.sist.e_learning.course.CourseService;
 
 @Controller
 public class QuizController {
@@ -31,6 +32,8 @@ public class QuizController {
     @Autowired
     private QuizService quizService;
 
+    @Autowired
+    private CourseService cs;
     // 강의실 이동 
 //    @GetMapping("/quiz/classRoom")
 //    public String showClassRoom(HttpSession session, Model model) {
@@ -119,7 +122,9 @@ public class QuizController {
 
         // DB 저장 서비스 호출
         quizService.addQuiz(quizListDTO, imageFiles);
-        
+        if(cs.updateQuizCount(quizListDTO.getCourseSeq()) == 1) {
+			System.out.println("퀴즈 카운트 + 1");
+		};
         return "success";
     }//addQuiz
    

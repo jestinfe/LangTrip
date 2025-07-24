@@ -13,7 +13,7 @@ public interface UserCourseService {
 	public List<UserCourseDTO> searchUserCourseByUserId(Long userId);
 	public List<UserCourseDTO> searchUserCourseByPage(Map<String, Object> param);
 	public int searchUserCourseCount(Long userId);
-
+	public int selectAlreadyEnrollCourse(String courseSeq);
     PageResponseDTO<UserCourseListDisplayDTO> getPublicCourses(Map<String, Object> params);
     List<UserCourseListDisplayDTO> getNewCourses(int limit);
 }

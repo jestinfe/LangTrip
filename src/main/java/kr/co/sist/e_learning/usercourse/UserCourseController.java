@@ -51,7 +51,7 @@ public class UserCourseController {
 	public String userLecture(@RequestParam("seq") String courseSeq, Model model,
 			 Authentication authentication) {
 		
-		System.out.println("강의 시퀀스 "+courseSeq);
+		System.out.println("강의 시퀀스 ㅅㅂ "+courseSeq);
 		
 		
 		Object principal = authentication.getPrincipal();
@@ -60,6 +60,7 @@ public class UserCourseController {
 			userSeq = (Long) principal;
 		}
 		
+		System.out.println("강의실 들어온 사람 seq "+userSeq);
 		
 		CourseDTO cDTO = cs.selectCourseData(courseSeq);
 		
@@ -84,36 +85,98 @@ public class UserCourseController {
 	
 	@PostMapping("/user/course_enroll")
 	public ResponseEntity<?> registerCourse(@RequestParam("courseSeq") String courseSeq,
-			Authentication authentication){
-		Object principal = authentication.getPrincipal();
-		Long userSeq = null;
-		if(principal instanceof Long) {
-			userSeq = (Long) principal;
-		}
-		System.err.println("🔥🔥🔥 받은 userSeq: " + userSeq);
-		
-		System.out.println("강의 시퀀스 : "+courseSeq);
-		System.out.println("유저시퀀스 : "+userSeq);
-		
-		try {
-			UserCourseDTO ucDTO = new UserCourseDTO();
-			ucDTO.setCourseSeq(courseSeq);
-			ucDTO.setUserSeq(userSeq);
-		    int result = ucs.addUserCourse(ucDTO);
-		    System.out.println("인서트형 된거임? : "+result);
-		    if(result==0) {
-		        System.out.println("실패");
-		    }
-		} catch (Exception e) {
-		    System.err.println("🔥 예외 발생: " + e.getMessage());
-		    e.printStackTrace();  // 정확한 오류 위치 확인
-		}
-		
-		
-		
-		return ResponseEntity.ok(Map.of("msg","수강완료"));
-		
+	                                        Authentication authentication) {
+	    Object principal = authentication.getPrincipal();
+	    Long userSeq = null;
+
+	    if (principal instanceof Long) {
+	        userSeq = (Long) principal;
+	    }
+
+	    System.err.println("🔥🔥🔥 받은 userSeq: " + userSeq);
+	    System.out.println("강의 시퀀스 : " + courseSeq);
+	    System.out.println("강의 페이지에 들어온 유저시퀀스 : " + userSeq);
+
+	    try {
+	        // 강의를 만든 사람의 userSeq 조회
+	        CourseDTO cDTO = cs.selectUserSeqByCourseSeq(courseSeq);
+	        System.out.println("강의만든 사람 userSeq : " + cDTO.getUserSeq());
+	        
+	        if (cDTO.getUserSeq() == null) {
+	            return ResponseEntity.badRequest().body(Map.of("msg", "강의 정보가 없습니다."));
+	        }
+
+	        // 1. 자기가 만든 강의는 수강 불가
+	        if (cDTO.getUserSeq().equals(userSeq)) {
+	            return ResponseEntity.badRequest().body(Map.of("msg", "자신이 만든 강의는 수강할 수 없습니다."));
+	        }
+
+	        // 2. 이미 수강 중인지 확인
+//	        boolean alreadyEnrolled = ucs.checkUserAlreadyEnrolled(courseSeq, userSeq); // 추가 필요
+	        int alreadyEnrolled = ucs.selectAlreadyEnrollCourse(courseSeq);
+	        if (alreadyEnrolled > 0) {
+	            return ResponseEntity.badRequest().body(Map.of("msg", "이미 수강 중인 강의입니다."));
+	        }
+
+	        // 3. 수강 등록
+	        UserCourseDTO ucDTO = new UserCourseDTO();
+	        ucDTO.setCourseSeq(courseSeq);
+	        ucDTO.setUserSeq(userSeq);
+
+	        int result = ucs.addUserCourse(ucDTO);
+	        System.out.println("인서트 성공 여부 : " + result);
+
+	        if (result == 0) {
+	            return ResponseEntity.internalServerError().body(Map.of("msg", "수강 등록에 실패했습니다."));
+	        }
+
+	        return ResponseEntity.ok(Map.of("msg", "수강완료"));
+
+	    } catch (Exception e) {
+	        System.err.println("🔥 예외 발생: " + e.getMessage());
+	        e.printStackTrace();
+	        return ResponseEntity.internalServerError().body(Map.of("msg", "서버 오류 발생"));
+	    }
 	}
+//	@PostMapping("/user/course_enroll")
+//	public ResponseEntity<?> registerCourse(@RequestParam("courseSeq") String courseSeq,
+//			Authentication authentication){
+//		Object principal = authentication.getPrincipal();
+//		Long userSeq = null;
+//		if(principal instanceof Long) {
+//			userSeq = (Long) principal;
+//		}
+//		System.err.println("🔥🔥🔥 받은 userSeq: " + userSeq);
+//		
+//		System.out.println("강의 시퀀스 : "+courseSeq);
+//		System.out.println("유저시퀀스 : "+userSeq);
+//		//강의 만든사람 userSeq검색
+//		
+//		try {
+//			CourseDTO cDTO = cs.selectUserSeqByCourseSeq(courseSeq);
+//			UserCourseDTO ucDTO = new UserCourseDTO();
+//			ucDTO.setCourseSeq(courseSeq);
+//			ucDTO.setUserSeq(userSeq);
+//			
+//			if (cDTO.getUserSeq().equals(userSeq)) {
+//	            return ResponseEntity.badRequest().body(Map.of("msg", "자신이 만든 강의는 수강할 수 없습니다."));
+//	        }else {
+//		    int result = ucs.addUserCourse(ucDTO);
+//		    System.out.println("인서트형 된거임? : "+result);
+//		    if(result==0) {
+//		        System.out.println("실패");
+//		    }
+//			}
+//		} catch (Exception e) {
+//		    System.err.println("🔥 예외 발생: " + e.getMessage());
+//		    e.printStackTrace();  // 정확한 오류 위치 확인
+//		}
+//		
+//		
+//		
+//		return ResponseEntity.ok(Map.of("msg","수강완료"));
+//		
+//	}
 	
 	
 	@GetMapping("/user/showUserCourses")

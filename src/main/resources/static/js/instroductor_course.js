@@ -167,8 +167,9 @@ function deleteCourse(courseSeq) {
         alert("삭제 성공");
         const card = document.getElementById(`course-${courseSeq}`);
         if (card) card.remove();
+		loadMyCourse(currentPage);
       } else {
-        alert("삭제 실패하였습니다.");
+        alert(res.msg);
       }
     })
     .catch(err => {

@@ -31,8 +31,8 @@ import kr.co.sist.e_learning.video.VideoService;
 @Controller
 public class CourseController {
 
-	@Value("${upload.saveDir2}")
-	private String saveDir2;
+	@Value("${file.upload-dir.courseImg}")  
+    private String courseImgPath;
 	
 	@Autowired
 	private CourseService cs;
@@ -113,12 +113,12 @@ public class CourseController {
 //			}//end if
 			String originalFileName = mf.getOriginalFilename();
 			
-			File dir = new File(saveDir2);
+			File dir = new File(courseImgPath);
 			if(!dir.exists()) {
 				dir.mkdirs();
 			}//end if
 			
-			File uploadFile = new File(saveDir2+File.separator+originalFileName);
+			File uploadFile = new File(courseImgPath, originalFileName);
 			String fileName = "";
 			String fileExt = "";
 			int fileSeperator=originalFileName.lastIndexOf(".");
@@ -130,7 +130,7 @@ public class CourseController {
 			int index = 1;
 //			while(uploadFile.exists()) {
 //				String newName = fileName+"("+index+")."+fileExt;
-//				uploadFile = new File(saveDir2+File.separator+newName);
+//				uploadFile = new File(courseImgPath+File.separator+newName);
 //				index++;
 //			}
 			mf.transferTo(uploadFile);
@@ -143,7 +143,7 @@ public class CourseController {
 		cDTO.setUserSeq(userSeq);
 		
 		cDTO.setThumbnailName(thumbNail);
-		cDTO.setThumbnailPath("/upload/img/"+thumbNail);
+		cDTO.setThumbnailPath("/courseImg/"+thumbNail);
 		cDTO.setUploadDate(new Date());
 		System.out.println("썸네일: " + cDTO.getThumbnailName());
 		System.out.println("유저 아이디 : "+cDTO.getUserSeq());
@@ -160,7 +160,7 @@ public class CourseController {
 		                         .body(Map.of("msg", "DB 삽입 실패"));
 		}
 		
-		return ResponseEntity.ok(Map.of("msg", "영상 등록 완료", "courseData", cDTO));
+		return ResponseEntity.ok(Map.of("msg", "강의 등록 완료", "courseData", cDTO));
 	}
 	
 	
@@ -182,6 +182,8 @@ public class CourseController {
 			System.out.println(cDTO.getUserSeq()+"님의 "+cDTO.getDifficulty());
 			System.out.println(cDTO.getUserSeq()+"님의 "+cDTO.getUploadDate());
 			System.out.println(cDTO.getUserSeq()+"님의 "+cDTO.getCourseSeq());
+			System.out.println("컨텐츠"+cDTO.getContentCount());
+			System.out.println("비디오"+cDTO.getVideoCount());
 			System.out.println("-------------------------------------------");
 		
 			if(videoList.isEmpty()) {
@@ -232,8 +234,8 @@ public class CourseController {
 			
 			}//end if
 			String originalFileName = mf.getOriginalFilename();
-			File dir = new File(saveDir2);
-			File uploadFile = new File(saveDir2+File.separator+originalFileName);
+			File dir = new File(courseImgPath);
+			File uploadFile = new File(courseImgPath+File.separator+originalFileName);
 			String fileName = "";
 			String fileExt = "";
 			int fileSeperator=originalFileName.lastIndexOf(".");
@@ -274,6 +276,7 @@ public class CourseController {
 	@PostMapping("/upload/delete_course")
 	@ResponseBody
 	public String deleteCourse(@RequestParam("seq")String courseSeq, Model model) {
+		
 		int result = cs.removeCourse(courseSeq);
 		String msg="";
 		if(result>0) {

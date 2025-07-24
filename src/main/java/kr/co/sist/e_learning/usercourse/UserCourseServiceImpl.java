@@ -54,4 +54,11 @@ public class UserCourseServiceImpl implements UserCourseService{
         return ucm.selectNewCourses(limit);
     }
 
+	@Override
+	public int selectAlreadyEnrollCourse(String courseSeq) {
+		int result = 0;
+		result = ucm.selectAlreadyEnrollCourse(courseSeq);
+		return result;
+	}
+
 }
