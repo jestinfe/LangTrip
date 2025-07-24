@@ -27,9 +27,9 @@ public class SupportDAOImpl implements SupportDAO {
 	}// getInstance
 
 	public static Connection getConnection() throws SQLException {
-		return DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "scott", "tiger");
+//		return DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "scott", "tiger");
 //		return DriverManager.getConnection("jdbc:oracle:thin:@192.168.10.98:1521:orcl", "c##under", "dog");
-//		return DriverManager.getConnection("jdbc:oracle:thin:@211.63.89.162:1521:orcl", "c##under", "dog");
+		return DriverManager.getConnection("jdbc:oracle:thin:@211.63.89.162:1521:orcl", "c##under", "dog");
 	}// getConnection
 
 	// ---------------------------------------------------------------------------------------------------------------------------------------------------
