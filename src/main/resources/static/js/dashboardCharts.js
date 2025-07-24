@@ -22,7 +22,40 @@ function drawCharts() {
       },
       options: {
         responsive: true,
-        plugins: { legend: { display: false } }
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: function(tooltipItem) {
+                return tooltipItem.raw + ' 분'; // 툴팁에 텍스트 포맷 추가
+              }
+            }
+          }
+        },
+        scales: {
+          x: {
+            ticks: {
+              font: {
+                size: 10,  // X축 레이블 글자 크기 조정
+                family: 'Arial, sans-serif',  // 폰트 스타일 변경
+                weight: 'normal',
+                lineHeight: 1.5
+              },
+              padding: 10  // X축 레이블과 그래프 간격 설정
+            }
+          },
+          y: {
+            ticks: {
+              font: {
+                size: 12,
+                family: 'Arial, sans-serif',
+                weight: 'normal',
+                lineHeight: 1.5
+              },
+              padding: 10  // Y축 레이블과 그래프 간격 설정
+            }
+          }
+        }
       }
     });
   }
@@ -42,7 +75,27 @@ function drawCharts() {
       options: {
         responsive: true,
         plugins: {
-			legend: { display: false }
+          legend: { display: false }
+        },
+        scales: {
+          x: {
+            ticks: {
+              font: {
+                size: 14,  // X축 레이블 글자 크기 조정
+                family: 'Arial, sans-serif',
+                weight: 'normal'
+              }
+            }
+          },
+          y: {
+            ticks: {
+              font: {
+                size: 14,  // Y축 레이블 글자 크기 조정
+                family: 'Arial, sans-serif',
+                weight: 'normal'
+              }
+            }
+          }
         }
       }
     });

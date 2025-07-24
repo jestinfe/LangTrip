@@ -17,7 +17,7 @@ public class QuizResponseDTO {
 	 private String quizListSeq; 
 	 private String quizSeq; 
 	 private String courseSeq;  
-	 private String userSeq;  
+	 private Long userSeq;  
 	 private int selectOption; //유저가 선택한 보기
 	 private String correctCheck; //정답(Y) or 오답(N) 체크
 	 private Date responseDate;	

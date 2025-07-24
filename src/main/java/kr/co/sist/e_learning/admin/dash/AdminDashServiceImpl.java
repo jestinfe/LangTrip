@@ -45,7 +45,6 @@ public class AdminDashServiceImpl implements AdminDashService {
     @Override
     public List<AdminDashDTO> getAdClickStats() {
         List<AdminDashDTO> accessList = adDAO.getAdClickStats();
-        System.out.println("시간별 접속 통계: " + accessList);  // 결과 출력
         return accessList;
     }
 }

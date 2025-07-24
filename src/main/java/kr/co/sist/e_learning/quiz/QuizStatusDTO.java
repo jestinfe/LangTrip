@@ -18,10 +18,10 @@ public class QuizStatusDTO {
   
 	private int totalCnt; //총 응답 수
 	private int correctCnt; //정답 수
-	private String userSeq;
+	private Long userSeq;
 	private String quizListSeq;
 	
-	public QuizStatusDTO(String userSeq, String quizListSeq) {
+	public QuizStatusDTO(Long userSeq, String quizListSeq) {
 		this.userSeq = userSeq;
 		this.quizListSeq = quizListSeq;
 	}

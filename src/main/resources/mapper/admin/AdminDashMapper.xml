@@ -13,7 +13,7 @@
   <!-- 일별 가입 통계 -->
   <select id="getDailySignupStats" resultType="kr.co.sist.e_learning.admin.dash.AdminDashDTO">
     SELECT TO_CHAR(created_at, 'MM-DD') AS regDate,
-           COUNT(*) AS dailyCount  <!-- count -> dailyCount로 변경 -->
+           COUNT(*) AS dailyCount
     FROM users
     GROUP BY TO_CHAR(created_at, 'MM-DD')
     ORDER BY regDate
@@ -23,7 +23,7 @@
   <!-- 유입 경로 통계 -->
   <select id="getSignupPathStats" resultType="kr.co.sist.e_learning.admin.dash.AdminDashDTO">
     SELECT signup_path AS signupPath,
-           COUNT(*) AS dailyCount  <!-- count -> dailyCount로 변경 -->
+           COUNT(*) AS dailyCount
     FROM users
     WHERE signup_path IS NOT NULL
     GROUP BY signup_path
@@ -58,12 +58,11 @@
 
   <!-- 광고 클릭 통계 -->
   <select id="getAdClickStats" resultType="kr.co.sist.e_learning.admin.dash.AdminDashDTO">
-    SELECT banner_id AS bannerId,
-           title AS title,
-           click_count AS clickCount
-    FROM ad_banner
-    ORDER BY created_at DESC
-    FETCH FIRST 5 ROWS ONLY
+	  SELECT banner_id AS bannerId,
+	         title AS title,
+	         click_count AS clickCount
+	  FROM ad_banner
+	  ORDER BY click_count DESC
   </select>
 
 </mapper>
