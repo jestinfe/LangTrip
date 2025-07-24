@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Controller
-@RequestMapping("/adminDash")
+@RequestMapping("/admin/dash/")
 public class AdminCommuController {
 
     @Autowired
@@ -37,9 +37,9 @@ public class AdminCommuController {
 
         List<CommunityPostDTO> posts;
         int totalPostCount;
-        int noticeCount = 0; // 현재 페이지에 표시될 공지사항 수
-        int totalNoticesMatchingKeyword = 0; // 검색어에 맞는 전체 공지사항 수 (페이징 계산용)
-        int totalRegularPostsMatchingKeyword = 0; // 검색어에 맞는 전체 일반 게시글 수 (페이징 계산용)
+        int noticeCount = 0; 
+        int totalNoticesMatchingKeyword = 0; 
+        int totalRegularPostsMatchingKeyword = 0; 
 
         int offset = (page - 1) * size; 
 
@@ -63,7 +63,6 @@ public class AdminCommuController {
         } else if ("best".equals(tab)) {
             posts = communityPostService.getBestPosts(offset, size);
             totalPostCount = communityPostService.getBestPostCount();
-            // best 탭일 때도 notice 관련 변수들을 0으로 초기화하여 모델에 추가
             totalNoticesMatchingKeyword = 0;
             totalRegularPostsMatchingKeyword = 0;
             noticeCount = 0;
@@ -72,10 +71,9 @@ public class AdminCommuController {
             posts = communityPostService.getNoticePosts(offset, size, keyword);
             posts.forEach(post -> post.setNickname("운영자"));
             totalPostCount = communityPostService.getTotalNoticePostCountWithSearch(keyword);
-            // notice 탭일 때도 regular 관련 변수들을 0으로 초기화하여 모델에 추가
-            totalNoticesMatchingKeyword = totalPostCount; // notice 탭에서는 totalPostCount가 곧 totalNoticesMatchingKeyword
+            totalNoticesMatchingKeyword = totalPostCount; 
             totalRegularPostsMatchingKeyword = 0;
-            noticeCount = posts.size(); // 현재 페이지에 보이는 공지사항 수
+            noticeCount = posts.size(); 
         }
         
         for (CommunityPostDTO post : posts) {
@@ -94,7 +92,6 @@ public class AdminCommuController {
         model.addAttribute("tab", tab);
         model.addAttribute("keyword", keyword); 
 
-        // 모든 경우에 noticeCount, totalRegularPostsMatchingKeyword, totalNoticesMatchingKeyword를 모델에 추가
         model.addAttribute("noticeCount", noticeCount); 
         model.addAttribute("totalRegularPostsMatchingKeyword", totalRegularPostsMatchingKeyword); 
         model.addAttribute("totalNoticesMatchingKeyword", totalNoticesMatchingKeyword); 
@@ -107,8 +104,6 @@ public class AdminCommuController {
         logger.debug("Received postId: {}", postId);
         CommunityPostDTO post = communityPostService.getPostDetail(postId); 
         
-        // 공지사항일 경우에만 닉네임을 "운영자"로 설정합니다.
-        // 일반 게시글의 경우, community.xml의 selectPost 쿼리에서 가져온 실제 닉네임이 그대로 사용됩니다.
         if (post != null && "Y".equals(post.getCommunityNotice())) {
             post.setNickname("운영자"); 
         }
@@ -116,7 +111,7 @@ public class AdminCommuController {
         if (post == null) {
         	logger.error("No post found with id: {}", postId);
         	model.addAttribute("errorMessage", "게시글을 찾을 수 없습니다.");
-        	return "errorPage";
+        	return "errorPage"; // 이 에러 페이지는 admin/dash 아래에 없을 수 있으니, 필요하면 경로를 조정해야 합니다.
         }
         
         List<CommunityCommentDTO> comments = communityPostService.getAllComments(postId); 
@@ -131,30 +126,26 @@ public class AdminCommuController {
         return "admin/dash/admincommuDetail"; // ⭐ 경로 수정
     }
     
-    // 관리자는 글쓰기 페이지를 볼 수 있지만, 실제 글 작성은 여기서 처리하지 않음 (POST 엔드포인트 제거)
     @GetMapping("/commuSWrite")
     public String showAdminCommunityWritePage(Model model) {
         return "admin/dash/admincommuWrite"; // ⭐ 경로 수정
     }
     
-    // 게시글 삭제 POST 엔드포인트는 유지 (관리자가 삭제는 가능)
     @PostMapping("/community/deletePost")
     public String deletePost(@RequestParam("postId") Long postId) {
         communityPostService.deletePostForAdmin(postId); 
-        return "redirect:/adminDash/admincommunity";
+        return "redirect:/adminDash/admincommunity"; 
     }
 
-    // 댓글 삭제 POST 엔드포인트는 유지 (관리자가 삭제는 가능)
     @PostMapping("/community/deleteComment")
     public String deleteComment(@RequestParam("commentId") Long commentId, @RequestParam("postId") Long postId) {
         communityPostService.deleteCommentForAdmin(commentId); 
-        return "redirect:/adminDash/admincommunity/detail?postId=" + postId;
+        return "redirect:/adminDash/admincommunity/detail?postId=" + postId; 
     }
 
-    // 대댓글 삭제 POST 엔드포인트는 유지 (관리자가 삭제는 가능)
     @PostMapping("/community/deleteReply")
     public String deleteReply(@RequestParam("replyId") Long replyId, @RequestParam("postId") Long postId) {
         communityPostService.deleteReplyForAdmin(replyId); 
-        return "redirect:/adminDash/admincommunity/detail?postId=" + postId;
+        return "redirect:/adminDash/admincommunity/detail?postId=" + postId; 
     }
 }
