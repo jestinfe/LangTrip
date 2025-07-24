@@ -55,14 +55,14 @@ async function registerLecture() {
   try {
     const res = await axios.post('/ui/register_course', formData);
     alert("강의 등록 완료 : " + res.data.msg);
-	
+   
     const countRes = await axios.get('/ui/my_lecture?page=1&limit=4');
     const totalCount = countRes.data.totalCount;
     const lastPage = Math.ceil(totalCount / limit);
-	console.log("응답으로 받은 courseData", res.data.courseData);
-	
+   console.log("응답으로 받은 courseData", res.data.courseData);
+   
     const currentCardCount = document.querySelectorAll(".lecture-card").length;
-	
+   
     if (currentCardCount < limit) {
       appendLectureForm(res.data.courseData);
     } else {
@@ -88,7 +88,7 @@ function appendLectureForm(course) {
       const base = course.thumbnailPath.substring(0, lastIndex + 1);
       safePath = base + encodeURIComponent(course.thumbnailName);
     }
-	
+   
   card.className = "lecture-card";
   card.id = `course-${course.courseSeq}`;
   card.innerHTML = `

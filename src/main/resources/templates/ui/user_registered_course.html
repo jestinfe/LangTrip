@@ -95,7 +95,7 @@
 						<div class="side-panel">
 							<h5>📊 강의 수강하기</h5>
 							<p class="mb-3">강의를 수강해보세요.</p>
-							<a class="btn btn-outline-primary btn-sm w-100 mb-2" th:onclick="goToRegisterCourse([[${courseData.courseSeq}]])">
+							<a class="btn btn-outline-primary btn-sm w-100 mb-2" onclick="goToDonate('${courseData.courseSeq}')">
 							 수강하기</a>							
 						</div>
 						<div class="side-panel">
@@ -148,31 +148,6 @@
 
 
 		<script>
-		function goToRegisterCourse(courseSeq) {
-			  console.log(courseSeq);
-			  const confirmed = confirm("이 강의를 수강하시겠습니까?");
-
-			  if (!confirmed) {
-			    return; // 사용자가 '아니오' 선택 시 종료
-			  }
-
-			  axios.post('/user/course_enroll', null, {
-			    params: { courseSeq: courseSeq }
-			  })
-			  .then(res => {
-			    alert("강의등록 완료");
-			    location.reload();
-			  })
-			  .catch(err => {
-			    if (err.response && err.response.data && err.response.data.msg) {
-			      alert("걍안됨");  // 서버 메시지 표시
-			    } else {
-			      alert("수강 중 오류 발생. 콘솔을 확인하세요.");
-			    }
-			    console.error(err);
-			  });
-			}
-		
 		function goToDonate(courseSeq){
 			location.href = "/user/donation?lectureNo="+ courseSeq;
 		}

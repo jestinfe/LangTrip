@@ -156,7 +156,7 @@ public class CourseController {
 		cDTO.setFlag("T");
 		int result = cs.addCourse(cDTO);
 		if (result == 0) {
-		    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 		                         .body(Map.of("msg", "DB 삽입 실패"));
 		}
 		
