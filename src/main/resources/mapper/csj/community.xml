@@ -6,19 +6,19 @@
 <mapper namespace="kr.co.sist.e_learning.community.dao.CommunityPostDAO">
 
   <!-- 게시글 작성 -->
-  <insert id="insertPost" parameterType="kr.co.sist.e_learning.community.dto.CommunityPostDTO">
-    INSERT INTO community_post (
-      post_id, user_id, title, content, created_at, views, post_state
-    ) VALUES (
-      seq_community_post.NEXTVAL,
-      #{userId},
-      #{title},
-      #{content},
-      SYSTIMESTAMP,
-      0,
-      'A'
-    )
-  </insert>
+ <insert id="insertPost" parameterType="kr.co.sist.e_learning.community.dto.CommunityPostDTO">
+  INSERT INTO community_post (
+    post_id, user_id, title, content, created_at, views, post_state
+  ) VALUES (
+    seq_community_post.NEXTVAL,
+    #{userId},
+    #{title},
+    #{content},
+    SYSTIMESTAMP,
+    0,
+    'A'
+  )
+</insert>
 
 
 <!-- 페이징 + 제목·내용 검색용 게시글 조회 -->
@@ -33,9 +33,17 @@
     cp.content,
     cp.created_at AS createdAt,
     cp.views,
-    cp.post_state AS postState
-  	, cp.community_notice AS communityNotice
-  	
+    cp.post_state AS postState,
+    cp.community_notice AS communityNotice,
+
+    -- ✅ 추천 수 가져오기
+    NVL((
+      SELECT COUNT(*) 
+      FROM community_like cl
+      WHERE cl.post_id2 = cp.post_id
+        AND cl.vote_type = 'UP'
+    ), 0) AS upCount
+
   FROM community_post cp
   JOIN users u ON cp.user_id = u.user_seq
   WHERE cp.post_state = 'A'
@@ -50,6 +58,7 @@
     OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
   </if>
 </select>
+
 
 
 
@@ -88,7 +97,7 @@
     FROM community_post cp
     JOIN users u ON cp.user_id = u.user_seq
     WHERE cp.post_state = 'A'
-    ORDER BY cp.post_id DESC
+	ORDER BY cp.created_at DESC
   </select>
 
   <!-- 페이징 게시글 조회 -->
@@ -162,17 +171,21 @@
   </select>
 
   <!-- 단일 게시글 조회 -->
+  <!-- ⭐ 수정: USERS 테이블과 조인하여 nickname을 가져오도록 변경 -->
   <select id="selectPost" parameterType="long" resultType="kr.co.sist.e_learning.community.dto.CommunityPostDTO">
     SELECT 
-      post_id AS postId,
-      user_id AS userId,
-      title,
-      content,
-      created_at AS createdAt,
-      views,
-      post_state AS postState
-    FROM community_post
-    WHERE post_id = #{postId}
+      cp.post_id AS postId,
+      cp.user_id AS userId,
+      u.nickname AS nickname,  <!-- 닉네임 컬럼 추가 -->
+      cp.title,
+      cp.content,
+      cp.created_at AS createdAt,
+      cp.views,
+      cp.post_state AS postState,
+      cp.community_notice AS communityNotice <!-- 공지사항 여부도 추가 -->
+    FROM community_post cp
+    JOIN users u ON cp.user_id = u.user_seq <!-- USERS 테이블 조인 추가 -->
+    WHERE cp.post_id = #{postId}
   </select>
 
   <!-- 기존 deletePost -->
@@ -255,10 +268,188 @@
 </select>
 
 
+<!-- 관리자 공지사항만 조회 -->
+<!-- <select id="selectPostsByNotice" resultType="kr.co.sist.e_learning.community.dto.CommunityPostDTO">
+    SELECT 
+        cp.post_id AS postId,
+        cp.user_id AS userId,
+        u.nickname AS nickname,
+        cp.title,
+        cp.content,
+        cp.created_at AS createdAt,
+        cp.views,
+        cp.post_state AS postState
+    FROM community_post cp
+    JOIN users u ON cp.user_id = u.user_seq
+    WHERE cp.post_state = 'A' AND cp.community_notice = 'y'
+    ORDER BY cp.created_at DESC
+</select>
+
+<select id="selectAdminPosts" parameterType="kr.co.sist.e_learning.community.dto.PageDTO" resultType="kr.co.sist.e_learning.community.dto.CommunityPostDTO">
+    SELECT 
+        cp.post_id AS postId,
+        cp.user_id AS userId,
+        u.nickname AS nickname,
+        cp.title,
+        cp.content,
+        cp.created_at AS createdAt,
+        cp.views,
+        cp.post_state AS postState
+    FROM community_post cp
+    JOIN users u ON cp.user_id = u.user_seq
+    WHERE cp.post_state = 'A'
+    ORDER BY cp.created_at DESC
+    LIMIT #{startIndex}, #{size}  startIndex와 size를 사용한 페이징
+</select>
+ -->
+<select id="selectNoticePosts"
+        parameterType="map"
+        resultType="kr.co.sist.e_learning.community.dto.CommunityPostDTO">
+  SELECT 
+    cp.post_id    AS postId,
+    cp.user_id    AS userId,
+    u.nickname    AS nickname,
+    cp.title,
+    cp.content,
+    cp.created_at AS createdAt,
+    cp.views,
+    cp.post_state AS postState,
+    cp.community_notice AS communityNotice,
+    NVL((
+      SELECT COUNT(*) 
+      FROM community_like cl
+      WHERE cl.post_id2 = cp.post_id
+        AND cl.vote_type = 'UP'
+    ), 0) AS upCount
+  FROM community_post cp
+  JOIN users u ON cp.user_id = u.user_seq
+  WHERE cp.post_state = 'A'
+    AND cp.community_notice = 'Y'
+  <if test="keyword != null and keyword != ''">
+    AND (
+      cp.title   LIKE '%' || #{keyword} || '%'
+      OR cp.content LIKE '%' || #{keyword} || '%'
+    )
+  </if>
+  ORDER BY cp.created_at DESC
+  <if test="offset != null and limit != null">
+    OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+  </if>
+</select>
+
+<select id="selectTotalNoticePostCount"
+        parameterType="map"
+        resultType="int">
+  SELECT COUNT(*)
+  FROM community_post cp
+  JOIN users u ON cp.user_id = u.user_seq
+  WHERE cp.post_state = 'A'
+    AND cp.community_notice = 'Y'
+  <if test="keyword != null and keyword != ''">
+    AND (
+      cp.title   LIKE '%' || #{keyword} || '%'
+      OR cp.content LIKE '%' || #{keyword} || '%'
+    )
+  </if>
+</select>
+
+<select id="selectRegularPosts" parameterType="map" resultType="kr.co.sist.e_learning.community.dto.CommunityPostDTO">
+    SELECT 
+      cp.post_id AS postId,
+      cp.user_id AS userId,
+      u.nickname AS nickname,
+      cp.title,
+      cp.content,
+      cp.created_at AS createdAt,
+      cp.views,
+      cp.post_state AS postState,
+      cp.community_notice AS communityNotice
+    FROM community_post cp
+    JOIN users u ON cp.user_id = u.user_seq
+    WHERE cp.post_state = 'A' AND cp.community_notice = 'N'
+    <if test="keyword != null and keyword != ''">
+        AND (
+            cp.title LIKE '%' || #{keyword} || '%'
+            OR cp.content LIKE '%' || #{keyword} || '%'
+        )
+    </if>
+    ORDER BY cp.created_at DESC
+    OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+</select>
+
+ <insert id="insertNoticePost" parameterType="CommunityPostDTO">
+    INSERT INTO community_post (
+        post_id,
+        user_id,
+        title,
+        content,
+        created_at,
+        views,
+        post_state,
+        community_notice
+    ) VALUES (
+        seq_community_post.NEXTVAL,
+        #{userId},
+        #{title},
+        #{content},
+        SYSTIMESTAMP,
+        0,
+        'A',
+        'Y'
+    )
+</insert>
+
+<select id="selectTotalNoticePostCountWithSearch" resultType="int">
+    SELECT count(*)
+    FROM community_post
+    WHERE community_notice = 'Y'
+    <if test="searchWord != null and searchWord != ''">
+        AND (
+            title LIKE '%' || #{searchWord} || '%'
+            OR content LIKE '%' || #{searchWord} || '%'
+        )
+    </if>
+</select>
+
+<delete id="deletePostForAdmin">
+        DELETE FROM community_post WHERE POST_ID = #{postId}
+    </delete>
+
+    <delete id="deleteCommentForAdmin">
+        DELETE FROM community_comment WHERE COMMENT_ID = #{commentId}
+    </delete>
+
+    <delete id="deleteReplyForAdmin">
+        DELETE FROM community_comment WHERE COMMENT_ID = #{replyId}
+    </delete>
+
+    <delete id="deleteCommentsByPostId">
+        DELETE FROM community_comment WHERE POST_ID2 = #{postId}
+    </delete>
 
 
+	<!-- ✅ 추가: 좋아요(추천/비추천) 기록 삭제 -->
+  <delete id="deleteLikesByPostId">
+      DELETE FROM community_like WHERE POST_ID2 = #{postId}
+  </delete>
 
+  <!-- ✅ 추가: 이미지 기록 삭제 -->
+  <delete id="deleteImagesByPostId">
+      DELETE FROM community_image WHERE POST_ID2 = #{postId}
+  </delete>
 
-
+ <!-- ✅ 추가: 검색어에 따른 일반 게시글 전체 수 조회 -->
+  <select id="selectTotalRegularPostCountWithSearch" parameterType="string" resultType="int">
+      SELECT COUNT(*)
+      FROM community_post cp
+      JOIN users u ON cp.user_id = u.user_seq
+      WHERE cp.post_state = 'A' AND cp.community_notice = 'N'
+      <if test="keyword != null and keyword != ''">
+          AND (
+              cp.title LIKE '%' || #{keyword} || '%'
+              OR cp.content LIKE '%' || #{keyword} || '%'
+          )
+      </if>
+  </select>
 
 </mapper>
