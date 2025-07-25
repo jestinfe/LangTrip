@@ -7,8 +7,6 @@ import kr.co.sist.e_learning.community.service.VoteService;
 import kr.co.sist.e_learning.user.auth.UserAuthentication;
 import kr.co.sist.e_learning.user.auth.UserRepository;
 import kr.co.sist.e_learning.user.auth.UserEntity;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
@@ -30,7 +28,6 @@ import java.util.UUID;
 @RequestMapping("/csj")
 public class CommunityPostController {
 
-    private static final Logger logger = LoggerFactory.getLogger(CommunityPostController.class);
 
     @Autowired
     private CommunityPostService communityService;
@@ -195,7 +192,6 @@ public class CommunityPostController {
             imageFile.transferTo(dest);
             return uploadPathWeb + "/" + fileName;
         } catch (IOException e) {
-            logger.error("파일 업로드 중 오류 발생", e);
             return null;
         }
     }

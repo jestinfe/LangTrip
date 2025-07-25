@@ -51,7 +51,6 @@ public class UserCourseController {
 	public String userLecture(@RequestParam("seq") String courseSeq, Model model,
 			 Authentication authentication) {
 		
-		System.out.println("강의 시퀀스 ㅅㅂ "+courseSeq);
 		
 		
 		Object principal = authentication.getPrincipal();
@@ -60,7 +59,6 @@ public class UserCourseController {
 			userSeq = (Long) principal;
 		}
 		
-		System.out.println("강의실 들어온 사람 seq "+userSeq);
 		
 		CourseDTO cDTO = cs.selectCourseData(courseSeq);
 		
@@ -93,14 +91,10 @@ public class UserCourseController {
 	        userSeq = (Long) principal;
 	    }
 
-	    System.err.println("🔥🔥🔥 받은 userSeq: " + userSeq);
-	    System.out.println("강의 시퀀스 : " + courseSeq);
-	    System.out.println("강의 페이지에 들어온 유저시퀀스 : " + userSeq);
 
 	    try {
 	        // 강의를 만든 사람의 userSeq 조회
 	        CourseDTO cDTO = cs.selectUserSeqByCourseSeq(courseSeq);
-	        System.out.println("강의만든 사람 userSeq : " + cDTO.getUserSeq());
 	        
 	        if (cDTO.getUserSeq() == null) {
 	            return ResponseEntity.badRequest().body(Map.of("msg", "강의 정보가 없습니다."));
@@ -124,16 +118,15 @@ public class UserCourseController {
 	        ucDTO.setUserSeq(userSeq);
 
 	        int result = ucs.addUserCourse(ucDTO);
-	        System.out.println("인서트 성공 여부 : " + result);
 
 	        if (result == 0) {
 	            return ResponseEntity.internalServerError().body(Map.of("msg", "수강 등록에 실패했습니다."));
+	        }else {
+	        cs.plusEnrollCount(courseSeq);
 	        }
-
 	        return ResponseEntity.ok(Map.of("msg", "수강완료"));
 
 	    } catch (Exception e) {
-	        System.err.println("🔥 예외 발생: " + e.getMessage());
 	        e.printStackTrace();
 	        return ResponseEntity.internalServerError().body(Map.of("msg", "서버 오류 발생"));
 	    }
@@ -146,10 +139,7 @@ public class UserCourseController {
 //		if(principal instanceof Long) {
 //			userSeq = (Long) principal;
 //		}
-//		System.err.println("🔥🔥🔥 받은 userSeq: " + userSeq);
 //		
-//		System.out.println("강의 시퀀스 : "+courseSeq);
-//		System.out.println("유저시퀀스 : "+userSeq);
 //		//강의 만든사람 userSeq검색
 //		
 //		try {
@@ -162,9 +152,7 @@ public class UserCourseController {
 //	            return ResponseEntity.badRequest().body(Map.of("msg", "자신이 만든 강의는 수강할 수 없습니다."));
 //	        }else {
 //		    int result = ucs.addUserCourse(ucDTO);
-//		    System.out.println("인서트형 된거임? : "+result);
 //		    if(result==0) {
-//		        System.out.println("실패");
 //		    }
 //			}
 //		} catch (Exception e) {
@@ -184,13 +172,11 @@ public class UserCourseController {
 	public Map<String, Object> showUserCourse(Authentication authentication,
 			@RequestParam(defaultValue = "1") int page,
 			@RequestParam(defaultValue = "5") int limit){
-		System.out.println("showUserCourses 진입");
 		Object principal = authentication.getPrincipal();
 		Long userSeq = null;
 		if(principal instanceof Long) {
 			userSeq = (Long) principal;
 		}
-		System.out.println(userSeq);
 		
 		
 		int offset = (page -1)*limit;
@@ -198,9 +184,7 @@ public class UserCourseController {
 		param.put("userId", userSeq);
 		param.put("offset", offset);
 		param.put("limit", limit);
-		System.out.println("showUserCourses 진입2");
 		List<UserCourseDTO> paginationList = ucs.searchUserCourseByPage(param);
-		System.out.println("showUserCourses 진입3");
 		
 		int totalCount = ucs.searchUserCourseCount(userSeq);
 		
@@ -212,7 +196,6 @@ public class UserCourseController {
 		
 		List<UserCourseDTO> list = ucs.searchUserCourseByUserId(userSeq);
 		for(UserCourseDTO uDTO : list) {
-			System.out.println(uDTO.toString());
 		}
 		
 		result.put("courses", list);
@@ -223,7 +206,6 @@ public class UserCourseController {
 	public String goToRegisterdCourse(@RequestParam("seq") String courseSeq, Model model,
 			 Authentication authentication) {
 		
-		System.out.println("강의 시퀀스 tlqkf "+courseSeq);
 	
 		Object principal = authentication.getPrincipal();
 		Long userSeq = null;
@@ -235,14 +217,13 @@ public class UserCourseController {
 		
 		
 		CourseDTO cDTO = cs.selectCourseData(courseSeq);
-		System.out.println("courseDTO : "+cDTO.toString());
 		List<VideoDTO> videoList = vs.searchVideoByCourseSeq(courseSeq);
 //		List<QuizListDTO> quizList = qs.searchQuizByCourseSeq(courseSeq);
 		List<QuizListDTO> quizSeq = qs.searchQuizSeqByCoursSEq(courseSeq);
 		List<QuizListDTO> quizList = qs.searchDistinctQuizLists(courseSeq);
 		
 		
-		
+		model.addAttribute("userSeq", userSeq);
 		model.addAttribute("courseData", cDTO);
 		model.addAttribute("videoList", videoList);
 		model.addAttribute("quizList", quizList);

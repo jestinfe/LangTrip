@@ -137,10 +137,6 @@ public class MyPageController {
             ) {
 
         long userSeq = getOrInitUserSeq(authentication);
-        System.out.println("user_course 진입");
-        System.out.println("USERSEQ : "+ userSeq);
-        System.err.println("로그야 좀 떠라 시발");
-        System.out.println("페이지, 리미트" + page+" " + limit);
         int offset = (page - 1) * limit;
         Map<String, Object> param = new HashMap<>();
         param.put("userSeq", userSeq);
@@ -149,7 +145,6 @@ public class MyPageController {
 //
         List<UserCourseDTO> courseList = ucs.searchUserCourseByPage(param);
         for(UserCourseDTO uDTO : courseList) {
-        	System.out.println(uDTO.toString());
         }
 //        
         int totalCount = ucs.searchUserCourseCount(userSeq);
@@ -350,7 +345,6 @@ public class MyPageController {
 
     @GetMapping("/wallet")
     public String accountPage(Model model, Authentication auth) {
-    	System.out.println("지갑 공간");
         long userSeq = getOrInitUserSeq(auth);
         FundingDTO accountInfo = fdSV.getAccountInfo(userSeq);
         model.addAttribute("accountInfo", accountInfo);

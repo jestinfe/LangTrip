@@ -13,6 +13,8 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,6 +26,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import kr.co.sist.e_learning.course.CourseService;
+import kr.co.sist.e_learning.course.CourseStatDTO;
 
 
 @Controller
@@ -41,7 +44,6 @@ public class VideoController {
 	@GetMapping("/upload/upload_video")
 	public String showUploadForm(@RequestParam("seq") String courseSeq, Model model) {
 		model.addAttribute("courseSeq", courseSeq);
-		System.out.println(courseSeq);
 		return "upload/upload_video";
 	}
 	
@@ -59,7 +61,8 @@ public class VideoController {
 	@ResponseBody
 	public Map<String, Object> videoData(
 			@RequestParam("upfile") List<MultipartFile> mfList,
-			@ModelAttribute VideoDTO vDTO, Model model)
+			@ModelAttribute VideoDTO vDTO, Model model
+			)
 			throws Exception {
 
 		Map<String, Object> result = new HashMap<String, Object>();
@@ -138,7 +141,6 @@ public class VideoController {
 			    Thread.sleep(100); // 0.1초씩 대기
 			    wait++;
 			}
-			System.out.println(fileSB.toString());
 			
 			
 			
@@ -161,7 +163,6 @@ public class VideoController {
 			videoCnt++;
 			
 			if(cs.updateVideoCount(vDTO.getCourseSeq()) == 1) {
-				System.out.println("비디오 카운트 + 1");
 			};
 			dtoList.add(newDTO);
 			result.put("cDTO", newDTO);
@@ -182,15 +183,12 @@ public class VideoController {
 //	    Map<String, Object> result = new HashMap<>();
 //
 //	    if (mf == null || mf.isEmpty()) {
-//	    	System.out.println("비디오 에러1");
 //	        result.put("status", "fail");
 //	        result.put("msg", "업로드한 파일이 없습니다.");
 //	        return result;
 //	    }
 //
 //	    if (!mf.getContentType().startsWith("video")) {
-//	    	System.out.println("비디오 에러2");
-//	    	System.out.println("비디오 에러2");
 //	        result.put("status", "fail");
 //	        result.put("msg", "영상 파일만 업로드 가능합니다.");
 //	        return result;
@@ -225,7 +223,6 @@ public class VideoController {
 //	    if (newDTO.getCourseSeq() != null && newDTO.getFileName() != null) {
 //	        vs.addVideo(newDTO);
 //	    } else {
-//	    	System.out.println("비디오 에러3");
 //	        result.put("status", "fail");
 //	        result.put("msg", "강의 번호 또는 파일 이름 누락");
 //	        return result;
@@ -245,19 +242,71 @@ public class VideoController {
 		return "video/watch_video";
 	}
 	
+	//업로드폼 버튼 -> 비디오 폼으로
 	@GetMapping("/video/watch")
-	public String showVideo(@RequestParam String videoSeq, Model model) {
+	public String showVideo(@RequestParam("videoSeq") String videoSeq, 
+			@RequestParam("courseSeq") String courseSeq, Model model, Authentication authentication) {
+		
+		Object principal = authentication.getPrincipal();
+		Long userSeq = null;
+		if(principal instanceof Long) {
+			userSeq = (Long) principal;
+		}
+		
+		
 		VideoDTO vDTO = vs.showVideo(videoSeq);
+		model.addAttribute("userSeq", userSeq);
+		model.addAttribute("courseSeq", courseSeq);
 		
 		model.addAttribute("videoData", vDTO);
-		System.out.println("파일이름 : "+vDTO.getFileName());
-		System.out.println("파일제목 : "+vDTO.getTitle());
-		System.out.println("파일설명 : "+vDTO.getDescription());
-		System.out.println("파일이름 : "+vDTO.getFileName());
-		System.out.println("파일패쓰 : "+vDTO.getFilePath());
+		
 		
 		return "video/video_frm";
 	}
+	
+	@PostMapping("/course/stat/update")
+	@ResponseBody
+	public ResponseEntity<?> updateStat(@RequestBody CourseStatDTO csDTO) {
+		 System.out.println("컨트롤러 도착 updateStat 요청: " + csDTO);
+	    Map<String, Object> map = new HashMap<String, Object>();
+	    map.put("userSeq", csDTO.getUserSeq());
+	    map.put("videoSeq", csDTO.getVideoSeq());
+	    map.put("courseSeq", csDTO.getCourseSeq());
+	    System.out.println("시발:"+csDTO.getCourseSeq());
+	    System.out.println(csDTO.getUserSeq());
+	    System.out.println(csDTO.getVideoSeq());
+	    System.out.println(csDTO.getLastTime());
+	    
+	    
+		if(cs.existCourseStat(map)>0) 
+		{ 
+			System.out.println("업뎃");
+			cs.updateCourseStat(csDTO);
+		}else {
+			System.out.println("추가");
+			cs.insertCourseStat(csDTO);
+		}
+		
+		return ResponseEntity.ok("updated");
+	}
+	
+	@GetMapping("/course/stat/get")
+	@ResponseBody
+	public ResponseEntity<CourseStatDTO> getCourseStat(
+	        @RequestParam("userSeq") Long userSeq,
+	        @RequestParam("videoSeq") int videoSeq,
+	        @RequestParam("courseSeq") String courseSeq
+	) {
+	    Map<String, Object> map = new HashMap<>();
+	    map.put("userSeq", userSeq);
+	    map.put("videoSeq", videoSeq);
+	    map.put("courseSeq", courseSeq);
+	    
+	    CourseStatDTO stat = cs.selectCourseStat(map);
+	    
+	    return ResponseEntity.ok(stat);
+	}
+	
 	
 	
 

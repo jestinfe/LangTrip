@@ -67,7 +67,6 @@ public class QuizController {
     @ResponseBody
     public QuizListDTO QuizModal(@RequestParam String quizListSeq, Long userSeq) {
     	
-    	System.out.println("QuizModal 컨트롤러 진입");
     	
         return quizService.getQuizListInfo(quizListSeq, userSeq);
     }
@@ -77,7 +76,6 @@ public class QuizController {
     public String showAddQuizForm(@RequestParam("seq") String courseSeq, 
     		Model model) {
     	
-    	System.out.println("showAddQuizForm 컨트롤러 진입");
     	
     	model.addAttribute("courseSeq", courseSeq);
     	
@@ -93,10 +91,8 @@ public class QuizController {
         Authentication authentication
     ) throws Exception {
     	
-    	System.out.println("addQuiz 컨트롤러 진입");
 
     	Long userSeq = getUserSeq(authentication);
-    	System.out.println("퀴즈를 등록한 유저 ID : "+userSeq);
     	
     	// JSON 파싱
     	ObjectMapper mapper = new ObjectMapper();
@@ -105,12 +101,10 @@ public class QuizController {
     	// 퀴즈 등록자 설정
         quizListDTO.setUserSeq(userSeq);
        
-        System.out.println(quizListDTO.getCourseSeq());
 
         // DB 저장 서비스 호출
         quizService.addQuiz(quizListDTO, imageFiles);
         if(cs.updateQuizCount(quizListDTO.getCourseSeq()) == 1) {
-			System.out.println("퀴즈 카운트 + 1");
 		};
         return "success";
     }//addQuiz
@@ -120,8 +114,6 @@ public class QuizController {
     public String showPlayQuiz(@PathVariable String quizListSeq, Model model,
     		@RequestParam String courseSeq) {
     	
-    	System.out.println("showPlayQuiz 컨트롤러 진입");
-    	System.out.println("✅ 퀴즈 학습 진입! quizListSeq: " + quizListSeq);
     	
         model.addAttribute("quizListSeq", quizListSeq);
         model.addAttribute("courseSeq", courseSeq);
@@ -135,14 +127,10 @@ public class QuizController {
     		Authentication authentication
     		) {
     	
-    	System.out.println("playQuiz 컨트롤러 진입");
     	
     	//userSeq 받아오기
     	Long userSeq = getUserSeq(authentication);
-    	System.out.println("✅ 퀴즈 학습 시작!");
-    	System.out.println("퀴즈 학습을 진행중인 유저 : "+userSeq);
     	
-    	System.out.println(quizListSeq);
     	
     	Map<String, Object> result=quizService.getQuizList(quizListSeq,userSeq);
     	
@@ -155,14 +143,11 @@ public class QuizController {
     public void saveQuizResponse(@RequestBody QuizResponseDTO qrDTO,
     		Authentication authentication){
     	
-    	System.out.println("saveQuizResponse 컨트롤러 진입");
     	
     	//userSeq 받아오기
     	Long userSeq = getUserSeq(authentication);
     	qrDTO.setUserSeq(userSeq);
         
-    	System.out.println("📦 DTO 내용 확인: " + qrDTO);
-    	System.out.println("✅ quizListSeq 확인: " + qrDTO.getQuizListSeq());
     	//정답 체크, 상태 설정, insert
     	quizService.saveQuizResponse(qrDTO);
     			
@@ -173,7 +158,6 @@ public class QuizController {
     public String quizCompleted(@PathVariable String quizListSeq, Model model
     		,Authentication authentication, @RequestParam("courseSeq") String courseSeq) {
     	
-    	System.out.println("quizCompleted 컨트롤러 진입");
     	
     	//userSeq 받아오기
     	Long userSeq = getUserSeq(authentication);
@@ -195,26 +179,21 @@ public class QuizController {
     		  @PathVariable String quizListSeq,
     		  @RequestParam String courseSeq) {
     	
-    	System.out.println("showModifyQuizForm 컨트롤러 진입");
     	
     	try {
     	Long loginUserSeq = getUserSeq(authentication);
-    	System.out.println("loginUserSeq: " + loginUserSeq);
     	// DB에서 정보 불러오기
     	QuizListDTO qlDTO = quizService.getQuizListForModify(quizListSeq);
     	if (qlDTO == null) {
-    	    System.out.println("해당 quizListSeq에 대한 데이터 없음");
     	    return "redirect:/error"; // 또는 적절한 오류 페이지
     	}
     	
     	
     	Long user=qlDTO.getUserSeq();
-    	System.out.println("DB에서 가져온 userSeq: " + user);
     	//본인 확인
     	if(!loginUserSeq.equals(user)) {
     		return "redirect:/ui/instroductor_course?userSeq="+loginUserSeq;
     	}
-    	System.out.println("본인 확인 완료! 퀴즈 수정 가능");
     	
         QuizListDTO qDTO = new QuizListDTO();
     	qDTO.setCourseSeq(courseSeq);
@@ -239,7 +218,6 @@ public class QuizController {
             @RequestParam(value = "imageFiles", required = false) List<MultipartFile> imageFiles,
             Authentication authentication) {
 
-    	System.out.println("modifyQuiz 컨트롤러 진입");
     	
     	//로그인한 사용자 확인 
     	Long loginUserSeq = getUserSeq(authentication);
@@ -252,7 +230,6 @@ public class QuizController {
     	if(!loginUserSeq.equals(user)) {
     		return "redirect:/ui/instroductor_course?userSeq="+loginUserSeq;
     	}
-    	System.out.println("본인 확인 완료! 퀴즈 수정 가능");
     	
         try {
 			quizService.updateQuiz(quizListSeq, quizJson, imageFiles);
@@ -269,7 +246,6 @@ public class QuizController {
     public String deleteQuizList(@PathVariable String quizListSeq,
     		Authentication authentication) {
 
-    	System.out.println("deleteQuizList 컨트롤러 진입");
     	
     	Long loginUserSeq = getUserSeq(authentication);
     	
@@ -283,6 +259,7 @@ public class QuizController {
     	}
     	
         quizService.softDeleteAllQuiz(quizListSeq);
+        cs.minusQuizCount(quizListSeq);
         return "delete";
     }
     

@@ -3,7 +3,6 @@ package kr.co.sist.e_learning.admin.donation;
 import kr.co.sist.e_learning.admin.PageRequestDTO_donation;
 import kr.co.sist.e_learning.admin.PageResponseDTO_donation;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

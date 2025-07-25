@@ -62,7 +62,8 @@
 										th:classappend="inactive">
 
 										<button type="button" class="circle-button"
-											th:onclick="'location.href=\'/video/watch?videoSeq=' + ${video.videoSeq} + '\''">
+											th:data-videoseq="${video.videoSeq}"
+											th:data-courseseq="${video.courseSeq}" onclick="goToVideo(this)">
 											<i class="fa-solid"
 												th:classappend="${video.type == 'video' ? 'fa-star' : 'fa-book'}"></i>
 										</button>
@@ -148,6 +149,13 @@
 
 
 		<script>
+		function goToVideo(button) {
+			  const videoSeq = button.dataset.videoseq;
+			  const courseSeq = button.dataset.courseseq;
+			  location.href = "/video/watch?videoSeq=" + videoSeq + "&courseSeq=" + courseSeq;
+			}
+		
+		
 		function goToRegisterCourse(courseSeq) {
 			  console.log(courseSeq);
 			  const confirmed = confirm("이 강의를 수강하시겠습니까?");

@@ -7,7 +7,7 @@ import org.apache.ibatis.annotations.Mapper;
 import kr.co.sist.e_learning.pagination.UsrAndRptPageRequestDTO;
 
 @Mapper
-public interface ReportMapper {
-	List<ReportDTO> selectReports(UsrAndRptPageRequestDTO pReqDTO);
-	int countReports(UsrAndRptPageRequestDTO pReqDTO);
+public interface AdminReportMapper {
+	public List<ReportDTO> selectReports(UsrAndRptPageRequestDTO pReqDTO);
+	public int countReports(UsrAndRptPageRequestDTO pReqDTO);
 }

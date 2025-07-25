@@ -48,7 +48,6 @@ public class AdminCommuController {
         @RequestParam(name = "tab", defaultValue = "all") String tab,
         Model model) {
 
-    	System.out.println("씨발련아"+tab);
         List<CommunityPostDTO> posts;
         int totalPostCount;
         int noticeCount = 0; // 현재 페이지에 표시될 공지사항 수

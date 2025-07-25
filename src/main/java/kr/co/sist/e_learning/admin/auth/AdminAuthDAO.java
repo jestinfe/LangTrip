@@ -7,6 +7,6 @@ import java.util.List;
 
 @Mapper
 public interface AdminAuthDAO {
-    AdminAuthDTO loginSelectAdminById(String id);
+	AdminAuthDTO loginSelectAdminById(String id);
     List<String> selectAdminRoles(String adminId);
 }
