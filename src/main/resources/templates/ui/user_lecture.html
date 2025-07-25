@@ -102,7 +102,7 @@
 						<div class="side-panel">
 							<h5>💖 후원하기</h5>
 							<p class="mb-3">강사님께 후원해보세요.</p>
-							<a class="btn btn-outline-primary btn-sm w-100 mb-2" onclick="goToDonate('${courseData.courseSeq}')">
+							<a class="btn btn-outline-primary btn-sm w-100 mb-2" th:onclick="goToDonate([[${courseData.courseSeq}]])">
 							 후원하기</a>
 						</div>
 						
