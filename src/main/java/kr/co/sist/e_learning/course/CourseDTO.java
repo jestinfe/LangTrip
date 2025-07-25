@@ -26,6 +26,9 @@ public class CourseDTO {
 	private int videoCount;
 	private int quizCount;
 	private int contentCount;
+	
+	private int enrollCount;
+	private String courseNotice;
 	// videoDTO
 //	private int videoSeq; // PK
 ////	private int courseSeq; // 강의 번호 (FK)
