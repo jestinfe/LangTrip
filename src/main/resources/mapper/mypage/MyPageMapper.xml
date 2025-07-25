@@ -75,6 +75,25 @@
     SET profile = #{profile}
     WHERE user_seq = #{userSeq}
   </update>
+  
+  
+	<!-- 회원 탈퇴 -->
+	<select id="getUserPassword" parameterType="long" resultType="String">
+	    SELECT password FROM users WHERE user_seq = #{userSeq}
+	</select>
+	
+	<!-- 탈퇴 사유 업데이트 -->
+	<update id="updateWithdrawalStatus">
+	    UPDATE users
+	    SET status = '탈퇴',
+	        unsign_path = #{reasonCode}
+	    WHERE user_seq = #{userSeq}
+	</update>
+	
+	<!-- 닉네임 가져오기 -->
+	<select id="getUserNickname" parameterType="long" resultType="String">
+    SELECT nickname FROM users WHERE user_seq = #{userSeq}
+	</select>
 
 <!-- 수강 내역 조회 -->
 <select id="selectLectureHistory"

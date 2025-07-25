@@ -29,11 +29,10 @@
 
 /* 🎯 강의 그리드 레이아웃 */
 .lecture-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-    gap: 2rem;
-    margin-bottom: 3rem;
-    padding: 0 1rem;
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); /* ✅ 최소 넓이 낮춤 */
+	gap: 1.5rem;
+	padding: 0 1rem;
 }
 
 /* 📖 강의 카드 디자인 */

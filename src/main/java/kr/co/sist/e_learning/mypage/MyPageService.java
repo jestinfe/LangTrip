@@ -12,7 +12,11 @@ public interface MyPageService {
     List<LectureHistoryDTO> selectMyLectures(long userSeq);
     UserAccountDTO getUserAccount(long userSeq);
 
+    boolean checkPassword(long userSeq, String inputPassword);
+    boolean withdrawUser(long userSeq, int reasonCode);
+
     public boolean linkUserAccount(UserAccountDTO userAccountDTO);
+    public String getUserNickname(long userSeq);
 
     public boolean unlinkUserAccount(long userSeq);
     List<PaymentsDTO> getPaymentHistory(long userSeq);

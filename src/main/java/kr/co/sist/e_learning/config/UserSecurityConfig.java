@@ -35,23 +35,26 @@ public class UserSecurityConfig {
         http
             .securityMatcher(request -> !request.getServletPath().startsWith("/admin")) // Exclude admin paths
             .authorizeHttpRequests(auth -> auth
-            		 .requestMatchers(
-            			        "/css/**", "/js/**", "/images/**", "/", 
-            			        "/login", "/signup", "/social_signup",
-            			        "/forgot-username", "/forgot-password", "/reset-password",
-            			        "/user/logout", "/user/login/**",
-            			        
-            			        // 🔐 로그인 없이 접근 가능한 API 경로 추가
-            			        "/api/auth/email/**",
-                                "/api/auth/nickname/check",
-                                "/api/auth/nickname/find",
-                                "/api/auth/password/**",
-                                "/api/auth/signup",
-                                "/api/auth/socialSignup",
-                                "/api/auth/login/**",
-            			        "/api/auth/token/refresh" 
-            			        
-            				 ).permitAll()
+            		.requestMatchers(
+            			    "/css/**", "/js/**", "/images/**", "/upload/images/**", // 정적 리소스 및 fallback
+            			    "/userprofile/**",  // 프로필 이미지
+            			    "/community/**",    // 커뮤니티 첨부 이미지
+            			    "/courseImg/**",    // 강의 썸네일 이미지
+            			    "/quiz/**",         // 퀴즈 이미지
+            			    "/", "/login", "/signup", "/social_signup",
+            			    "/forgot-username", "/forgot-password", "/reset-password",
+            			    "/user/logout", "/user/login/**",
+
+            			    // API
+            			    "/api/auth/email/**",
+            			    "/api/auth/nickname/check",
+            			    "/api/auth/nickname/find",
+            			    "/api/auth/password/**",
+            			    "/api/auth/signup",
+            			    "/api/auth/socialSignup",
+            			    "/api/auth/login/**",
+            			    "/api/auth/token/refresh"
+            			).permitAll()
                 .anyRequest().authenticated()
             )
       
@@ -74,5 +77,5 @@ public class UserSecurityConfig {
                                                            AuthService authService) {
         return new JwtAuthenticationFilter(jwtProvider, jwtAuthUtils, authService);
     }
-
+    
 }

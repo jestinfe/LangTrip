@@ -1,13 +1,6 @@
 let currentPage = 1;
 const limit = 4;
 
-//document.addEventListener("DOMContentLoaded", () => {
-//  console.log("✅ DOM fully loaded");
-//  if (document.getElementById("lectureList")) {
-//  console.log("✅ DOM fully loaded");
-//    loadMyCourse(1);
-//  }
-//});
 window.initInstroductorCourse = function () {
   console.log("📌 instroductor_course fragment loaded");
 
@@ -23,13 +16,30 @@ async function loadMyCourse(page = 1) {
   const empty = document.getElementById("lectureEmpty");
   const list = document.getElementById("lectureList");
   currentPage = page;
+
   list.innerHTML = "";
   if (empty) empty.style.display = "none";
 
   try {
     const res = await axios.get(`/ui/my_lecture?page=${page}&limit=${limit}`);
+
+    // 로그인 상태 확인 (비로그인 시 로그인 페이지로 리디렉션되는 경우 차단)
+    if (res.request.responseURL.includes("/login")) {
+      alert("로그인이 필요합니다. 로그인 후 다시 시도해주세요.");
+      location.href = "/login";
+      return;
+    }
+	
+	// 리다이렉트 감지
+	if (res.request.responseURL && res.request.responseURL.includes("/login")) {
+	  alert("로그인 세션이 만료되었습니다. 다시 로그인 해주세요.");
+	  location.href = "/login";
+	  return;
+	}
+
     const courseListData = res.data.courseList;
     const totalCount = res.data.totalCount;
+
     if (!courseListData || courseListData.length === 0) {
       if (empty) empty.style.display = "block";
       return;
@@ -55,14 +65,13 @@ async function registerLecture() {
   try {
     const res = await axios.post('/ui/register_course', formData);
     alert("강의 등록 완료 : " + res.data.msg);
-   
+
     const countRes = await axios.get('/ui/my_lecture?page=1&limit=4');
     const totalCount = countRes.data.totalCount;
     const lastPage = Math.ceil(totalCount / limit);
-   console.log("응답으로 받은 courseData", res.data.courseData);
-   
+
     const currentCardCount = document.querySelectorAll(".lecture-card").length;
-   
+
     if (currentCardCount < limit) {
       appendLectureForm(res.data.courseData);
     } else {
@@ -79,20 +88,20 @@ async function registerLecture() {
 function appendLectureForm(course) {
   const list = document.getElementById("lectureList");
   const card = document.createElement("div");
-//  const lastIndex = course.thumbnailPath.lastIndexOf("/");
-//  const base = course.thumbnailPath.substring(0, lastIndex + 1);
-  let safePath = "/upload/img/dice_3.png"; // fallback 이미지 경로
 
-    if (course.thumbnailPath && course.thumbnailName) {
-      const lastIndex = course.thumbnailPath.lastIndexOf("/");
-      const base = course.thumbnailPath.substring(0, lastIndex + 1);
-      safePath = base + encodeURIComponent(course.thumbnailName);
-    }
-   
+  let safePath = "/images/fallback.png"; // 로그인 없이 접근 가능한 경로
+
+  if (course.thumbnailPath && course.thumbnailName) {
+    const lastIndex = course.thumbnailPath.lastIndexOf("/");
+    const base = course.thumbnailPath.substring(0, lastIndex + 1);
+    safePath = base + encodeURIComponent(course.thumbnailName);
+  }
+
   card.className = "lecture-card";
   card.id = `course-${course.courseSeq}`;
   card.innerHTML = `
-    <img src="${safePath}" alt="썸네일" class="lecture-img">
+  <img src="${safePath}" alt="썸네일" class="lecture-img"
+       onerror="if (!this.dataset.fallback) { this.src='/images/default.png'; this.dataset.fallback='true'; }">
     <div class="lecture-content">
       <div class="lecture-info">
         <div class="lecture-title">
@@ -161,25 +170,25 @@ function getPagination(totalCount, currentPage, limit) {
 
 function deleteCourse(courseSeq) {
   if (!confirm("정말 삭제하시겠습니까?")) return;
+
   axios.post("/upload/delete_course?seq=" + courseSeq)
     .then(res => {
-      if (res.data == "success") {
+      if (res.data === "success") {
         alert("삭제 성공");
         const card = document.getElementById(`course-${courseSeq}`);
         if (card) card.remove();
-		loadMyCourse(currentPage);
+        loadMyCourse(currentPage);
       } else {
-        alert(res.msg);
+        alert(res.msg || "삭제 실패");
       }
     })
     .catch(err => {
       alert("삭제 실패");
-      console.log(err);
+      console.error(err);
     });
 }
 
 function goToCourse(courseSeq) {
-   console.log("코스시퀀스 : "+courseSeq);
   location.href = "/upload/upload_course?seq=" + courseSeq;
 }
 
@@ -192,5 +201,6 @@ function goToCourseEdit(course) {
     })
     .catch(err => {
       alert("세션 저장 실패");
+      console.error(err);
     });
 }

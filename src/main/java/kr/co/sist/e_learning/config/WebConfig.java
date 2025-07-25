@@ -36,7 +36,7 @@ public class WebConfig implements WebMvcConfigurer {
     
     
 
-    @Value("${upload.path.quiz}")           // /upload/img/quiz
+    @Value("${upload.path.quiz}")           // /upload/images/quiz
     private String quizImagePath;
 
     @Override
@@ -50,13 +50,14 @@ public class WebConfig implements WebMvcConfigurer {
                 .addResourceLocations("file:///" + uploadRootDir + "/community/");
         // 커뮤니티 이미지 URL: /community/xxx.jpg → 로컬 경로: {uploadRootDir}/community
         
-        registry.addResourceHandler(communityPath + "/**")
+        registry.addResourceHandler(courseImg + "/**")
         .addResourceLocations("file:///" + uploadRootDir + "/courseImg/");
-        // 커뮤니티 이미지 URL: /community/xxx.jpg → 로컬 경로: {uploadRootDir}/community
-        registry.addResourceHandler(communityPath + "/**")
+
+        registry.addResourceHandler(courseVideo + "/**")
         .addResourceLocations("file:///" + uploadRootDir + "/courseVideo/");
 
-        // 퀴즈 이미지 URL: /upload/img/quiz/xxx.png → 로컬 경로: {uploadRootDir}/quiz
+
+        // 퀴즈 이미지 URL: /upload/images/quiz/xxx.png → 로컬 경로: {uploadRootDir}/quiz
         registry.addResourceHandler(quizImagePath + "/**")
                 .addResourceLocations("file:///" + uploadRootDir + "/quiz/");
 

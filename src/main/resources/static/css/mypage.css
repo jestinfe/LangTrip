@@ -52,6 +52,7 @@ body.mypage::before {
   100% { background-position: 0% 50%; }
 }
 
+/* 메인 콘텐츠 영역 - 광고와 겹치지 않도록 수정 */
 body.mypage .main-content {
   display: flex;
   width: 100%;
@@ -98,7 +99,8 @@ body.mypage .main-content {
   box-shadow: var(--shadow-heavy);
 }
 
-/* 콘텐츠 영역 스타일 */
+
+/* 콘텐츠 영역 스타일 - 최대 너비 제한 추가 */
 .content-area {
   flex: 1;
   min-width: 0;
@@ -112,7 +114,9 @@ body.mypage .main-content {
   position: relative;
   overflow-y: auto;
   max-height: calc(100vh - 40px);
+  max-width: 100%;
 }
+
 
 .content-area::before {
   content: '';
@@ -717,11 +721,19 @@ body.mypage .main-content {
   min-width: 140px;
 }
 
-/* 반응형 디자인 */
+/* 반응형 디자인 수정 */
+@media (max-width: 1400px) {
+  
+  .content-area {
+    max-width: 100%;
+  }
+}
+
 @media (max-width: 1200px) {
   body.mypage .main-content {
     flex-direction: column;
     padding: 15px;
+    padding-right: 210px; /* 광고 너비(250px) + 최소 간격 */
   }
   
   .sidebar {
@@ -750,10 +762,29 @@ body.mypage .main-content {
   .content-area {
     max-height: none;
     padding: 30px 20px;
+    max-width: calc(100vw - 230px);
+  }
+}
+
+@media (max-width: 900px) {
+  body.mypage .main-content {
+    padding-right: 230px; /* 광고가 하단으로 이동하므로 공간 줄임 */
+  }
+  
+  .content-area {
+    max-width: calc(100vw - 250px);
   }
 }
 
 @media (max-width: 768px) {
+  body.mypage .main-content {
+    padding-right: 15px; /* 모바일에서는 광고가 하단에 위치하므로 원래대로 */
+  }
+  
+  .content-area {
+    max-width: none; /* 모바일에서는 제한 해제 */
+  }
+  
   .wallet-section,
   .donation-section,
   .profile-container {

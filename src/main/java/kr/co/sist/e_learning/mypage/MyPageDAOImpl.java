@@ -37,4 +37,22 @@ public class MyPageDAOImpl implements MyPageDAO {
         session.update(nsMP + ".updateProfile", map);
     }
     
+    @Override
+    public String getUserNickname(long userSeq) {
+        return sst.selectOne("kr.co.sist.e_learning.mypage.MyPageMapper.getUserNickname", userSeq);
+    }
+    
+    @Override
+    public String getUserPassword(long userSeq) {
+        return sst.selectOne(nsMP + "getUserPassword", userSeq);
+    }
+
+    @Override
+    public int updateWithdrawalStatus(long userSeq, int reasonCode) {
+        Map<String, Object> param = new HashMap<>();
+        param.put("userSeq", userSeq);
+        param.put("reasonCode", reasonCode);
+        return sst.update(nsMP + "updateWithdrawalStatus", param);
+    }
+    
 }

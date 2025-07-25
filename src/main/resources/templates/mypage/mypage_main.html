@@ -34,25 +34,20 @@
 </head>
 <body class="mypage">
     <th:block th:replace="~{layout/header :: header}"/>
+    
   <div class="container">
-    <!-- 헤더 -->
 
     <!-- 3단 레이아웃: sidebar / content / ad-area -->
     <div class="main-content">
-      <!-- 사이드바 -->
       <div class="sidebar" th:replace="~{mypage/sidebar :: sidebar}"></div>
-
-      <!-- 콘텐츠 영역 -->
       <div class="content-area" id="content-area"></div>
-
-      <!-- 광고 영역 -->
-      <div class="ad-container">
-        <!-- 첫 번째 광고 영역 -->
-        <div class="ad-area" id="ad-area"></div>
-        <!-- 두 번째 광고 영역 (오른쪽) -->
-        <div class="ad-area" id="ad-area-2"></div>
-      </div>
     </div>
+            
+    <div class="ad-container">
+      <div class="ad-area" id="ad-area"></div>
+      <div class="ad-area" id="ad-area-2"></div>
+    </div>
+    
   </div>
 
 <!-- ================= 광고 + AJAX 로드 스크립트 ================= -->

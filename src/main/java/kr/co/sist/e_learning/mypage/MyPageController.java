@@ -18,11 +18,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import  kr.co.sist.e_learning.user.*;
+import jakarta.servlet.http.HttpSession;
 import kr.co.sist.e_learning.adBanner.AdBannerEntity;
 import kr.co.sist.e_learning.adBanner.AdBannerService;
-import kr.co.sist.e_learning.mypage.UserAccountDTO;
 import kr.co.sist.e_learning.usercourse.UserCourseDTO;
 import kr.co.sist.e_learning.usercourse.UserCourseService;
 
@@ -269,6 +269,8 @@ public class MyPageController {
     public String resetPassword() {
         return "user/login/reset-password";
     }
+    
+    
 
     @GetMapping("/link_account")
     public String linkAccount(Authentication auth, Model model) {
@@ -325,8 +327,50 @@ public class MyPageController {
     }
 
     @GetMapping("/leave")
-    public String leave() {
+    public String leave(Authentication auth, Model model) {
+        long userSeq = getOrInitUserSeq(auth);
+        String nickname = mpSV.getUserNickname(userSeq);
+        model.addAttribute("nickname", nickname);
         return "mypage/leave";
+    }
+
+    @PostMapping("/withdraw")
+    public String withdraw(@RequestParam("reason") String reason,
+                           @RequestParam("id") String userId,
+                           @RequestParam("password") String password,
+                           Authentication auth,
+                           HttpSession session,
+                           RedirectAttributes redirectAttr) {
+
+        long userSeq = getOrInitUserSeq(auth);
+
+        // 1. 비밀번호 확인
+        if (!mpSV.checkPassword(userSeq, password)) {
+            redirectAttr.addFlashAttribute("error", "비밀번호가 일치하지 않습니다.");
+            return "redirect:/mypage/leave";
+        }
+
+        // 2. 사유 코드 매핑
+        int reasonCode = switch (reason) {
+            case "학습 동기 저하" -> 1;
+            case "진행 어려움" -> 2;
+            case "콘텐츠 불만" -> 3;
+            case "기술적 문제" -> 4;
+            case "개인 사정" -> 5;
+            case "기타" -> 6;
+            default -> 0;
+        };
+
+        // 3. 탈퇴 처리
+        boolean success = mpSV.withdrawUser(userSeq, reasonCode);
+        System.out.println("탈퇴 처리 성공 여부: " + success);
+        if (success) {
+            session.invalidate(); // 로그아웃
+            return "redirect:/user/login?withdraw=success";
+        } else {
+            redirectAttr.addFlashAttribute("error", "탈퇴 처리 중 오류 발생");
+            return "redirect:/mypage/leave";
+        }
     }
 
     @GetMapping("/wallet")

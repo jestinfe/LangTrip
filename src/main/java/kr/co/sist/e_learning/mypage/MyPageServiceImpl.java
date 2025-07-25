@@ -7,6 +7,7 @@ import java.util.Map;
 import kr.co.sist.e_learning.util.EncryptionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -22,9 +23,11 @@ public class MyPageServiceImpl implements MyPageService {
     @Autowired
     private LectureHistoryDAO lctDAO;
 
-
     @Autowired
     private FundingService fundingService; // FundingService 주입
+    
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     // 대시보드 요약 정보
     @Override
@@ -55,6 +58,18 @@ public class MyPageServiceImpl implements MyPageService {
         }
         mpDAO.updateProfile(userSeq, newPath);
     }
+    
+    //회원탈퇴
+    @Override
+    public boolean checkPassword(long userSeq, String inputPassword) {
+        String hashed = mpDAO.getUserPassword(userSeq);
+        return passwordEncoder.matches(inputPassword, hashed);
+    }
+
+    @Override
+    public boolean withdrawUser(long userSeq, int reasonCode) {
+        return mpDAO.updateWithdrawalStatus(userSeq, reasonCode) > 0;
+    }
 
     
     // 수강 내역
@@ -62,8 +77,6 @@ public class MyPageServiceImpl implements MyPageService {
     public List<LectureHistoryDTO> getLectureHistory(long userSeq) {
         return lctDAO.getLectureHistory(userSeq);
     }
-    
-
     
     //내 강의
     @Override
@@ -113,6 +126,11 @@ public class MyPageServiceImpl implements MyPageService {
     @Override
     public List<PaymentsDTO> getRefundablePayments(long userSeq) {
         return myPageMapper.selectRefundablePayments(userSeq);
+    }
+    
+    @Override
+    public String getUserNickname(long userSeq) {
+        return mpDAO.getUserNickname(userSeq);
     }
 
     @Override
