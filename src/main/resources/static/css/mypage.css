@@ -58,7 +58,9 @@ body.mypage .main-content {
   width: 100%;
   padding: 20px;
   margin: 0;
+  max-width: 100%;
   min-height: 100vh;
+  justify-content: center;
   gap: 20px;
 }
 
@@ -102,6 +104,8 @@ body.mypage .main-content {
 
 /* 콘텐츠 영역 스타일 - 최대 너비 제한 추가 */
 .content-area {
+  max-width: 1280px; /* 또는 1400px */
+  margin: 0 auto;
   flex: 1;
   min-width: 0;
   background: var(--glass-bg);

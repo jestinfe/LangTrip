@@ -1,90 +1,6 @@
  @charset "UTF-8";
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
 
-        body {
-            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #f8fbff;
-            color: #333;
-            line-height: 1.6;
-        }
 
-        .container-fluid {
-            padding: 0;
-        }
-
-        .row {
-            margin: 0;
-        }
-
-        /* 사이드바 */
-        .sidebar {
-            background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
-            min-height: 100vh;
-            padding: 30px 20px;
-            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
-            position: fixed;
-            width: 250px;
-            z-index: 1000;
-            transition: all 0.3s ease;
-        }
-
-        .sidebar a {
-            display: block;
-            padding: 15px 20px;
-            color: white;
-            font-weight: 600;
-            text-decoration: none;
-            border-radius: 12px;
-            margin-bottom: 10px;
-            transition: all 0.3s ease;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-        }
-
-        .sidebar a:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateX(5px);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .sidebar a.active {
-            background: rgba(255, 255, 255, 0.3);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        /* 메인 콘텐츠 */
-        .main-content {
-            margin-left: 250px;
-            min-height: 100vh;
-            max-width: calc(100vw - 250px);
-            width: 100%;
-            overflow-x: hidden;
-            padding: 40px;
-        }
-
-        .header-section {
-            background: white;
-            padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
-            margin-bottom: 30px;
-        }
-
-        .main-title {
-            font-size: 28px;
-            font-weight: 700;
-            color: #4a90e2;
-            margin-bottom: 10px;
-        }
-
-        .subtitle {
-            color: #6c757d;
-            font-size: 16px;
-        }
 
         /* 필터 섹션 */
         .filter-section {
@@ -156,18 +72,24 @@
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 20px;
         }
+        
+		.courseGrid {
+		  display: grid;
+		  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+		  gap: 24px;
+		  width: 100%;
+		  max-width: 960px; /* 너무 넓어지지 않도록 */
+		  margin: 0 auto;
+		}
+		
+		.course-card {
+		  width: 100%;
+		  max-width: 100%;
+		}	
 
-        .course-card {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-            overflow: hidden;
-            transition: all 0.3s ease;
-            height: fit-content;
-        }
 
         .course-card:hover {
-            transform: translateY(-5px);
+            transform: translㅡateY(-5px);
             box-shadow: 0 10px 30px rgba(74, 144, 226, 0.15);
         }
 

@@ -189,7 +189,7 @@ window.initUserCourse = function () {
         nextBtn.textContent = ">";
         nextBtn.className = "btn btn-sm btn-outline-secondary m-1";
         nextBtn.addEventListener("click", () => {
-            loadCourse(endPage + 1);
+            loadCourses(endPage + 1);
         });
         pagination.appendChild(nextBtn);
     }
