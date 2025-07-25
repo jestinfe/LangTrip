@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="pagination(pageResponse)" class="pagination">
+    
+    <!-- 이전 버튼 -->
+    <a th:if="${pageResponse.hasPrev}"
+       th:href="@{${pageResponse.pageRequestDTO.getLink(pageResponse.startPage - 1)}}" 
+       class="prev">«</a>
+
+
+    <!-- 페이지 번호 -->
+    <a th:each="page : ${#numbers.sequence(pageResponse.startPage, pageResponse.endPage)}"
+       th:href="@{${pageResponse.pageRequestDTO.getLink(page)}}"
+       th:classappend="${page == pageResponse.pageRequestDTO.page} ? 'active' : ''"
+       th:text="${page}"></a>
+
+    <!-- 다음 버튼 -->
+    <a th:if="${pageResponse.hasNext}"
+       th:href="@{${pageResponse.pageRequestDTO.getLink(pageResponse.endPage + 1)}}" 
+       class="next">»</a>
+
+
+</div>
+</body>
+</html>

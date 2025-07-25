@@ -29,39 +29,132 @@
 <body class="container mt-5">
 <h3>회원 목록</h3>
 <hr>
+<!-- 초기화 버튼 -->
+<div class="row justify-content-end mb-3">
+  <div class="col-12 col-md-auto">
+    <div class="d-flex justify-content-md-end">
+      <a th:href="@{/admin/user/user-list}" class="btn btn-secondary w-100 w-md-auto" id="resetBtn">초기화</a>
+    </div>
+  </div>
+</div>
+
+<!-- 필터/검색 영역 -->
+<form th:action="@{/admin/user/user-list}" method="get" class="mb-4">
+  <div class="row g-2 justify-content-md-end">
+
+    <div class="col-12 col-md-auto">
+      <select name="status" id="status" class="form-select">
+        <option value="">계정 상태</option>
+        <option value="정상" th:selected="${requestDTO.status == '정상'}">정상</option>
+        <option value="영구정지" th:selected="${requestDTO.status == '영구정지'}">영구정지</option>
+        <option value="탈퇴" th:selected="${requestDTO.status == '탈퇴'}">탈퇴</option>
+      </select>
+    </div>
+
+    <div class="col-12 col-md-auto">
+      <input type="text" name="userSeq" class="form-control"
+             placeholder="회원 ID" th:value="${requestDTO.userSeq}">
+    </div>
+
+    <div class="col-12 col-md-auto">
+      <button type="submit" class="btn btn-primary w-100 w-md-auto" id="searchBtn">검색</button>
+    </div>
+
+  </div>
+</form>
+
+<!-- 회원 목록 테이블 -->
 <table class="table table-bordered mt-3">
   <thead class="table-light">
     <tr>
+      <th>번호</th>
       <th>아이디</th>
       <th>닉네임</th>
-      <th>개설한 과목 수</th>
       <th>수강 중인 과목 수</th>
+      <th>개설한 과목 수</th>
       <th>가입일</th>
-      <th>상태</th>
+      <th>계정 상태</th>
       <th>상태 최근 조치일</th>
     </tr>
   </thead>
   <tbody>
-    <tr th:each="user : ${responseDTO.list}"
+    <tr th:each="user, stat : ${responseDTO.list}"
     	th:data-user-seq="${user.userSeq}"
     	class="user-row">
+      <td th:text="${(responseDTO.currentPage - 1) * requestDTO.size + stat.index + 1}">번호</td>
       <td th:text="${user.userSeq}">아이디</td>
       <td th:text="${user.nickname}">닉네임</td>
-      <td th:text="${user.openedCourseCnt}">개설 과목</td>
       <td th:text="${user.activeCourseCnt}">수강 과목</td>
-      <td th:text="${#temporals.format(user.createdAt, 'yyyy-MM-dd')}">가입일</td>
+      <td th:text="${user.openedCourseCnt}">개설 과목</td>
+      <td th:text="${#dates.format(user.createdAt, 'yyyy-MM-dd')}">가입일</td>
       <td>
         <span th:text="${user.status}"
               th:classappend="${user.status == '정상'} ? 'badge bg-success' :
-                              (user.status == '탈퇴') ? 'badge bg-secondary' :
-                              (user.status == '영구정지') ? 'badge bg-danger' : 'badge bg-light text-dark'">
+								(${user.status == '탈퇴'} ? 'badge bg-secondary' :
+									(${user.status == '영구정지'} ? 'badge bg-danger' :
+										'badge bg-light text-dark'))">
         상태
         </span>
       </td>
-      <td th:text="${user.adminActedAt != null ? #temporals.format(user.adminActedAt, 'yyyy-MM-dd') : '없음'}">상태 최근 조치일</td>
+      <td th:text="${user.adminActedAt != null ? #dates.format(user.adminActedAt, 'yyyy-MM-dd') : '없음'}">상태 최근 조치일</td>
     </tr>
   </tbody>
 </table>
+
+<!-- 페이지네이션 -->
+<nav class="d-flex justify-content-center mt-4">
+  <ul class="pagination">
+  
+  	<!-- 맨 처음 페이지 ≪ -->
+    <li class="page-item" th:classappend="${responseDTO.currentPage == 1} ? 'disabled' : ''">
+      <a class="page-link" th:href="@{/admin/user/user-list(
+      	page=1,
+      	userSeq=${requestDTO.userSeq},
+      	status=${requestDTO.status}
+      )}">≪</a>
+    </li>
+    
+    <!-- 이전 페이지 ＜ -->
+    <li class="page-item"  th:classappend="${responseDTO.currentPage == 1} ? 'disabled' : ''">
+      <a class="page-link" th:href="@{/admin/user/user-list(
+      	page=${responseDTO.currentPage - 1},
+      	userSeq=${requestDTO.userSeq},
+      	status=${requestDTO.status}
+      )}"><</a>
+    </li>
+    
+    <!-- 페이지 번호 목록 -->
+    <li class="page-item"
+    	th:each="p : ${#numbers.sequence(responseDTO.startPage, responseDTO.endPage)}"
+    	th:classappend="${p == responseDTO.currentPage} ? 'active' : ''">
+      <a class="page-link" th:href="@{/admin/user/user-list(
+        page=${p},
+        userSeq=${requestDTO.userSeq},
+        status=${requestDTO.status}
+      )}" th:text="${p}">1</a>
+    </li>
+    
+    <!-- 다음 페이지 -->
+    <li class="page-item" th:classappend="${responseDTO.currentPage == responseDTO.totalPages} ? disabled : ''">
+      <a class="page-link" th:href="@{/admin/user/user-list(
+      	page=${responseDTO.currentPage + 1},
+      	userSeq=${requestDTO.userSeq},
+      	status=${requestDTO.status}
+      )}">></a>
+    </li>
+    
+    <!-- 마지막 페이지 -->
+    <li class="page-item" th:classappend="${responseDTO.currentPage == responseDTO.totalPages} ? 'disabled' : ''">
+      <a class="page-link" th:href="@{/admin/user/user-list(
+        page=${responseDTO.totalPages},
+        userSeq=${requestDTO.userSeq},
+        status=${requestDTO.status}
+      )}">≫</a>
+    </li>
+    
+  </ul>
+</nav>
+    
 
 <!-- 상세 모달 -->
 <div class="modal fade" id="userDetailModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="userDetailModalLabel" aria-hidden="true">
@@ -82,10 +175,10 @@
 	            <tbody>
 	              <tr><th>아이디</th><td id="detail-user-id">wjdwrprbs</td></tr>
 	              <tr><th>닉네임</th><td id="detail-nickname">정제균</td></tr>
-	              <tr><th>개설한 과목 수</th><td id="detail-opened-count">1</td></tr>
 	              <tr><th>수강 중인 과목 수</th><td id="detail-active-count">2</td></tr>
+	              <tr><th>개설한 과목 수</th><td id="detail-opened-count">1</td></tr>
 	              <tr><th>가입일</th><td id="detail-created">2025-06-21</td></tr>
-	              <tr><th>상태</th><td id="detail-status">경고 (사유 : 욕설)</td></tr>
+	              <tr><th>상태</th><td id="detail-status">정상</td></tr>
 	              <tr><th>현재 상태 확정일</th><td id="detail-admin-acted">2024-06-25</td></tr>
 	            </tbody>
 	          </table>
@@ -96,14 +189,10 @@
 	          <h6><strong>수강 중인 과목</strong></h6>
 	          <table class="table table-bordered" id="detail-active-courses">
 	            <thead>
-	              <tr><th>과목명</th><th class="d-none d-sm-table-cell">강사명</th></tr>
+	              <tr><th>과목명</th></tr>
 	            </thead>
 	            <tbody>
-	              <tr><td><a href="#">Content</a></td><td class="d-none d-sm-table-cell">Content</td></tr>
-	              <tr><td><a href="#">Content</a></td><td class="d-none d-sm-table-cell">Content</td></tr>
-	              <tr><td><a href="#">Content</a></td><td class="d-none d-sm-table-cell">Content</td></tr>
-	              <tr><td><a href="#">Content</a></td><td class="d-none d-sm-table-cell">Content</td></tr>
-	              <tr><td><a href="#">Content</a></td><td class="d-none d-sm-table-cell">Content</td></tr>
+	              <tr><td><a href="#">Content</a></td></tr>
 	            </tbody>
 	          </table>
 	        </section>
@@ -216,8 +305,81 @@
 
 <!-- bootstrap bundle CDN -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script th:inline="javascript">
 document.addEventListener('DOMContentLoaded', () => {
+
+const statusSelect = document.getElementById('status');
+let initialReasons = [];
+let initialCustomTxt = '';
+let initialStatus = '';
+
+function restoreAccountSection(status, reasons, customTxt) {
+	// 탈퇴 시
+	if (status === '탈퇴') {
+		leaveRadio.checked = true;
+		leaveRadio.disabled = true;
+		normalRadio.disabled = true;
+		banRadio.disabled = true;
+	
+		// 무제재/제재 라디오 해제
+		noPenaltyRadio.checked = false;
+		penaltyRadio.checked = false;
+		noPenaltyRadio.disabled = true;
+		penaltyRadio.disabled = true;
+
+		// 체크박스 해제
+		reasonCheckboxes.forEach((cb) => {
+			cb.checked = false;
+			cb.disabled = true;
+		});
+
+		// 기타 사유 비활성화 및 초기화
+		reasonEtc.checked = false;
+		customReasonInput.value = '';
+		customReasonInput.disabled = true;
+
+		// 상태 라디오 비활성화
+		normalRadio.disabled = true;
+		banRadio.disabled = true;
+
+		// 무제재/제재 라디오 비활성화
+		noPenaltyRadio.disabled = true;
+		penaltyRadio.disabled = true;
+
+		return; // 탈퇴인 경우 더 이상 진행하지 않음
+	}
+
+	// 계정 상태 라디오 설정
+	switch (status) {
+		case '정상':
+			normalRadio.checked = true;
+			break;
+		case '영구정지':
+			banRadio.checked = true;
+			break;
+		case '탈퇴':
+			leaveRadio.checked = true;
+			break;
+	}
+
+	// 체크박스 초기화 및 체크
+	reasonCheckboxes.forEach((cb) => cb.checked = false);
+	reasons.forEach((code) => {
+		const cb = document.getElementById('reason' + code);
+		if (cb) cb.checked = true;
+	});
+
+	// 기타 사유
+	const etcChecked = reasons.includes('4');
+	reasonEtc.checked = etcChecked;
+	customReasonInput.disabled = !etcChecked;
+	customReasonInput.value = customTxt;
+}
+
+statusSelect.addEventListener('change', () => {
+  statusSelect.form.submit();
+});
 
 // Axios + async/await로 상세 정보 요청
 document.querySelectorAll('.user-row').forEach((row) => {
@@ -229,37 +391,56 @@ document.querySelectorAll('.user-row').forEach((row) => {
 
 		try {
 			const response = await axios.get('/admin/user/detail', {
-				params: {
-					userseq,
-				},
+				params: {userSeq},
 			});
 			
 			const data = response.data;
+			
+			// 모달 초기 렌더링 시 값 저장
+			initialReasons = (data.adminCheckedReason?.split(',') || []).map((e) => e.trim());
+			initialCustomTxt = data.adminCustomReasonTxt ?? '';
+			initialStatus = data.status;
 			
 			// 모달 내용 채우기
 			document.querySelector('#detail-user-id').innerText = data.userSeq;
 			document.querySelector('#detail-nickname').innerText = data.nickname;
 			document.querySelector('#detail-opened-count').innerText = data.openedCourseCnt ?? '';
 			document.querySelector('#detail-active-count').innerText = data.activeCourseCnt ?? '';
-			document.querySelector('#detail-created').innerText = data.createdAt ?? '없음';
+			document.querySelector('#detail-created').innerText = data.createdAt ?? '';
 			document.querySelector('#detail-status').innerText = data.status;
 			document.querySelector('#detail-admin-acted').innerText = data.adminActedAt ?? '조치 없음';
 		
 			// 수강 중 과목
 			const tbody1 = document.querySelector('#detail-active-courses tbody');
 			tbody1.innerHTML = "";
-			data.courseTitle?.forEach((title) => {
-				const row = `<tr><td><a href="#">${title}</a></td><td class="d-none d-sm-table-cell">Content</td></tr>`;
-				tobdy1.insertAdjacentHTML("beforeend", row);
+			data.courseTitles?.forEach((title) => {
+				const row = `<tr><td><a href="#">${title}</a></td></tr>`;
+				tbody1.insertAdjacentHTML("beforeend", row);
 			});
 
 			// 개설 과목
 			const tbody2 = document.querySelector('#detail-opened-courses tbody');
 			tbody2.innerHTML = "";
-			data.communityTitle?.forEach((title) => {
+			data.openedCourses?.forEach((title) => {
 				const row = `<tr><td><a href="#">${title}</a></td></tr>`;
-				tbody2.insertAdjacentElement('beforeend', row);
+				tbody2.insertAdjacentHTML('beforeend', row);
 			});
+			
+			// 계정 조치 섹션 값 반영
+			const adminReason = data.adminCheckedReason?.split(',').map((e) => e.trim()) || [];
+			const customTxt = data.adminCustomReasonTxt ?? '';
+			const userStatus = data.status;
+			
+			// 계정 조치 영역 복원: DB값으로 UI 초기 상태 설정
+			restoreAccountSection(initialStatus, initialReasons, initialCustomTxt);
+			
+			// 탈퇴가 아닌 경우에만 라디오 상태 설정 및 활성화 여부 조정
+			if (initialStatus !== '탈퇴') {
+				const isPenalty = initialReasons.length > 0;
+				penaltyRadio.checked = isPenalty;
+				noPenaltyRadio.checked = !isPenalty;
+				setInputsDisabled(!isPenalty);
+			}
 
 			// 모달 띄우기
 			const modal = new bootstrap.Modal(document.getElementById('userDetailModal'));
@@ -270,8 +451,6 @@ document.querySelectorAll('.user-row').forEach((row) => {
 		}
 	});
 });
-
-
 
 // 회원 상세 모달
 // 무제재/제재 라디오
@@ -287,9 +466,6 @@ const leaveRadio = document.getElementById('status-leave');
 const reasonCheckboxes = document.querySelectorAll("#reason1, #reason2, #reason3, #reason4");
 const reasonEtc = document.getElementById("reason4");
 const customReasonInput = document.getElementById("customReason");
-
-// 탈퇴 라디오 항상 비활성화
-leaveRadio.disabled = true;
 
 // 제어 함수 : 입력 요소 비활성화/활성화
 function setInputsDisabled(disabled) {
@@ -307,14 +483,32 @@ setInputsDisabled(noPenaltyRadio.checked);
 // 무제재 선택 시 입력요소 비활성화
 noPenaltyRadio.addEventListener('change', () => {
 	if (noPenaltyRadio.checked) {
+		// 비활성화
 		setInputsDisabled(true);
+		
+		// 값 초기화
+		// 계정 상태 라디오 해제
+		normalRadio.checked = false;
+		banRadio.checked = false;
+
+		// 체크박스 해제
+		reasonCheckboxes.forEach((cb) => {
+			 cb.checked = false;
+		});
+
+		// 기타 사유 초기화
+		customReasonInput.value = "";
+		customReasonInput.disabled = true;
 	}
 });
 
-// 제재 선택 시 입력요소 활성화
+// 제재 선택 시 입력요소 활성화 및 값 복원
 penaltyRadio.addEventListener('change', ()=> {
 	if (penaltyRadio.checked) {
 		setInputsDisabled(false);
+
+		// DB에서 불러온 값으로 복원
+		restoreAccountSection(initialStatus, initialReasons, initialCustomTxt);
 	}
 });
 
@@ -346,12 +540,32 @@ document.getElementById('applyBtn').addEventListener('click', () => {
 	confirmActionModal.show();
 });
 
-// 확인 버튼 클릭 시 두 모달 닫기
-document.getElementById('confirmApplyBtn').addEventListener('click', () => {
-	const modal1 = bootstrap.Modal.getInstance(document.getElementById('userDetailModal'));
-	const modal2 = bootstrap.Modal.getInstance(document.getElementById('confirmModal'));
-	modal2.hide();
-	modal1.hide();
+document.getElementById('confirmApplyBtn').addEventListener('click', async () => {
+	// 회원 계정 상태 변경
+	const userSeq = document.querySelector('#detail-user-id').innerText;
+	const status = document.querySelector('input[name="accountStatus"]:checked')?.value;
+	const reasonCodes = Array.from(reasonCheckboxes)
+		.filter((cb) => cb.checked)
+		.map((cb) => cb.id.replace("reason", ""));
+	const customReason = document.getElementById("customReason").value.trim();
+
+	try {
+		await axios.post('/admin/user/update-status', {
+	      userSeq,
+	      status,
+	      adminCheckedReasonList: reasonCodes,
+	      adminCustomReasonTxt: customReason
+	    });
+	    
+		// 확인 버튼 클릭 시 두 모달 닫기
+		const modal1 = bootstrap.Modal.getInstance(document.getElementById('userDetailModal'));
+		const modal2 = bootstrap.Modal.getInstance(document.getElementById('confirmModal'));
+		modal2.hide();
+		modal1.hide();
+	} catch (err) {
+		console.error(err);
+		alert("계정 상태 적용 중 오류가 발생했습니다.");
+	}
 });
 
 });

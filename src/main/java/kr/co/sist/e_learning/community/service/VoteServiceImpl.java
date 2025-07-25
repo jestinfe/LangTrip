@@ -16,7 +16,8 @@ public class VoteServiceImpl implements VoteService {
 
     @Override
     public boolean hasVotedToday(Integer userId, Integer postId) {
-        return voteDAO.hasVotedToday(userId, postId) > 0;
+        int result = voteDAO.hasVotedToday(userId, postId);
+        return result > 0;
     }
 
     @Override
@@ -29,10 +30,7 @@ public class VoteServiceImpl implements VoteService {
         Map<String, Object> params = new HashMap<>();
         params.put("postId", postId);
         params.put("voteType", voteType);
-        return voteDAO.countVotes(params);
+        int count = voteDAO.countVotes(params);
+        return count;
     }
-    
-    
-    
-    
 }

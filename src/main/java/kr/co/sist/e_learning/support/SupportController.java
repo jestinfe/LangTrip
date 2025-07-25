@@ -154,7 +154,6 @@ public class SupportController {
 	// 피드백 제출 - 2
 	@PostMapping("/support/feedback/submit")
 	public String submitFeedback(@ModelAttribute FeedbackDTO feedbackDTO) {
-		System.out.println("실명(1)/익명(0) 피드백 구분: " + feedbackDTO.getFeedback_style());
 		supportService.addFeedback(feedbackDTO);
 		return "redirect:/support/feedback/finished"; // 제출 완료 페이지
 	}
@@ -235,9 +234,7 @@ public class SupportController {
 
 		boolean flag = supportService.editNoticeFixFlag(id, "Y");
 		if (flag) {
-			System.out.println("공지사항 공지 고정 완료 ");
 		} else {
-			System.out.println("에러발생 ");
 		}
 
 		return "redirect:/admin/support";// 완료 후 관리자 공지사항 페이지로 복귀
@@ -248,9 +245,7 @@ public class SupportController {
 	public String unfixNoticeAdmin(@PathVariable("id") String id) {
 		boolean flag = supportService.editNoticeFixFlag(id, "N");
 		if (flag) {
-			System.out.println("공지사항 공지 해제 완료 ");
 		} else {
-			System.out.println("에러발생 ");
 		}
 		return "redirect:/admin/support";// 완료 후 관리자 공지사항 페이지로 복귀
 	}

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>마일 충전하기</title>
+    <title>LangTrip | 마일 충전하기</title>
     <style>
         * {
             margin: 0;
@@ -577,12 +577,15 @@
                     receiptUrl: rsp.receipt_url,
                     mileAmount: Math.floor(amount * (1 - FEE_RATE)),
                     feeRate: FEE_RATE * 100
-                }).then(res => {
+                }, {
+                    withCredentials: true  // ✅ 여기가 정확한 위치입니다!
+                })
+                .then(res => {
                     console.log("Response from /payment:", res.data);
                     if (res.data.success) {
-                        // 결제 성공 후 서버로 payment_amount와 mile_amount를 전달하는 대신
-                        // 서버에서 세션에 저장했으므로 바로 리디렉션
-                        window.location.href = '/payment/success?lectureNo=' + lectureNo;
+                    	 localStorage.setItem("paymentAmount", rsp.paid_amount);
+                    	    localStorage.setItem("mileAmount", Math.floor(amount * (1 - FEE_RATE)));
+                    	    window.location.href = '/payment/success?lectureNo=' + lectureNo;
                     } else {
                         alert("결제 검증 실패: " + res.data.message);
                     }
@@ -612,7 +615,7 @@
 
     function closeModal() {
         if (confirm("결제를 취소하시겠습니까?")) {
-            window.history.back();
+        	 window.location.href = "/"; 
         }
     }
 

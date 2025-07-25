@@ -1,8 +1,6 @@
 package kr.co.sist.e_learning.admin.signup;
 
 import kr.co.sist.e_learning.common.aop.Loggable;
-import kr.co.sist.e_learning.common.aop.Loggable;
-import kr.co.sist.e_learning.common.aop.Loggable;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +21,6 @@ public class AdminSignupController {
     @Loggable(actionType = "SIGNUP_SEND_CODE")
     public void sendVerification(@RequestParam String email) {
         signupService.sendVerificationCode(email);
-        System.out.println("씨삐라빨삐라ㅃ이ㅏ러ㅣ아ㅓ리ㅏㄹ");
     }
 
     // 인증코드 확인

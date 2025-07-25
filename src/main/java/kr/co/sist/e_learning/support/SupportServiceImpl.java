@@ -299,7 +299,6 @@ public class SupportServiceImpl extends SupportServiceAbstract {
 			}
 		}
 
-		System.out.println("[NoticeServiceImpl] " + titleList.size() + "건의 키워드 반환.");
 		return titleList;
 	}
 

@@ -85,8 +85,6 @@ public class QuizServiceImpl implements QuizService {
         int totalQuizCnt = quizList.size(); //총 퀴즈 수
         int responseCnt = qsDTO.getTotalCnt();   //사용자의 응답 수
 
-        System.out.println("✅ 총 퀴즈 수: " + totalQuizCnt);
-        System.out.println("✅ 응답 수: " + responseCnt);
         
         // 상태 판단 (학습전/학습중(중도포기)/학습완료)
         String status;
@@ -111,7 +109,6 @@ public class QuizServiceImpl implements QuizService {
     @Override
     public void addQuiz(QuizListDTO quizListDTO, List<MultipartFile> imageFiles) throws Exception {
     	
-    	 System.out.println("addQuiz 서비스 진입");
     	
         // 1. 퀴즈 묶음 등록
         quizMapper.insertQuizList(quizListDTO);
@@ -164,9 +161,7 @@ public class QuizServiceImpl implements QuizService {
                     option.setImageAddr(uploadPathWeb+"/"+fileName);
                 }
 
-                System.out.println("addQuiz 서비스 : 퀴즈 등록 전");
                 quizMapper.insertQuizOption(option);
-                System.out.println("addQuiz 서비스 : 퀴즈 등록 완료");
             }
         }//end for
     }//addQuiz
@@ -180,7 +175,6 @@ public class QuizServiceImpl implements QuizService {
 
     	//퀴즈 목록 조회
         List<QuizDTO> quizList = quizMapper.selectQuizWithOptions(quizListSeq);
-        System.out.println("QuizList: " + quizList); 
 
         // 정답 수, 응답 수 조회
         QuizStatusDTO quizStatus = new QuizStatusDTO();
@@ -246,7 +240,6 @@ public class QuizServiceImpl implements QuizService {
     	
     	//DB에 저장
     	quizMapper.insertQuizResponse(qrDTO);
-    	System.out.println("✔️ 응답 저장 시 quizListSeq = " + qrDTO.getQuizListSeq());
     }//saveQuizResponse
     
     //퀴즈 학습완료 화면
@@ -269,11 +262,9 @@ public class QuizServiceImpl implements QuizService {
     //퀴즈 수정할때 db 정보 불러오기
     @Override
     public QuizListDTO getQuizListForModify(String quizListSeq) {
-    	System.out.println("서비스 getQuizListForModify() 진입");
     	
     	// 1. 퀴즈 묶음 기본 정보 (제목, 언어 등)
         QuizListDTO quizListDTO = quizMapper.selectQuizListInfo(quizListSeq);
-        System.out.println("quizListDTO: " + quizListDTO);
         
         // 2. 퀴즈 + 보기 전체 정보 세팅
         List<QuizDTO> quizList = quizMapper.selectQuizWithOptions(quizListSeq);
@@ -285,7 +276,6 @@ public class QuizServiceImpl implements QuizService {
             }
         }
         quizListDTO.setQuiz(quizList);
-        System.out.println("quizList size: " + quizList.size());
         
         return quizListDTO;
     }
@@ -295,7 +285,6 @@ public class QuizServiceImpl implements QuizService {
     @Transactional
     public void updateQuiz(String quizListSeq, String quizJson, List<MultipartFile> imageFiles) throws Exception {
     		
-    		System.out.println("서비스 updateQuiz() 진입");
     	
     		ObjectMapper mapper = new ObjectMapper();
     	    QuizListDTO parsed = mapper.readValue(quizJson, QuizListDTO.class);
@@ -363,9 +352,7 @@ public class QuizServiceImpl implements QuizService {
     	                option.setImageAddr(null);
     	            }//end if
     	            
-    	            System.out.println("서비스 updateQuiz() 수정 전");
     	            quizMapper.insertQuizOption(option);
-    	            System.out.println("서비스 updateQuiz() 수정 완료!");
     	            
     	        }//end for
     	        

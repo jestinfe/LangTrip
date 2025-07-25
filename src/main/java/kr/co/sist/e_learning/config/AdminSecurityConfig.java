@@ -12,13 +12,15 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
-import org.springframework.security.web.context.SecurityContextHolderFilter;
 import org.springframework.security.web.context.SecurityContextRepository;
+import lombok.extern.log4j.Log4j2;
 
 import kr.co.sist.e_learning.admin.auth.CustomAdminDetailsService;
+import kr.co.sist.e_learning.config.filter.AdminPageViewLoggingFilter;
 
 @Configuration
 @Order(1)
+@Log4j2
 public class AdminSecurityConfig {
 
     @Autowired
@@ -29,6 +31,12 @@ public class AdminSecurityConfig {
     private CustomAdminAuthenticationFailureHandler customAdminAuthenticationFailureHandler;
     @Autowired
     private CustomAdminLogoutSuccessHandler customAdminLogoutSuccessHandler;
+    @Autowired
+    private AdminAccessDeniedHandler adminAccessDeniedHandler;
+    @Autowired
+    private AdminAuthenticationEntryPoint adminAuthenticationEntryPoint;
+    @Autowired
+    private AdminPageViewLoggingFilter adminPageViewLoggingFilter;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -42,6 +50,7 @@ public class AdminSecurityConfig {
 
     @Bean
     public SecurityFilterChain adminSecurity(HttpSecurity http) throws Exception {
+     
         http
             .securityMatcher("/admin/**") // /admin/** 경로에만 적용
             .authorizeHttpRequests(auth -> auth
@@ -66,13 +75,16 @@ public class AdminSecurityConfig {
                 .logoutUrl("/admin/logout") // 로그아웃 URL
                 .logoutSuccessHandler(customAdminLogoutSuccessHandler) // 로그아웃 성공 처리
             )
+            .exceptionHandling(exceptions -> exceptions
+                .accessDeniedHandler(adminAccessDeniedHandler) // AccessDeniedHandler 설정
+                .authenticationEntryPoint(adminAuthenticationEntryPoint) // AuthenticationEntryPoint 설정
+            )
             .csrf(csrf -> csrf.disable())
             .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
                 .sessionFixation().migrateSession()
-            )
-            .securityContext(securityContext -> securityContext.securityContextRepository(securityContextRepository()))
-            .addFilterBefore(new DebugSecurityContextFilter(), SecurityContextHolderFilter.class);
+            );
+            
 
         return http.build();
     }

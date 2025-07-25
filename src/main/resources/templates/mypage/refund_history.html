@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>환불 내역</title>
+    <title>LangTrip | 환불 내역</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -153,10 +153,11 @@
                                                   (refund.status == 'APPROVED' ? 'status-approved' :
                                                   (refund.status == 'REJECTED' ? 'status-rejected' :
                                                   (refund.status == 'COMPLETED' ? 'status-completed' : '')))}"
-                                  th:text="${refund.status}"></span>
+                                  th:text="${@paymentStatusConverter.convert(refund.status)}"></span>
                         </td>
                         <td th:text="${refund.reason}"></td>
-                        <td th:text="${refund.rejectReason != null ? refund.rejectReason : '-'}"></td>
+                      
+                        <td th:text="${refund.rejectReason != 'null' ? refund.rejectReason : '-'}"></td>
                     </tr>
                 </tbody>
             </table>

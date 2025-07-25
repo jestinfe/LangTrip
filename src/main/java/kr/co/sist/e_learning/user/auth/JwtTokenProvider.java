@@ -68,11 +68,9 @@ public class JwtTokenProvider {
             return true;
         } catch (ExpiredJwtException e) {
             // 만료된 토큰은 여기서 다시 던져서 JwtAuthenticationFilter에서 처리하도록 함
-            System.out.println("[JWT] Expired token detected in validateToken: " + e.getMessage()); // 추가된 로그
             throw e; 
         } catch (JwtException | IllegalArgumentException e) {
             // 다른 JWT 관련 예외나 잘못된 인자 예외는 유효하지 않은 토큰으로 간주
-            System.out.println("[JWT] Invalid token: " + e.getMessage());
             return false;
         }
     }

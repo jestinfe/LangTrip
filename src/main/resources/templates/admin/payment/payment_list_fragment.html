@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+    <div th:fragment="paymentList">
+        <div class="table-header">
+            <h3>결제/환불 내역 (<span th:text="${totalCount}"></span>건)</h3>
+        </div>
+        <div class="table-container">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>결제 번호</th>
+                        <th>사용자 닉네임</th>
+                        <th>결제 금액</th>
+                        <th>결제 상태</th>
+                        <th>결제일</th>
+                        <th>환불요청 사유</th>
+                        <th>환불요청일</th>
+                        <th>상태처리일</th>
+                        <th>상태 처리</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="payment : ${list}">
+                        <td th:text="${payment.paymentSeq}"></td>
+                        <td th:text="${payment.nickname}"></td>
+                        <td th:text="${payment.paymentAmount != null ? #numbers.formatDecimal(payment.paymentAmount, 0, 'COMMA', 0, 'POINT') + '원' : '0원'}"></td>
+                        
+                        <td th:text="${@paymentStatusConverter.convert(payment.paymentStatus)}"></td>
+                        <td th:text="${#dates.format(payment.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></td>
+                        <td th:text="${payment.reason}"></td>
+                        <td th:text="${payment.refundRequestedAt != null ? #dates.format(payment.refundRequestedAt, 'yyyy-MM-dd HH:mm:ss') : '-'}"></td>
+                        <td th:text="${payment.refundProcessedAt != null ? #dates.format(payment.refundProcessedAt, 'yyyy-MM-dd HH:mm:ss') : '-'}"></td>
+                        <td>
+                            <div class="status-actions" th:if="${payment.paymentStatus == 'refund_requested'}">
+                                <button type="button" class="btn status-update-btn btn-approve"
+                                        th:data-id="${payment.paymentSeq}"
+                                        data-status="refund_completed">환불 승인</button>
+                                <button type="button" class="btn status-update-btn btn-reject"
+                                        th:data-id="${payment.paymentSeq}"
+                                        data-status="refund_rejected">환불 거절</button>
+                            </div>
+                            <span th:unless="${payment.paymentStatus == 'refund_requested'}" class="processed-text" th:text="${@paymentStatusConverter.convert(payment.paymentStatus)}"></span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div th:replace="~{/layout/pagination :: pagination(${pageResponse})}"></div>
+    </div>
+</body>
+</html>

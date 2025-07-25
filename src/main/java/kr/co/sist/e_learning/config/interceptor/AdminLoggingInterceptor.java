@@ -8,11 +8,11 @@ import org.springframework.web.servlet.HandlerInterceptor;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import kr.co.sist.e_learning.admin.log.AdminLogDTO;
 import kr.co.sist.e_learning.admin.log.AdminLogService;
 
 @Component
 public class AdminLoggingInterceptor implements HandlerInterceptor {
+
 
     @Autowired
     private AdminLogService logService;
@@ -22,19 +22,8 @@ public class AdminLoggingInterceptor implements HandlerInterceptor {
         String requestURI = request.getRequestURI();
         String method = request.getMethod();
 
-        // Log only GET requests for page views
-        if ("GET".equalsIgnoreCase(method)) {
-            String adminId = getAdminId();
-            String details = "IP: " + request.getRemoteAddr();
 
-            AdminLogDTO logDTO = new AdminLogDTO();
-            logDTO.setAdminId(adminId);
-            logDTO.setActionType("PAGE_VIEW");
-            logDTO.setTargetId(requestURI);
-            logDTO.setDetails(details);
-
-            logService.addLog(logDTO);
-        }
+        // This interceptor will no longer handle PAGE_VIEW logging
 
         return true;
     }

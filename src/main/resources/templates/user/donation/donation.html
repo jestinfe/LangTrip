@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>강의 후원하기</title>
+    <title>LangTrip | 강의 후원하기</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="stylesheet" th:href="@{/css/donation.css}">
 </head>
@@ -229,9 +229,9 @@ async function processSponsor() {
 
 function closeModal() {
     if (currentAmount > 0) {
-        if (confirm('작성 중인 후원 내용이 있습니다. 닫을까요?')) window.history.back();
+        if (confirm('작성 중인 후원 내용이 있습니다. 닫을까요?'))  window.location.href = "/"; 
     } else {
-        window.history.back();
+    	 window.location.href = "/"; 
     }
 }
 

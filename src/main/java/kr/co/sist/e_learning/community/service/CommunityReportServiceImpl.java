@@ -22,14 +22,8 @@ public class CommunityReportServiceImpl implements CommunityReportService {
                            Integer reasonChk,
                            String reasonText) {
 
-        System.out.println("[Service] 신고 서비스 진입");
-        System.out.println("[Service] postId2=" + postId2
-                         + ", reporterId=" + reporterId
-                         + ", reasonChk=" + reasonChk
-                         + ", reasonText=" + reasonText);
 
         boolean alreadyReported = reportDAO.hasReportedToday(postId2, reporterId);
-        System.out.println("[Service] 중복 신고 여부: " + alreadyReported);
 
         if (alreadyReported) {
             throw new IllegalStateException("ALREADY_REPORTED");
@@ -42,10 +36,8 @@ public class CommunityReportServiceImpl implements CommunityReportService {
         
         reportDAO.insertReport(dto);
         Long newReportId = dto.getReportId();
-        System.out.println("[Service] insert 후 생성된 reportId: " + newReportId);
 
         reasonDAO.insertReason(newReportId, reasonChk);
-        System.out.println("[Service] 신고 사유 insert 완료");
     }
 }
 

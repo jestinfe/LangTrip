@@ -48,6 +48,7 @@ window.addEventListener('load', () => {
 	    },
 	    options: {
 	      responsive: true,
+          devicePixelRatio: window.devicePixelRatio,
 	      plugins: {
 	        legend: { display: false }
 	      },
@@ -89,6 +90,7 @@ function drawSignupChart(signups) {
     },
     options: {
       responsive: true,
+      devicePixelRatio: window.devicePixelRatio,
       plugins: {
         legend: { display: false }
       }
@@ -116,6 +118,7 @@ function drawSignupPathChart(paths) {
     },
     options: {
       responsive: true,
+      devicePixelRatio: window.devicePixelRatio,
       plugins: {
         legend: { position: 'bottom' },
         title: { display: true, text: '유입 경로 통계' }
@@ -153,6 +156,7 @@ function drawUnsignReasonChart(reasons) {
     },
     options: {
       responsive: true,
+      devicePixelRatio: window.devicePixelRatio,
       plugins: {
         legend: { display: false }
       },
@@ -180,6 +184,7 @@ function drawCourseCategoryChart(stats) {
     },
     options: {
       responsive: true,
+      devicePixelRatio: window.devicePixelRatio,
       plugins: {
         legend: { display: false },
         title: { display: true, text: '카테고리별 강의 등록 수' }
@@ -208,6 +213,7 @@ function drawCourseDifficultyChart(stats) {
     },
     options: {
       responsive: true,
+      devicePixelRatio: window.devicePixelRatio,
       plugins: {
         legend: { display: false },
         title: {
@@ -245,6 +251,7 @@ function drawAdClickChart(stats) {
     },
     options: {
       responsive: true,
+      devicePixelRatio: window.devicePixelRatio,
       plugins: {
         legend: { display: false },
         title: {
@@ -275,3 +282,38 @@ function drawAdClickChart(stats) {
   });
 }
 
+function exportToCSV(data, filename = 'statistics_export.csv') {
+  if (!Array.isArray(data) || data.length === 0) {
+    alert('내보낼 데이터가 없습니다.');
+    return;
+  }
+
+  const csvHeader = Object.keys(data[0]).join(',') + '\n';
+  const csvRows = data.map(obj => Object.values(obj).join(',')).join('\n');
+  const csvContent = csvHeader + csvRows;
+
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+
+  URL.revokeObjectURL(url);
+}
+
+document.getElementById('export-signup').addEventListener('click', () => {
+  fetch("/admin/api/user_stats")
+    .then(res => {
+      if (!res.ok) throw new Error("데이터 불러오기 실패");
+      return res.json();
+    })
+    .then(data => {
+      exportToCSV(data.dailySignup, 'daily_signup.csv');
+    })
+    .catch(err => {
+      console.error(err);
+      alert("CSV 다운로드 중 오류 발생");
+    });
+});

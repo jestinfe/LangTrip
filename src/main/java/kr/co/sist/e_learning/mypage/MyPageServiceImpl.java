@@ -113,10 +113,7 @@ public class MyPageServiceImpl implements MyPageService {
         }
     }
 
-    @Override
-    public boolean unlinkUserAccount(long userSeq) {
-        return myPageMapper.deleteUserAccount(userSeq) > 0;
-    }
+  
 
     @Override
     public List<PaymentsDTO> getPaymentHistory(long userSeq) {
@@ -144,14 +141,14 @@ public class MyPageServiceImpl implements MyPageService {
 
         // 2. 환불 가능 여부 확인 (이미 구현된 selectRefundablePayments 로직과 유사)
         // 여기서는 간단히 상태만 확인. 실제로는 후원 이력도 다시 확인해야 함.
-        if (!"PAID".equals(payment.getPaymentStatus())) {
+        if (!"payment_success".equals(payment.getPaymentStatus())) {
             return false; // 이미 환불되었거나 다른 상태
         }
 
         // 3. 결제 상태 업데이트
         Map<String, Object> paramMap = new HashMap<>();
         paramMap.put("paymentSeq", refundRequestDTO.getPaymentId());
-        paramMap.put("status", "REFUND_REQUESTED");
+        paramMap.put("status", "refund_requested");
         myPageMapper.updatePaymentStatus(paramMap);
 
         // 4. 환불 기록 삽입
@@ -166,7 +163,7 @@ public class MyPageServiceImpl implements MyPageService {
         refundDTO.setAccountSeq(userAccount.getAccountSeq());
         refundDTO.setWalletSeq(payment.getWalletSeq()); // 결제 시 사용된 지갑 시퀀스
         refundDTO.setRefundAmount(payment.getPaymentAmount());
-        refundDTO.setStatus("REQUESTED");
+        refundDTO.setStatus("refund_requested");
         refundDTO.setReason(refundRequestDTO.getRefundReason());
 
         return myPageMapper.insertRefund(refundDTO) > 0;
@@ -193,7 +190,7 @@ public class MyPageServiceImpl implements MyPageService {
 
         // 3. 정산 가능 마일리지 조회
         FundingDTO fundingInfo = fundingService.getAccountInfo(userSeq);
-        double availableMiles = fundingInfo != null ? fundingInfo.getDonationAvailable() : 0;
+        double availableMiles = fundingInfo != null ? fundingInfo.getReceivedMiles() : 0;
 
         if (availableMiles <= 0) {
             return false; // 정산할 마일리지가 없음
@@ -209,7 +206,8 @@ public class MyPageServiceImpl implements MyPageService {
         settlementRequest.setTotalMile(availableMiles);
         settlementRequest.setCompanyFee(companyFee);
         settlementRequest.setPaidAmount(paidAmount);
-        settlementRequest.setStatus("PENDING");
+        settlementRequest.setStatus("settlement_requested");
+        settlementRequest.setAccountSeq(userAccount.getAccountSeq());
 
         return myPageMapper.insertSettlementRequest(settlementRequest) > 0;
     }
@@ -228,6 +226,18 @@ public class MyPageServiceImpl implements MyPageService {
     @Override
     public SettlementRequestDTO getSettlementDetail(long requestSeq) {
         return myPageMapper.selectSettlementDetail(requestSeq);
+    }
+    
+    @Override
+    public boolean unlinkUserAccount(long userSeq) {
+        int refundCount = myPageMapper.countRefundByUserSeq(userSeq);
+        int payoutCount = myPageMapper.countSettlementByUserSeq(userSeq);
+
+        if (refundCount > 0 || payoutCount > 0) {
+            throw new IllegalStateException("정산 또는 환불 내역이 존재하여 계좌 연동을 해제할 수 없습니다.");
+        }
+
+        return myPageMapper.deleteUserAccount(userSeq) > 0;
     }
 }
 

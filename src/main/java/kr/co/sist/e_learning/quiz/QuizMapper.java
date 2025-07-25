@@ -70,4 +70,6 @@ public interface QuizMapper {
 	public List<QuizListDTO> selectDistinctQuizLists(String courseSeq);
 	
 	List<QuizListDTO> selectQuizListsWithQuizzesByCourseSeq(String courseSeq);
+
+	public QuizListDTO selectQuizListBySeq(String quizListSeq);
 }

@@ -1,6 +1,7 @@
 package kr.co.sist.e_learning.report;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,15 +17,16 @@ import kr.co.sist.e_learning.pagination.UsrAndRptPageResponseDTO;
 @Controller
 @RequestMapping("/admin/report")
 public class AdminReportController {
-	private final ReportService reportService;
+	private final AdminReportService reportService;
 	
 	// 생성자 주입
 	@Autowired
-	public AdminReportController(ReportService reportService) {
+	public AdminReportController(AdminReportService reportService) {
 		this.reportService = reportService;
 	}
 	
 	@GetMapping("/report-list")
+	@PreAuthorize("hasAnyRole('REPORT', 'SUPER')")
 	public String reportList(@ModelAttribute UsrAndRptPageRequestDTO pReqDTO, Model model) {
 		UsrAndRptPageResponseDTO<ReportDTO> pResDTO = reportService.getReports(pReqDTO);
 		model.addAttribute("pResDTO", pResDTO);
