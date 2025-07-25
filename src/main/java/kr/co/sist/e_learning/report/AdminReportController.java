@@ -16,11 +16,11 @@ import kr.co.sist.e_learning.pagination.UsrAndRptPageResponseDTO;
 @Controller
 @RequestMapping("/admin/report")
 public class AdminReportController {
-	private final ReportService reportService;
+	private final AdminReportService reportService;
 	
 	// 생성자 주입
 	@Autowired
-	public AdminReportController(ReportService reportService) {
+	public AdminReportController(AdminReportService reportService) {
 		this.reportService = reportService;
 	}
 	

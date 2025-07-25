@@ -3,7 +3,7 @@
 	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="kr.co.sist.e_learning.report.ReportMapper">
+<mapper namespace="kr.co.sist.e_learning.report.AdminReportMapper">
 <resultMap id="ReportResultMap" type="kr.co.sist.e_learning.report.ReportDTO">
     <id property="reportId" column="report_id"/>
     <result property="reportedAt" column="reported_at"/>

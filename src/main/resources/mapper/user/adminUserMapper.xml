@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.co.sist.e_learning.user.AdminUserMapper">
+
+<!-- 회원 목록 조회 -->
+<select id ="selectUserList" parameterType="kr.co.sist.e_learning.pagination.UsrAndRptPageRequestDTO"
+	resultType="kr.co.sist.e_learning.user.UserDTO">
+SELECT *
+FROM (
+	SELECT ROWNUM rnum, temp.*
+	FROM (
+		SELECT
+			u.user_seq,
+			u.email,
+			u.password,
+			u.nickname,
+			u.status,
+			u.profile,
+			u.social_id,
+			u.social_provider,
+			u.created_at,
+			<!-- 관리자 최근 조치일 (null 가능) -->
+			(
+				SELECT r.admin_acted_at
+				FROM report r
+				WHERE r.reported_user_id = u.user_seq
+			) AS adminActedAt,
+			<!-- 개설한 강의 수 -->
+			(
+				SELECT COUNT(*)
+				FROM course c
+				WHERE c.user_seq = u.user_seq AND c.flag = 'T'
+			) AS openedCourseCnt,
+			<!-- 수강 중인 강의 수 -->
+			(
+				SELECT COUNT(*)
+				FROM course c
+				WHERE c.user_seq = u.user_seq AND c.flag = 'S'
+			) AS activeCourseCnt
+		FROM users u
+		WHERE 1 = 1
+		<if test="status != null and status != ''">
+		AND u.status = #{status}
+		</if>
+		<if test="userSeq != null and userSeq != ''">
+		AND u.user_seq LIKE '%' || #{userSeq} || '%'
+		</if>
+<![CDATA[
+		ORDER BY u.created_at DESC
+	) temp
+	WHERE ROWNUM <= #{endRow}
+)
+WHERE rnum >= #{startRow}
+]]>
+</select>
+
+<!-- 페이지네이션을 위한 회원 목록 수 -->
+<select id="countUserList" parameterType="kr.co.sist.e_learning.pagination.UsrAndRptPageRequestDTO"
+	resultType="Integer">
+SELECT COUNT(*)
+FROM users u
+WHERE 1 = 1
+<if test="status != null and status != ''">
+AND u.status = #{status}
+</if>
+<if test="userSeq != null and userSeq != ''">
+AND u.social_id LIKE '%' || #{userSeq} || '%'
+</if>
+</select>
+
+<!-- 회원 상세 조회 (모달용) -->
+<select id="selectUserDetail" parameterType="long"
+	resultType="kr.co.sist.e_learning.user.UserDTO">
+SELECT
+	u.user_seq AS userSeq,
+	u.email,
+	u.password,
+	u.nickname,
+	u.status,
+	u.profile,
+	u.social_id AS socialID,
+	u.social_provider AS socialProvider,
+	u.created_at AS createdAt,
+	(
+		SELECT r.admin_acted_at
+		FROM report r
+		WHERE r.reported_user_id = u.user_seq
+		ORDER BY r.reported_at DESC
+		FETCH FIRST 1 ROWS ONLY
+	) AS adminActedAt,
+	(
+		SELECT r.admin_reason
+		FROM report r
+		WHERE r.reported_user_id = u.user_seq
+		ORDER BY r.reported_at DESC
+		FETCH FIRST 1 ROWS ONLY
+	) AS adminCustomReasonTxt,
+	(
+		SELECT COUNT(*)
+		FROM course
+		WHERE user_seq = u.user_seq AND flag = 'T'
+	) AS openedCourseCnt,
+	(
+		SELECT COUNT(*)
+		FROM course
+		WHERE user_seq = u.user_seq AND flag = 'S'
+	) AS activeCourseCnt,
+	(
+		SELECT LISTAGG(rra.reason_chk, ',') WITHIN GROUP (ORDER BY rra.reason_chk)
+		FROM report r
+		JOIN report_reason_admin rra ON r.report_id = rra.report_id
+		WHERE r.reported_user_id = u.user_seq
+		AND r.reported_at = (
+			SELECT MAX(r2.reported_at)
+			FROM report r2
+			WHERE r2.reported_user_id = u.user_seq
+		)
+	) AS adminCheckedReason
+FROM users u
+WHERE u.user_seq = #{userSeq}
+</select>
+
+<!-- 수강 중인 과목 리스트 -->
+<select id="selectActiveCourses" parameterType="long" resultType="String">
+SELECT title
+FROM course
+WHERE flag = 'S' AND user_seq = #{userSeq}
+</select>
+
+<!-- 개설한 과목 리스트 -->
+<select id="selectOpenedCourses" parameterType="long" resultType="String">
+SELECT title
+FROM course
+WHERE user_seq = #{userSeq} AND flag = 'T'
+</select>
+
+<!-- 최신 report_id 조회 -->
+<select id="selectLatestReportId" resultType="long">
+SELECT report_id
+FROM report
+WHERE reported_user_id = #{userSeq}
+ORDER BY reported_at DESC
+FETCH FIRST 1 ROWS ONLY
+</select>
+
+<!-- report 테이블 update -->
+<update id="updateReport" parameterType="kr.co.sist.e_learning.user.UserDTO">
+UPDATE report
+SET admin_acted_at = SYSDATE,
+	admin_reason = #{adminCustomReasonTxt}
+WHERE report_id = #{reportId}
+</update>
+
+<!-- 기존 사유 삭제 -->
+<delete id="deleteReasonByReportId" parameterType="kr.co.sist.e_learning.user.UserDTO">
+DELETE FROM report_reason_admin
+WHERE report_id = #{reportId}
+</delete>
+
+<!-- 새로운 사유 insert -->
+<insert id="insertReasons" parameterType="kr.co.sist.e_learning.user.UserDTO">
+<foreach collection="adminCheckedReasonList" item="code">
+INSERT INTO report_reason_admin (report_id, reason_chk)
+VALUES (#{reportId}, #{code})
+</foreach>
+</insert>
+
+<!-- users 상태 update -->
+<update id="updateUserStatus" parameterType="kr.co.sist.e_learning.user.UserDTO">
+UPDATE users
+SET status = #{status}
+WHERE user_seq = #{userSeq}
+</update>
+
+</mapper>

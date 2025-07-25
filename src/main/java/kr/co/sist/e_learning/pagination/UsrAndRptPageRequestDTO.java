@@ -21,8 +21,8 @@ public class UsrAndRptPageRequestDTO {
 	private Integer size = 10; // 한 페이지당 개수
 	
 	// 회원 관리용 검색 조건
-	private String accountStatus;
-	private String socialId;
+	private String status;
+	private String userSeq;
 	
 	// 신고용 검색 조건
 	private String reporterId;
@@ -41,4 +41,12 @@ public class UsrAndRptPageRequestDTO {
         int s = (size != null) ? size : 10;
         return p * s;
     }
+    
+//    // null 방어용 안전 getter 추가
+//    public int getPage() {
+//        return page != null ? page : 1;
+//    }
+//    public int getSize() {
+//        return size != null ? size : 10;
+//    }
 }
