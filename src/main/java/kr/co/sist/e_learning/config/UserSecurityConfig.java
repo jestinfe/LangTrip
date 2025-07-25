@@ -7,7 +7,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.config.http.SessionCreationPolicy;
 
 import kr.co.sist.e_learning.user.auth.AuthService;
 import kr.co.sist.e_learning.user.auth.JwtAuthUtils;
@@ -33,7 +33,7 @@ public class UserSecurityConfig {
     @Bean
     public SecurityFilterChain userSecurity(HttpSecurity http) throws Exception {
         http
-            .securityMatcher("/**") // admin 외 전부
+            .securityMatcher(request -> !request.getServletPath().startsWith("/admin")) // Exclude admin paths
             .authorizeHttpRequests(auth -> auth
             		 .requestMatchers(
             			        "/css/**", "/js/**", "/images/**", "/", 
@@ -42,7 +42,16 @@ public class UserSecurityConfig {
             			        "/user/logout", "/user/login/**",
             			        
             			        // 🔐 로그인 없이 접근 가능한 API 경로 추가
-            			        "/api/auth/**"
+            			        "/api/auth/email/**",
+                                "/api/auth/nickname/check",
+                                "/api/auth/nickname/find",
+                                "/api/auth/password/**",
+                                "/api/auth/signup",
+                                "/api/auth/socialSignup",
+                                "/api/auth/login/**",
+            			        "/api/auth/token/refresh",
+            			        "/courses/**", "/csj/**", "/support/**"
+            			        
             				 ).permitAll()
                 .anyRequest().authenticated()
             )
@@ -53,7 +62,8 @@ public class UserSecurityConfig {
                 .successHandler(customOAuth2AuthenticationSuccessHandler)
             )
             .addFilterBefore(jwtAuthenticationFilter(jwtTokenProvider, jwtAuthUtils, authService), UsernamePasswordAuthenticationFilter.class)
-            .csrf(csrf -> csrf.disable());
+            .csrf(csrf -> csrf.disable())
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         return http.build();
     }

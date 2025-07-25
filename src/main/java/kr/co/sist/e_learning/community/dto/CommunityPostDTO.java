@@ -1,4 +1,4 @@
-package kr.co.sist.e_learning.community.dto;
+	package kr.co.sist.e_learning.community.dto;
 
 import java.sql.Timestamp;
 
@@ -18,7 +18,7 @@ import lombok.ToString;
 public class CommunityPostDTO {
 
     private Long postId;
-    private Integer userId;
+    private Long userId;
     private String title;
     private String content;
     private Timestamp createdAt;

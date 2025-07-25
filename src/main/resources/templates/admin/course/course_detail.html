@@ -7,6 +7,35 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" th:href="@{/css/admin_sidebar.css}">
     <link rel="stylesheet" th:href="@{/css/account_detail.css}"> <!-- Assuming account_detail.css has relevant detail page styles -->
+    <style>
+        .form-group textarea {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            min-height: 120px;
+            resize: vertical;
+        }
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        .admin-table th, .admin-table td {
+            padding: 1rem 1.5rem;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .admin-table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+        .admin-table tbody tr:hover {
+            background-color: #f1f3f5;
+        }
+    </style>
 </head>
 <body>
     <div th:replace="layout/admin_sidebar :: sidebar"></div>
@@ -51,14 +80,6 @@
                         <textarea disabled th:text="${course.introduction}"></textarea>
                     </div>
                     <div class="form-group">
-                        <label>영상 수:</label>
-                        <input type="text" th:value="${course.videoCount}" disabled>
-                    </div>
-                    <div class="form-group">
-                        <label>퀴즈 수:</label>
-                        <input type="text" th:value="${course.quizCount}" disabled>
-                    </div>
-                    <div class="form-group">
                         <label>공개 여부:</label>
                         <div>
                             <label style="margin-right: 1rem;">
@@ -70,15 +91,81 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
 
-                <div class="action-buttons">
-                    <a th:href="@{/admin/courses}" class="btn btn-outline"><i class="fas fa-arrow-left"></i> 목록으로</a>
-                    <form th:action="@{/admin/courses/{courseSeq}/toggleVisibility(courseSeq=${course.courseSeq})}" method="post" style="display:inline;">
-                        <input type="hidden" name="isPublic" th:value="${course.isPublic == 'Y' ? 'N' : 'Y'}">
-                        <button type="submit" class="btn btn-primary" th:text="${course.isPublic == 'Y' ? '비공개로 전환' : '공개로 전환'}"></button>
-                    </form>
+        <div class="detail-section">
+            <div class="section-header">
+                <i class="fas fa-video"></i> 영상 목록 (<span th:text="${course.videos != null ? course.videos.size() : 0}">0</span>개)
+            </div>
+            <div class="section-content">
+                <div th:if="${course.videos != null and not #lists.isEmpty(course.videos)}">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>순서</th>
+                                <th>제목</th>
+                                <th>파일 이름</th>
+                                <th>설명</th>
+                                <th>업로드 날짜</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="video : ${course.videos}">
+                                <td th:text="${video.videoOrder}"></td>
+                                <td><a th:href="@{/admin/courses/videos/{videoSeq}(videoSeq=${video.videoSeq})}" th:text="${video.title}"></a></td>
+                                <td th:text="${video.fileName}"></td>
+                                <td th:text="${video.description}"></td>
+                                <td th:text="${#dates.format(video.uploadDate, 'yyyy-MM-dd')}"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div th:unless="${course.videos != null and not #lists.isEmpty(course.videos)}" style="text-align: center; color:#666; padding:1.5rem;">
+                    등록된 영상이 없습니다.
                 </div>
             </div>
+        </div>
+
+        <div class="detail-section">
+            <div class="section-header">
+                <i class="fas fa-question-circle"></i> 퀴즈 목록 (<span th:text="${course.quizzes != null ? course.quizzes.size() : 0}">0</span>개)
+            </div>
+            <div class="section-content">
+                <div th:if="${course.quizzes != null and not #lists.isEmpty(course.quizzes)}">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>퀴즈ID</th>
+                                <th>제목</th>
+                                <th>언어</th>
+                                <th>생성일</th>
+                                <th>문제 수</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="quizList : ${course.quizzes}">
+                                <td th:text="${quizList.quizListSeq}"></td>
+                                <td><a th:href="@{/admin/courses/quizzes/{quizListSeq}(quizListSeq=${quizList.quizListSeq})}" th:text="${quizList.title}"></a></td>
+                                <td th:text="${quizList.langCategory}"></td>
+                                <td th:text="${#dates.format(quizList.uploadDate, 'yyyy-MM-dd')}"></td>
+                                <td th:text="${quizList.quiz != null ? quizList.quiz.size() : 0}"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div th:unless="${course.quizzes != null and not #lists.isEmpty(course.quizzes)}" style="text-align: center; color:#666; padding:1.5rem;">
+                    등록된 퀴즈가 없습니다.
+                </div>
+            </div>
+        </div>
+
+        <div class="action-buttons" style="margin-top: 20px;">
+            <a th:href="@{/admin/courses}" class="btn btn-outline"><i class="fas fa-arrow-left"></i> 목록으로</a>
+            <form th:action="@{/admin/courses/{courseSeq}/toggleVisibility(courseSeq=${course.courseSeq})}" method="post" style="display:inline;">
+                <input type="hidden" name="isPublic" th:value="${course.isPublic == 'Y' ? 'N' : 'Y'}">
+                <button type="submit" class="btn btn-primary" th:text="${course.isPublic == 'Y' ? '비공개로 전환' : '공개로 전환'}"></button>
+            </form>
         </div>
     </div>
 </body>

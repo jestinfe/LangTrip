@@ -283,19 +283,6 @@
             position: relative;
         }
         
-        .course-thumbnail::before {
-            content: '';
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            width: 40px;
-            height: 40px;
-            background: rgba(255, 255, 255, 0.7);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
         
         .course-info { 
             padding: 20px; 
@@ -330,14 +317,6 @@
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
-        }
-        
-        .course-rating { 
-            display: flex; 
-            align-items: center; 
-            gap: 4px; 
-            color: #f59e0b; 
-            font-size: 14px; 
         }
         
         .subscribed-section { 
@@ -503,6 +482,22 @@
   display: inline-flex;
   gap: 10px;
 }
+
+body.logged-in .guest-state {
+  display: none;
+}
+body.logged-in .user-state {
+  display: inline-flex ;
+}
+body.logged-out .guest-state {
+  display: inline-flex ;
+}
+body.logged-out .user-state {
+  display: none ;
+}
+
+            
+        }
 
 
 

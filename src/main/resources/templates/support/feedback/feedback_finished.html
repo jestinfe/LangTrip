@@ -6,11 +6,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" th:href="@{/css/common.css}">
-<link rel="stylesheet" href="/support_static/support_design/feedback_design.css">
+<link rel="stylesheet" href="/css/feedback_design.css">
 <title>templates/support/feedback/feedback_finished.html</title>
 </head>
 
-<body>
+<body
+style="background: linear-gradient( to bottom, rgba(204,169,254, 0.9), rgba(204,169,254, 0.1),  rgba(204,169,254, 0.1), white, white) !important;"
+>
 <div th:replace="layout/header :: header"></div>
 
 	<div class="parent-container"
@@ -27,7 +29,7 @@
 				
 				<div class="div-2"
 					style="font-size: 28px; color: #000000; margin: 0px; margin-bottom: -5px; border: none; display: flex">
-					<div><a th:href="@{/support}"><img th:src="@{/support_static/support_images/symbol_support.png}" style="width: 32px; height: 32px; margin-right: 15px; margin-top: 8px;"/></a></div>
+					<div><a th:href="@{/support}"><img th:src="@{/images/symbol_support.png}" style="width: 32px; height: 32px; margin-right: 15px; margin-top: 8px;"/></a></div>
 					<div><a th:href="@{/support}" style="color: #000000">지원센터</a></div>
 				</div><!-- div-2 -->
 				
@@ -48,7 +50,7 @@
 			<div class="title-div">
 				<div class="div-1">
 					<div>
-						<img th:src="@{/support_static/support_images/symbol_feedback.png}"
+						<img th:src="@{/images/symbol_feedback.png}"
 							style="width: 50px; height: 50px" />
 					</div>
 				</div>
@@ -145,7 +147,9 @@
 			
 					<div class="child-div" style="height: auto; width: 1200px; box-shadow: none; background-color: transparent; border:none;">
 						<div class="content-div3" style="background-color: transparent; border:none;">
-			 				<div class="moreAction" style="text-align: right; margin-right: 60px"><a th:href="@{/support}">마이페이지로</a></div>
+			 				<div class="moreAction" style="text-align: right; margin-right: 60px; color: #cecece">
+			 				마이페이지로
+			 				</div>
 						</div>
 					</div><!-- child-div -->
 			
@@ -252,7 +256,7 @@
 		<div class="child-div" style="height: auto; width: 1200px; box-shadow: none; background-color: transparent; border:none;">
 			<div class="content-div3" style="background-color: transparent; border:none;">
  				<div class="moreAction" style="text-align: right; margin-right: 60px">
-				    <div class="moreActionButton"><a th:href="@{/support}" class="custom-button">지원센터로</a></div>
+				    <div class="moreActionButton"><a th:href="@{/support}" class="custom-button">지원센터 홈으로</a></div>
 				</div>
 			</div>
 		</div><!-- child-div -->
@@ -297,7 +301,8 @@
 
 
 	</div><!-- parent-container -->
-	<script src="/support_static/support_js/support_ready.js"></script>
+<!-- 	<script src="/js/support_ready.js"></script> -->
+<script src="/js/support_center.js"></script>
 	
 	<div th:replace="layout/footer :: footer"></div>
 </body>

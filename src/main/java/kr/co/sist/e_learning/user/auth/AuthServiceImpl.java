@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -23,6 +24,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 @Service
 @Transactional
+@Log4j2
 public class AuthServiceImpl implements AuthService {
 
     @Autowired
@@ -289,28 +291,47 @@ public class AuthServiceImpl implements AuthService {
     
     @Override
     public Long reissueAccessToken(HttpServletRequest request, HttpServletResponse response) {
+        log.info("Attempting to reissue access token...");
         String refreshToken = jwtAuthUtils.extractRefreshTokenFromCookies(request);
+        log.info("Extracted refresh token: {}", refreshToken != null ? "[PRESENT]" : "[ABSENT]");
 
         if (refreshToken == null) {
-            throw new RuntimeException("Refresh Token 없음");
+            log.warn("Refresh Token is null. Cannot reissue access token.");
+            return null; // 예외 대신 null 반환
         }
 
         RefreshTokenEntity token = refreshTokenRepository.findByRefreshToken(refreshToken)
-                .orElseThrow(() -> new RuntimeException("Refresh Token 만료 혹은 없음"));
+                .orElseThrow(() -> {
+                    log.warn("Refresh Token not found or expired in repository: {}", refreshToken);
+                    return new RuntimeException("Refresh Token 만료 혹은 없음");
+                });
+        log.info("Refresh Token found in repository. Expires at: {}", token.getExpiresAt());
 
         if (token.getExpiresAt().isBefore(LocalDateTime.now())) {
             refreshTokenRepository.delete(token);
+            log.warn("Refresh Token has expired. Deleted from repository.");
             throw new RuntimeException("Refresh Token 만료");
         }
 
-        String userId = token.getUserId(); // refresh token entity에 포함됨
+        String userId = token.getUserId();
+        log.info("User ID from refresh token: {}", userId);
         UserEntity user = userRepository.findByUserId(userId);
         if (user == null) {
+            log.warn("User not found for userId: {}", userId);
             throw new RuntimeException("Refresh Token에 해당하는 사용자를 찾을 수 없습니다.");
         }
+        log.info("User found: {}", user.getUserId());
 
         String newAccessToken = jwtTokenProvider.createAccessToken(user.getUserId(), user.getUserSeq());
-        jwtAuthUtils.setAccessTokenCookie(response, newAccessToken);
+        log.info("New access token created.");
+
+        try {
+            jwtAuthUtils.setAccessTokenCookie(response, newAccessToken);
+            log.info("New access token cookie set successfully.");
+        } catch (Exception e) {
+            log.error("Failed to set access token cookie: {}", e.getMessage(), e);
+            throw new RuntimeException("액세스 토큰 쿠키 설정 실패", e);
+        }
         return user.getUserSeq();
     }
 

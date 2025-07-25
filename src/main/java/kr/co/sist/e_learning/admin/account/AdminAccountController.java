@@ -1,6 +1,7 @@
 package kr.co.sist.e_learning.admin.account;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +26,7 @@ public class AdminAccountController {
      * 관리자 상세 or 가입신청 상세
      */
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('SUPER')")
     public String getAdminOrSignupDetail(@PathVariable("id") String id, Model model) {
         AdminAccountUnifiedDTO dto = adminAccountService.getById(id);
 
@@ -43,6 +45,7 @@ public class AdminAccountController {
      */
     @PostMapping("/{id}")
     @Loggable(actionType = "ADMIN_UPDATE")
+    @PreAuthorize("hasRole('SUPER')")
     public String updateAdmin(@PathVariable("id") String id,
                               @ModelAttribute AdminAccountUnifiedDTO dto) {
         dto.setAdminId(id);
@@ -54,6 +57,7 @@ public class AdminAccountController {
      * 가입신청 상태 변경 (승인/거절)
      */
     @PostMapping("/{requestId}/status")
+    @PreAuthorize("hasRole('SUPER')")
     public String updateSignupStatus(@PathVariable String requestId,
                                      @RequestParam String status,
                                      @RequestParam(required = false) String reason,
@@ -85,6 +89,7 @@ public class AdminAccountController {
     }
     
     @GetMapping
+    @PreAuthorize("hasRole('SUPER')")
     public String listUnifiedAccounts(
         @RequestParam(required = false) String status,
         @RequestParam(required = false) String searchType,
@@ -92,6 +97,7 @@ public class AdminAccountController {
         @RequestParam(required = false, defaultValue = "createdAt,desc") String sort,
         @RequestParam(defaultValue = "1") int page,
         @RequestParam(defaultValue = "10") int pageSize,
+        @RequestParam(name = "async", required = false) boolean async,
         Model model
     ) {
         int offset = (page - 1) * pageSize;
@@ -120,13 +126,17 @@ public class AdminAccountController {
         model.addAttribute("searchType", searchType);
         model.addAttribute("searchKeyword", searchKeyword);
         model.addAttribute("sort", sort);
-        model.addAttribute("pageSize", pageSize); // Add pageSize to the model
-        model.addAttribute("page", page);       // ✅ 추가
+        model.addAttribute("pageSize", pageSize);
+        model.addAttribute("page", page);
         model.addAttribute("totalCount", totalCount);
         model.addAttribute("totalPages", totalPages);
         model.addAttribute("startPage", startPage);
         model.addAttribute("endPage", endPage);
         model.addAttribute("roleNameMap", getRoleNameMap());
+
+        if (async) {
+            return "admin/account/account_list_fragment";
+        }
 
         return "admin/account/account_list";
     }

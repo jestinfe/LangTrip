@@ -20,15 +20,9 @@ public class MyPageDAOImpl implements MyPageDAO {
     private final String nsMP = "kr.co.sist.e_learning.mypage.MyPageMapper";
 
     @Override
-    public MyPageDTO getMyPageSummary(long userSeq) {
-        return session.selectOne(nsMP + ".selectMyPageSummary", userSeq);
+    public MyPageDTO getUserInfo(long userSeq) {
+    	return session.selectOne(nsMP + ".selectUserInfo", userSeq);
     }
-
-    @Override
-    public MyPageDTO selectUserInfo(long userSeq) {
-        return sst.selectOne(nsMP + ".selectUserInfo", userSeq);
-    }
-    
     
     @Override
     public String selectProfilePath(long userSeq) {
@@ -42,23 +36,5 @@ public class MyPageDAOImpl implements MyPageDAO {
         map.put("profile", profile);
         session.update(nsMP + ".updateProfile", map);
     }
-
-  
-    @Override
-    public List<SubscriptionDTO> selectSubscriptions(Long userSeq) {
-        System.out.println("[DAO] selectSubscriptions(userSeq=" + userSeq + ")");
-        List<SubscriptionDTO> list = session.selectList(nsMP + ".selectSubscriptions", userSeq);
-        System.out.println("[DAO] session.selectList → size=" + list.size() + ", list=" + list);
-        return list;
-    }
-
-    @Override
-    public int deleteSubscription(Map<String, Object> paramMap) {
-        System.out.println("[DAO] deleteSubscription(paramMap=" + paramMap + ")");
-        int count = session.delete(nsMP + ".deleteSubscription", paramMap);
-        System.out.println("[DAO] session.delete → count=" + count);
-        return count;
-    }
-    
     
 }

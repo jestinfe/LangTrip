@@ -6,10 +6,15 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 import java.util.Map;
 
+import kr.co.sist.e_learning.quiz.QuizListDTO;
+import kr.co.sist.e_learning.video.VideoDTO;
+
 @Mapper
 public interface AdminCourseMapper {
     List<AdminCourseDTO> selectAdminCourses(Map<String, Object> params);
     int countAdminCourses(Map<String, Object> params);
-    AdminCourseDTO selectAdminCourseDetail(@Param("courseSeq") String courseSeq);
+    AdminCourseDetailDTO selectAdminCourseDetail(@Param("courseSeq") String courseSeq);
     void updateCourseVisibility(@Param("courseSeq") String courseSeq, @Param("isPublic") String isPublic);
+    VideoDTO selectVideoBySeq(@Param("videoSeq") String videoSeq);
+    QuizListDTO selectQuizListBySeq(@Param("quizListSeq") String quizListSeq);
 }

@@ -5,10 +5,10 @@
   
   	<div style="display: flex;">
 	    <div style="border: none; width: 40px; height: 40px;">
-<!-- 	    	<img th:src="@{/support_static/support_images/symbol_faqType_1.png}" style="width: 95%; height: 95%; margin-bottom: -75px;"/> -->
-<!-- 		    <img th:src="@{|/support_static/support_images/symbol_faqType_${iterStat.index + 1}.png|}" style="width: 95%; height: 95%; margin-bottom: -73px;" /> -->
-				<img th:src="@{|/support_static/support_images/symbol_faqType_${iterStat.index + 1}.png|}"
-				     onerror="this.onerror=null; this.src='/support_static/support_images/symbol_faq.png';"
+<!-- 	    	<img th:src="@{/images/symbol_faqType_1.png}" style="width: 95%; height: 95%; margin-bottom: -75px;"/> -->
+<!-- 		    <img th:src="@{|/images/symbol_faqType_${iterStat.index + 1}.png|}" style="width: 95%; height: 95%; margin-bottom: -73px;" /> -->
+				<img th:src="@{|/images/symbol_faqType_${iterStat.index + 1}.png|}"
+				     onerror="this.onerror=null; this.src='/images/symbol_faq.png';"
 				     style="width: 95%; height: 95%; margin-bottom: -73px;" />
 
 	    </div>
@@ -19,12 +19,23 @@
      
 
 
-
+	<style>
+	.faqHover:hover{
+		background-color: rgba(204, 169, 254, 0.3);
+		
+		.div-2 {
+			color: #5701d0 !important;
+		}
+		.div-4 {
+			color: #5701d0 !important;
+		}
+	}
+	</style>
 
     <!-- 해당 그룹의 faq 항목들 출력 -->
     <div th:each="faq, iterStat: ${group.value}">
     
-      <div class="child-div" onclick="toggleAccordion(this)" th:id="'faq-' + ${faq.faq_id}" th:attr="data-id=${faq.faq_id}">
+      <div class="child-div faqHover " onclick="toggleAccordion(this)" th:id="'faq-' + ${faq.faq_id}" th:attr="data-id=${faq.faq_id}"  style="box-shadow: 0 0 4px rgba(0, 0, 0, 0.4) !important; cursor: pointer;">
 
       
         <div class="title-div">

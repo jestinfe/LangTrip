@@ -1,7 +1,11 @@
 package kr.co.sist.e_learning.admin.course;
 
 import kr.co.sist.e_learning.pagination.PageResponseDTO;
+import kr.co.sist.e_learning.quiz.QuizListDTO;
+import kr.co.sist.e_learning.video.VideoDTO;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +22,7 @@ public class AdminCourseController {
     private AdminCourseService adminCourseService;
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('COURSE', 'SUPER')")
     public String listAdminCourses(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int pageSize,
@@ -25,6 +30,7 @@ public class AdminCourseController {
             @RequestParam(required = false) String searchKeyword,
             @RequestParam(required = false, defaultValue = "uploadDate,desc") String sort,
             @RequestParam(required = false) String isPublic,
+            @RequestParam(name = "async", required = false) boolean async,
             Model model) {
 
         Map<String, Object> params = new HashMap<>();
@@ -37,7 +43,7 @@ public class AdminCourseController {
         params.put("offset", (page - 1) * pageSize);
         params.put("limit", pageSize);
 
-        PageResponseDTO<AdminCourseDTO> responseDTO = adminCourseService.getAdminCourses(params);
+        PageResponseDTO<AdminCourseListDisplayDTO> responseDTO = adminCourseService.getAdminCourses(params);
 
         model.addAttribute("courseList", responseDTO.getList());
         model.addAttribute("currentPage", responseDTO.getPage());
@@ -51,20 +57,42 @@ public class AdminCourseController {
         model.addAttribute("sort", sort);
         model.addAttribute("isPublic", isPublic);
 
+        if (async) {
+            return "admin/course/course_list_fragment";
+        }
+
         return "admin/course/course_list";
     }
 
     @GetMapping("/{courseSeq}")
+    @PreAuthorize("hasAnyRole('COURSE', 'SUPER')")
     public String adminCourseDetail(@PathVariable String courseSeq, Model model) {
-        AdminCourseDTO course = adminCourseService.getAdminCourseDetail(courseSeq);
+        AdminCourseDetailDTO course = adminCourseService.getAdminCourseDetail(courseSeq);
         model.addAttribute("course", course);
         return "admin/course/course_detail";
     }
 
     @PostMapping("/{courseSeq}/toggleVisibility")
+    @PreAuthorize("hasAnyRole('COURSE', 'SUPER')")
     public String toggleCourseVisibility(@PathVariable String courseSeq, @RequestParam String isPublic, RedirectAttributes ra) {
         adminCourseService.updateCourseVisibility(courseSeq, isPublic);
         ra.addFlashAttribute("message", "Course visibility updated successfully!");
         return "redirect:/admin/courses/" + courseSeq;
+    }
+
+    @GetMapping("/videos/{videoSeq}")
+    @PreAuthorize("hasAnyRole('COURSE', 'SUPER')")
+    public String adminVideoDetail(@PathVariable String videoSeq, Model model) {
+        VideoDTO video = adminCourseService.getVideoBySeq(videoSeq);
+        model.addAttribute("video", video);
+        return "admin/course/video_detail";
+    }
+
+    @GetMapping("/quizzes/{quizListSeq}")
+    @PreAuthorize("hasAnyRole('COURSE', 'SUPER')")
+    public String adminQuizDetail(@PathVariable String quizListSeq, Model model) {
+        QuizListDTO quizList = adminCourseService.getQuizListBySeq(quizListSeq);
+        model.addAttribute("quizList", quizList);
+        return "admin/course/quiz_detail";
     }
 }

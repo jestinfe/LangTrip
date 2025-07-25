@@ -29,6 +29,7 @@ public class UsrAndRptPageRequestDTO {
 	private String reportedUserId;
 	private String contentType;
 	private String actionStatus;
+	private String sort; // 정렬 기준 (예: reportedAt,desc)
 	
     public int getStartRow() {
         int p = (page != null) ? page : 1;

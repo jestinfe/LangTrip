@@ -1,16 +1,17 @@
 package kr.co.sist.e_learning.community.controller;
 
-import jakarta.servlet.http.HttpSession;
-import kr.co.sist.e_learning.community.dto.UsersssDTO;
 import kr.co.sist.e_learning.community.dto.VoteDTO;
 import kr.co.sist.e_learning.community.service.VoteService;
-
-import java.util.Map;
-
+import kr.co.sist.e_learning.user.auth.UserAuthentication;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/csj")
@@ -20,28 +21,45 @@ public class VoteController {
     private VoteService voteService;
 
     @PostMapping("/vote")
-    public ResponseEntity<?> vote(@RequestBody VoteDTO voteDTO, HttpSession session) {
+    public ResponseEntity<?> vote(@RequestBody VoteDTO dto, Authentication authentication) {
 
-        UsersssDTO loginUser = (UsersssDTO) session.getAttribute("loginUser");
-        if (loginUser == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
+        System.out.println("▶ vote() 호출됨"); // 🔍
+
+        if (authentication == null || !authentication.isAuthenticated()) {
+            System.out.println("❌ 인증 정보 없음"); // 🔍
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 필요");
         }
 
-        int userId = loginUser.getUserSeq();
-        int postId = voteDTO.getPostId();
-        String voteType = voteDTO.getVoteType();
+        Long userSeq;
+        try {
+            userSeq = (Long) authentication.getPrincipal();
+        } catch (Exception e) {
+            System.out.println("❌ 인증 principal 추출 실패"); // 🔍
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("인증 실패");
+        }
+
+        int userId = userSeq.intValue();
+        int postId = dto.getPostId();
+        String type = dto.getVoteType();
+
+        System.out.println("👉 userId: " + userId + ", postId: " + postId + ", type: " + type); // 🔍
 
         if (voteService.hasVotedToday(userId, postId)) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("이미 오늘 투표하셨습니다.");
+            System.out.println("⚠️ 이미 오늘 투표함"); // 🔍
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("이미 오늘 투표함");
         }
 
-        voteService.saveVote(userId, postId, voteType);
+        voteService.saveVote(userId, postId, type);
+        System.out.println("✅ 투표 저장 완료"); // 🔍
 
-        // 투표 후 count 다시 조회해서 클라이언트에 내려줌
-        int upVotes = voteService.getVoteCount(postId, "UP");
-        int downVotes = voteService.getVoteCount(postId, "DOWN");
+        int up = voteService.getVoteCount(postId, "UP");
+        int down = voteService.getVoteCount(postId, "DOWN");
 
-        return ResponseEntity.ok().body(Map.of("up", upVotes, "down", downVotes));
+        System.out.println("📊 최신 카운트 - UP: " + up + ", DOWN: " + down); // 🔍
+
+        return ResponseEntity.ok(Map.of("up", up, "down", down));
     }
 
+
 }
+

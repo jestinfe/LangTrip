@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>회원 통계</title>
+  <link rel="icon" href="/images/favicon.ico">
+  
+  <link rel="stylesheet" href="/css/admin_sidebar.css">
+
+  <script src="/js/chart.umd.js"></script>
+  <script src="/js/userStatisticsCharts.js"></script>
+
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f4f6fa;
+      padding: 30px;
+      color: #333;
+    }
+
+    h2 {
+      font-size: 28px;
+      margin-bottom: 40px;
+      color: #3f51b5;
+    }
+
+    section {
+      background: #fff;
+      padding: 25px;
+      border-radius: 16px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+      margin-bottom: 40px;
+    }
+
+    section h3 {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #555;
+    }
+
+    canvas {
+      width: 100%;
+      height: 320px;
+    }
+.chart-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* ✅ 이 아래는 chart-grid와 chart-item의 스타일인데
+   chart-container 안에 들어가면 안 됨! 반드시 분리해야 됨 */
+.chart-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+}
+
+.chart-item {
+  flex: 1 1 45%;
+  max-width: 600px;
+  padding: 20px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.05);
+  background-color: white;
+  border-radius: 10px;
+}
+
+.chart-item--full {
+  flex: 1 1 100%; 
+  max-width: 1200px;  /* 최대 너비 */
+  margin: 0 auto;     /* 좌우 중앙 정렬 */
+}
+
+.chart-item canvas {
+  width: 100%;
+  height: 300px;
+}
+</style>
+</head>
+<body>
+  <div th:replace="~{/layout/admin_sidebar :: sidebar}"></div>
+
+
+<!-- 메인 콘텐츠 -->
+<main class="main-content">
+  <h2>📊 관리자 대시보드</h2>
+
+ 	<div class="chart-item chart-item--full">
+     <h5 class="chart-title">⌚️ 관리자 시간별 접속 통계</h5>
+     <canvas id="hourlyAccessChart"></canvas>
+  	</div>
+
+  <div class="chart-grid">
+    <div class="chart-item">
+      <h3>📅 일별 회원 가입 수</h3>
+      <canvas id="signupLineChart"></canvas>
+    </div>
+
+    <div class="chart-item">
+      <h3>📱 유입 경로 통계</h3>
+      <canvas id="pathDonutChart"></canvas>
+    </div>
+
+    <div class="chart-item">
+      <h3>📤 탈퇴 사유 통계</h3>
+      <canvas id="reasonBarChart"></canvas>
+    </div>
+    
+    <div class="chart-item">
+	  <h3>📚 카테고리별 강의 등록 수</h3>
+	  <canvas id="courseCategoryChart"></canvas>
+	</div>
+    
+    <div class="chart-item">
+	  <h3>📊 난이도별 강의 등록 수</h3>
+	  <canvas id="courseDifficultyChart"></canvas>
+	</div>
+
+    <div class="chart-item">
+      <h3>📈 광고별 클릭 횟수</h3>
+      <canvas id="adClickChart"></canvas>
+    </div>
+    
+  </div>
+</main>
+
+
+<!-- Font Awesome CDN (최하단에 넣기) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/js/all.min.js"></script>
+  
+</body>
+
+</html>

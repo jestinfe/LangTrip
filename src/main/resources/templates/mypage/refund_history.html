@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>환불 내역</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        .back-button {
+            background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+            border: none;
+            border-radius: 16px;
+            width: 56px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #475569;
+            font-size: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .back-button:hover {
+            background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            margin: 0;
+            flex: 1;
+            text-align: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background-color: #ecf0f1;
+            color: #2c3e50;
+            font-weight: bold;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 50px;
+            color: #777;
+            font-size: 18px;
+            background-color: #f8f8f8;
+            border-radius: 8px;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .status-requested { background-color: #ffe0b2; color: #e65100; }
+        .status-approved { background-color: #c8e6c9; color: #2e7d32; }
+        .status-rejected { background-color: #ffcdd2; color: #c62828; }
+        .status-completed { background-color: #bbdefb; color: #1976d2; }
+        
+        /* 반응형 디자인 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+                margin: 10px;
+            }
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            h1 {
+                text-align: left;
+            }
+            table {
+                font-size: 14px;
+            }
+            th, td {
+                padding: 8px 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <button class="back-button" onclick="history.back()">←</button>
+            <h1>🔄 환불 내역</h1>
+        </div>
+
+        <div th:if="${#lists.isEmpty(refundList)}" class="empty-state">
+            <p>환불 내역이 없습니다.</p>
+        </div>
+
+        <div th:unless="${#lists.isEmpty(refundList)}">
+            <table>
+                <thead>
+                    <tr>
+                        <th>결제 번호</th>
+                        <th>환불 금액</th>
+                        <th>신청일</th>
+                        <th>처리일</th>
+                        <th>상태</th>
+                        <th>사유</th>
+                        <th>거절 사유</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="refund : ${refundList}">
+                        <td th:text="${refund.paymentSeq}"></td>
+                        <td th:text="${#numbers.formatDecimal(refund.refundAmount, 0, 'COMMA', 0, 'POINT')} + '원'"></td>
+                        <td th:text="${#dates.format(refund.requestedAt, 'yyyy-MM-dd HH:mm')}"></td>
+                        <td th:text="${refund.processedAt != null ? #dates.format(refund.processedAt, 'yyyy-MM-dd HH:mm') : '-'}"></td>
+                        <td>
+                            <span class="status-badge"
+                                  th:classappend="${refund.status == 'REQUESTED' ? 'status-requested' :
+                                                  (refund.status == 'APPROVED' ? 'status-approved' :
+                                                  (refund.status == 'REJECTED' ? 'status-rejected' :
+                                                  (refund.status == 'COMPLETED' ? 'status-completed' : '')))}"
+                                  th:text="${@paymentStatusConverter.convert(refund.status)}"></span>
+                        </td>
+                        <td th:text="${refund.reason}"></td>
+                      
+                        <td th:text="${refund.rejectReason != 'null' ? refund.rejectReason : '-'}"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

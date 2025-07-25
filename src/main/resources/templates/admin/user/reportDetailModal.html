@@ -7,30 +7,8 @@
 	TODO :
 -->
 
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>신고 상세 정보</title>
-<!-- bootstrap CSS CDN -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"
-	integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
-<style type="text/css">
-.modal-dialog {
-  animation: none !important;
-  transform: none !important;
-}
-</style>
-</head>
-<body>
-<!-- 신고 상세 모달 트리거 -->
-<button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#reportDetailModal">
-  신고 상세 보기
-</button>
-
 <!-- 신고 상세 모달 -->
-<div class="modal fade" id="reportDetailModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="reportDetailModalLabel" aria-hidden="true">
+<div th:fragment="reportDetailModalContent" class="modal fade" id="reportDetailModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="reportDetailModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg modal-fullscreen-sm-down">
     <div class="modal-content">
       <div class="modal-header">
@@ -43,14 +21,15 @@
 		  <!-- 상세 정보 테이블 -->
           <table class="table table-bordered">
             <tbody>
-              <tr><th>신고 사유</th><td id="modal-reason">욕설, 기타(직접입력한내용)</td></tr>
-              <tr><th>콘텐츠 유형</th><td id="modal-contentType">강의</td></tr>
-              <tr><th>제목</th><td><a href="#" id="modal-title" class="text-decoration-underline">풀스택</a></td></tr>
-              <tr><th>신고일</th><td id="modal-date">2025-06-21</td></tr>
-              <tr><th>신고인 ID</th><td id="modal-reporterId">홍길동</td></tr>
-              <tr><th>피신고인 ID</th><td id="modal-reportedUserId">Content</td></tr>
-              <tr><th>처리상태</th><td id="modal-actionStatus">미처리</td></tr>
-              <tr><th>피신고인 계정 상태</th><td id="modal-reportedUserStatus">정상</td></tr>
+              <tr><th>신고 사유</th><td id="modal-reason"></td></tr>
+              <tr><th>콘텐츠 유형</th><td id="modal-contentType"></td></tr>
+              <tr><th>제목</th><td><a href="#" id="modal-title" class="text-decoration-underline"></a></td></tr>
+              <tr><th>신고일</th><td id="modal-date"></td></tr>
+              <tr><th>신고인 ID</th><td id="modal-reporterId"></td></tr>
+              <tr><th>피신고인 ID</th><td id="modal-reportedUserId"></td></tr>
+              <tr><th>처리상태</th><td id="modal-actionStatus"></td></tr>
+              <tr><th>최근 조치일</th><td id="modal-adminActedAt"></td></tr>
+              <tr><th>피신고인 계정 상태</th><td id="modal-reportedUserStatus"></td></tr>
             </tbody>
           </table>
           <!-- JS/axios에서 필요 -->
@@ -66,7 +45,7 @@
               <label class="form-check-label" for="noPenalty">무제재</label>
             </div>
             <div class="form-check form-check-inline">
-              <input class="form-check-input" type="radio" name="penaltyType" id="penalty" value="제재" checked>
+              <input class="form-check-input" type="radio" name="penaltyType" id="penalty" value="제재">
               <label class="form-check-label" for="penalty">제재</label>
             </div>
           </div>
@@ -131,7 +110,7 @@
 </div>
 
 <!-- ✅ 의사 재확인 모달 -->
-<div class="modal fade" id="confirmModal"
+<div th:fragment="confirmModalContent" class="modal fade" id="confirmModal"
      data-bs-backdrop="static" data-bs-keyboard="false"
      tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
@@ -241,4 +220,6 @@ document.getElementById("confirmApplyBtn").addEventListener("click", () => {
 });
 </script>
 </body>
+<!-- bootstrap bundle CDN -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
 </html>

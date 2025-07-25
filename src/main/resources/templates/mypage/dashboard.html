@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head>
   <meta charset="UTF-8">
   <title>마이페이지 대시보드</title>
@@ -131,7 +132,9 @@
   <h2>📊 마이페이지 요약 정보</h2>
 
   <div class="profile-card">
-    <img th:src="@{${myData.profile}}" alt="프로필 이미지"/>
+    <img th:src="${myData.profile != null ? myData.profile : '/images/logo.png'}"
+     alt="프로필 이미지" />
+
     <div>
       <p><strong>사용자 ID:</strong> <span th:text="${myData.userSeq}">user001</span></p>
       <p><strong>이름:</strong> <span th:text="${myData.nickname}">닉네임1</span></p>
@@ -140,7 +143,7 @@
   </div>
 
   <hr>
-
+<!-- 시연을 위해 주석
   <div class="summary-section">
     <div class="summary-item">
       <p class="label">✅ 완료한 강좌 수</p>
@@ -158,7 +161,28 @@
       <p class="label">🎖️ 후원 등급</p>
       <p class="value silver" th:text="${myData.donationLevel}">실버</p>
     </div>
+  </div> 
+  	-->
+  
+  <div class="summary-section">
+  <div class="summary-item">
+    <p class="label">✅ 완료한 강좌 수</p>
+    <p class="value">3</p>
   </div>
+  <div class="summary-item">
+    <p class="label">⏱️ 총 학습 시간</p>
+    <p class="value">4시간 30분</p>
+  </div>
+  <div class="summary-item">
+    <p class="label">📊 퀴즈 정답률</p>
+    <p class="value">95.5%</p>
+  </div>
+  <div class="summary-item">
+    <p class="label">🎖️ 후원 등급</p>
+    <p class="value silver">실버</p>
+  </div>
+</div>
+  
 
 <div class="charts-row">
   <div class="chart-container">
@@ -173,59 +197,7 @@
 </div>
 
 <script>
-console.log(Chart)
-
-function drawCharts() {
-  const studyCtx = document.getElementById('studyChart');
-  if (studyCtx) {
-    new Chart(studyCtx, {
-      type: 'line',
-      data: {
-        labels: ['07-01', '07-02', '07-03', '07-04'],
-        datasets: [{
-          label: '학습 시간 (분)',
-          data: [30, 60, 45, 75],
-          borderColor: '#3f51b5',
-          backgroundColor: 'rgba(63, 81, 181, 0.2)',
-          tension: 0.4
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: { display: false }
-        }
-      }
-    });
-  }
-
-  const quizCtx = document.getElementById('quizChart');
-  if (quizCtx) {
-    new Chart(quizCtx, {
-      type: 'doughnut',
-      data: {
-        labels: ['정답', '오답'],
-        datasets: [{
-          data: [95.5, 4.5],
-          backgroundColor: ['#4caf50', '#f44336']
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: { position: 'bottom' }
-        }
-      }
-    });
-  }
-}
-
-// ⚠️ AJAX 로드되는 구조라면 drawCharts를 명시적으로 호출해야 함
-window.addEventListener('load', () => {
-  if (typeof drawCharts === 'function') {
-    drawCharts();
-  }
-});
+  if (typeof drawCharts === 'function') drawCharts();
 </script>
 </body>
 </html>

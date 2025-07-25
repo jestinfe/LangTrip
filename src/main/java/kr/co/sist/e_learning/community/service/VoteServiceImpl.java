@@ -16,12 +16,16 @@ public class VoteServiceImpl implements VoteService {
 
     @Override
     public boolean hasVotedToday(Integer userId, Integer postId) {
-        return voteDAO.hasVotedToday(userId, postId) > 0;
+        int result = voteDAO.hasVotedToday(userId, postId);
+        System.out.println("📌 hasVotedToday() 호출됨 - userId: " + userId + ", postId: " + postId + " → 결과: " + result);
+        return result > 0;
     }
 
     @Override
     public void saveVote(Integer userId, Integer postId, String voteType) {
+        System.out.println("💾 saveVote() 호출됨 - userId: " + userId + ", postId: " + postId + ", type: " + voteType);
         voteDAO.saveVote(userId, postId, voteType);
+        System.out.println("✅ saveVote() 완료됨");
     }
 
     @Override
@@ -29,10 +33,8 @@ public class VoteServiceImpl implements VoteService {
         Map<String, Object> params = new HashMap<>();
         params.put("postId", postId);
         params.put("voteType", voteType);
-        return voteDAO.countVotes(params);
+        int count = voteDAO.countVotes(params);
+        System.out.println("📈 getVoteCount() - postId: " + postId + ", type: " + voteType + " → count: " + count);
+        return count;
     }
-    
-    
-    
-    
 }

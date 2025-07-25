@@ -3,6 +3,7 @@ package kr.co.sist.e_learning.user.auth;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.core.Authentication;
@@ -10,8 +11,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
+
+    private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
 
     private final JwtTokenProvider jwtTokenProvider;
     private final JwtAuthUtils jwtAuthUtils;
@@ -22,38 +27,54 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         this.jwtAuthUtils = jwtAuthUtils;
         this.authService = authService;
     }
-    
-    
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        return request.getServletPath().startsWith("/admin");
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        try {
-            String accessToken = jwtAuthUtils.extractTokenFromCookies(request);
+        String accessToken = jwtAuthUtils.extractTokenFromCookies(request);
+        Long userSeq = null;
 
-            if (accessToken != null && jwtTokenProvider.validateToken(accessToken)) {
-                Long userSeq = jwtTokenProvider.getUserSeq(accessToken);
-                SecurityContextHolder.getContext().setAuthentication(new UserAuthentication(userSeq, null));
-            } else {
-                // 액세스 토큰이 없거나 유효하지 않으면 리프레시로 시도
-                try {
-                    Long userSeq = authService.reissueAccessToken(request, response);
-                    SecurityContextHolder.getContext().setAuthentication(new UserAuthentication(userSeq, null));
-                } catch (Exception ex) {
-                    // 재발급 실패해도 예외 던지지 않고 그냥 필터 통과시킴
-                    jwtAuthUtils.deleteAccessTokenCookie(response);
-                    jwtAuthUtils.deleteRefreshTokenCookie(response);
-                    // 여기서 return하지 말고 그냥 다음 필터로 진행
+        try {
+            if (accessToken != null) {
+                if (jwtTokenProvider.validateToken(accessToken)) {
+                    userSeq = jwtTokenProvider.getUserSeq(accessToken);
+                    logger.info("JwtAuthenticationFilter: Access Token valid. Setting authentication for userSeq: {}", userSeq);
+                } else {
+                    logger.warn("JwtAuthenticationFilter: Invalid (non-expired) Access Token for URI: {}. Attempting refresh.", request.getRequestURI());
+                    // Access token invalid, try to refresh
+                    userSeq = authService.reissueAccessToken(request, response);
+                    logger.info("JwtAuthenticationFilter: Access Token refreshed. New userSeq: {}", userSeq);
                 }
+            } else {
+                logger.debug("JwtAuthenticationFilter: No Access Token found in cookies for URI: {}. Attempting refresh.", request.getRequestURI());
+                // No access token, try to refresh
+                userSeq = authService.reissueAccessToken(request, response);
+                logger.info("JwtAuthenticationFilter: Access Token refreshed. New userSeq: {}", userSeq);
             }
+
+            if (userSeq != null) {
+                SecurityContextHolder.getContext().setAuthentication(new UserAuthentication(userSeq, null));
+            }
+
         } catch (ExpiredJwtException e) {
+            logger.warn("JwtAuthenticationFilter: Token expired for URI: {}. Clearing tokens.", request.getRequestURI());
             jwtAuthUtils.deleteAccessTokenCookie(response);
-            // 만료된 경우에도 강제 응답 X
+            jwtAuthUtils.deleteRefreshTokenCookie(response);
+            // No need to call authService.logout(refreshToken) here, as it's handled by the client or other logout mechanisms.
+            // The goal here is to clear invalid tokens and let Spring Security handle the unauthenticated state.
         } catch (Exception e) {
+            logger.error("JwtAuthenticationFilter: Error during token processing for URI: {}: {}", request.getRequestURI(), e.getMessage(), e);
+            // In case of any other error, clear tokens to prevent infinite loops or bad state
             jwtAuthUtils.deleteAccessTokenCookie(response);
+            jwtAuthUtils.deleteRefreshTokenCookie(response);
         }
 
-        filterChain.doFilter(request, response); // 무조건 다음 필터로 넘김
+        filterChain.doFilter(request, response);
     }
 }

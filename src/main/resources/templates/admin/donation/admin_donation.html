@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>관리자 후원 관리</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="stylesheet" th:href="@{/css/admin_sidebar.css}">
+  <style>
+    /* Critical page-specific styles */
+    @charset "UTF-8";
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f7fa; display: flex; }
+    .main-content { margin-left: 280px; padding: 2rem; flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
+    .page-header { background: #fff; padding: 2rem; border-radius: 16px; box-shadow: 0 8px 32px rgba(0,0,0,.1); margin-bottom: 2rem; }
+    .page-header h1 { color: #333; font-size: 2rem; margin-bottom: .5rem; }
+    .page-header p { color: #666; font-size: 1.1rem; }
+    /* Sticky search section */
+    .search-section { 
+      background: #f5f7fa; /* Match body background */
+      padding: 2rem; 
+      border-radius: 16px; 
+      margin-bottom: 1rem; 
+      position: sticky; 
+      top: 0; 
+      z-index: 10;
+      box-shadow: 0 8px 16px rgba(0,0,0,.05);
+    }
+    .search-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; align-items: end; }
+    .form-group { display: flex; flex-direction: column; }
+    .form-group label { margin-bottom: .5rem; font-weight: 600; color: #333; }
+    .form-group input, .form-group select { padding: .8rem; border: 2px solid #e9ecef; border-radius: 8px; font-size: 1rem; transition: border-color .3s; }
+    .form-group input:focus, .form-group select:focus { outline: none; border-color: #667eea; }
+    .search-buttons { display: flex; gap: 1rem; justify-content: flex-end; }
+    .btn { padding: .8rem 1.5rem; border: none; border-radius: 8px; font-size: 1rem; cursor: pointer; display: inline-flex; align-items: center; gap: .5rem; transition: all .3s; text-decoration: none; height: 38px; justify-content: center; }
+    .btn-primary { background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 20px rgba(102,126,234,.4); }
+    .btn-secondary { background: #6c757d; color: #fff; }
+    .btn-secondary:hover { background: #5a6268; }
+    .btn-danger { background: #dc3545; color: #fff; }
+    .btn-danger:hover { background: #c82333; }
+    .btn-info { background: #17a2b8; color: #fff; }
+    .btn-info:hover { background: #138496; }
+    .sort-filter-bar { display: flex; justify-content: flex-end; align-items: center; gap: 1.5rem; padding: 1.5rem 1rem 1.5rem; }
+    .sort-filter-bar label { font-weight: 600; color: #333; }
+    .sort-filter-bar select { padding: .6rem 1rem; border-radius: 8px; border: 2px solid #e9ecef; font-size: 1rem; }
+    .table-section-wrapper { flex-grow: 1; display: flex; flex-direction: column; overflow: hidden; background: #fff; border-radius: 16px; box-shadow: 0 8px 32px rgba(0,0,0,.1); }
+    .table-header { padding: 1.5rem 2rem; background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+    .table-header h3 { margin: 0; font-size: 1.3rem; }
+    .table-stats { font-size: .9rem; opacity: .9; }
+    .table-container { overflow-y: auto; flex-grow: 1; }
+    .admin-table { width: 100%; border-collapse: collapse; }
+    .admin-table th, .admin-table td { padding: 1rem 1.5rem; text-align: center; border-bottom: 1px solid #e9ecef; vertical-align: middle; white-space: normal; }
+    .admin-table th { background: #f8f9fa; font-weight: 600; color: #333; position: sticky; top: 0; z-index: 1; }
+    .admin-table tr:hover { background-color: #f1f3f5; }
+    .admin-table .deleted-message { color: #999; font-style: italic; }
+    .pagination { display: flex; justify-content: center; padding: 1.5rem 0; flex-shrink: 0; }
+    .pagination button, .pagination a { padding: 0.5rem 1rem; margin: 0 5px; border: 1px solid #ddd; border-radius: 5px; background-color: #f8f8f8; cursor: pointer; transition: background-color 0.3s; text-decoration: none; color: #333; }
+    .pagination button:hover:not(.active), .pagination a:hover:not(.active) { background-color: #e0e0e0; }
+    .pagination button.active, .pagination a.active { background-color: #667eea; color: white; border-color: #667eea; }
+    
+    /* Modal Styles */
+    .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5); }
+    .modal-content { background-color: #fefefe; margin: 15% auto; padding: 2rem; border: 1px solid #888; width: 80%; max-width: 600px; border-radius: 16px; box-shadow: 0 8px 32px rgba(0,0,0,.2); }
+    .modal-header { padding-bottom: 1rem; border-bottom: 1px solid #e9ecef; }
+    .modal-header h2 { margin: 0; font-size: 1.5rem; color: #333; }
+    .modal-body { padding: 1rem 0; }
+    .modal-body p { margin-bottom: 1rem; font-size: 1.1rem; color: #555; }
+    .modal-body strong { color: #333; }
+    .modal-footer { padding-top: 1rem; border-top: 1px solid #e9ecef; text-align: right; }
+    .close-button { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
+    .close-button:hover, .close-button:focus { color: black; text-decoration: none; }
+
+    @media (max-width: 768px) {
+      body { flex-direction: column; }
+      .main-content { margin-left: 0; height: auto; }
+      .search-form { grid-template-columns: 1fr; }
+      .modal-content { width: 95%; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <div th:replace="~{/layout/admin_sidebar :: sidebar}"></div>
+
+  <div class="main-content">
+    <!-- Page Header -->
+    <div class="page-header">
+      <h1><i class="fas fa-hand-holding-heart"></i> 후원 관리</h1>
+      <p>사용자 후원 내역을 조회하고 관리합니다.</p>
+    </div>
+
+    <!-- Search Section -->
+    <div class="search-section">
+      <form id="searchForm" class="search-form" th:action="@{/admin/donation}" method="get">
+        <div class="form-group">
+          <label for="searchType">검색 유형</label>
+          <select id="searchType" name="searchType">
+            <option value="all" th:selected="${searchDTO == null or searchDTO.searchType == 'all'}">전체</option>
+            <option value="sender" th:selected="${searchDTO != null and searchDTO.searchType == 'sender'}">보낸 사람</option>
+            <option value="recipient" th:selected="${searchDTO != null and searchDTO.searchType == 'recipient'}">받는 사람</option>
+            <option value="lecture" th:selected="${searchDTO != null and searchDTO.searchType == 'lecture'}">강의명</option>
+            <option value="message" th:selected="${searchDTO != null and searchDTO.searchType == 'message'}">메시지</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="searchKeyword">검색어</label>
+          <input type="text" id="searchKeyword" name="searchKeyword" th:value="${searchDTO != null ? searchDTO.searchKeyword : ''}" placeholder="검색어를 입력하세요">
+        </div>
+        <div class="form-group">
+          <label for="startDate">시작일</label>
+          <input type="date" id="startDate" name="startDate" th:value="${searchDTO != null ? searchDTO.startDate : ''}">
+        </div>
+        <div class="form-group">
+          <label for="endDate">종료일</label>
+          <input type="date" id="endDate" name="endDate" th:value="${searchDTO != null ? searchDTO.endDate : ''}">
+        </div>
+        <div class="search-buttons">
+          <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> 검색</button>
+          <button type="button" class="btn btn-secondary" onclick="clearSearch()"><i class="fas fa-redo"></i> 초기화</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="sort-filter-bar">
+      <label for="pageSize">항목 수</label>
+      <select id="pageSize" name="pageSize">
+        <option value="5" th:selected="${pageResponse != null and pageResponse.pageRequestDTO.size == 5}">5</option>
+        <option value="10" th:selected="${pageResponse == null or (pageResponse != null and pageResponse.pageRequestDTO.size == 10)}">10</option>
+        <option value="15" th:selected="${pageResponse != null and pageResponse.pageRequestDTO.size == 15}">15</option>
+        <option value="20" th:selected="${pageResponse != null and pageResponse.pageRequestDTO.size == 20}">20</option>
+        <option value="25" th:selected="${pageResponse != null and pageResponse.pageRequestDTO.size == 25}">25</option>
+        <option value="30" th:selected="${pageResponse != null and pageResponse.pageRequestDTO.size == 30}">30</option>
+      </select>
+    </div>
+
+    <!-- Donation List -->
+    <div id="donation-list-container" class="table-section-wrapper">
+      <div th:replace="~{/admin/donation/donation_list_fragment :: donationList}"></div>
+    </div>
+  </div>
+
+  <!-- Detail Modal -->
+  <div id="detailModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>후원 상세 정보</h2>
+      </div>
+      <div class="modal-body">
+        <p><strong>후원번호:</strong> <span id="modalDonationId"></span></p>
+        <p><strong>보낸 사람:</strong> <span id="modalSender"></span></p>
+        <p><strong>받는 사람:</strong> <span id="modalRecipient"></span></p>
+        <p><strong>강의명:</strong> <span id="modalLecture"></span></p>
+        <p><strong>후원금액:</strong> <span id="modalAmount"></span></p>
+        <p><strong>메시지:</strong> <span id="modalMessage"></span></p>
+        <p><strong>후원일시:</strong> <span id="modalDate"></span></p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal()">닫기</button>
+      </div>
+    </div>
+  </div>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchForm = document.getElementById('searchForm');
+    const pageSizeSelect = document.getElementById('pageSize');
+    const container = document.getElementById('donation-list-container');
+    const searchKeyword = document.getElementById('searchKeyword');
+    const startDate = document.getElementById('startDate');
+    const endDate = document.getElementById('endDate');
+    const modal = document.getElementById('detailModal'); // 모달 DOM 요소도 이 스코프 안으로 옮깁니다.
+
+    // 초기 로드 시 기부 목록 가져오기
+    fetchDonations(new URL(window.location.href));
+
+    // --- 핵심 함수들 (스코프 안으로 이동) ---
+
+    function fetchDonations(url) {
+        url.searchParams.set('async', 'true');
+
+        fetch(url.toString(), {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.text().then(text => {
+                    throw new Error(`서버 응답 오류: ${response.status} - ${text}`);
+                });
+            }
+            return response.text();
+        })
+        .then(html => {
+            container.innerHTML = html;
+        })
+        .catch(error => console.error('기부 목록 불러오기 오류:', error));
+    }
+
+    // 검색 유효성 검증 함수
+    function validateSearchForm() {
+        const searchKeywordValue = searchKeyword.value.trim();
+        const startDateValue = startDate.value;
+        const endDateValue = endDate.value;
+
+        if (!searchKeywordValue && !startDateValue && !endDateValue) {
+            alert('검색어 또는 날짜를 하나 이상 입력해주세요.');
+            return false;
+        }
+
+        if (startDateValue && endDateValue) {
+            const startDateObj = new Date(startDateValue);
+            const endDateObj = new Date(endDateValue);
+            
+            if (startDateObj > endDateObj) {
+                alert('종료일은 시작일보다 늦거나 같아야 합니다.');
+                endDate.focus();
+                return false;
+            }
+        }
+        return true;
+    }
+
+    // 날짜 입력 시 실시간 검증
+    startDate.addEventListener('change', function() {
+        const startDateValue = this.value;
+        const endDateValue = endDate.value;
+        
+        if (startDateValue && endDateValue) {
+            const startDateObj = new Date(startDateValue);
+            const endDateObj = new Date(endDateValue);
+            
+            if (startDateObj > endDateObj) {
+                alert('시작일이 종료일보다 늦을 수 없습니다.');
+                endDate.value = startDateValue;
+            }
+        }
+    });
+
+    endDate.addEventListener('change', function() {
+        const startDateValue = startDate.value;
+        const endDateValue = this.value;
+        
+        if (startDateValue && endDateValue) {
+            const startDateObj = new Date(startDateValue);
+            const endDateObj = new Date(endDateValue);
+            
+            if (startDateObj > endDateObj) {
+                alert('종료일은 시작일보다 늦거나 같아야 합니다.');
+                this.value = startDateValue;
+            }
+        }
+    });
+
+    function updateUrlAndFetch() {
+        const url = new URL(window.location.origin + window.location.pathname);
+        const formData = new FormData(searchForm);
+
+        for (const [key, value] of formData.entries()) {
+            if (value) {
+                url.searchParams.set(key, value);
+            }
+        }
+        url.searchParams.set('size', pageSizeSelect.value);
+        url.searchParams.set('page', 1);
+
+        history.pushState({}, '', url);
+        fetchDonations(url);
+    }
+
+    // 상세 정보 모달 표시 함수
+    function showDetails(button) {
+        const row = button.closest('tr');
+        const cells = row.getElementsByTagName('td');
+
+        document.getElementById('modalDonationId').textContent = cells[0].textContent;
+        document.getElementById('modalSender').textContent = cells[1].textContent;
+        document.getElementById('modalRecipient').textContent = cells[2].textContent;
+        document.getElementById('modalLecture').textContent = cells[3].textContent;
+        document.getElementById('modalAmount').textContent = cells[4].textContent;
+        document.getElementById('modalMessage').textContent = cells[5].textContent;
+        document.getElementById('modalDate').textContent = cells[6].textContent;
+
+        modal.style.display = "block";
+    }
+
+    // 모달 닫기 함수
+    function closeModal() {
+        modal.style.display = "none";
+    }
+
+    // 메시지 삭제 함수
+    function deleteMessage(button) {
+        if (confirm("정말로 이 메시지를 삭제하시겠습니까?")) {
+            const row = button.closest('tr');
+            const donationId = row.dataset.donationId; // <tr>에 data-donation-id 속성이 있어야 합니다.
+
+            fetch(`/admin/donation/deleteMessage/${donationId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert("메시지가 성공적으로 삭제되었습니다.");
+                    // 삭제 성공 후 현재 페이지의 목록을 다시 불러와 화면을 갱신합니다.
+                    fetchDonations(new URL(window.location.href));
+                } else {
+                    return response.text().then(errorMessage => {
+                        console.error('삭제 실패 응답:', errorMessage);
+                        alert("메시지 삭제에 실패했습니다: " + errorMessage);
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('삭제 중 오류가 발생했습니다:', error);
+                alert("메시지 삭제 중 오류가 발생했습니다: " + error.message);
+            });
+        }
+    }
+
+    // --- 이벤트 리스너 바인딩 ---
+
+    // 검색 폼 제출 이벤트
+    searchForm.addEventListener('submit', function(e) {
+        e.preventDefault(); // 폼 기본 제출 동작 방지
+        
+        if (!validateSearchForm()) {
+            return;
+        }
+        
+        updateUrlAndFetch();
+    });
+
+    // 페이지 당 항목 수 변경 이벤트
+    pageSizeSelect.addEventListener('change', function() {
+        localStorage.setItem('adminDonationPageSize', this.value);
+        updateUrlAndFetch();
+    });
+
+    // 컨테이너에 클릭 이벤트 리스너를 한 번만 바인딩 (이벤트 위임)
+    container.addEventListener('click', function(e) {
+        const targetButton = e.target.closest('button');
+        const targetPaginationLink = e.target.closest('.pagination a');
+
+        if (targetButton) {
+            if (targetButton.classList.contains('btn-info')) {
+                showDetails(targetButton);
+            } else if (targetButton.classList.contains('btn-danger')) {
+                // '두 번 호출' 문제 방지를 위해 기본 동작 및 이벤트 전파 방지
+                e.preventDefault(); 
+                e.stopPropagation(); 
+
+                deleteMessage(targetButton);
+            }
+        } else if (targetPaginationLink) {
+            e.preventDefault(); // 링크 기본 동작 방지
+            const url = new URL(targetPaginationLink.href);
+            history.pushState({}, '', url);
+            fetchDonations(url);
+        }
+    });
+    
+    // 모달 외부 클릭 시 모달 닫기 (이 스코프 안으로 이동)
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            closeModal();
+        }
+    }
+
+    // 검색 초기화 함수 (전역 함수로 노출)
+    window.clearSearch = function() {
+        searchForm.reset();
+        const url = new URL(window.location.origin + window.location.pathname);
+        url.searchParams.set('page', 1);
+        url.searchParams.set('size', pageSizeSelect.value);
+        history.pushState({}, '', url);
+        fetchDonations(url);
+    }
+
+    // 저장된 페이지 당 항목 수 적용
+    const savedPageSize = localStorage.getItem('adminDonationPageSize');
+    if (savedPageSize) {
+        pageSizeSelect.value = savedPageSize;
+    }
+}); // DOMContentLoaded 끝
+
+function closeModal() {
+    const modal = document.getElementById('detailModal'); // 모달 요소 가져오기
+    modal.style.display = 'none'; // 모달 숨기기
+}
+</script>
+
+</body>
+</html>

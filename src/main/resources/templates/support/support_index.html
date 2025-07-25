@@ -5,126 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" th:href="@{/css/common.css}">
-<link rel="stylesheet" href="/support_static/support_design/support_index_design.css">
+<link rel="stylesheet" href="/css/support_index_design.css">
 <title>templates/support/support_index.html</title>
+<script src="/js/login-status.js" defer></script>
 <script
 	src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
-<style>
-
-	.scroll-container {
-	  width: 800px;
-	  height: 120px;
-	  overflow: hidden;
-	}
-	
-	#slider {
-	  display: flex;
-	  flex-direction: column;
-/* 	  animation: scroll-up 45s linear infinite; */
-	  animation: scroll-up 32s linear infinite;
-	  padding-top: 30px;
-	  
-	}
-	
-	.slide {
- 	  margin-top: 10px; 
- 	  margin-bottom: 10px; 
-	  
-	  height: 50px;
-	  box-sizing: border-box;
-/* 	  border-bottom: 1px solid #ddd !important;  */
-	  background-color: transparent;
-	  
-	  display: flex; 
-	  flex-direction: row;
-	  width: 100%;
-	  
-/* 	  border: 1px solid rgba(181,87,254, 0.4) !important; */
-	  
-	}
-	.slide:hover{
-		background-color: rgba(154,67,254, 0.1);
-	}
-	
-	@keyframes scroll-up {
-	  0% { transform: translateY(0); }
-	  100% { transform: translateY(-700px); } /* 총 슬라이드 수 * 높이 */
-	}
-
-  
-  .faqToolLeft > .faqToolLeftTitle {
-	font-size: 32px;
-	font-weight: bold;
-	color: #5701d0;
-	
-  }
-  .faqToolLeft > .faqToolLeftInfo {
-	font-size: 18px;
-	color: rgb(155, 155, 155);
-  }
-  
-  .plusDiv{
-  border:1px solid red !important;
-  font-size: 36px;
-/*   font-weight: bold; */
-  color: #9a43fe;
-  width: 40px;
-  }
-  
-  .countDiv{
-/*   border:1px solid red !important; */
-  font-size: 36px;
-/*   font-weight: bold;  */
-  color: #9a43fe;
-  width: 40px;
-  }
-  
-  .rankDiv{
-  width :60px;;
-/*   border: 1px solid tranparent !important; */
-/*   border: 1px solid red !important; */
-  color: #9a43fe;
-  font-size: 30px;
-  margin-left: 40px;
-  margin-right: -20px;
-  }
-  
-  .topFaqtypeDiv{
-  width :auto;
-/*   border: 1px solid tranparent !important; */
-/*   border: 1px solid red !important; */
-  margin-left: 40px;
-  border: 1px solid #9a43fe !important;
-  border-radius: 8px; 
-  color: #9a43fe;
-  height: 100%;
-  font-size: 24px;
-  
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  
-  padding: 5px !important;
-  
-  
-  }
-  
-  .topFaqDiv{
-  width :auto;
-/*   border: 1px solid tranparent !important; */
-/*   border: 1px solid red !important; */
-  font-size: 30px;
-  margin-left: 36px;
-   color: #9a43fe;
-  }
-  
-  
-</style>
 </head>
+<style>
+.child-div {border-radius: 16px;}
+</style>
 <body>
 
 	<div th:replace="layout/header :: header"></div>
-	<div id="overlay" style="display: none;"></div>
+	<div id="overlay" style="display: none; "></div>
 	
 	<div class="parent-container"
 		style="border: none !important; width: 100%; padding-top: 30px">
@@ -144,10 +37,10 @@
 		<!-- child-div -->
 
 		<div class="child-div"
-			style="height: auto; margin-bottom: -5px; margin-top: 1px; border: none; box-shadow: 0 0 0px rgba(0, 0, 0, 0.0); background: none; display: flex; justify-content: center; flex-direction: column; align-items: center;">
+			style="height: auto; margin-bottom: -15px; margin-top: -60px; border: none; box-shadow: 0 0 0px rgba(0, 0, 0, 0.0); background: none; display: flex; justify-content: center; flex-direction: column; align-items: center;">
 			<div class="content-div" style="background: none; border: none">
 				<div class="centerSymbol">
-					<img th:src="@{/support_static/support_images/symbol_support.png}" />
+					<img th:src="@{/images/symbol_support.png}" />
 				</div>
 			</div>
 		</div>
@@ -162,22 +55,23 @@
 		<!-- child-div -->
 
 		<div class="child-div"
-			style="height: 100px;   width: 800px; border: none; box-shadow: 0 0 0px rgba(0, 0, 0, 0.0); background: none; margin-bottom: 40px;">
+			style="height: 100px; width: 800px; border: none; box-shadow: 0 0 0px rgba(0, 0, 0, 0.0); background: none; margin-bottom: 40px;">
 
 			<div
 				style="position: relative; width: 100%; margin-top: 20px; height: 100px;">
-				<input type="text" id="keywordInput" placeholder="키워드로 찾아보세요" autocomplete="off" style="font-size: 36px; border: 3px solid #5701d0; width: 100%; height: 95%; text-align: center; outline:none;"/>
-				<div id="suggestBox" class="suggestBoxCss" style="width: 794px; margin-top: -7px;"></div>
+				<input type="text" id="keywordInput" placeholder="키워드로 찾아보세요" autocomplete="off"
+				style="font-size: 36px; border: 3px solid #5701d0; width: 100%; height: 95%; text-align: center; outline:none;"/>
+				<div id="suggestBox" class="suggestBoxCss " style="width: 794px; margin-top: -7px;"></div>
 			</div>
 
 		</div>
 		<!-- child-div -->
 		
-		<div class="child-div" style="height: 90px; border:none !important;">
+		<div class="child-div" style="height: 90px; border:none !important; margin-top: -20px;">
 			<div class="title-div" style="border:none !important;">
 				<div class="div-1">
 					<div>
-						<img th:src="@{/support_static/support_images/symbol_notice.png}"
+						<img th:src="@{/images/symbol_notice.png}"
 							style="width: 50px; height: 50px; border:none !important;" />
 					</div>
 				</div>
@@ -198,7 +92,7 @@
 				style="border-bottom: 1px solid #cecece !important;">
 				<div class="div-1">
 					<div>
-						<img th:src="@{/support_static/support_images/symbol_faq.png}"
+						<img th:src="@{/images/symbol_faq.png}"
 							style="width: 50px; height: 50px" />
 					</div>
 				</div>
@@ -233,6 +127,7 @@
 									  <span th:case="3002">학습FAQ</span>
 									  <span th:case="3003">계정FAQ</span>
 									  <span th:case="3004">기타FAQ</span>
+									  <span th:case="3005">기능FAQ</span>
 							    </div>
 							    
 							    
@@ -253,6 +148,7 @@
 									  <span th:case="3002">학습FAQ</span>
 									  <span th:case="3003">계정FAQ</span>
 									  <span th:case="3004">기타FAQ</span>
+									  <span th:case="3005">기능FAQ</span>
 							    </div>
 							    
 							    
@@ -285,7 +181,7 @@
 				style="border-bottom: 1px solid #cecece !important; border: 1px solid none">
 				<div class="div-1">
 					<div>
-						<img th:src="@{/support_static/support_images/symbol_feedback.png}"
+						<img th:src="@{/images/symbol_feedback.png}"
 							style="width: 50px; height: 50px" />
 					</div>
 				</div>
@@ -301,7 +197,7 @@
 			<div class="content-div" style="display: flex; flex-direction: row;">
 				<div class="feedbackNull"></div>
 				<div class="feedbackCmp"
-					style="box-shadow: 0 0 6px rgba(180, 159, 213, 0.5);">
+					style="box-shadow: 0 0 6px rgba(180, 159, 213, 1);">
 					<div class="feedbackCmpTitle" style="color: #b49fd5;">피드백 접수</div>
 					<div class="feedbackCmpContent" style="color: #b49fd5;">
 						여러분의 소중한 의견을<br> 직접 전달해주세요.
@@ -309,11 +205,11 @@
 				</div>
 				<div class="feedbackArrow">
 					<div>
-						<img th:src="@{/support_static/support_images/symbol_arrow.png}" />
+						<img th:src="@{/images/symbol_arrow.png}" />
 					</div>
 				</div>
 				<div class="feedbackCmp"
-					style="box-shadow: 0 0 6px rgba(154, 67, 254, 0.5);">
+					style="box-shadow: 0 0 6px rgba(154, 67, 254, 0.8);">
 					<div class="feedbackCmpTitle" style="color: #9a43fe;">피드백 검토</div>
 					<div class="feedbackCmpContent" style="color: #9a43fe;">
 						접수된 피드백은<br> 검토와 분석을 거칩니다.
@@ -321,11 +217,11 @@
 				</div>
 				<div class="feedbackArrow">
 					<div>
-						<img th:src="@{/support_static/support_images/symbol_arrow.png}" />
+						<img th:src="@{/images/symbol_arrow.png}" />
 					</div>
 				</div>
 				<div class="feedbackCmp"
-					style="box-shadow: 0 0 6px rgba(87, 1, 208, 0.7);">
+					style="box-shadow: 0 0 6px rgba(87, 1, 208, 0.9);">
 					<div class="feedbackCmpTitle" style="color: #5701d0;">피드백 반영</div>
 					<div class="feedbackCmpContent" style="color: #5701d0;">
 						함께 만들어 가는<br> 향상된 사용자 경험
@@ -348,11 +244,12 @@
 	</div>
 	<!-- parent-container -->
 
-	<div style="margin-top: 60px"></div>
-	<script src="/support_static/support_js/index_autoSlider.js"></script>
-	<script src="/support_static/support_js/index_searchSuggest.js"></script>
-	<script src="/support_static/support_js/index_ready.js"></script>
-	<script src="/support_static/support_js/support_ready.js"></script>
+	<div style="margin-top: 20px"></div>
+<!-- 	<script src="/js/index_autoSlider.js"></script> -->
+<!-- 	<script src="/js/index_searchSuggest.js"></script> -->
+<!-- 	<script src="/js/index_ready.js"></script> -->
+<!-- 	<script src="/js/support_ready.js"></script> -->
+<script src="/js/support_center.js"></script>
 	
 	<div th:replace="layout/footer :: footer"></div>
 </body>

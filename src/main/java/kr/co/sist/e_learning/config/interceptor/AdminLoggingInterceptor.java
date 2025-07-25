@@ -5,7 +5,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import kr.co.sist.e_learning.admin.log.AdminLogDTO;
@@ -13,6 +16,8 @@ import kr.co.sist.e_learning.admin.log.AdminLogService;
 
 @Component
 public class AdminLoggingInterceptor implements HandlerInterceptor {
+
+    private static final Logger logger = LoggerFactory.getLogger(AdminLoggingInterceptor.class);
 
     @Autowired
     private AdminLogService logService;
@@ -22,19 +27,11 @@ public class AdminLoggingInterceptor implements HandlerInterceptor {
         String requestURI = request.getRequestURI();
         String method = request.getMethod();
 
-        // Log only GET requests for page views
-        if ("GET".equalsIgnoreCase(method)) {
-            String adminId = getAdminId();
-            String details = "IP: " + request.getRemoteAddr();
+        logger.debug("AdminLoggingInterceptor: Processing request for URI: {}", requestURI);
+        logger.debug("AdminLoggingInterceptor: INCLUDE_REQUEST_URI: {}", request.getAttribute(RequestDispatcher.INCLUDE_REQUEST_URI));
+        logger.debug("AdminLoggingInterceptor: FORWARD_REQUEST_URI: {}", request.getAttribute(RequestDispatcher.FORWARD_REQUEST_URI));
 
-            AdminLogDTO logDTO = new AdminLogDTO();
-            logDTO.setAdminId(adminId);
-            logDTO.setActionType("PAGE_VIEW");
-            logDTO.setTargetId(requestURI);
-            logDTO.setDetails(details);
-
-            logService.addLog(logDTO);
-        }
+        // This interceptor will no longer handle PAGE_VIEW logging
 
         return true;
     }

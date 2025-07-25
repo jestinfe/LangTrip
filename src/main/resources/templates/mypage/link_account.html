@@ -1,39 +1,436 @@
-<div th:fragment="link_account">
-  <div th:if="${linked}" class="account-info-box">
-    <div><strong>은행명:</strong> <span th:text="${bank}">국민은행</span></div>
-    <div><strong>계좌번호:</strong> <span th:text="${maskedAccount}">211-****-****</span></div>
-    <div><strong>연동일시:</strong> <span th:text="${linkedAt}">2025-06-20 13:45</span></div>
-  </div>
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>계좌 연동</title>
+    <style>
+        @charset "UTF-8";
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; 
+            line-height: 1.6; 
+            color: #1e293b; 
+            background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 50%, #7dd3fc 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
 
-  <form th:action="@{/mypage/unlink-account}" method="post" th:if="${linked}">
-    <button class="unlink-btn" type="submit">계좌 연동 해제</button>
-  </form>
+        .page-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            position: relative;
+        }
 
-  <hr style="margin: 30px 0; border: none; border-top: 1px solid #ddd;">
+        .page-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
 
-  <form th:action="@{/mypage/link-account}" method="post">
-    <div class="form-group">
-      <label for="bank">은행명</label>
-      <select id="bank" name="bank" required>
-        <option value="">-- 은행 선택 --</option>
-        <option value="국민은행">국민은행</option>
-        <option value="신한은행">신한은행</option>
-        <option value="우리은행">우리은행</option>
-        <option value="하나은행">하나은행</option>
-        <option value="농협">농협</option>
-      </select>
-    </div>
+        .back-button {
+            background: rgba(100, 116, 139, 0.1);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #64748b;
+            font-size: 18px;
+        }
 
-    <div class="form-group">
-      <label for="account">계좌번호</label>
-      <input type="text" id="account" name="account" placeholder="예: 211-1234-5678" required>
-    </div>
+        .back-button:hover {
+            background: rgba(100, 116, 139, 0.2);
+            transform: translateX(-2px);
+        }
 
-    <div class="form-group">
-      <label for="owner">예금주명</label>
-      <input type="text" id="owner" name="owner" required>
-    </div>
+        .page-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
-    <button class="link-btn" type="submit">계좌 연동하기</button>
-  </form>
+        .account-info-box {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+
+        .account-info-box > div {
+            margin-bottom: 12px;
+            font-size: 16px;
+        }
+
+        .account-info-box > div:last-child {
+            margin-bottom: 0;
+        }
+
+        .account-info-box strong {
+            color: #1e40af;
+            font-weight: 600;
+            display: inline-block;
+            min-width: 80px;
+        }
+
+        .account-info-box span {
+            color: #1e293b;
+            font-weight: 500;
+        }
+
+        .unlink-btn, .change-btn {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .change-btn {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+
+        .unlink-btn:hover {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px -5px rgba(239, 68, 68, 0.3);
+        }
+
+        .change-btn:hover {
+            background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px -5px rgba(245, 158, 11, 0.3);
+        }
+
+        .divider {
+            margin: 30px 0;
+            border: none;
+            border-top: 2px solid rgba(148, 163, 184, 0.1);
+            position: relative;
+        }
+
+        .divider::after {
+            content: '계좌 등록';
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.9);
+            padding: 0 15px;
+            color: #64748b;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #374151;
+            font-size: 14px;
+        }
+
+        .form-group select,
+        .form-group input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid rgba(148, 163, 184, 0.2);
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+        }
+
+        .form-group select:focus,
+        .form-group input:focus {
+            outline: none;
+            border-color: #0ea5e9;
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        .form-group select {
+            cursor: pointer;
+        }
+
+        .form-group input::placeholder {
+            color: #9ca3af;
+        }
+
+        .link-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+            color: white;
+            border: none;
+            padding: 16px 24px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .link-btn:hover {
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px -5px rgba(14, 165, 233, 0.3);
+        }
+
+        .form-section {
+            display: none;
+        }
+
+        .form-section.active {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .page-container {
+                padding: 20px;
+                margin: 20px 10px;
+            }
+            
+            .page-title {
+                font-size: 24px;
+            }
+            
+            .account-info-box {
+                padding: 20px;
+            }
+        }
+
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid transparent;
+            border-radius: 12px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .alert-success {
+            color: #155724;
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+        }
+
+        .alert-danger {
+            color: #721c24;
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+
+<div id="alertBox" class="alert"
+     th:if="${message}"
+     th:classappend="${message.contains('성공')} ? 'alert-success' : 'alert-danger'"
+     th:text="${message}">
 </div>
+    <div class="page-container">
+        <div class="page-header">
+            <button class="back-button" onclick="goToWalletPage()">←</button>
+            <h1 class="page-title">🏦 계좌 연동</h1>
+        </div>
+
+        
+
+        <!-- 계좌가 이미 연동된 경우 -->
+        <div class="linked-account-section" th:if="${linked}">
+            <div class="account-info-box">
+                <div><strong>은행명:</strong> <span th:text="${bank}"></span></div>
+                <div><strong>계좌번호:</strong> <span th:text="${maskedAccount}"></span></div>
+                <div><strong>예금주:</strong> <span th:text="${holderName}"></span></div>
+                <div><strong>연동일시:</strong> <span th:text="${linkedAt}"></span></div>
+            </div>
+
+            <button class="change-btn" type="button" onclick="toggleFormSection()">계좌 변경하기</button>
+            
+            <button class="unlink-btn" type="button" onclick="unlinkAccount()">계좌 연동 해제</button>
+            
+        
+        </div>
+
+        <hr class="divider" th:if="${linked}">
+
+        <!-- 계좌 등록/변경 폼 -->
+        <div class="form-section" id="accountForm" th:classappend="${linked} ? '' : 'active'">
+            <form action="/mypage/link-account" method="post">
+                <div class="form-group">
+                    <label for="bank">은행명</label>
+                    <select id="bank" name="bank" required>
+                        <option value="">-- 은행 선택 --</option>
+                        <option value="국민은행">국민은행</option>
+                        <option value="신한은행">신한은행</option>
+                        <option value="우리은행">우리은행</option>
+                        <option value="하나은행">하나은행</option>
+                        <option value="농협">농협</option>
+                        <option value="기업은행">기업은행</option>
+                        <option value="SC제일은행">SC제일은행</option>
+                        <option value="카카오뱅크">카카오뱅크</option>
+                        <option value="토스뱅크">토스뱅크</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="account">계좌번호</label>
+                    <input type="text" id="account" name="account" placeholder="예: 211-1234-5678" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="owner">예금주명</label>
+                    <input type="text" id="owner" name="owner" placeholder="계좌의 예금주명을 입력해주세요" required>
+                </div>
+
+                <button class="link-btn" type="submit">계좌 연동하기</button>
+            </form>
+        </div>
+
+        <!-- 계좌가 연동되지 않은 경우 (처음 방문 시) -->
+        <div class="no-account-section" th:unless="${linked}" style="display: none;">
+            <div class="form-section active">
+                <form action="/mypage/link-account" method="post">
+                    <div class="form-group">
+                        <label for="bank">은행명</label>
+                        <select id="bank" name="bank" required>
+                            <option value="">-- 은행 선택 --</option>
+                            <option value="국민은행">국민은행</option>
+                            <option value="신한은행">신한은행</option>
+                            <option value="우리은행">우리은행</option>
+                            <option value="하나은행">하나은행</option>
+                            <option value="농협">농협</option>
+                            <option value="기업은행">기업은행</option>
+                            <option value="SC제일은행">SC제일은행</option>
+                            <option value="카카오뱅크">카카오뱅크</option>
+                            <option value="토스뱅크">토스뱅크</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="account">계좌번호</label>
+                        <input type="text" id="account" name="account" placeholder="예: 211-1234-5678" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="owner">예금주명</label>
+                        <input type="text" id="owner" name="owner" placeholder="계좌의 예금주명을 입력해주세요" required>
+                    </div>
+
+                    <button class="link-btn" type="submit">계좌 연동하기</button>
+                </form>
+            </div>
+        </div>
+   
+     
+</div>
+
+
+    <script>
+    function unlinkAccount() {
+        if (!confirm("정말로 계좌 연동을 해제하시겠습니까?")) return;
+
+        fetch("/mypage/unlink-account", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"  // 실제 바디는 없지만 명시해도 무방
+            }
+        })
+        .then(res => {
+            if (!res.ok) throw new Error("서버 오류 발생");
+            return res.json();
+        })
+        .then(data => {
+            alert(data.message);
+
+            // 메시지에 따라 행동 분기 (선택)
+            if (data.message.includes("해제되었습니다")) {
+                location.reload(); // 성공 시 페이지 새로고침
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            alert("요청 처리 중 오류가 발생했습니다.");
+        });
+    }
+
+        function toggleFormSection() {
+            const formSection = document.getElementById('accountForm');
+            const changeBtn = document.querySelector('.change-btn');
+            
+            if (formSection.classList.contains('active')) {
+                formSection.classList.remove('active');
+                changeBtn.textContent = '계좌 변경하기';
+            } else {
+                formSection.classList.add('active');
+                changeBtn.textContent = '변경 취소';
+            }
+        }
+
+        // 계좌번호 입력 시 자동 하이픈 추가
+        document.addEventListener('DOMContentLoaded', function() {
+        const accountInputs = document.querySelectorAll('input[name="account"]');
+
+        accountInputs.forEach(input => {
+            input.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/[^0-9]/g, ''); // 숫자만 남기기
+                let formattedValue = '';
+
+                if (value.length > 0) {
+                    // 12자리 이하 계좌
+                    if (value.length <= 3) {
+                        formattedValue = value;
+                    } else if (value.length <= 6) {
+                        formattedValue = value.slice(0, 3) + '-' + value.slice(3);
+                    } else if (value.length <= 10) {
+                        formattedValue = value.slice(0, 3) + '-' + value.slice(3, 6) + '-' + value.slice(6);
+                    } else {
+                        // 10자리 이상의 계좌에 대해 적용 (예: 11자리 이상)
+                        formattedValue = value.slice(0, 3) + '-' + value.slice(3, 6) + '-' + value.slice(6, 10) + '-' + value.slice(10);
+                    }
+                }
+
+                e.target.value = formattedValue;
+            });
+        });
+    });
+        
+        function goToWalletPage() {
+            // 지정된 URL로 리디렉션
+            window.location.href = "http://localhost:8080/mypage?tab=wallet";
+        }
+    </script>
+   
+
+
+    
+</body>
+</html>

@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>결제 내역</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f8fafc;
+            min-height: 100vh;
+            color: #1a202c;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .header .subtitle {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.1rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .top-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .back-button {
+            background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+            border: none;
+            border-radius: 16px;
+            width: 56px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #475569;
+            font-size: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .back-button:hover {
+            background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .button-group button {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .button-group button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .button-group button:hover::before {
+            left: 100%;
+        }
+
+        .refund-request-btn {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+        }
+
+        .refund-request-btn:hover {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3);
+        }
+
+        .view-refund-btn {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+        }
+
+        .view-refund-btn:hover {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+        }
+
+        .table-container {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            padding: 20px 16px;
+            text-align: left;
+            font-weight: 700;
+            color: #374151;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        td {
+            padding: 20px 16px;
+            border-bottom: 1px solid #f3f4f6;
+            color: #4b5563;
+            font-size: 14px;
+        }
+
+        tr:hover {
+            background: linear-gradient(135deg, #fefefe, #f9fafb);
+            transform: scale(1.005);
+            transition: all 0.2s ease;
+        }
+
+        .receipt-link {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2);
+        }
+
+        .receipt-link:hover {
+            background: linear-gradient(135deg, #059669, #047857);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .receipt-none {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+            color: #9ca3af;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 40px;
+            background: linear-gradient(135deg, #fefefe, #f8fafc);
+            border-radius: 16px;
+            border: 2px dashed #d1d5db;
+            margin: 20px 0;
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        .empty-state p {
+            color: #6b7280;
+            font-size: 18px;
+            font-weight: 500;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .status-success { 
+            background: #dcfce7; 
+            color: #166534; 
+        }
+        
+        .status-pending { 
+            background: #fef3c7; 
+            color: #92400e; 
+        }
+        
+        .status-failed { 
+            background: #fee2e2; 
+            color: #991b1b; 
+        }
+
+        .amount {
+            font-weight: 700;
+            color: #059669;
+            font-size: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 20px;
+                border-radius: 16px;
+            }
+
+            .header {
+                padding: 30px 20px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .top-section {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .button-group {
+                justify-content: center;
+            }
+
+            table {
+                font-size: 12px;
+            }
+
+            th, td {
+                padding: 12px 8px;
+            }
+
+            .table-container {
+                overflow-x: auto;
+            }
+        }
+
+        .loading-shimmer {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1000; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 30px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            position: relative;
+        }
+
+        .close-button {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            position: absolute;
+            top: 10px;
+            right: 20px;
+        }
+
+        .close-button:hover,
+        .close-button:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .payment-item {
+            border: 1px solid #eee;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .payment-item:hover {
+            background-color: #f9f9f9;
+        }
+
+        .payment-item p {
+            margin: 5px 0;
+        }
+
+        .payment-item strong {
+            color: #333;
+        }
+
+        #refundDetail label {
+            display: block;
+            margin-top: 15px;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        #refundDetail textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        #refundDetail button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 15px;
+            width: 100%;
+        }
+
+        #refundDetail button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💳 결제 내역</h1>
+            <p class="subtitle">모든 결제 정보를 한눈에 확인하세요</p>
+        </div>
+
+        <div class="content">
+            <div class="top-section">
+                <button class="back-button" onclick="goToWalletPage()">←</button>
+
+                <div class="button-group">
+                    <button class="refund-request-btn" onclick="openRefundModal()">환불 신청</button>
+                    <button class="view-refund-btn" onclick="location.href='/mypage/refund/history'">환불 내역 보기</button>
+                </div>
+            </div>
+
+            <div th:if="${#lists.isEmpty(paymentList)}" class="empty-state">
+                <div class="empty-state-icon">📋</div>
+                <p>아직 결제 내역이 없습니다</p>
+            </div>
+
+            <div th:unless="${#lists.isEmpty(paymentList)}" class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>결제 번호</th>
+                            <th>상품명</th>
+                            <th>결제 금액</th>
+                            <th>결제 수단</th>
+                            <th>결제 상태</th>
+                            <th>결제일</th>
+                            <th>영수증</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="payment : ${paymentList}">
+                            <td><strong th:text="${payment.paymentSeq}"></strong></td>
+                            <td th:text="${#strings.isEmpty(payment.name) ? '결제 취소' : payment.name}"></td>
+                            <td class="amount" 
+    th:text="${payment.paymentAmount != null and payment.paymentAmount != 'payment_canceled' 
+              ? #numbers.formatDecimal(payment.paymentAmount, 0, 'COMMA', 0, 'POINT') + '원' 
+              : '결제 취소'}">
+</td>
+<td th:text="${payment.method == 'easy' ? '간편결제' : (payment.method == 'payment_canceled' ? '결제 취소' : payment.method)}"></td>
+                            
+                            <td>
+                                <span class="status-badge status-success" th:text="${@paymentStatusConverter.convert(payment.paymentStatus)}"></span>
+                            </td>
+                            <td th:text="${#dates.format(payment.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
+                            <td>
+                                <a th:if="${payment.receiptUrl}" th:href="${payment.receiptUrl}" target="_blank" class="receipt-link">보기</a>
+                                <span th:unless="${payment.receiptUrl}" class="receipt-none">없음</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Refund Modal -->
+    <div id="refundModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeRefundModal()">&times;</span>
+            <h2>환불 신청</h2>
+            <div id="refundablePaymentsList">
+                <!-- Refundable payments will be loaded here -->
+            </div>
+            <div id="refundDetail" style="display: none;">
+                <h3>선택된 결제: <span id="selectedPaymentId"></span></h3>
+                <p>금액: <span id="selectedPaymentAmount"></span></p>
+                <p>상품명: <span id="selectedPaymentName"></span></p>
+                <label for="refundReason">환불 사유:</label>
+                <textarea id="refundReason" rows="4" placeholder="환불 사유를 입력해주세요."></textarea>
+                <button onclick="submitRefund()">환불 신청</button>
+            </div>
+            <div id="noRefundablePayments" style="display: none;">
+                <p>환불 가능한 결제 내역이 없습니다.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function goToWalletPage() {
+            window.location.href = "/mypage?tab=wallet";
+        }
+
+        // 페이지 로드 애니메이션
+        document.addEventListener('DOMContentLoaded', function() {
+            const container = document.querySelector('.container');
+            container.style.opacity = '0';
+            container.style.transform = 'translateY(20px)';
+            
+            setTimeout(() => {
+                container.style.transition = 'all 0.6s ease';
+                container.style.opacity = '1';
+                container.style.transform = 'translateY(0)';
+            }, 100);
+        });
+
+        // 테이블 행 호버 효과 개선
+        document.querySelectorAll('tbody tr').forEach(row => {
+            row.addEventListener('mouseenter', function() {
+                this.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.1)';
+            });
+            
+            row.addEventListener('mouseleave', function() {
+                this.style.boxShadow = 'none';
+            });
+        });
+
+        // Refund Modal Logic
+        const refundModal = document.getElementById('refundModal');
+        let selectedPayment = null; // To store the currently selected payment for refund
+
+        function openRefundModal() {
+            console.log("openRefundModal called.");
+            // 1. Check if user has a registered account
+            fetch('/mypage/link_account') // This endpoint returns the link_account.html, which contains 'linked' attribute
+                .then(response => response.text())
+                .then(html => {
+                    console.log("Fetched link_account.html");
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    const linkedAccountSection = doc.querySelector('.linked-account-section');
+                    const isLinked = linkedAccountSection !== null;
+
+                    console.log("Is account linked?", isLinked);
+
+                    if (!isLinked) {
+                        if (confirm("환불 신청을 위해 계좌 등록이 필요합니다.\n계좌 등록 페이지로 이동하시겠습니까?")) {
+                            window.location.href = "/mypage/link_account";
+                        }
+                        return;
+                    }
+
+                    // 2. Fetch refundable payments
+                    fetch('/mypage/refund/refundable-payments')
+                        .then(response => response.json())
+                        .then(payments => {
+                            console.log("Fetched refundable payments:", payments);
+                            const listDiv = document.getElementById('refundablePaymentsList');
+                            listDiv.innerHTML = ''; // Clear previous list
+                            document.getElementById('refundDetail').style.display = 'none';
+                            document.getElementById('noRefundablePayments').style.display = 'none';
+
+                            if (payments && payments.length > 0) {
+                            	payments.forEach(payment => {
+                            	    const paymentItem = document.createElement('div');
+                            	    paymentItem.className = 'payment-item';
+                            	    paymentItem.innerHTML = `
+                            	        <p><strong>결제 번호:</strong> ${payment.paymentSeq}</p>
+                            	        <p><strong>상품명:</strong> ${payment.name || 'payment_canceled'}</p>
+                            	        <p><strong>결제 금액:</strong> ${payment.paymentAmount?.toLocaleString() || 'payment_canceled'}원</p>
+                            	        <p><strong>결제 수단:</strong> ${payment.method === 'easy' ? '간편결제' : payment.method}</p>
+                            	        <p><strong>결제일:</strong> ${new Date(payment.createdAt).toLocaleString()}</p>
+                            	    `;
+                            	    paymentItem.onclick = () => selectPaymentForRefund(payment);
+                            	    listDiv.appendChild(paymentItem);
+                            	});
+                                listDiv.style.display = 'block';
+                            } else {
+                                document.getElementById('noRefundablePayments').style.display = 'block';
+                                listDiv.style.display = 'none';
+                            }
+                            refundModal.style.display = 'flex'; // Show the modal with flex
+                            console.log("Modal display set to flex.");
+                        })
+                        .catch(error => {
+                            console.error('Error fetching refundable payments:', error);
+                            alert('환불 가능한 결제 내역을 불러오는 데 실패했습니다.');
+                        });
+                })
+                .catch(error => {
+                    console.error('Error checking account linkage:', error);
+                    alert('계좌 연동 여부를 확인하는 데 실패했습니다.');
+                });
+        }
+
+        function closeRefundModal() {
+            refundModal.style.display = 'none';
+            selectedPayment = null; // Reset selected payment
+            document.getElementById('refundReason').value = ''; // Clear reason
+        }
+
+        function selectPaymentForRefund(payment) {
+            selectedPayment = payment;
+            document.getElementById('selectedPaymentId').textContent = payment.paymentSeq;
+            document.getElementById('selectedPaymentAmount').textContent = payment.paymentAmount.toLocaleString() + '원';
+            document.getElementById('selectedPaymentName').textContent = payment.name;
+            document.getElementById('refundablePaymentsList').style.display = 'none';
+            document.getElementById('refundDetail').style.display = 'block';
+        }
+
+        function submitRefund() {
+            if (!selectedPayment) {
+                alert('환불할 결제 내역을 선택해주세요.');
+                return;
+            }
+
+            const refundReason = document.getElementById('refundReason').value;
+            if (!refundReason.trim()) {
+                alert('환불 사유를 입력해주세요.');
+                return;
+            }
+
+            if (confirm('선택하신 결제에 대해 환불을 신청하시겠습니까?')) {
+                fetch('/mypage/refund/request', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        paymentId: selectedPayment.paymentSeq,
+                        refundReason: refundReason
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(data.message);
+                        closeRefundModal();
+                        location.reload(); // Refresh page to update payment status
+                    } else {
+                        alert(data.message);
+                        if (data.redirect) {
+                            window.location.href = data.redirect;
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error submitting refund:', error);
+                    alert('환불 신청 중 오류가 발생했습니다.');
+                });
+            }
+        }
+    </script>
+</body>
+</html>

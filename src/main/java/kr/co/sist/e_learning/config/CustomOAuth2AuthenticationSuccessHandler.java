@@ -16,6 +16,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 @Component
 public class CustomOAuth2AuthenticationSuccessHandler implements AuthenticationSuccessHandler {
@@ -108,7 +109,11 @@ public class CustomOAuth2AuthenticationSuccessHandler implements AuthenticationS
             refreshCookie.setPath("/");
             refreshCookie.setMaxAge(7 * 24 * 60 * 60);
             response.addCookie(refreshCookie);
-
+            
+            HttpSession session = request.getSession(false); // 기존 세션이 있다면 가져옴 (새로 생성하지 않음)
+            if (session != null) {
+                session.invalidate(); // 세션 무효화
+            }
             response.sendRedirect("/");
         }
     }

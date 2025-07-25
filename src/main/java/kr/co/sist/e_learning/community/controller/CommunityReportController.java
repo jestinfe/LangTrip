@@ -21,7 +21,11 @@ public class CommunityReportController {
             @RequestBody CommuRpModal req,
             HttpSession session) {
 
-        // 세션에서 로그인 유저 가져오기 (임시 세팅 유지)
+        System.out.println("[Controller] 들어온 신고 요청: "
+            + "postId2=" + req.getPostId2()
+            + ", reasonChk=" + req.getReasonChk()
+            + ", reasonText=" + req.getReasonText());
+
         UsersssDTO loginUser = (UsersssDTO) session.getAttribute("loginUser");
         if (loginUser == null) {
             loginUser = new UsersssDTO();
@@ -29,10 +33,11 @@ public class CommunityReportController {
             loginUser.setNickname("임시사용자");
             session.setAttribute("loginUser", loginUser);
         }
+
         Long reporterId = loginUser.getUserSeq().longValue();
-        
+        System.out.println("[Controller] reporterId: " + reporterId);
+
         try {
-            // DTO에서 바로 꺼내서 서비스 호출
             reportService.reportPost(
                 req.getPostId2(),
                 reporterId,
@@ -41,13 +46,12 @@ public class CommunityReportController {
             );
             return ResponseEntity.ok("신고가 정상 접수되었습니다.");
         } catch (IllegalStateException e) {
-            // 중복 신고 예외
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                                 .body("하루에 한 번만 신고할 수 있습니다.");
+            System.out.println("[Controller] 중복 신고 예외 발생: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("하루에 한 번만 신고할 수 있습니다.");
         } catch (Exception e) {
+            System.out.println("[Controller] 기타 예외 발생: " + e.getMessage());
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                                 .body("신고 요청에 문제가 있습니다.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("신고 요청에 문제가 있습니다.");
         }
     }
 }

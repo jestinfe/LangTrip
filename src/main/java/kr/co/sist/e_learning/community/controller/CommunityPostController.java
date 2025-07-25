@@ -1,116 +1,171 @@
-package kr.co.sist.e_learning.community.controller;
+	package kr.co.sist.e_learning.community.controller;
 
-import java.io.File;
-import java.io.IOException;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.UUID;
-import kr.co.sist.e_learning.community.dto.PageDTO;
-
+import kr.co.sist.e_learning.community.dto.CommunityCommentDTO;
+import kr.co.sist.e_learning.community.dto.CommunityPostDTO;
+import kr.co.sist.e_learning.community.service.CommunityPostService;
+import kr.co.sist.e_learning.community.service.VoteService;
+import kr.co.sist.e_learning.user.auth.UserAuthentication;
+import kr.co.sist.e_learning.user.auth.UserRepository;
+import kr.co.sist.e_learning.user.auth.UserEntity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
-import kr.co.sist.e_learning.community.dto.CommunityCommentDTO;
-import kr.co.sist.e_learning.community.dto.CommunityPostDTO;
-import kr.co.sist.e_learning.community.dto.PageDTO;
-import kr.co.sist.e_learning.community.dto.UsersssDTO;
-import kr.co.sist.e_learning.community.service.CommunityPostService;
-import kr.co.sist.e_learning.community.service.VoteService;
-
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import java.io.File;
+import java.io.IOException;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 @Controller
 @RequestMapping("/csj")
 public class CommunityPostController {
 
+    private static final Logger logger = LoggerFactory.getLogger(CommunityPostController.class);
+
     @Autowired
     private CommunityPostService communityService;
-    @Value("${upload.path}")
-    private String uploadPath;
 
     @Autowired
     private VoteService voteService;
-    
-    
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Value("${file.upload-dir.root}")
+    private String uploadDirRoot;
+
+    @Value("${upload.path.community}")
+    private String uploadPathWeb;
+
+    private Long getCurrentUserSeq() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication instanceof UserAuthentication) {
+            return (Long) authentication.getPrincipal();
+        }
+        return null;
+    }
+
+    private UserEntity getCurrentUserEntity() {
+        Long userSeq = getCurrentUserSeq();
+        if (userSeq != null) {
+            return userRepository.findByUserSeq(userSeq).orElse(null);
+        }
+        return null;
+    }
 
     @GetMapping("/community")
-    public String list(
-        @RequestParam(name = "page", defaultValue = "1") int page,
-        @RequestParam(name = "size", defaultValue = "50") int size,
-        @RequestParam(name = "tab", defaultValue = "all") String tab,
-        @RequestParam(name = "keyword", required = false) String keyword,
-        Model model
-    ) {
+    public String list(@RequestParam(name = "page", defaultValue = "1") int page,
+                       @RequestParam(name = "size", defaultValue = "50") int size,
+                       @RequestParam(name = "tab", defaultValue = "all") String tab,
+                       @RequestParam(name = "keyword", required = false) String keyword,
+                       Model model) {
+
         int offset = (page - 1) * size;
+        List<CommunityPostDTO> postList = new ArrayList<>();
+        int totalCount = 0;
+        int noticeCount = 0; // 현재 페이지에 표시될 공지사항 수
+        int totalNoticesMatchingKeyword = 0; // 검색어에 맞는 전체 공지사항 수 (페이징 계산용)
+        int totalRegularPostsMatchingKeyword = 0; // 검색어에 맞는 전체 일반 게시글 수 (페이징 계산용)
 
-        List<CommunityPostDTO> postList;
-        int totalCount;
+        if ("all".equals(tab)) {
+            // ✅ 검색어에 따라 필터링된 공지사항 가져오기 (전체 공지사항 목록에서)
+            List<CommunityPostDTO> noticePosts = communityService.getNoticePosts(0, Integer.MAX_VALUE, keyword);
+            noticePosts.forEach(post -> post.setNickname("운영자"));
+            postList.addAll(noticePosts);
+            noticeCount = noticePosts.size(); // 현재 리스트에 포함된 공지사항의 실제 개수
 
-        if ("best".equals(tab)) {
+            // ✅ 검색어에 따라 필터링된 일반 게시글의 전체 개수
+            totalRegularPostsMatchingKeyword = communityService.getTotalPostCountWithSearch(keyword); // 일반 게시글은 getTotalPostCountWithSearch 사용
+            
+            // ✅ 검색어에 따라 필터링된 공지사항의 전체 개수 (페이징 계산용)
+            totalNoticesMatchingKeyword = communityService.getTotalNoticePostCountWithSearch(keyword);
+
+            List<CommunityPostDTO> regularPosts = communityService.getRegularPosts(offset, size, keyword);
+            postList.addAll(regularPosts);
+            
+            // ✅ 전체 게시글 수 (페이징 계산용): 검색어에 맞는 공지사항 + 검색어에 맞는 일반 게시글
+            totalCount = totalNoticesMatchingKeyword + totalRegularPostsMatchingKeyword;
+
+            model.addAttribute("totalRegularPostsMatchingKeyword", totalRegularPostsMatchingKeyword); // 일반 게시글 전체 수 (번호 계산용)
+            model.addAttribute("totalNoticesMatchingKeyword", totalNoticesMatchingKeyword); // 공지사항 전체 수 (번호 계산용)
+
+
+        } else if ("best".equals(tab)) {
             postList = communityService.getBestPosts(offset, size);
             totalCount = communityService.getBestPostCount();
-            model.addAttribute("bestPostCount", totalCount); 
-        } else {
-            postList = communityService.getPostsPaginatedWithSearch(offset, size, keyword);
-            totalCount = communityService.getTotalPostCountWithSearch(keyword);
+
+        } else if ("notice".equals(tab)) {
+            postList = communityService.getNoticePosts(offset, size, keyword);
+            postList.forEach(post -> post.setNickname("운영자"));
+            totalCount = communityService.getTotalNoticePostCountWithSearch(keyword);
+        }
+        
+        for (CommunityPostDTO post : postList) {
+            long postId = post.getPostId();
+            int upVoteCount = voteService.getVoteCount((int) postId, "UP");
+            post.setUpCount(upVoteCount);
         }
 
         int totalPages = (int) Math.ceil((double) totalCount / size);
 
         model.addAttribute("postList", postList);
+        model.addAttribute("totalPostCount", totalCount);
+        model.addAttribute("noticeCount", noticeCount); // 현재 리스트에 보이는 공지사항 수
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", totalPages);
         model.addAttribute("size", size);
         model.addAttribute("tab", tab);
         model.addAttribute("keyword", keyword);
-        model.addAttribute("totalPostCount", totalCount);
 
         return "csj/community";
     }
 
     @GetMapping("/communityWrite")
-    public String communityWrite(HttpSession session) {
-        if (session.getAttribute("loginUser") == null) {
-            UsersssDTO fakeUser = new UsersssDTO();
-            fakeUser.setUserSeq(400);
-            fakeUser.setEmail("jj000808@naver.com");
-            fakeUser.setNickname("asd22");
-            session.setAttribute("loginUser", fakeUser);
+    public String communityWrite(Model model) {
+        UserEntity currentUser = getCurrentUserEntity();
+        if (currentUser == null) {
+            return "redirect:/login";
         }
+        model.addAttribute("currentUserNickname", currentUser.getNickname());
+        model.addAttribute("currentUserSeq", currentUser.getUserSeq());
         return "csj/communityWrite";
     }
 
     @PostMapping("/writeOk")
     public String writePost(CommunityPostDTO dto) {
-        communityService.writeRecommendation(dto);
+        Long userSeq = getCurrentUserSeq();
+        if (userSeq == null) {
+            throw new IllegalStateException("로그인 상태가 아닙니다.");
+        }
+        dto.setUserId(userSeq);
+        communityService.writePost(dto);
         return "redirect:/csj/community";
     }
 
     @GetMapping("/community/detail")
-    public String detail(@RequestParam("postId") Long postId, Model model, HttpSession session) {
-        if (session.getAttribute("loginUser") == null) {
-            UsersssDTO fakeUser = new UsersssDTO();
-            fakeUser.setUserSeq(400);
-            fakeUser.setEmail("jj000808@naver.com");
-            fakeUser.setNickname("asd22");
-            session.setAttribute("loginUser", fakeUser);
-        }
+    public String detail(@RequestParam("postId") Long postId, Model model) {
+        Long currentUserSeq = getCurrentUserSeq();
+
+        CommunityPostDTO post = communityService.getPostDetail(postId);
         communityService.increaseViewCount(postId);
+        
+        // 공지사항일 경우에만 닉네임을 "운영자"로 설정
+        if (post != null && "Y".equals(post.getCommunityNotice())) {
+            post.setNickname("운영자"); 
+        }
 
-        CommunityPostDTO post = communityService.getRecommendation(postId);
         List<CommunityCommentDTO> comments = communityService.getAllComments(postId);
-
-        // 🔥 추천 수 조회 추가
+        
         int upCount = voteService.getVoteCount(postId.intValue(), "UP");
         int downCount = voteService.getVoteCount(postId.intValue(), "DOWN");
 
@@ -118,106 +173,66 @@ public class CommunityPostController {
         model.addAttribute("commentList", comments);
         model.addAttribute("upCount", upCount);
         model.addAttribute("downCount", downCount);
-
+        model.addAttribute("currentUserSeq", currentUserSeq);
         return "csj/communityDetail";
     }
-    
-    
-//댓글
-    @GetMapping("/comment/add")
-    public String commentAdd(@RequestParam("postId") Long postId, Model model) {
-    	CommunityPostDTO post = communityService.getRecommendation(postId);
-    	model.addAttribute("post", post);
-    	return "csj/communityDetail";
-    }
-//ㅅㅂ fuck shit asssshole
 
-  
     @PostMapping("/uploadImage")
     @ResponseBody
     public String uploadImage(@RequestParam("image") MultipartFile imageFile) {
+        if (getCurrentUserSeq() == null) {
+            return "error: Not logged in";
+        }
+
         try {
             String fileName = UUID.randomUUID() + "_" + imageFile.getOriginalFilename();
-            File dir = new File(uploadPath);
+            File dir = new File(uploadDirRoot + "/community");
             if (!dir.exists()) {
                 dir.mkdirs();
             }
 
             File dest = new File(dir, fileName);
             imageFile.transferTo(dest);
-
-            // 이 URL이 실제로 접근 가능해짐
-            return "/images/community/" + fileName;
+            return uploadPathWeb + "/" + fileName;
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("파일 업로드 중 오류 발생", e);
             return null;
         }
     }
 
     @GetMapping("/community/delete")
-    public String deletePost(@RequestParam("postId") Long postId, HttpSession session) {
-        // 권한 체크: 로그인한 유저와 작성자가 같을 때만 삭제 허용
-        UsersssDTO loginUser = (UsersssDTO) session.getAttribute("loginUser");
-
-        CommunityPostDTO post = communityService.getRecommendation(postId);
-        if (loginUser != null && loginUser.getUserSeq().equals(post.getUserId())) {
-            communityService.deletePost(postId);  // 삭제 처리
-        }
-        return "redirect:/csj/community";
-    }
-////////////좆댓구알////////////////////////////////////////
-    
-    @PostMapping("/comment/write")
-    @ResponseBody
-    public CommunityCommentDTO writeComment(@RequestBody CommunityCommentDTO commentDTO, HttpSession session) {
-
-        UsersssDTO loginUser = (UsersssDTO) session.getAttribute("loginUser");
-        if (loginUser == null) {
+    public String deletePost(@RequestParam("postId") Long postId) {
+        Long currentUserSeq = getCurrentUserSeq();
+        if (currentUserSeq == null) {
             throw new IllegalStateException("로그인 상태가 아닙니다.");
         }
 
-        // 유저 정보 주입
-        commentDTO.setUserId2(loginUser.getUserSeq());
-        commentDTO.setNickname(loginUser.getNickname());
+        CommunityPostDTO post = communityService.getPostDetail(postId);
+        if (post != null && currentUserSeq.equals(post.getUserId())) {
+            communityService.deletePost(postId);
+        } else {
+            throw new IllegalStateException("삭제 권한이 없거나 게시글을 찾을 수 없습니다.");
+        }
+        return "redirect:/csj/community";
+    }
 
-        // 방어 코드
+    @PostMapping("/comment/write")
+    @ResponseBody
+    public CommunityCommentDTO writeComment(@RequestBody CommunityCommentDTO commentDTO) {
+        UserEntity currentUser = getCurrentUserEntity();
+        if (currentUser == null) {
+            throw new IllegalStateException("로그인 상태가 아닙니다.");
+        }
+
+        commentDTO.setUserId2(currentUser.getUserSeq());
+        commentDTO.setNickname(currentUser.getNickname());
+
         if (commentDTO.getPostId2() == null || commentDTO.getContent() == null || commentDTO.getContent().trim().isEmpty()) {
             throw new IllegalArgumentException("postId2 또는 content가 비어 있음");
         }
 
-
-        communityService.writeCommet(commentDTO);
+        communityService.writeComment(commentDTO);
         commentDTO.setCreatedAt(Timestamp.valueOf(LocalDateTime.now()));
         return commentDTO;
     }
-    
-    @GetMapping("/csj/community")
-    public String showCommunity(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "50") int size,
-            @RequestParam(required = false) String keyword,
-            Model model) {
-
-        PageDTO pageDTO = new PageDTO();
-        pageDTO.setPage(page);
-        pageDTO.setSize(size);
-        pageDTO.setKeyword(keyword);
-
-        List<CommunityPostDTO> postList = communityService.getPostList(pageDTO);
-        int totalCount = communityService.getPostCount(pageDTO);
-
-        model.addAttribute("postList", postList);
-        model.addAttribute("currentPage", page);
-        model.addAttribute("totalPages", (int)Math.ceil((double)totalCount / size));
-        model.addAttribute("size", size);
-        model.addAttribute("keyword", keyword);
-        return "csj/community";
-    }
-    
-    
-    
-    
-    
-   
 }
-
