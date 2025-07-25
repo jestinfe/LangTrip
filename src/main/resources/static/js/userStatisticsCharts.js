@@ -48,6 +48,7 @@ window.addEventListener('load', () => {
 	    },
 	    options: {
 	      responsive: true,
+          devicePixelRatio: window.devicePixelRatio,
 	      plugins: {
 	        legend: { display: false }
 	      },
@@ -89,6 +90,7 @@ function drawSignupChart(signups) {
     },
     options: {
       responsive: true,
+      devicePixelRatio: window.devicePixelRatio,
       plugins: {
         legend: { display: false }
       }
@@ -116,6 +118,7 @@ function drawSignupPathChart(paths) {
     },
     options: {
       responsive: true,
+      devicePixelRatio: window.devicePixelRatio,
       plugins: {
         legend: { position: 'bottom' },
         title: { display: true, text: '유입 경로 통계' }
@@ -153,6 +156,7 @@ function drawUnsignReasonChart(reasons) {
     },
     options: {
       responsive: true,
+      devicePixelRatio: window.devicePixelRatio,
       plugins: {
         legend: { display: false }
       },
@@ -180,6 +184,7 @@ function drawCourseCategoryChart(stats) {
     },
     options: {
       responsive: true,
+      devicePixelRatio: window.devicePixelRatio,
       plugins: {
         legend: { display: false },
         title: { display: true, text: '카테고리별 강의 등록 수' }
@@ -208,6 +213,7 @@ function drawCourseDifficultyChart(stats) {
     },
     options: {
       responsive: true,
+      devicePixelRatio: window.devicePixelRatio,
       plugins: {
         legend: { display: false },
         title: {
@@ -245,6 +251,7 @@ function drawAdClickChart(stats) {
     },
     options: {
       responsive: true,
+      devicePixelRatio: window.devicePixelRatio,
       plugins: {
         legend: { display: false },
         title: {

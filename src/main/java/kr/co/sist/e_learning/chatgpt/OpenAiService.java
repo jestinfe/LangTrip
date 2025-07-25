@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import ch.qos.logback.core.net.server.Client;
 
 @Service
 public class OpenAiService {

@@ -12,12 +12,12 @@ import kr.co.sist.e_learning.pagination.UsrAndRptPageResponseDTO;
  * 정제균.
  */
 @Service
-public class ReportService {
-	private final ReportMapper reportMapper;
+public class AdminReportService {
+	private final AdminReportMapper reportMapper;
 	
 	// 생성자 주입
 	@Autowired
-	public ReportService(ReportMapper reportMapper) {
+	public AdminReportService(AdminReportMapper reportMapper) {
 		this.reportMapper = reportMapper;
 	}
 

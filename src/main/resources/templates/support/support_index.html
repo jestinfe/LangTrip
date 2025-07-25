@@ -10,11 +10,8 @@
 <script
 	src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
 </head>
-<style>
-.child-div {border-radius: 16px;}
-</style>
 <body
-style="background: linear-gradient( to bottom, white, rgba(204,169,254, 0.8)) !important;"
+style="background: linear-gradient( to bottom, white, rgba(204,169,254, 0.7), rgba(64,5,147, 0.6)) !important;"
 >
 
 	<div th:replace="layout/header :: header"></div>
@@ -22,6 +19,15 @@ style="background: linear-gradient( to bottom, white, rgba(204,169,254, 0.8)) !i
 	
 	<div class="parent-container"
 		style="border: none !important; width: 100%; padding-top: 30px">
+
+
+
+
+
+
+
+
+
 
 		<div class="child-div"
 			style="height: auto; margin: 0px; border: none; box-shadow: 0 0 0px rgba(0, 0, 0, 0.0); background: none">
@@ -31,8 +37,6 @@ style="background: linear-gradient( to bottom, white, rgba(204,169,254, 0.8)) !i
 					style="font-size: 28px; color: #000000; margin: 0px; margin-bottom: -5px; border: none">
 					<a th:href="@{/support}" style="color: #000000 !important">지원센터</a>
 				</div>
-				<div class="div-3" style="margin: 0px; border: none"></div>
-				<div class="div-4" style="margin: 0px; border: none"></div>
 			</div>
 		</div>
 		<!-- child-div -->
@@ -46,6 +50,7 @@ style="background: linear-gradient( to bottom, white, rgba(204,169,254, 0.8)) !i
 			</div>
 		</div>
 		<!-- child-div -->
+		
 
 		<div class="child-div"
 			style="height: auto; border: none; margin-bottom: -20px; margin-top: -8px; box-shadow: 0 0 0px rgba(0, 0, 0, 0.0); background: none;">
@@ -54,6 +59,7 @@ style="background: linear-gradient( to bottom, white, rgba(204,169,254, 0.8)) !i
 				도와드릴까요?</div>
 		</div>
 		<!-- child-div -->
+		
 
 		<div class="child-div"
 			style="height: 100px; width: 800px; border: none; box-shadow: 0 0 0px rgba(0, 0, 0, 0.0); background: none; margin-bottom: 40px;">
@@ -68,16 +74,29 @@ style="background: linear-gradient( to bottom, white, rgba(204,169,254, 0.8)) !i
 		</div>
 		<!-- child-div -->
 		
-		<div class="child-div" style="height: 90px; border:none !important; margin-top: -20px;">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<div class="child-div" style="height: 90px; margin-top: -20px; ">
 			<div class="title-div" style="border:none !important;">
 				<div class="div-1">
-					<div>
+					<div style="margin-top:0px; margin-left: 5px;">
 						<img th:src="@{/images/symbol_notice.png}"
-							style="width: 50px; height: 50px; border:none !important;" />
+							style="width: 45px; height: 45px; border:none !important;" />
 					</div>
 				</div>
-				<div class="div-2">공지사항</div>
-				<div class="div-3">안내 사항과 피드백 반영을 전달해드립니다.</div>
+				<div class="div-2" style="font-size: 28px; margin-top: 0px; margin-left: -15px;">공지사항</div>
+				<div class="div-3" style="font-size: 20px; margin-top: 0px; color: rgba(0,0,0,0.6);">안내 사항과 피드백 반영을 전달해드립니다.</div>
 				<div class="div-4" style="color: #5701d0">
 					<span><a href="/support/notice">확인하기</a></span>
 				</div>
@@ -87,72 +106,68 @@ style="background: linear-gradient( to bottom, white, rgba(204,169,254, 0.8)) !i
 		
 		
 		
-		<div class="child-div" style="height: auto;">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<div class="child-div" style="height: auto; margin-top: -2px;">
 
 			<div class="title-div"
 				style="border-bottom: 1px solid #cecece !important;">
-				<div class="div-1">
-					<div>
+				<div class="div-1" style="height: 20px;">
+					<div style="margin-top:-10px;">
 						<img th:src="@{/images/symbol_faq.png}"
-							style="width: 50px; height: 50px" />
+							style="width: 45px; height: 45x" />
 					</div>
 				</div>
-				<div class="div-2">자주 묻는 질문</div>
-				<div class="div-3">관련된 질문을 유형별로 탐색할 수 있습니다.</div>
-				<div class="div-4" style="color: #5701d0">
+				<div class="div-2" style="font-size: 28px; margin-left: -15px;">자주 묻는 질문</div>
+				<div class="div-3" style="font-size: 20px; color: rgba(0,0,0,0.6);">관련된 질문을 유형별로 탐색할 수 있습니다.</div>
+				<div class="div-4" style="color: #5701d0; margin-top: -5px">
 					<span><a href="/support/faq">탐색하기</a></span>
 				</div>
 			</div>
 
 
-			<div class="content-div" style="border: none; height: 100%; flex-direction: row; justify-content: center; align-items: center">
+			<div class="content-div" style="border: none; flex-direction: row; justify-content: center; align-items: center">
 				<div style="border:1px solid transparent !important; width: 280px;">
 					<div class="faqToolLeft">
 						<div class="faqToolLeftTitle">실시간 FAQ 추천</div>
-<!-- 						<div class="faqToolLeftInfo">조회수 기반으로 추천해드립니다.</div> -->
 					</div>
 				</div>
 				<div style="border:2px solid rgba(87,1,208, 0.6) !important; border-radius: 15px; width: 800px; height: 110px; overflow: hidden;">
-				
 						<div class="scroll-container">
 							<div id="slider">
 							<th:block th:each="faq, stat : ${faqList}">
 							  <div class="slide" th:attr="data-link=@{'/support/faq?openId=' + ${faq.faq_id}}" style="cursor:pointer;">
 							    <div class="rankDiv"><span th:text="${stat.index +1}"></span>위</div>
-							    
-							    
 							    <div class="topFaqtypeDiv" th:switch="${faq.faqtype_id}">
-<!-- 							      <span th:text="${faq.faqtype_id}"></span> -->
-							    	  <span th:case="3000">결제FAQ</span>
-									  <span th:case="3001">강좌FAQ</span>
-									  <span th:case="3002">학습FAQ</span>
-									  <span th:case="3003">계정FAQ</span>
-									  <span th:case="3004">기타FAQ</span>
-									  <span th:case="3005">기능FAQ</span>
+							    	  <span th:case="3000">결제 FAQ</span>
+									  <span th:case="3001">강좌 FAQ</span>
+									  <span th:case="3002">학습 FAQ</span>
+									  <span th:case="3003">계정 FAQ</span>
+									  <span th:case="3004">기타 FAQ</span>
+									  <span th:case="3005">기능 FAQ</span>
 							    </div>
-							    
-							    
 							    <div class="topFaqDiv"><span th:text="${faq.faq_title}">제목</span></div>
 							  </div>
 							</th:block>
-													 
-													    <!-- 반복 복제로 무한 스크롤처럼 -->
 							<th:block th:each="faq, stat : ${faqList}">
 							  <div class="slide" th:attr="data-link=@{'/support/faq?openId=' + ${faq.faq_id}}" style="cursor:pointer;">
 							    <div class="rankDiv"><span th:text="${stat.index +1}"></span>위</div>
-							    
-							    
 							 	<div class="topFaqtypeDiv" th:switch="${faq.faqtype_id}">
-<!-- 							      <span th:text="${faq.faqtype_id}"></span> -->
-							    	  <span th:case="3000">결제FAQ</span>
-									  <span th:case="3001">강좌FAQ</span>
-									  <span th:case="3002">학습FAQ</span>
-									  <span th:case="3003">계정FAQ</span>
-									  <span th:case="3004">기타FAQ</span>
-									  <span th:case="3005">기능FAQ</span>
+							    	  <span th:case="3000">결제 FAQ</span>
+									  <span th:case="3001">강좌 FAQ</span>
+									  <span th:case="3002">학습 FAQ</span>
+									  <span th:case="3003">계정 FAQ</span>
+									  <span th:case="3004">기타 FAQ</span>
+									  <span th:case="3005">기능 FAQ</span>
 							    </div>
-							    
-							    
 							    <div class="topFaqDiv"><span th:text="${faq.faq_title}">제목</span></div>
 							  </div>
 							</th:block>
@@ -176,21 +191,31 @@ style="background: linear-gradient( to bottom, white, rgba(204,169,254, 0.8)) !i
 
 		</div>
 		<!-- child-div -->
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 
-		<div class="child-div" style="height: 450px;">
-			<div class="title-div"
-				style="border-bottom: 1px solid #cecece !important; border: 1px solid none">
-				<div class="div-1">
+		<div class="child-div" style="height: 450px; margin-top: -2px;">
+			<div class="title-div" style="border-bottom: 1px solid #cecece !important; border: 1px solid none">
+				<div class="div-1" style="height: 20px; margin-top: -5px; margin-left: 9px;">
 					<div>
-						<img th:src="@{/images/symbol_feedback.png}"
-							style="width: 50px; height: 50px" />
+						<img th:src="@{/images/symbol_feedback.png}" style="width: 36px; height: 36px" />
 					</div>
 				</div>
-				<div class="div-2">피드백</div>
-				<div class="div-3">소중한 피드백을 통해 사용자 경험을 향상시킬 수 있습니다.</div>
-				<div class="div-4">
+				<div class="div-2" style="font-size: 28px; margin-left: -24px;">피드백</div>
+				<div class="div-3" style="font-size: 20px; color: rgba(0,0,0,0.6);">소중한 피드백을 통해 사용자 경험을 향상시킬 수 있습니다.</div>
+				<div class="div-4" style="margin-top: -3px;">
 					<span><a href="/support/feedback/about"
-						style="font-size: 22px">자세히 알아보기</a></span>
+						style="font-size: 22px;">자세히 알아보기</a></span>
 				</div>
 
 			</div>
@@ -234,7 +259,7 @@ style="background: linear-gradient( to bottom, white, rgba(204,169,254, 0.8)) !i
 			<div class="content-div2"
 				style="height: 70px; border-top: 1px solid #cecece !important; background-color: transparent; border-color: transparent !important;">
 				<div class="gradient-text"
-					style="font-size: 48px; font-weight: bold;">
+					style="font-size: 45px; font-weight: bold; margin-top: -30px;">
 					<span><a href="/support/feedback/send">피드백 바로 전달하기</a></span>
 				</div>
 			</div>
@@ -245,11 +270,8 @@ style="background: linear-gradient( to bottom, white, rgba(204,169,254, 0.8)) !i
 	</div>
 	<!-- parent-container -->
 
-	<div style="margin-top: 20px"></div>
-<!-- 	<script src="/js/index_autoSlider.js"></script> -->
-<!-- 	<script src="/js/index_searchSuggest.js"></script> -->
-<!-- 	<script src="/js/index_ready.js"></script> -->
-<!-- 	<script src="/js/support_ready.js"></script> -->
+	<div style="margin-top: 50px"></div>
+
 <script src="/js/support_center.js"></script>
 	
 	<div th:replace="layout/footer :: footer"></div>

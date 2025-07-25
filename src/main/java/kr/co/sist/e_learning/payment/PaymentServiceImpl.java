@@ -86,14 +86,14 @@ public class PaymentServiceImpl implements PaymentService {
             logger.info("[PAYMENT-DEBUG] 지갑 생성 완료. walletSeq: {}", walletSeq);
         }
         // payments 테이블에 "CANCELLED" 상태로 insert
-        paymentDTO.setPaymentStatus("CANCELLED");
+        paymentDTO.setPaymentStatus("payment_canceled");
 
         if (paymentDTO.getProvider() == null) {
-            paymentDTO.setProvider("CANCELLED");
+            paymentDTO.setProvider("payment_canceled");
         }
 
         if (paymentDTO.getMethod() == null) {
-            paymentDTO.setMethod("CANCELLED");
+            paymentDTO.setMethod("payment_canceled");
         }
 
         // 2. 명시적으로 시퀀스 채번 및 DTO에 설정
@@ -110,5 +110,3 @@ public class PaymentServiceImpl implements PaymentService {
         logger.info("[PAYMENT-DEBUG] ----- cancelPayment 정상 종료. 트랜잭션 커밋 예정 -----");
     }
 }
-
-

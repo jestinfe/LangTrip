@@ -23,9 +23,20 @@ public class LoggingAspect {
     @Autowired
     private AdminLogService logService;
 
-    @AfterReturning(pointcut = "@annotation(loggable)")
-    public void logActivity(JoinPoint joinPoint, Loggable loggable) {
-        // This aspect is now only for specific actions
+    @AfterReturning(pointcut = "@annotation(loggable)", returning = "result")
+    public void logActivity(JoinPoint joinPoint, Loggable loggable, Object result) {
+        String adminId = getAdminId();
+        String actionType = loggable.actionType();
+        String targetId = getTargetId(joinPoint.getArgs(), actionType, adminId);
+        String details = getRequestDetails();
+
+        AdminLogDTO logDTO = new AdminLogDTO();
+        logDTO.setAdminId(adminId);
+        logDTO.setActionType(actionType);
+        logDTO.setTargetId(targetId);
+        logDTO.setDetails(details);
+
+        logService.addLog(logDTO);
     }
 
     private String getAdminId() {

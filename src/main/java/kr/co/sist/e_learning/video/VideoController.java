@@ -41,7 +41,6 @@ public class VideoController {
 	@GetMapping("/upload/upload_video")
 	public String showUploadForm(@RequestParam("seq") String courseSeq, Model model) {
 		model.addAttribute("courseSeq", courseSeq);
-		System.out.println(courseSeq);
 		return "upload/upload_video";
 	}
 	
@@ -138,7 +137,6 @@ public class VideoController {
 			    Thread.sleep(100); // 0.1초씩 대기
 			    wait++;
 			}
-			System.out.println(fileSB.toString());
 			
 			
 			
@@ -161,7 +159,6 @@ public class VideoController {
 			videoCnt++;
 			
 			if(cs.updateVideoCount(vDTO.getCourseSeq()) == 1) {
-				System.out.println("비디오 카운트 + 1");
 			};
 			dtoList.add(newDTO);
 			result.put("cDTO", newDTO);
@@ -182,15 +179,12 @@ public class VideoController {
 //	    Map<String, Object> result = new HashMap<>();
 //
 //	    if (mf == null || mf.isEmpty()) {
-//	    	System.out.println("비디오 에러1");
 //	        result.put("status", "fail");
 //	        result.put("msg", "업로드한 파일이 없습니다.");
 //	        return result;
 //	    }
 //
 //	    if (!mf.getContentType().startsWith("video")) {
-//	    	System.out.println("비디오 에러2");
-//	    	System.out.println("비디오 에러2");
 //	        result.put("status", "fail");
 //	        result.put("msg", "영상 파일만 업로드 가능합니다.");
 //	        return result;
@@ -225,7 +219,6 @@ public class VideoController {
 //	    if (newDTO.getCourseSeq() != null && newDTO.getFileName() != null) {
 //	        vs.addVideo(newDTO);
 //	    } else {
-//	    	System.out.println("비디오 에러3");
 //	        result.put("status", "fail");
 //	        result.put("msg", "강의 번호 또는 파일 이름 누락");
 //	        return result;
@@ -250,11 +243,6 @@ public class VideoController {
 		VideoDTO vDTO = vs.showVideo(videoSeq);
 		
 		model.addAttribute("videoData", vDTO);
-		System.out.println("파일이름 : "+vDTO.getFileName());
-		System.out.println("파일제목 : "+vDTO.getTitle());
-		System.out.println("파일설명 : "+vDTO.getDescription());
-		System.out.println("파일이름 : "+vDTO.getFileName());
-		System.out.println("파일패쓰 : "+vDTO.getFilePath());
 		
 		return "video/video_frm";
 	}

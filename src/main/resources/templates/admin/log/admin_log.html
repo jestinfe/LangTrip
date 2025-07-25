@@ -167,7 +167,9 @@ document.addEventListener('DOMContentLoaded', function() {
         for (const [key, value] of formData.entries()) {
             url.searchParams.set(key, value);
         }
-        url.searchParams.set('sort', sortSelect.value);
+        const sortValue = sortSelect.value.split(',');
+        url.searchParams.set('orderBy', sortValue[0]);
+        url.searchParams.set('sort', sortValue[1]);
         url.searchParams.set('pageSize', pageSizeSelect.value);
         url.searchParams.set('page', 1); // Reset to page 1 on new search/filter
 

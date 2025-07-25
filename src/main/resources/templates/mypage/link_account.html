@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>계좌 연동</title>
+    <title>LangTrip | 계좌 연동</title>
     <style>
         @charset "UTF-8";
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -250,15 +250,19 @@
     </style>
 </head>
 <body>
+
+<div id="alertBox" class="alert"
+     th:if="${message}"
+     th:classappend="${message.contains('성공')} ? 'alert-success' : 'alert-danger'"
+     th:text="${message}">
+</div>
     <div class="page-container">
         <div class="page-header">
             <button class="back-button" onclick="goToWalletPage()">←</button>
             <h1 class="page-title">🏦 계좌 연동</h1>
         </div>
 
-        <div th:if="${message}" class="alert" th:classappend="${message.contains('성공')} ? 'alert-success' : 'alert-danger'">
-            <span th:text="${message}"></span>
-        </div>
+        
 
         <!-- 계좌가 이미 연동된 경우 -->
         <div class="linked-account-section" th:if="${linked}">
@@ -271,9 +275,9 @@
 
             <button class="change-btn" type="button" onclick="toggleFormSection()">계좌 변경하기</button>
             
-            <form action="/mypage/unlink-account" method="post" style="display: inline;">
-                <button class="unlink-btn" type="submit" onclick="return confirm('정말로 계좌 연동을 해제하시겠습니까?')">계좌 연동 해제</button>
-            </form>
+            <button class="unlink-btn" type="button" onclick="unlinkAccount()">계좌 연동 해제</button>
+            
+        
         </div>
 
         <hr class="divider" th:if="${linked}">
@@ -345,9 +349,39 @@
                 </form>
             </div>
         </div>
-    </div>
+   
+     
+</div>
+
 
     <script>
+    function unlinkAccount() {
+        if (!confirm("정말로 계좌 연동을 해제하시겠습니까?")) return;
+
+        fetch("/mypage/unlink-account", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"  // 실제 바디는 없지만 명시해도 무방
+            }
+        })
+        .then(res => {
+            if (!res.ok) throw new Error("서버 오류 발생");
+            return res.json();
+        })
+        .then(data => {
+            alert(data.message);
+
+            // 메시지에 따라 행동 분기 (선택)
+            if (data.message.includes("해제되었습니다")) {
+                location.reload(); // 성공 시 페이지 새로고침
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            alert("요청 처리 중 오류가 발생했습니다.");
+        });
+    }
+
         function toggleFormSection() {
             const formSection = document.getElementById('accountForm');
             const changeBtn = document.querySelector('.change-btn');
@@ -394,5 +428,9 @@
             window.location.href = "http://localhost:8080/mypage?tab=wallet";
         }
     </script>
+   
+
+
+    
 </body>
 </html>

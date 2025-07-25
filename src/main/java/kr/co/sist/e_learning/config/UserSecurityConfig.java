@@ -49,7 +49,8 @@ public class UserSecurityConfig {
                                 "/api/auth/signup",
                                 "/api/auth/socialSignup",
                                 "/api/auth/login/**",
-            			        "/api/auth/token/refresh" 
+            			        "/api/auth/token/refresh",
+            			        "/courses/**", "/csj/**", "/support/**"
             			        
             				 ).permitAll()
                 .anyRequest().authenticated()

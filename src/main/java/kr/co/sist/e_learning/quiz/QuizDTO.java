@@ -19,6 +19,7 @@ public class QuizDTO {
     private String question; //문제 
     private Integer correctOption; //정답인 보기 번호
     private int quizOrder; //문제 순서
+    private java.sql.Date uploadDate; //업로드 날짜
     private String isDelete; //soft delete용 0 or 1로 처리
     private List<QuizOptionDTO> options= new ArrayList<>(); //보기 묶음
     private Integer fileIndex; // 이미지가 있을 때 index

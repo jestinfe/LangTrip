@@ -122,4 +122,24 @@
     WHERE COURSE_SEQ = #{courseSeq}
   </update>
 
-</mapper>
+  <select id="selectVideoBySeq" parameterType="String" resultType="kr.co.sist.e_learning.video.VideoDTO">
+    SELECT
+      VIDEO_SEQ AS videoSeq,
+      COURSE_SEQ AS courseSeq,
+      TITLE,
+      FILE_PATH AS filePath,
+      FILE_NAME AS fileName,
+      UPLOAD_DATE AS uploadDate,
+      DESCRIPTION,
+      IS_COMPLETED AS isCompleted,
+      VIDEO_ORDER AS videoOrder,
+      TYPE
+    FROM VIDEO
+    WHERE VIDEO_SEQ = #{videoSeq}
+  </select>
+
+  
+
+  
+
+  </mapper>

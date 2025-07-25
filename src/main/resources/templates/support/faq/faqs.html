@@ -6,11 +6,12 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" th:href="@{/css/common.css}">
 <link rel="stylesheet" href="/css/faqs_design.css">
+
 <title>templates/support/faq/faqs.html</title>
 
 </head>
 <body
-style="background: linear-gradient( to bottom, rgba(204,169,254, 0.9), rgba(204,169,254, 0.1),  rgba(204,169,254, 0.1), white, white) !important;"
+style="background: linear-gradient( to bottom, white, rgba(204,169,254, 0.3), rgba(64,5,147, 0.3)) !important;" 
 >
 
 <div th:replace="layout/header :: header"></div>
@@ -40,6 +41,12 @@ style="background: linear-gradient( to bottom, rgba(204,169,254, 0.9), rgba(204,
 		</div>
 		<!-- child-div -->
 
+
+
+
+
+
+
 		<div class="child-div"
 			style="height: 90px; margin-top: 40px; margin-bottom: 20px; box-shadow: 0 0 6px rgba(0, 0, 0, 0.4) !important;">
 			<div class="title-div" style="margin-top: -5px">
@@ -50,9 +57,7 @@ style="background: linear-gradient( to bottom, rgba(204,169,254, 0.9), rgba(204,
 					</div>
 				</div>
 				<div class="div-2" style="margin-left: -90px">자주 묻는 질문</div>
-				<div class="div-3">
-					자주찾는 질문들을 제시해드립니다.<br>관련된 질문(FAQ)를 직접 탐색할 수 있습니다.
-				</div>
+				<div class="div-3" style="font-size: 22px">관련된 질문(FAQ)를 직접 탐색할 수 있습니다.</div>
 				<div class="div-4" style="color: #5701d0">
 					<span><a href="/support" style="font-size: 18px">뒤로가기</a></span>
 				</div>
@@ -60,11 +65,22 @@ style="background: linear-gradient( to bottom, rgba(204,169,254, 0.9), rgba(204,
 
 		</div>
 		<!-- child-div -->
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 
 
 
 
-					<div class="faq-menu" style="font-size: 32px; margin-top:48px; margin-bottom: 10px;">
+					<div class="faq-menu" style="font-size: 32px; margin-top:48px; margin-bottom: -30px;">
 					
 					<style>
 						a:hover{
@@ -84,7 +100,7 @@ style="background: linear-gradient( to bottom, rgba(204,169,254, 0.9), rgba(204,
 					         style="width: 60px; height: 60px; margin-bottom: 15px;" />
 					
 					    <!-- 텍스트 (하단) -->
-					    <span th:text="${type.faqtype_name}" style="font-size: 40px">faqtype_name</span>
+					    <span th:text="${type.faqtype_name}" style="font-size: 40px; color: #5701d0">faqtype_name</span>
 					
 					  </a>
 					  
@@ -95,14 +111,14 @@ style="background: linear-gradient( to bottom, rgba(204,169,254, 0.9), rgba(204,
 
 
 
-			<hr style="width: 1200px; border: 1px solid rgba(189,143,253, 0.2);">
+<!-- 			<hr style="width: 1200px; border: 1px solid rgba(189,143,253, 0.2);"> -->
 
 
 
 
 
 		<div id="faq-result-container" th:replace="support/faq/faq-item :: faqItemFragment"></div>
-		<div style="margin-top: 60px"></div>
+		<div style="margin-top: 100px"></div>
 
 	</div>
 	<!-- parent-container -->

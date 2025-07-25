@@ -1,4 +1,4 @@
-package kr.co.sist.e_learning.community.dto;
+	package kr.co.sist.e_learning.community.dto;
 
 import java.sql.Timestamp;
 

@@ -46,7 +46,6 @@ public class AdminSignupServiceImpl implements AdminSignupService {
         signupDAO.insertVerificationCode(dto);
 
         // TODO: 이메일 발송 구현 필요
-        System.out.println("임시 인증 코드: " + code);
         
         try {
             MimeMessage message = mailSender.createMimeMessage();

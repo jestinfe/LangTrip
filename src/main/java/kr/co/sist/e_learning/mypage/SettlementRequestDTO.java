@@ -24,4 +24,5 @@ public class SettlementRequestDTO {
     private Double companyFee;
     private Double paidAmount;
     private String rejectReason; // 반려 사유 추가
+    private String accountSeq;
 }

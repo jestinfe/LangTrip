@@ -104,7 +104,6 @@
 <div class="container">
     <div class="header">
         <h1>관리자 로그인</h1>
-        <p>시스템 관리자 전용</p>
     </div>
     <form id="loginForm" th:action="@{/admin/login}" method="post">
         <div class="form-group">
@@ -150,7 +149,7 @@
     document.getElementById("loginBtn").addEventListener("click", handleLoginAttempt);
 
     function onCaptchaSuccess() {
-        console.log("캡챠 완료됨");
+        document.getElementById("loginForm").submit();
     }
 </script>
 </body>
