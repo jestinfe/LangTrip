@@ -28,7 +28,7 @@
   </div>
 
   <div class="post-meta">
-    작성자: <span th:text="${post.nickname}">user</span> | <!-- ⭐ 이 부분을 post.nickname으로 변경했습니다. -->
+    작성자: <span th:text="${post.nickname}">user</span> | 
     작성일: <span th:text="${#dates.format(post.createdAt, 'yyyy-MM-dd HH:mm')}">날짜</span> |
     조회수: <span th:text="${post.views}">0</span>
   </div>
@@ -40,13 +40,13 @@
       <span id="upVoteCount" class="vote-count text-danger" th:text="${upCount}">0</span>
      <button class="vote-button"
         th:attr="data-post-id=${post.postId}, data-type='UP'"
-        onclick="handleVote(this)">
+        th:onclick="${currentUserSeq != null} ? 'handleVote(this)' : 'redirectToLogin()'"> <!-- ⭐ 수정: 로그인 안 되어 있으면 로그인 페이지로 -->
   <i class="bi bi-star-fill"></i><br>개념
 </button>
 
 <button class="vote-button"
         th:attr="data-post-id=${post.postId}, data-type='DOWN'"
-        onclick="handleVote(this)">
+        th:onclick="${currentUserSeq != null} ? 'handleVote(this)' : 'redirectToLogin()'"> <!-- ⭐ 수정: 로그인 안 되어 있으면 로그인 페이지로 -->
   <i class="bi bi-star"></i><br>비추
 </button>
 
@@ -54,7 +54,9 @@
     </div>
 
     <div class="action-buttons d-flex justify-content-center gap-2">
-      <button class="action-btn" data-bs-toggle="modal" data-bs-target="#userReportModal">
+      <button class="action-btn" 
+              th:attr="data-bs-toggle=${currentUserSeq != null ? 'modal' : ''}, data-bs-target=${currentUserSeq != null ? '#userReportModal' : ''}"
+              th:onclick="${currentUserSeq != null} ? '' : 'redirectToLogin()'"> <!-- ⭐ 수정: 로그인 안 되어 있으면 로그인 페이지로 -->
         <i class="bi bi-exclamation-triangle"></i> 신고
       </button>
     </div>
@@ -74,16 +76,16 @@
             <div class="form-check"><input class="form-check-input" type="radio" id="reason1" name="reasonChk" value="1"><label class="form-check-label" for="reason1">1. 욕설</label></div>
             <div class="form-check"><input class="form-check-input" type="radio" id="reason2" name="reasonChk" value="2"><label class="form-check-label" for="reason2">2. 음란물</label></div>
             <div class="form-check"><input class="form-check-input" type="radio" id="reason3" name="reasonChk" value="3"><label class="form-check-label" for="reason3">3. 허위</label></div>
-            <div class="form-check"><input class="form-check-input" type="radio" id="reason4" name="reasonChk" value="4"><label class="form-check-label" for="reason4">4. 기타</label></div>
+            <div class="form-check"><input class="form-check-input" type="radio" id="reason4" name="reasonChk" value="4"><label class="form-check-label" for="reason4">4. 기타</label></div> <!-- ⭐ 수정: name="reason4" -> name="reasonChk" -->
           </div>
           <div class="mb-3">
-            <textarea id="reportReason" class="form-control" rows="2" maxlength="20" placeholder="추가 설명 (최대 20자)"></textarea>
+            <textarea id="reportReason" class="form-control" rows="2" maxlength="20" placeholder="추가 설명 (최대 20자)" th:readonly="${currentUserSeq == null}"></textarea> <!-- ⭐ 수정: 로그인 안 되어 있으면 읽기 전용 -->
             <input type="hidden" id="postIdForReport" th:value="${post.postId}" />
           </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">취소</button>
-          <button type="button" class="btn btn-danger" onclick="submitReport()">신고</button>
+          <button type="button" class="btn btn-danger" th:onclick="${currentUserSeq != null} ? 'submitReport()' : 'redirectToLogin()'">신고</button> <!-- ⭐ 수정: 로그인 안 되어 있으면 로그인 페이지로 -->
         </div>
       </div>
     </div>
@@ -93,10 +95,10 @@
   <div class="comment-box">
     <input type="hidden" id="postId" th:value="${post.postId}" />
     <div class="mb-3">
-      <textarea class="form-control" id="commentContent" rows="3" placeholder="댓글을 입력하세요..."></textarea>
+      <textarea class="form-control" id="commentContent" rows="3" placeholder="댓글을 입력하세요..." th:readonly="${currentUserSeq == null}"></textarea> <!-- ⭐ 수정: 로그인 안 되어 있으면 읽기 전용 -->
     </div>
     <div class="text-end">
-      <button type="button" class="btn btn-outline-primary btn-sm" onclick="submitComment()">댓글 작성</button>
+      <button type="button" class="btn btn-outline-primary btn-sm" th:onclick="${currentUserSeq != null} ? 'submitComment()' : 'redirectToLogin()'">댓글 작성</button> <!-- ⭐ 수정: 로그인 안 되어 있으면 로그인 페이지로 -->
     </div>
   </div>
 
@@ -106,7 +108,11 @@
       <div th:if="${comment.parentId == null}" class="comment-item mb-2 border-bottom pb-2">
         <div class="d-flex justify-content-between align-items-center">
           <div><strong th:text="${comment.nickname}">닉네임</strong> <span class="comment-meta" th:text="${#dates.format(comment.createdAt, 'yyyy-MM-dd HH:mm')}">날짜</span></div>
-          <div><button class="btn btn-sm btn-light" type="button" th:onclick="'showReplyForm(' + ${comment.commentId} + ')'"><i class="bi bi-chat-dots"></i></button></div>
+          <div>
+            <button class="btn btn-sm btn-light" type="button" th:onclick="${currentUserSeq != null} ? 'showReplyForm(' + ${comment.commentId} + ')' : 'redirectToLogin()'"> <!-- ⭐ 수정: 로그인 안 되어 있으면 로그인 페이지로 -->
+              <i class="bi bi-chat-dots"></i>
+            </button>
+          </div>
         </div>
         <div th:text="${comment.content}">댓글 내용</div>
 
@@ -122,8 +128,8 @@
 
         <!-- 대댓글 입력 -->
         <div class="reply-form d-none mt-2" th:id="'replyForm-' + ${comment.commentId}">
-          <textarea class="form-control mb-1" rows="2" th:id="'replyContent-' + ${comment.commentId}" placeholder="답글을 입력하세요..."></textarea>
-          <button class="btn btn-primary btn-sm" th:onclick="'submitReply(' + ${comment.commentId} + ')'">등록</button>
+          <textarea class="form-control mb-1" rows="2" th:id="'replyContent-' + ${comment.commentId}" placeholder="답글을 입력하세요..." th:readonly="${currentUserSeq == null}"></textarea> <!-- ⭐ 수정: 로그인 안 되어 있으면 읽기 전용 -->
+          <button class="btn btn-primary btn-sm" th:onclick="${currentUserSeq != null} ? 'submitReply(' + ${comment.commentId} + ')' : 'redirectToLogin()'">등록</button> <!-- ⭐ 수정: 로그인 안 되어 있으면 로그인 페이지로 -->
         </div>
       </div>
     </div>
@@ -139,6 +145,12 @@
 <!-- Script -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+// ⭐ 추가: 로그인 페이지로 리다이렉트하는 함수
+function redirectToLogin() {
+    alert("로그인이 필요합니다.");
+    window.location.href = '/login';
+}
+
 function handleVote(btn) {
   const postId = btn.getAttribute('data-post-id');
   const type = btn.getAttribute('data-type');
@@ -155,7 +167,7 @@ function vote(postId, voteType) {
 	    contentType: 'application/json',
 	    beforeSend: function(xhr) {
 	      if (token) {
-	        console.log("👉 토큰 존재 - Authorization 헤더 추가"); // 🔍
+	        console.log("� 토큰 존재 - Authorization 헤더 추가"); // 🔍
 	        xhr.setRequestHeader('Authorization', 'Bearer ' + token);
 	      }
 	    },
@@ -164,12 +176,12 @@ function vote(postId, voteType) {
 	      console.log("✅ 서버 응답 도착:", res); // 🔍
 	      $('#upVoteCount').text(res.up);
 	      $('#downVoteCount').text(res.down);
-	      alert("추추~ 완료");
+	      alert("추천/비추천 완료"); // 메시지 변경
 	    },
 	    error: function(xhr) {
 	      console.error("❌ 서버 에러 응답:", xhr.status, xhr.responseText); // 🔍
-	      if (xhr.status === 409) alert("하루에 한 번만 추천할 수 있습니다.");
-	      else if (xhr.status === 401) alert("로그인이 필요합니다.");
+	      if (xhr.status === 409) alert("하루에 한 번만 추천/비추천할 수 있습니다."); // 메시지 변경
+	      else if (xhr.status === 401) redirectToLogin(); // ⭐ 수정: 로그인 필요 시 리다이렉트
 	      else alert("본인 글은 안돼요~!");
 	    }
 	  });
@@ -199,8 +211,10 @@ function submitComment() {
       $(".comment-list").prepend(html);
       $("#commentContent").val("");
     },
-    error: function() {
-      alert("로그인 필수!");
+    error: function(xhr) { // ⭐ 수정: 에러 핸들링 추가
+        console.error("❌ 댓글 작성 에러:", xhr.status, xhr.responseText);
+        if (xhr.status === 401) redirectToLogin(); // ⭐ 수정: 로그인 필요 시 리다이렉트
+        else alert("댓글 작성 중 오류가 발생했습니다.");
     }
   });
 }
@@ -223,8 +237,10 @@ function submitReply(parentId) {
     success: function() {
       location.reload();
     },
-    error: function() {
-      alert("로그인 필수!");
+    error: function(xhr) { // ⭐ 수정: 에러 핸들링 추가
+        console.error("❌ 답글 작성 에러:", xhr.status, xhr.responseText);
+        if (xhr.status === 401) redirectToLogin(); // ⭐ 수정: 로그인 필요 시 리다이렉트
+        else alert("답글 작성 중 오류가 발생했습니다.");
     }
   });
 }
@@ -247,8 +263,9 @@ function submitReport() {
       $('#userReportModal').modal('hide');
     },
     error: function(xhr) {
+      console.error("❌ 신고 에러:", xhr.status, xhr.responseText); // ⭐ 추가: 에러 로깅
       if (xhr.status === 409) alert("오늘 이미 신고하셨습니다.");
-      else if (xhr.status === 401) alert("로그인이 필요합니다.");
+      else if (xhr.status === 401) redirectToLogin(); // ⭐ 수정: 로그인 필요 시 리다이렉트
       else alert("신고 중 오류가 발생했습니다.");
     }
   });
@@ -258,3 +275,4 @@ function submitReport() {
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+�
