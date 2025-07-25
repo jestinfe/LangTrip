@@ -128,8 +128,9 @@ public class UserCourseController {
 
 	        if (result == 0) {
 	            return ResponseEntity.internalServerError().body(Map.of("msg", "수강 등록에 실패했습니다."));
+	        }else {
+	        cs.plusEnrollCount(courseSeq);
 	        }
-
 	        return ResponseEntity.ok(Map.of("msg", "수강완료"));
 
 	    } catch (Exception e) {
@@ -242,7 +243,7 @@ public class UserCourseController {
 		List<QuizListDTO> quizList = qs.searchDistinctQuizLists(courseSeq);
 		
 		
-		
+		model.addAttribute("userSeq", userSeq);
 		model.addAttribute("courseData", cDTO);
 		model.addAttribute("videoList", videoList);
 		model.addAttribute("quizList", quizList);

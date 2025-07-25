@@ -281,6 +281,7 @@ public class CourseController {
 		String msg="";
 		if(result>0) {
 			msg ="success";
+			cs.minusVideoCount(courseSeq);
 			System.out.println("삭제 성공");
 		}else {
 			msg ="fail";

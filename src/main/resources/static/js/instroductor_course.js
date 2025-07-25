@@ -101,7 +101,7 @@ function appendLectureForm(course) {
           ${course.courseTitle}
         </div>
         <div class="lecture-meta">
-          <div class="lecture-count">컨텐츠 개수 5/7</div>
+          <div class="lecture-count">컨텐츠 수 : ${course.contentCount}</div>
           <div class="lecture-stats">
             <div class="stat-item">
               <span class="stat-icon">👥</span><span>1,234명</span>
