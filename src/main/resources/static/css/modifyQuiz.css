@@ -268,3 +268,66 @@ input:focus, textarea:focus, select:focus {
   font-size: 20px;
   line-height: 1;
 }
+
+/* 퀴즈 풀기 버튼 스타일 */
+.play-button {
+  position: static;
+  top: 20px;
+  right: 20px;
+  background-color: #007bff; /* 더 눈에 띄는 파란색 */
+  border: none;
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-size: 16px;
+  /* font-weight: bold; */
+  color: white; /* 글자색 흰색 */
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0px;
+  z-index: 100;
+}
+
+.play-button:hover {
+  background-color: #0056b3; /* 호버 시 더 진한 파란색 */
+  color: white;
+}
+
+.play-button span {
+  font-size: 20px;
+  line-height: 1;
+}
+
+ .hover-box {
+      position: absolute;
+      display: inline-block;
+      cursor: pointer;
+      top: 20px;
+ 	 right: 20px;
+    }
+
+    .hover-box .tooltip-text {
+      visibility: hidden;
+      max-width: 140px;
+      background-color: #333;
+      color: #fff;
+      text-align: center;
+      padding: 6px 10px;
+      border-radius: 6px;
+
+      position: absolute;
+      bottom: -40px; /* 아래로 배치 */
+      left: 50%;
+      transform: translateX(-50%);
+      white-space: nowrap;
+
+      opacity: 0;
+      transition: opacity 0.3s;
+      z-index: 1;
+    }
+
+    .hover-box:hover .tooltip-text {
+      visibility: visible;
+      opacity: 1;
+    }
