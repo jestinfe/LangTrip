@@ -2,107 +2,178 @@
 <!DOCTYPE mapper
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-  
-  <mapper namespace="kr.co.sist.e_learning.course.CourseMapper">
-  <insert id="insertCourse" parameterType="CourseDTO">
-  <selectKey keyProperty="courseSeq" resultType="String" order="BEFORE">
-      SELECT 'course_seq' || LPAD(course_seq.NEXTVAL, 3, '0') FROM dual
-    </selectKey>
-  insert into course(
-  course_seq,
-  title,
-  introduction,
-  upload_date,
-  difficulty,
-  category,
-  thumbnail_path,
-  thumbnail_name,
-  user_seq,
-  flag
-  ) values(
-  	#{courseSeq},
-  	#{courseTitle},
-  	#{introduction},
-  	SYSDATE,
-  	#{difficulty},
-  	#{category},
-  	#{thumbnailPath},
-  	#{thumbnailName},
-  	#{userSeq},
-  	#{flag}		
-  )
-  </insert>
-  <select id="selectUserSeqByCourseSeq" parameterType="String" resultType="CourseDTO">
-  select user_seq from course where course_seq=#{courseSeq}
-  
-  </select>
-  
-  
-  <insert id="insertVideo" parameterType="VideoDTO">
-  INSERT INTO video (
-      video_seq,
-      course_seq,
-      title,
-      file_name,
-      file_path,
-      upload_date,
-      description,
-      is_completed,
-      video_order
-    ) VALUES (
-      video_seq.NEXTVAL,
-      #{courseSeq},
-      #{title},
-      #{fileName},
-      #{filePath},
-      SYSDATE,
-      #{description},
-      #{isCompleted},
-      #{videoOrder}
-    )
-  </insert>
- <select id="searchCourseById" resultType="CourseDTO" parameterType="Long">
- select title as courseTitle, introduction, upload_date, user_seq, thumbnail_path, thumbnail_name, category, course_seq, difficulty, is_public 
-  from course 
-  where user_seq = #{userSeq}
- </select>
- <select id="searchCourseByCourseId" resultType="CourseDTO" parameterType="String">
- select course_seq, title as courseTitle, introduction,
-upload_date, user_seq, thumbnail_path, thumbnail_name,
-category, difficulty, is_public, video_count, quiz_count,  (video_count + quiz_count) AS content_count from course where course_seq = #{courseSeq}
- </select>
- <select id="searchCourseByPage" parameterType="map" resultType="CourseDTO">
- SELECT title as courseTitle, introduction, upload_date, user_seq, thumbnail_path, thumbnail_name, category, course_seq, difficulty, is_public
-  FROM course
-  WHERE user_seq = #{userSeq} and is_public = 'Y'
-  ORDER BY upload_date asc
-  OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
- </select>
-  <select id="searchCourseCount" parameterType="Long" resultType="int">
-  select count(*) from course where user_seq = #{userSeq} AND is_public = 'Y'
-  </select>
-  <update id="updateCourseByCourseSeq" parameterType="CourseDTO">
-  update course 
-  set 
-  	  category=#{category},
-  	  difficulty=#{difficulty},
-	  title=#{courseTitle},
-  	  thumbnail_name=#{thumbnailName},
-  	  thumbnail_path=#{thumbnailPath},
-  	  introduction=#{introduction}
-  where course_seq = #{courseSeq}
-  	  
-  </update>
-  <update id="deleteCourseByCourseSeq" parameterType="String">
-  update course set is_public = 'N' where course_seq=#{courseSeq}
-  </update>
-  
-  <update id="updateVideoCount" parameterType="String">
-  update course set video_count = video_count+1 where course_seq=#{courseSeq}
-  </update>
-  
-  <update id="updateQuizCount" parameterType="String">
-  update course set quiz_count = quiz_count+1 where course_seq=#{courseSeq}
-  </update>
-  
-  </mapper>
+
+<mapper namespace="kr.co.sist.e_learning.course.CourseMapper">
+	<insert id="insertCourse" parameterType="CourseDTO">
+		<selectKey keyProperty="courseSeq" resultType="String"
+			order="BEFORE">
+			SELECT 'course_seq' || LPAD(course_seq.NEXTVAL, 3, '0') FROM dual
+		</selectKey>
+		insert into course(
+		course_seq,
+		title,
+		introduction,
+		upload_date,
+		difficulty,
+		category,
+		thumbnail_path,
+		thumbnail_name,
+		user_seq,
+		flag
+		) values(
+		#{courseSeq},
+		#{courseTitle},
+		#{introduction},
+		SYSDATE,
+		#{difficulty},
+		#{category},
+		#{thumbnailPath},
+		#{thumbnailName},
+		#{userSeq},
+		#{flag}
+		)
+	</insert>
+	<select id="selectUserSeqByCourseSeq" parameterType="String"
+		resultType="CourseDTO">
+		select user_seq from course where course_seq=#{courseSeq}
+
+	</select>
+
+
+	<insert id="insertVideo" parameterType="VideoDTO">
+		INSERT INTO video (
+		video_seq,
+		course_seq,
+		title,
+		file_name,
+		file_path,
+		upload_date,
+		description,
+		is_completed,
+		video_order
+		) VALUES (
+		video_seq.NEXTVAL,
+		#{courseSeq},
+		#{title},
+		#{fileName},
+		#{filePath},
+		SYSDATE,
+		#{description},
+		#{isCompleted},
+		#{videoOrder}
+		)
+	</insert>
+	<select id="searchCourseById" resultType="CourseDTO"
+		parameterType="Long">
+		select title as courseTitle, introduction, upload_date, user_seq,
+		thumbnail_path, thumbnail_name, enroll_count, category, course_seq,
+		difficulty, is_public
+		from course
+		where user_seq = #{userSeq}
+	</select>
+	<select id="searchCourseByCourseId" resultType="CourseDTO"
+		parameterType="String">
+		select course_seq, title as courseTitle, introduction,
+		upload_date, user_seq, thumbnail_path, thumbnail_name, enroll_count,
+		category, difficulty, is_public, video_count, quiz_count, (video_count +
+		quiz_count) AS content_count from course where course_seq =
+		#{courseSeq}
+	</select>
+	<select id="searchCourseByPage" parameterType="map"
+		resultType="CourseDTO">
+		SELECT title as courseTitle, introduction, upload_date, user_seq,
+		thumbnail_path, thumbnail_name, category, course_seq, difficulty,
+		is_public, enroll_count
+		FROM course
+		WHERE user_seq = #{userSeq} and is_public = 'Y'
+		ORDER BY upload_date asc
+		OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+	</select>
+	<select id="searchCourseCount" parameterType="Long"
+		resultType="int">
+		select count(*) from course where user_seq = #{userSeq} AND is_public = 'Y'
+	</select>
+	<update id="updateCourseByCourseSeq" parameterType="CourseDTO">
+		update course
+		set
+		category=#{category},
+		difficulty=#{difficulty},
+		title=#{courseTitle},
+		thumbnail_name=#{thumbnailName},
+		thumbnail_path=#{thumbnailPath},
+		introduction=#{introduction}
+		where course_seq = #{courseSeq}
+
+	</update>
+	<update id="deleteCourseByCourseSeq" parameterType="String">
+		update course set is_public = 'N' where course_seq=#{courseSeq}
+	</update>
+
+	<update id="updateVideoCount" parameterType="String">
+		update course set video_count = video_count+1 where course_seq=#{courseSeq}
+	</update>
+
+	<update id="minusVideoCount" parameterType="String">
+		update course set video_count = video_count-1 where course_seq=#{courseSeq}
+	</update>
+
+	<update id="updateQuizCount" parameterType="String">
+		update course set quiz_count = quiz_count+1 where course_seq=#{courseSeq}
+	</update>
+	<update id="minusQuizCount" parameterType="String">
+		update course set quiz_count = quiz_count+1 where course_seq=#{courseSeq}
+	</update>
+
+	<insert id="insertCourseStat" parameterType="CourseStatDTO">
+		INSERT INTO COURSE_STAT (
+		course_seq, user_seq, video_seq,
+		course_time, course_rate,
+		last_time, update_time
+		)
+		VALUES (
+		#{courseSeq}, #{userSeq}, #{videoSeq},
+		#{courseTime}, #{courseRate},
+		#{lastTime}, SYSDATE
+		)
+	</insert>
+	<!-- 업데이트 -->
+	<update id="updateCourseStat" parameterType="CourseStatDTO">
+		UPDATE COURSE_STAT
+		SET course_time = #{courseTime}, course_rate = #{courseRate},
+		last_time = #{lastTime},
+		update_time = SYSDATE
+		WHERE user_seq = #{userSeq} AND video_seq = #{videoSeq}
+	</update>
+
+	<!-- 조회 -->
+	<select id="selectCourseStat" resultType="CourseStatDTO"
+		parameterType="map">
+		SELECT *
+		FROM COURSE_STAT
+		WHERE user_seq = #{userSeq} AND video_seq = #{videoSeq} and
+		course_seq=#{courseSeq}
+	</select>
+
+	<!-- 존재 여부 -->
+	<select id="existCourseStat" resultType="int"
+		parameterType="map">
+		SELECT COUNT(*)
+		FROM COURSE_STAT
+		WHERE user_seq = #{userSeq} AND video_seq = #{videoSeq}
+	</select>
+
+	<update id="plusEnrollCount" parameterType="String">
+		UPDATE course
+		SET enroll_count = enroll_count + 1
+		WHERE course_seq = #{courseSeq}
+	</update>
+	<update id="minusEnrollCount" parameterType="String">
+		UPDATE course
+		SET enroll_count = enroll_count - 1
+		WHERE course_seq = #{courseSeq}
+	</update>
+
+
+
+
+</mapper>

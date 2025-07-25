@@ -19,4 +19,15 @@ public interface CourseMapper {
 	 public CourseDTO selectUserSeqByCourseSeq(String courseSeq);
 	 public int updateVideoCount(String courseSeq);
 	 public int updateQuizCount(String courseSeq);
+	 public void minusVideoCount(String courseSeq);
+	 public void minusQuizCount(String courseSeq);
+	 
+	 public void plusEnrollCount(String courseSeq);
+	 public void minusEnrollCount(String courseSeq);
+	 
+	 //동영상 5초마다 
+	 public void insertCourseStat(CourseStatDTO csDTO);
+	 public void updateCourseStat(CourseStatDTO csDTO);
+	 public CourseStatDTO selectCourseStat(Map<String, Object> map);
+	 public int existCourseStat(Map<String, Object> map);
 }

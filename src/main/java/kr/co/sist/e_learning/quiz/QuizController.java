@@ -259,6 +259,7 @@ public class QuizController {
     	}
     	
         quizService.softDeleteAllQuiz(quizListSeq);
+        cs.minusQuizCount(quizListSeq);
         return "delete";
     }
     
