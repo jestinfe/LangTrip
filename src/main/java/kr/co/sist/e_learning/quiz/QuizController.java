@@ -35,23 +35,7 @@ public class QuizController {
 
     @Autowired
     private CourseService cs;
-    // 강의실 이동 
-//    @GetMapping("/quiz/classRoom")
-//    public String showClassRoom(HttpSession session, Model model) {
-//    	// userSeq  
-//    	String userSeq = (String) session.getAttribute("user_seq");
-//    	if (userSeq == null) {
-//    	    userSeq = "user001";
-//    	    session.setAttribute("user_seq", userSeq); 
-//    	}
-//        
-//        // 전체 퀴즈 묶음 목록 조회
-//        List<QuizListDTO> quizList = quizService.getAllQuizList(userSeq); 
-//
-//        model.addAttribute("quizList", quizList);
-//        
-//        return "quiz/classRoom"; 
-//    }
+    
     //userSeq 가져오기
     private Long getUserSeq(Authentication authentication) {
         Object principal = authentication.getPrincipal();
@@ -62,15 +46,15 @@ public class QuizController {
         return userSeq;
     }
     
-    // 강의실 : 퀴즈 시작 전 title/language modal창 전용 //수정 필요 userSeq
-    @GetMapping("/classRoom/info/data")
-    @ResponseBody
-    public QuizListDTO QuizModal(@RequestParam String quizListSeq, Long userSeq) {
-    	
-    	System.out.println("QuizModal 컨트롤러 진입");
-    	
-        return quizService.getQuizListInfo(quizListSeq, userSeq);
-    }
+    // 강의실 : 퀴즈 시작 전 title/language modal창 전용
+//    @GetMapping("")
+//    @ResponseBody
+//    public QuizListDTO QuizModal(@RequestParam String quizListSeq, Long userSeq) {
+//    	
+//    	System.out.println("QuizModal 컨트롤러 진입");
+//    	
+//        return quizService.getQuizListInfo(quizListSeq, userSeq);
+//    }
     
     // 퀴즈 등록 폼 
     @GetMapping("/quiz/addQuizForm")
@@ -95,6 +79,7 @@ public class QuizController {
     	
     	System.out.println("addQuiz 컨트롤러 진입");
 
+     try {
     	Long userSeq = getUserSeq(authentication);
     	System.out.println("퀴즈를 등록한 유저 ID : "+userSeq);
     	
@@ -113,15 +98,27 @@ public class QuizController {
 			System.out.println("퀴즈 카운트 + 1");
 		};
         return "success";
+    	
+     } catch (Exception e) {
+    	e.printStackTrace();
+    	return "error: " + e.getMessage();
+     }//end catch
     }//addQuiz
    
     // 퀴즈 학습 페이지
     @GetMapping("/quiz/playQuiz/{quizListSeq}")
     public String showPlayQuiz(@PathVariable String quizListSeq, Model model,
-    		@RequestParam String courseSeq) {
+    		@RequestParam String courseSeq, Authentication authentication) {
     	
     	System.out.println("showPlayQuiz 컨트롤러 진입");
     	System.out.println("✅ 퀴즈 학습 진입! quizListSeq: " + quizListSeq);
+    	
+    	//userSeq 받아오기 : 로그인한 사용자 정보
+    	//Long userSeq = getUserSeq(authentication);
+    	//quizListSeq 받아오기
+    	//QuizListDTO qlDTO = new QuizListDTO();
+    	//qlDTO.getQuizListSeq();
+    	//ownerUserSeq = quizListSeq.get
     	
         model.addAttribute("quizListSeq", quizListSeq);
         model.addAttribute("courseSeq", courseSeq);
@@ -142,31 +139,54 @@ public class QuizController {
     	System.out.println("✅ 퀴즈 학습 시작!");
     	System.out.println("퀴즈 학습을 진행중인 유저 : "+userSeq);
     	
-    	System.out.println(quizListSeq);
+    	Map<String,Object> result = new HashMap<>();
     	
-    	Map<String, Object> result=quizService.getQuizList(quizListSeq,userSeq);
-    	
+    	try {
+    		result=quizService.getQuizList(quizListSeq,userSeq);
+    		System.out.println("맵 결과:"+result);
+    	} catch (Exception e) {
+    		  System.out.println("❌ 예외 발생: " + e.getClass().getSimpleName() + " - " + e.getMessage());
+    	      e.printStackTrace();
+    	      result.put("error", "퀴즈 데이터를 가져오는 중 오류 발생");
+    	}
     	return result;
     }//playQuiz
     
     //퀴즈 응답 문제 모두 풀면 insert 
     @ResponseBody
     @PostMapping("/quizResponse")
-    public void saveQuizResponse(@RequestBody QuizResponseDTO qrDTO,
+    public void saveQuizResponse(@RequestBody List<QuizResponseDTO> responses,
     		Authentication authentication){
     	
     	System.out.println("saveQuizResponse 컨트롤러 진입");
     	
     	//userSeq 받아오기
     	Long userSeq = getUserSeq(authentication);
+    	System.out.println("현재 로그인된 유저의 ID: "+userSeq);
+    	
+    	if (!responses.isEmpty()) {
+    		// 첫번째 응답의 quizListSeq 가져오기
+    	    String quizListSeq = responses.get(0).getQuizListSeq();
+    	    // quizList 테이블에 있는 퀴즈를 만든 사용자의 userSeq 가져오기
+    	    Long quizOwner = quizService.getQuizOwnerUserSeq(quizListSeq);
+    	    System.out.println("퀴즈를 만든 유저의 ID: "+quizOwner);
+
+    	    // 작성자 본인이면 응답 저장하지 않음
+    	    if (userSeq.equals(quizOwner)) return;
+    	}
+    	
+    	for (QuizResponseDTO qrDTO : responses) {
     	qrDTO.setUserSeq(userSeq);
-        
-    	System.out.println("📦 DTO 내용 확인: " + qrDTO);
+    	System.out.println("퀴즈에 응답한 유저 ID : "+userSeq);
     	System.out.println("✅ quizListSeq 확인: " + qrDTO.getQuizListSeq());
+    	System.out.println("📦 DTO 내용 확인: " + qrDTO);
+    	}//end for
+    	
+    	
     	//정답 체크, 상태 설정, insert
-    	quizService.saveQuizResponse(qrDTO);
-    			
+    	quizService.saveQuizResponse(responses);
     }
+    
     
     //퀴즈 학습완료 화면으로 이동
     @GetMapping("/quiz/quizCompleted/{quizListSeq}")
@@ -289,7 +309,11 @@ public class QuizController {
     //퀴즈 정답,오답 처리
     @PostMapping("/submitAnswer")
     @ResponseBody
-    public Map<String, Object> submitAnswer(@RequestBody QuizResponseDTO qrDTO) {
+    public Map<String, Object> submitAnswer(@RequestBody QuizResponseDTO qrDTO,
+                                            Authentication authentication) {
+        Long userSeq = getUserSeq(authentication);
+        qrDTO.setUserSeq(userSeq);
+
         return quizService.processSubmitAnswer(qrDTO);
     } 
     

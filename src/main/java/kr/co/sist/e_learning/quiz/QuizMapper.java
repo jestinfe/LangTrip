@@ -31,7 +31,7 @@ public interface QuizMapper {
 	public void insertQuizResponse(QuizResponseDTO qrDTO);
 	
 	//<select id="existsQuizResponse" resultType="boolean">
-	public boolean existsQuizResponse(@Param("quizSeq") String quizSeq, @Param("userSeq") Long userSeq);
+	public int existsQuizResponse(@Param("quizSeq") String quizSeq, @Param("userSeq") Long userSeq);
 
 	//<select id="QuizCorrectChk" resultType="kr.co.sist.elearning.quiz.QuizStatusDTO">
 	public QuizStatusDTO QuizCorrectChk(QuizStatusDTO qsDTO);
@@ -70,4 +70,7 @@ public interface QuizMapper {
 	public List<QuizListDTO> selectDistinctQuizLists(String courseSeq);
 	
 	List<QuizListDTO> selectQuizListsWithQuizzesByCourseSeq(String courseSeq);
+	
+	//<select id="findOwnerUserSeq" resultType="Long">
+	public Long findOwnerUserSeq(String quizListSeq);
 }

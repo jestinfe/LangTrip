@@ -81,6 +81,7 @@ WHERE is_delete = 'N'
 SELECT
   q.quiz_seq, <!-- 퀴즈 id -->
   q.quiz_list_seq, <!-- 퀴즈 묶음 id -->
+  q.course_seq, <!-- 강의 id -->
   q.question, <!-- 문제 -->
   q.correct_option, <!-- 정답 -->
   q.quiz_order, <!-- 퀴즈 순서 (1번퀴즈~5번퀴즈까지) -->
@@ -162,7 +163,7 @@ and course_seq=#{courseSeq}
     AND course_seq = #{courseSeq}
 </select>
 
-<!-- 퀴즈 학습 데이터 저장 -->
+<!-- 퀴즈 학습 응답 데이터 저장 -->
 <insert id="insertQuizResponse" parameterType="kr.co.sist.e_learning.quiz.QuizResponseDTO">
  <selectKey keyProperty="quizResponseSeq" resultType="String" order="BEFORE">
     SELECT 'QR' || TO_CHAR(SYSDATE, 'YYYYMMDD') || LPAD(quiz_response_seq.NEXTVAL, 4, '0') FROM dual
@@ -172,7 +173,7 @@ INSERT INTO quiz_response (
 	quiz_response_seq, quiz_seq, course_seq, user_seq,
 	quiz_list_seq, select_option, correct_check, responseDate
 ) VALUES (
-	#{quizResponseSeq}, #{quizSeq, jdbcType=VARCHAR}, #{courseSeq, jdbcType=VARCHAR}, #{userSeq, jdbcType=VARCHAR},
+	#{quizResponseSeq}, #{quizSeq, jdbcType=VARCHAR}, #{courseSeq, jdbcType=VARCHAR}, #{userSeq, jdbcType=NUMERIC},
 	#{quizListSeq, jdbcType=VARCHAR} ,#{selectOption, jdbcType=NUMERIC}, #{correctCheck, jdbcType=VARCHAR}, SYSDATE
 )
 
@@ -186,10 +187,10 @@ WHERE quiz_seq = #{quizSeq}
 </select>
 
 <!-- 응답 중복 체크용 1개 이상 true, 데이터 없으면 false -->
-<select id="existsQuizResponse" resultType="boolean">
+<select id="existsQuizResponse" resultType="int">
  SELECT CASE WHEN EXISTS (
-    SELECT 1 FROM quiz_response 
-    WHERE quiz_seq = #{quizSeq} 
+    SELECT 1 FROM quiz_response                                   
+    WHERE quiz_seq = #{quizSeq}   
     AND user_seq = #{userSeq}
   ) THEN 1 ELSE 0 END AS result
   FROM dual
@@ -198,8 +199,8 @@ WHERE quiz_seq = #{quizSeq}
 <!-- 퀴즈 정답률 및 응답 수 조회 -->
 <select id="QuizCorrectChk" resultType="kr.co.sist.e_learning.quiz.QuizStatusDTO">
 SELECT 
-COUNT(*) AS totalCnt, 
-SUM(CASE WHEN correct_check = 'Y' THEN 1 ELSE 0 END) AS correctCnt
+COUNT(*) AS totalCnt,                                                                           
+SUM(CASE WHEN correct_check = 'Y' THEN 1 ELSE 0 END) AS correctCnt 
 FROM quiz_response
 WHERE user_seq = #{userSeq}
 AND quiz_list_seq = #{quizListSeq}
@@ -207,9 +208,9 @@ AND quiz_list_seq = #{quizListSeq}
 
 <!-- 퀴즈 정답 내용 보여주기 -->
 <select id="selectCorrectContent" resultType="String">
-SELECT content
-FROM quiz_option
-WHERE quiz_seq = #{quizSeq}
+SELECT content 
+FROM quiz_option 
+WHERE quiz_seq = #{quizSeq}        
 AND option_order = (
 SELECT correct_option FROM quiz WHERE quiz_seq = #{quizSeq}
 AND is_delete = 'N'
@@ -271,5 +272,11 @@ WHERE quiz_seq IN (
   SELECT quiz_seq FROM quiz WHERE quiz_list_seq = #{quizListSeq}
 )
 </update>
+
+<select id="findOwnerUserSeq" resultType="Long">
+SELECT user_seq
+FROM quiz_list
+WHERE quiz_list_seq = #{quizListSeq, jdbcType=VARCHAR}  
+</select>
 
 </mapper>

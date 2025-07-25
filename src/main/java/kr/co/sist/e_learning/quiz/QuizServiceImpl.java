@@ -36,37 +36,6 @@ public class QuizServiceImpl implements QuizService {
     private String uploadPathWeb;
     
     
-//    // 강의실 전체 퀴즈 목록
-//    @Override
-//    public List<QuizListDTO> getAllQuizList(String userSeq) {
-//    	
-//    	List<QuizListDTO> quizList = quizMapper.selectQuizListTable();
-//
-//        for (QuizListDTO q : quizList) {
-//            int total = quizMapper.selectQuizWithOptions(q.getQuizListSeq()).size();
-//
-//            QuizStatusDTO param = new QuizStatusDTO();
-//            param.setQuizListSeq(q.getQuizListSeq());
-//            param.setUserSeq(userSeq);
-//
-//            QuizStatusDTO statusDTO = quizMapper.QuizCorrectChk(param);
-//            int response = statusDTO.getTotalCnt();
-//
-//            if (response == 0) {
-//                q.setStatus("학습전");
-//            } else if (response < total) {
-//                q.setStatus("학습중");
-//            } else if (response == total) {
-//                q.setStatus("학습완료");
-//            } else {
-//                throw new IllegalStateException("응답 수 > 총 퀴즈 수: " + response + " > " + total);
-//            }
-//            
-//        }
-//
-//        return quizList;
-//    }
-    
     //단일 퀴즈의 상세 정보 : 시작 전 모달창 정보 (퀴즈 제목/외국어 종류/상태)
     @Override
     public QuizListDTO getQuizListInfo(String quizListSeq, Long userSeq) {
@@ -180,61 +149,72 @@ public class QuizServiceImpl implements QuizService {
 
     	//퀴즈 목록 조회
         List<QuizDTO> quizList = quizMapper.selectQuizWithOptions(quizListSeq);
-        System.out.println("QuizList: " + quizList); 
+        System.out.println("QuizList size: " + (quizList != null ? quizList.size() : "null")); 
 
+        if (quizList == null || quizList.isEmpty()) {
+            System.out.println("⚠️ quizList 비어있음");
+        } 
+        
         // 정답 수, 응답 수 조회
         QuizStatusDTO quizStatus = new QuizStatusDTO();
         quizStatus.setQuizListSeq(quizListSeq);
         quizStatus.setUserSeq(userSeq);
-
+        System.out.println("퀴즈 상태 조회 전까지 실행됨");
         QuizStatusDTO qsDTO = quizMapper.QuizCorrectChk(quizStatus);
+        System.out.println("퀴즈 상태 조회 완료");
+        System.out.println("응답 수: " + qsDTO.getTotalCnt());
         int totalQuizCnt = quizList.size(); //총 퀴즈 수
         int responseCnt = qsDTO.getTotalCnt();   //사용자의 응답 수
         int correctCnt = qsDTO.getCorrectCnt();  //맞힌 정답 수
-//        // 사용자 응답 개수 조회
-//        int responseCnt = quizMapper.countUserResponse(quizListSeq, userSeq);
-        
-        // 상태 판단 (학습전/학습중(중도포기)/학습완료)
-        String status;
-        if (responseCnt == 0) {
-            status = "학습전";
-        } else if (responseCnt < totalQuizCnt) {
-            status = "학습중";
-        } else if (responseCnt == totalQuizCnt) {
-            status = "학습완료";
-        } else {
-        	//예외 상황: 중복 저장같은 버그로 응답 수가 총 퀴즈 수보다 더 많아질 경우
-         throw new IllegalStateException("응답 수: "+responseCnt + " > 총 퀴즈 수: " + totalQuizCnt);
-        }
         
         //진행률 계산 (프로그레스 바)
-        double progress = (double) responseCnt / totalQuizCnt * 100;
+        double progress = 0;
+        if (totalQuizCnt > 0) {
+            progress = (double) responseCnt / totalQuizCnt * 100;
+        }
         
         //Map<String, Object> result
         result.put("userSeq", userSeq); //유저별 응답 저장
         result.put("quizListSeq", quizListSeq);
-        result.put("quizList", quizList);
-        result.put("status", status);
+        if (quizList != null && !quizList.isEmpty()) {
+        	   result.put("quizList", quizList);  // 조건 만족할 때만 넣음
+        	}
         result.put("progress", progress);
         result.put("correctCnt", correctCnt);
-        
 
         return result;
     }//getQuizList
-
+    
+    
     //퀴즈 응답 저장하기 (최초 응답만 저장)
+    @Transactional(rollbackFor = Exception.class)
     @Override
-    public void saveQuizResponse(QuizResponseDTO qrDTO){
+    public void saveQuizResponse(List<QuizResponseDTO> responseList){
+    	
+    	
+    	for(QuizResponseDTO qrDTO : responseList) {
+    	
+    	// 필수값 확인
+        if (qrDTO.getUserSeq() == null) {
+             throw new IllegalArgumentException("❌ userSeq가 null입니다 - quizSeq=" + qrDTO.getQuizSeq());
+        }
+
+    	System.out.println("userSeq: " + qrDTO.getUserSeq());
     	
     	//중복 응답 체크 true = insert 방지, false 로직 실행
-    	boolean ResponseCheck = quizMapper.existsQuizResponse(qrDTO.getQuizSeq(),qrDTO.getUserSeq());
+    	int ResponseCheck = quizMapper.existsQuizResponse(qrDTO.getQuizSeq(),qrDTO.getUserSeq());
     	
-    	if (ResponseCheck) {
+    	if (ResponseCheck > 0) {
+    		System.out.println("중복 응답! 저장 생략. userSeq: " + qrDTO.getUserSeq());
     		return; 
 		}//end if
     	
     	//퀴즈 조회
     	QuizDTO quiz=quizMapper.selectQuiz(qrDTO.getQuizSeq());
+    	
+    	if (quiz == null) {
+    	    throw new IllegalArgumentException("해당 퀴즈가 존재하지 않습니다: " + qrDTO.getQuizSeq());
+    	}
     	
     	//정답:Y 오답:N 체크
     	boolean correct = qrDTO.getSelectOption() == quiz.getCorrectOption();
@@ -247,6 +227,7 @@ public class QuizServiceImpl implements QuizService {
     	//DB에 저장
     	quizMapper.insertQuizResponse(qrDTO);
     	System.out.println("✔️ 응답 저장 시 quizListSeq = " + qrDTO.getQuizListSeq());
+    	}//end for
     }//saveQuizResponse
     
     //퀴즈 학습완료 화면
@@ -255,8 +236,8 @@ public class QuizServiceImpl implements QuizService {
        
     	QuizStatusDTO status = quizMapper.QuizCorrectChk(new QuizStatusDTO(userSeq, quizListSeq));
 
-        int totalCnt = status.getTotalCnt();
-        int correctCnt = status.getCorrectCnt();
+        int totalCnt = 5;
+        int correctCnt = status.getCorrectCnt(); // 정답 갯수
         int rate = totalCnt == 0 ? 0 : (int)((correctCnt * 100.0) / totalCnt);
 
         Map<String, Object> result = new HashMap<>();
@@ -382,7 +363,6 @@ public class QuizServiceImpl implements QuizService {
 
 	@Override
 	public List<QuizListDTO> searchQuizByCourseSeq(String courseSeq) {
-
 		
 		return quizMapper.selectQuizByCourseSeq(courseSeq);
 	}
@@ -401,7 +381,8 @@ public class QuizServiceImpl implements QuizService {
     //퀴즈 정답 알려주기
     @Override
     public Map<String, Object> processSubmitAnswer(QuizResponseDTO qrDTO) {
-        // 정답 여부 판별 + 응답 저장
+    	
+    	// 정답 여부 판별 + 응답 저장
         QuizDTO quiz = quizMapper.selectQuiz(qrDTO.getQuizSeq());
         boolean isCorrect = qrDTO.getSelectOption() == quiz.getCorrectOption();
 
@@ -409,7 +390,7 @@ public class QuizServiceImpl implements QuizService {
         qrDTO.setCourseSeq(quiz.getCourseSeq());
         qrDTO.setQuizListSeq(quiz.getQuizListSeq());
 
-        quizMapper.insertQuizResponse(qrDTO); 
+        //quizMapper.insertQuizResponse(qrDTO); 
 
         // 정답 보기 내용
         String correctContent = quizMapper.selectCorrectContent(qrDTO.getQuizSeq());
@@ -420,6 +401,11 @@ public class QuizServiceImpl implements QuizService {
         result.put("correctContent", correctContent);
 
         return result;
+    }
+    
+    //퀴즈 수정 폼 -> 학습 화면 이동할때 응답 insert 방지용
+    public Long getQuizOwnerUserSeq(String quizListSeq) {
+        return quizMapper.findOwnerUserSeq(quizListSeq);
     }
     
 }//class
