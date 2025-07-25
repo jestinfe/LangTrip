@@ -31,7 +31,6 @@ public class AdminUserController {
 		model.addAttribute("requestDTO", requestDTO);
 		model.addAttribute("responseDTO", responseDTO);
 		
-		System.out.println("✅ /admin/user/user-list 접근됨");
 		
 		return "admin/user/user-list";
 	}

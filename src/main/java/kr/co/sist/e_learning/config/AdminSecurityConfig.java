@@ -12,7 +12,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
-import org.springframework.security.web.context.SecurityContextHolderFilter;
 import org.springframework.security.web.context.SecurityContextRepository;
 import lombok.extern.log4j.Log4j2;
 
@@ -51,7 +50,7 @@ public class AdminSecurityConfig {
 
     @Bean
     public SecurityFilterChain adminSecurity(HttpSecurity http) throws Exception {
-        log.info("Configuring Admin SecurityFilterChain");
+     
         http
             .securityMatcher("/admin/**") // /admin/** 경로에만 적용
             .authorizeHttpRequests(auth -> auth

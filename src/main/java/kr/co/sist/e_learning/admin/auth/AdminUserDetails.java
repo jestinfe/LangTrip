@@ -3,16 +3,13 @@ package kr.co.sist.e_learning.admin.auth;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
-import java.util.List;
+
 import java.util.stream.Collectors;
 
 public class AdminUserDetails implements UserDetails {
 
-    private static final Logger logger = LoggerFactory.getLogger(AdminUserDetails.class);
 
     private final String username;
     private final String password;
@@ -24,11 +21,11 @@ public class AdminUserDetails implements UserDetails {
         this.password = admin.getAdminPw();
         this.authorities = admin.getRoles().stream()
                 .map(role -> {
-                    logger.info("Processing role: {}", role);
+                   
                     return new SimpleGrantedAuthority(role);
                 })
                 .collect(Collectors.toList());
-        logger.info("Authorities created for admin {}: {}", admin.getAdminId(), this.authorities);
+       
         this.status = admin.getStatus();
     }
 

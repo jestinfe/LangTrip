@@ -7,14 +7,12 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
-import lombok.extern.log4j.Log4j2;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 @Component
-@Log4j2
 public class AdminAccessDeniedHandler implements AccessDeniedHandler {
 
     private ObjectMapper objectMapper = new ObjectMapper();
@@ -22,7 +20,6 @@ public class AdminAccessDeniedHandler implements AccessDeniedHandler {
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response,
                        AccessDeniedException accessDeniedException) throws IOException, ServletException {
-        log.error("Access Denied: {} for URI: {}", accessDeniedException.getMessage(), request.getRequestURI());
 
         String ajaxHeader = request.getHeader("X-Requested-With");
         boolean isAjax = "XMLHttpRequest".equals(ajaxHeader);

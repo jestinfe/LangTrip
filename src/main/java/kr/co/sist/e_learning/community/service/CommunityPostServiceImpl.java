@@ -1,6 +1,4 @@
 package kr.co.sist.e_learning.community.service;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -15,7 +13,6 @@ import kr.co.sist.e_learning.community.dto.PageDTO;
 
 @Service
 public class CommunityPostServiceImpl implements CommunityPostService {
-	private static final Logger logger = LoggerFactory.getLogger(CommunityPostServiceImpl.class);
 
     @Autowired
     @Qualifier("communityPostDAOImpl")
@@ -98,7 +95,6 @@ public class CommunityPostServiceImpl implements CommunityPostService {
     
     @Override
     public List<CommunityPostDTO> getPostsPaginatedWithSearch(int offset, int limit, String keyword) {
-        logger.debug("Fetching posts with offset: {}, limit: {}, keyword: {}", offset, limit, keyword);
         return communityDAO.selectPostsPaginatedWithSearch(offset, limit, keyword);
     }
 

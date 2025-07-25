@@ -7,14 +7,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 
 @Controller
 @RequestMapping("/admin/payment")
 public class AdminPaymentController {
 
-    private static final Logger logger = LoggerFactory.getLogger(AdminPaymentController.class);
+    
 
     @Autowired
     private AdminPaymentService adminPaymentService;
@@ -24,7 +23,7 @@ public class AdminPaymentController {
      */
     @GetMapping
     public String adminPaymentPage(AdminPaymentSearchDTO searchDTO, MyPageRequestDTO pageRequestDTO, Model model) {
-        logger.info("adminPaymentPage called with searchDTO: {}, pageRequestDTO: {}", searchDTO, pageRequestDTO);
+        
         model.addAttribute("searchDTO", searchDTO);
         model.addAttribute("pageRequestDTO", pageRequestDTO);
         return "admin/payment/admin_payment";
@@ -38,7 +37,7 @@ public class AdminPaymentController {
                               MyPageRequestDTO pageRequestDTO,
                               @RequestParam(name = "async", required = false, defaultValue = "false") boolean async,
                               Model model) {
-        logger.info("getPayments called with searchDTO: {}, pageRequestDTO: {}, async: {}", searchDTO, pageRequestDTO, async);
+     
         MyPageResponseDTO<PaymentDTO> pageResponse = adminPaymentService.getAllPayments(searchDTO, pageRequestDTO);
 
         model.addAttribute("list", pageResponse.getDtoList());
@@ -58,7 +57,7 @@ public class AdminPaymentController {
      */
     @GetMapping("/settlements")
     public String getSettlements(AdminPaymentSearchDTO searchDTO, MyPageRequestDTO pageRequestDTO, Model model) {
-        logger.info("getSettlements called with searchDTO: {}, pageRequestDTO: {}", searchDTO, pageRequestDTO);
+       
         MyPageResponseDTO<SettlementDTO> pageResponse = adminPaymentService.getAllSettlements(searchDTO, pageRequestDTO);
         model.addAttribute("list", pageResponse.getDtoList());
         model.addAttribute("pageResponse", pageResponse);
@@ -72,7 +71,6 @@ public class AdminPaymentController {
     @PostMapping("/update-status")
     @ResponseBody
     public String updatePaymentStatus(@RequestParam String paymentSeq, @RequestParam String status) {
-        logger.info("updatePaymentStatus called with paymentSeq: {}, status: {}", paymentSeq, status);
         adminPaymentService.updatePaymentStatus(paymentSeq, status);
         return "SUCCESS";
     }
@@ -83,7 +81,6 @@ public class AdminPaymentController {
     @PostMapping("/update-settlement-status")
     @ResponseBody
     public String updateSettlementStatus(@RequestParam String requestSeq, @RequestParam String status, @RequestParam(required = false) String reason) {
-        logger.info("updateSettlementStatus called with requestSeq: {}, status: {}, reason: {}", requestSeq, status, reason);
         adminPaymentService.updateSettlementStatus(requestSeq, status, reason);
         return "SUCCESS";
     }
@@ -94,7 +91,6 @@ public class AdminPaymentController {
     @PostMapping("/update-refund-status")
     @ResponseBody
     public String updateRefundStatus(@RequestParam String paymentSeq, @RequestParam String status, @RequestParam(required = false) String reason) {
-        logger.info("updateRefundStatus called with paymentSeq: {}, status: {}, reason: {}", paymentSeq, status, reason);
         adminPaymentService.updateRefundStatus(paymentSeq, status, reason);
         adminPaymentService.updatePaymentStatus(paymentSeq, status);
         return "SUCCESS";

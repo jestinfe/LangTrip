@@ -1,7 +1,5 @@
 package kr.co.sist.e_learning.admin.commuCon;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -10,8 +8,6 @@ import kr.co.sist.e_learning.community.service.CommunityPostService;
 import kr.co.sist.e_learning.community.service.VoteService;
 import kr.co.sist.e_learning.community.dto.CommunityCommentDTO;
 import kr.co.sist.e_learning.community.dto.CommunityPostDTO;
-import java.sql.Timestamp; 
-import java.time.LocalDateTime; 
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,7 +21,7 @@ public class AdminCommuController {
     @Autowired
     private VoteService voteService;
     
-    private static final Logger logger = LoggerFactory.getLogger(AdminCommuController.class);
+  
 
     @GetMapping("/admincommunity")
     public String getAllPosts(
@@ -101,7 +97,7 @@ public class AdminCommuController {
 
     @GetMapping("/admincommunity/detail")
     public String getPostDetail(@RequestParam Long postId, Model model) {
-        logger.debug("Received postId: {}", postId);
+   
         CommunityPostDTO post = communityPostService.getPostDetail(postId); 
         
         if (post != null && "Y".equals(post.getCommunityNotice())) {
@@ -109,7 +105,7 @@ public class AdminCommuController {
         }
         
         if (post == null) {
-        	logger.error("No post found with id: {}", postId);
+;
         	model.addAttribute("errorMessage", "게시글을 찾을 수 없습니다.");
         	return "errorPage"; // 이 에러 페이지는 admin/dash 아래에 없을 수 있으니, 필요하면 경로를 조정해야 합니다.
         }
@@ -121,8 +117,7 @@ public class AdminCommuController {
         model.addAttribute("commentList", comments);
         model.addAttribute("upCount", upCount);
         model.addAttribute("downCount", downCount);
-        logger.debug("Post details: {}", post);
-        logger.debug("Total comments: {}", comments.size());
+
         return "admin/dash/admincommuDetail"; // ⭐ 경로 수정
     }
     

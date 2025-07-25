@@ -23,10 +23,8 @@ public class VoteController {
     @PostMapping("/vote")
     public ResponseEntity<?> vote(@RequestBody VoteDTO dto, Authentication authentication) {
 
-        System.out.println("▶ vote() 호출됨"); // 🔍
 
         if (authentication == null || !authentication.isAuthenticated()) {
-            System.out.println("❌ 인증 정보 없음"); // 🔍
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 필요");
         }
 
@@ -34,7 +32,6 @@ public class VoteController {
         try {
             userSeq = (Long) authentication.getPrincipal();
         } catch (Exception e) {
-            System.out.println("❌ 인증 principal 추출 실패"); // 🔍
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("인증 실패");
         }
 
@@ -42,20 +39,16 @@ public class VoteController {
         int postId = dto.getPostId();
         String type = dto.getVoteType();
 
-        System.out.println("👉 userId: " + userId + ", postId: " + postId + ", type: " + type); // 🔍
 
         if (voteService.hasVotedToday(userId, postId)) {
-            System.out.println("⚠️ 이미 오늘 투표함"); // 🔍
             return ResponseEntity.status(HttpStatus.CONFLICT).body("이미 오늘 투표함");
         }
 
         voteService.saveVote(userId, postId, type);
-        System.out.println("✅ 투표 저장 완료"); // 🔍
 
         int up = voteService.getVoteCount(postId, "UP");
         int down = voteService.getVoteCount(postId, "DOWN");
 
-        System.out.println("📊 최신 카운트 - UP: " + up + ", DOWN: " + down); // 🔍
 
         return ResponseEntity.ok(Map.of("up", up, "down", down));
     }

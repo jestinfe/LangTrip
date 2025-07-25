@@ -53,7 +53,6 @@ public class SupportDAOImpl implements SupportDAO {
 			try (PreparedStatement insertStmt = conn.prepareStatement("INSERT INTO notice (notice_id) VALUES (?)")) {
 				insertStmt.setString(1, newId);
 				int result = insertStmt.executeUpdate();
-//				System.out.println("[NoticeDTO] " + result + "건의 insert 시행.");
 				return result > 0;
 			} // end try
 
@@ -88,8 +87,6 @@ public class SupportDAOImpl implements SupportDAO {
 				resultList.add(dto);
 			} // end while
 
-			System.out.println("[공지사항 목록]");
-			resultList.forEach(System.out::println);
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -123,8 +120,6 @@ public class SupportDAOImpl implements SupportDAO {
 				resultList.add(dto);
 			} // end while
 
-			System.out.println("[공지사항 목록]");
-			resultList.forEach(System.out::println);
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -268,7 +263,6 @@ public class SupportDAOImpl implements SupportDAO {
 				} // end while
 			}
 
-			System.out.println("[SupportDAOImpl] " + resultList.size() + "건의 추천 키워드 조회.");
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -388,7 +382,6 @@ public class SupportDAOImpl implements SupportDAO {
 			try (PreparedStatement insertStmt = conn.prepareStatement("INSERT INTO faq (faq_id) VALUES (?)")) {
 				insertStmt.setString(1, newId);
 				int result = insertStmt.executeUpdate();
-//				System.out.println("[FaqDTO] " + result + "건의 insert 시행.");
 				return result > 0;
 			} // end try
 
@@ -443,8 +436,6 @@ public class SupportDAOImpl implements SupportDAO {
 				resultList.add(dto);
 			}
 
-			System.out.println("[FAQ 목록]");
-			resultList.forEach(System.out::println);
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -589,7 +580,6 @@ public class SupportDAOImpl implements SupportDAO {
 				}
 			}
 
-			System.out.println("[SupportDAO] " + faqList.size() + "건의 faqtype_id(" + typeId + ") 반환.");
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -616,8 +606,6 @@ public class SupportDAOImpl implements SupportDAO {
 				resultList.add(dto);
 			}
 
-			System.out.println("[FAQ 유형 목록]");
-			resultList.forEach(System.out::println);
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -652,8 +640,6 @@ public class SupportDAOImpl implements SupportDAO {
 				resultList.add(dto);
 			} // end while
 
-			System.out.println("[피드백 목록]");
-			resultList.forEach(System.out::println);
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -686,8 +672,6 @@ public class SupportDAOImpl implements SupportDAO {
 				resultList.add(dto);
 			} // end while
 
-			System.out.println("[피드백 목록]");
-			resultList.forEach(System.out::println);
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -730,9 +714,7 @@ public class SupportDAOImpl implements SupportDAO {
 				insertStmt.setString(8, feedback.getFeedback_style()); // 실명1, 익명0
 				insertStmt.setString(9, feedback.getFeedback_type());
 
-				System.out.println("feedback.getFeedback_style(): " + feedback.getFeedback_style());
 				int result = insertStmt.executeUpdate();
-//				System.out.println("[FeedbackDTO] " + result + "건의 전체 insert 시행.");
 				return result > 0;
 			}
 
@@ -751,7 +733,6 @@ public class SupportDAOImpl implements SupportDAO {
 				PreparedStatement stmt1 = conn1.prepareStatement(sql1);
 				ResultSet rs1 = stmt1.executeQuery()) {
 
-			System.out.println();
 //			boolean selectFlag1 = rs1.next();
 			while (rs1.next()) {
 				FeedbackDTO dto1 = new FeedbackDTO();
@@ -767,9 +748,6 @@ public class SupportDAOImpl implements SupportDAO {
 				dto1.setFeedback_type(rs1.getString("feedback_type"));
 				resultList1.add(dto1);
 			} // end while
-			System.out.println("resultList1: " + resultList1);
-			System.out.println("[접수된 피드백 목록]");
-			resultList1.forEach(System.out::println);
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -787,7 +765,6 @@ public class SupportDAOImpl implements SupportDAO {
 				PreparedStatement stmt2 = conn2.prepareStatement(sql2);
 				ResultSet rs2 = stmt2.executeQuery()) {
 
-			System.out.println();
 //			boolean selectFlag2 = rs2.next();
 			while (rs2.next()) {
 				FeedbackDTO dto2 = new FeedbackDTO();
@@ -803,9 +780,6 @@ public class SupportDAOImpl implements SupportDAO {
 				dto2.setFeedback_type(rs2.getString("feedback_type"));
 				resultList2.add(dto2);
 			} // end while
-			System.out.println("resultList2: " + resultList2);
-			System.out.println("[진행중인 피드백 목록]");
-			resultList2.forEach(System.out::println);
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -827,9 +801,6 @@ public class SupportDAOImpl implements SupportDAO {
 //				PreparedStatement stmt2 = conn2.prepareStatement(sql2);
 //				ResultSet rs2 = stmt2.executeQuery()) {
 //
-//			System.out.println();
-//			System.out.println("conn2: " + conn2);
-//			System.out.println("rs2.next(): " + rs2.next());
 //
 //			while (rs2.next()) {
 //				FeedbackDTO dto2 = new FeedbackDTO();
@@ -845,9 +816,6 @@ public class SupportDAOImpl implements SupportDAO {
 //				resultList2.add(dto2);
 //			} // end while
 //
-//			System.out.println("resultList2: " + resultList2);
-//			System.out.println("[진행중인 피드백 목록]");
-//			resultList2.forEach(System.out::println);
 //
 //		} catch (SQLException e) {
 //			e.printStackTrace();
@@ -922,7 +890,6 @@ public class SupportDAOImpl implements SupportDAO {
 			e.printStackTrace();
 		}
 
-		System.out.println("feedback_status: " + flag);
 		return flag;
 
 	}
@@ -943,7 +910,6 @@ public class SupportDAOImpl implements SupportDAO {
 			e.printStackTrace();
 		}
 
-		System.out.println("feedback_status: " + flag);
 		return flag;
 
 	}
@@ -1028,8 +994,6 @@ public class SupportDAOImpl implements SupportDAO {
 				resultList.add(dto);
 			}
 
-			System.out.println("[FAQ 상위 3개 조회순]");
-			resultList.forEach(System.out::println);
 
 		} catch (SQLException e) {
 			e.printStackTrace();

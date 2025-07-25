@@ -22,7 +22,6 @@ public class DonationController {
     public String donationPage(@RequestParam("lectureNo") String lectureNo,
                                Authentication authentication,
                                Model model) {
-        System.out.println("[LOG] donationPage 메서드 진입 lectureNo=" + lectureNo);
 
         LectureDetailDTO lecture = lectureService.getLectureDetail(lectureNo);
         if (lecture == null) {
@@ -47,16 +46,10 @@ public class DonationController {
         }
 
         Long userMiles = donationService.getUserMiles(userSeq);
-        System.out.println("[DEBUG] userSeq = " + userSeq);
-        System.out.println("[DEBUG] userMiles = " + userMiles);
 
         model.addAttribute("lecture", lecture);
         model.addAttribute("userMiles", userMiles);
 
-        System.out.println("lectureNo = " + lectureNo);
-        System.out.println("lecture = " + lecture);
-        System.out.println("userSeq = " + userSeq);
-        System.out.println("auth = " + authentication);
 
         return "user/donation/donation";
     }

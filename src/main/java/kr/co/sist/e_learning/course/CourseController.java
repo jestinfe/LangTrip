@@ -96,13 +96,11 @@ public class CourseController {
 	public ResponseEntity<?> registerCourse(@RequestParam("thumbnail") MultipartFile mf,
 			@ModelAttribute CourseDTO cDTO,
 			Authentication authentication)throws Exception{
-		System.out.println("아 되냐? 여기까진?");
 		Object principal = authentication.getPrincipal();
 		Long userSeq = null;
 		if(principal instanceof Long) {
 			userSeq = (Long) principal;
 		}
-		System.out.println("사용자 seq : "  + userSeq);
 		
 		String thumbNail="";
 		
@@ -145,14 +143,7 @@ public class CourseController {
 		cDTO.setThumbnailName(thumbNail);
 		cDTO.setThumbnailPath("/courseImg/"+thumbNail);
 		cDTO.setUploadDate(new Date());
-		System.out.println("썸네일: " + cDTO.getThumbnailName());
-		System.out.println("유저 아이디 : "+cDTO.getUserSeq());
-		System.out.println("썸네일 패스 : " + cDTO.getThumbnailPath());
 		
-		System.out.println("카테고리:" + cDTO.getCategory());
-		System.out.println("난이도:" + cDTO.getDifficulty());
-		System.out.println("제목: " + cDTO.getCourseTitle());
-		System.out.println("설명: " + cDTO.getIntroduction());
 		cDTO.setFlag("T");
 		int result = cs.addCourse(cDTO);
 		if (result == 0) {
@@ -166,7 +157,6 @@ public class CourseController {
 	
 	@GetMapping("/upload/upload_course")
 	public String showCourseForm(@RequestParam("seq") String courseSeq, Model model) {
-		System.out.println("📌 강의 이동 요청 수신: " + courseSeq);
 		
 		CourseDTO cDTO = cs.selectCourseData(courseSeq);
 		List<VideoDTO> videoList = vs.searchVideoByCourseSeq(courseSeq);
@@ -177,23 +167,10 @@ public class CourseController {
 		List<QuizListDTO> quizList = qs.searchDistinctQuizLists(courseSeq);
 		
 		
-			System.out.println(cDTO.getUserSeq()+"님의 "+cDTO.getUserSeq());
-			System.out.println(cDTO.getUserSeq()+"님의 "+cDTO.getCourseTitle());
-			System.out.println(cDTO.getUserSeq()+"님의 "+cDTO.getDifficulty());
-			System.out.println(cDTO.getUserSeq()+"님의 "+cDTO.getUploadDate());
-			System.out.println(cDTO.getUserSeq()+"님의 "+cDTO.getCourseSeq());
-			System.out.println("컨텐츠"+cDTO.getContentCount());
-			System.out.println("비디오"+cDTO.getVideoCount());
-			System.out.println("-------------------------------------------");
-		
 			if(videoList.isEmpty()) {
-				System.out.println("비디오 강의들이 없음요");
 			}else {
 			for(VideoDTO vDTO : videoList) {
 				
-				System.out.println(cDTO.getUserSeq()+"님의 "+vDTO.getType());
-				System.out.println(cDTO.getUserSeq()+"님의 "+vDTO.getFileName());
-				System.out.println(cDTO.getUserSeq()+"님의 "+vDTO.getCourseSeq());
 				}
 			}
 		model.addAttribute("courseData", cDTO);
@@ -205,13 +182,6 @@ public class CourseController {
 	@GetMapping("/upload/upload_update")
 	public String updateCourse(HttpSession session, Model model) {
 		CourseDTO cDTO = (CourseDTO) session.getAttribute("courseToEdit");
-		System.out.println("수정 강의 시퀀스 : "+cDTO.getCourseSeq());
-		System.out.println("수정 강의 제목 : "+cDTO.getCourseTitle());
-		System.out.println("수정 강의 설명 : "+cDTO.getIntroduction());
-		System.out.println("수정 강의 난이도 : "+cDTO.getDifficulty());
-		System.out.println("수정 강의 카테고리 : "+cDTO.getCategory());
-		System.out.println("수정 강의 전 썸네일 이름 : "+cDTO.getThumbnailName());
-		System.out.println("수정 강의 전 경로 : "+cDTO.getThumbnailPath());
 		model.addAttribute("cDTO", cDTO);
 		return "ui/update_course";
 	}
@@ -250,22 +220,12 @@ public class CourseController {
 		cDTO.setThumbnailName(thumbNail);
 		cDTO.setThumbnailPath("/upload/img/"+thumbNail);
 		
-		System.out.println("썸네일 이름"+cDTO.getThumbnailName());
 		
 		int result = cs.modifyCourse(cDTO);
 		if(result>0) {
-			System.out.println("수정 성공시발새꺄");
 		}else {
-			System.out.println("수정 실패새꺄");
 		}
 		
-		System.out.println("수정 강의 후 시퀀스 : "+cDTO.getCourseSeq());
-		System.out.println("수정 강의 후 제목 : "+cDTO.getCourseTitle());
-		System.out.println("수정 강의 후 설명 : "+cDTO.getIntroduction());
-		System.out.println("수정 강의 후 난이도 : "+cDTO.getDifficulty());
-		System.out.println("수정 강의 후 카테고리 : "+cDTO.getCategory());
-		System.out.println("수정 강의 후 썸네일 이름 : "+cDTO.getThumbnailName());
-		System.out.println("수정 강의 후 경로 : "+cDTO.getThumbnailPath());
 //		session.setAttribute("courseToEdit", cDTO);
 		model.addAttribute("cDTO", cDTO);
 		 
@@ -281,10 +241,8 @@ public class CourseController {
 		String msg="";
 		if(result>0) {
 			msg ="success";
-			System.out.println("삭제 성공");
 		}else {
 			msg ="fail";
-			System.out.println("삭제 실패");
 		}
 		
 		return msg;

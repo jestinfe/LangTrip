@@ -24,7 +24,6 @@ public class AdminUserService {
 		List<UserDTO> list = adminUserMapper.selectUserList(reqDTO);
 		int totalCnt = adminUserMapper.countUserList(reqDTO);
 		
-		System.out.println("✅ 현재 페이지: " + reqDTO.getPage());
 		
 		return new UsrAndRptPageResponseDTO<UserDTO>(list, totalCnt, reqDTO.getPage());
 	}

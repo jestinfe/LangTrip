@@ -9,16 +9,11 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import kr.co.sist.e_learning.mileWallet.MileWalletDao;
 import kr.co.sist.e_learning.mileWallet.MileWalletDTO;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Service
 public class DonationServiceImpl implements DonationService {
 
-    private static final Logger logger = LoggerFactory.getLogger(DonationServiceImpl.class);
 
-    @Autowired
-    private DonationJpaRepository donationRepository;
 
     @Autowired
     private MileWalletDao mileWalletDao;
@@ -33,11 +28,9 @@ public class DonationServiceImpl implements DonationService {
     @Transactional
     public DonationDTO donate(Long sponsorUserSeq, DonationRequestDTO dto) {
 
-        logger.debug("Donation process started for sponsorUserSeq: {}", sponsorUserSeq);
         
         // 1. 후원자 지갑 및 잔액 확인
         Long sponsorWalletSeq = getOrCreateSponsorWalletSeq(sponsorUserSeq);
-        logger.debug("Retrieved sponsorWalletSeq: {}", sponsorWalletSeq);
 
         // 2. 후원자의 보유 마일 확인 및 부족 시 예외 처리
         Long currentUserMiles = getUserMiles(sponsorUserSeq);
@@ -121,7 +114,6 @@ public class DonationServiceImpl implements DonationService {
      */
     @Transactional
     public void saveDonationRecord(DonationRequestDTO dto, Long sponsorWalletSeq, Long instructorWalletSeq, long amount) {
-        logger.debug("Saving donation record for sponsorWalletSeq: {}, instructorWalletSeq: {}", sponsorWalletSeq, instructorWalletSeq);
         DonationEntity donation = new DonationEntity();
         Long seq = ((Number) entityManager
                 .createNativeQuery("SELECT SEQ_donation.NEXTVAL FROM DUAL")
