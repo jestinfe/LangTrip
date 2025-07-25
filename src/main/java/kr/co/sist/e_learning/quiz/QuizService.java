@@ -17,7 +17,7 @@ public interface QuizService {
 	public Map<String, Object> getQuizList(String quizListSeq, Long userSeq);
 	
 	//퀴즈 응답 저장
-	public void saveQuizResponse(QuizResponseDTO qrDTO);
+	public void saveQuizResponse(List<QuizResponseDTO> responseList);
 	
 	//강의실 퀴즈 리스트 info
 	//public List<QuizListDTO> getAllQuizList(String userSeq);
@@ -43,4 +43,6 @@ public interface QuizService {
 	 
 	 public List<QuizListDTO> searchDistinctQuizLists(String courseSeq);
 
+	 //퀴즈 만든 사용자의 응답 insert 방지용
+	 public Long getQuizOwnerUserSeq(String quizListSeq);
 }

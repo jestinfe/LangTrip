@@ -21,17 +21,19 @@
     <label>퀴즈 제목</label>
     <input type="text" id="quizTitle" class="form-control" placeholder="퀴즈 제목을 입력해주세요.">
 	<input type="hidden" id="courseSeq" th:value="${courseSeq}">
-    <label class="mt-3">언어 분류</label>
+    
+   <!--  <label class="mt-3">언어 분류</label>
     <select id="langCategory" class="form-select">
     <option value="">선택해주세요</option>
       <option value="영어">영어</option>
       <option value="일본어">일본어</option>
       <option value="중국어">중국어</option>
-    </select>
+    </select> -->
     
      <div class="type-examples mt-4">
           <div class="example-box mb-2">
             <strong class="example-label">퀴즈 예시</strong>
+            <span class="example-label">💡 이미지 퀴즈는 최대 3개까지 가능합니다 !</span>
             <img src="/images/quiz/text-quiz-ex.png" class="img-thumbnail">
             <img src="/images/quiz/image-quiz-ex.png" class="img-thumbnail">
           </div>
@@ -221,6 +223,65 @@ $(function () {
 	const quizList = [];
     const imageFiles = [];
 
+ 	// 이미지 퀴즈 개수 제한 검사 -> 3개까지만 가능
+	let imgQuizCount = 0;
+	$(".slide").each(function () {
+	  const type = $(this).find("select[name$='.type']").val();
+	  if (type === "img-quiz") {
+	    imgQuizCount++;
+	  }
+	});
+	if (imgQuizCount > 3) {
+	  alert("이미지 퀴즈는 3개까지 등록 가능합니다.");
+	  return;
+	}
+	
+	// 이미지 파일 수 검사
+	if (imageFiles.length > 9) {
+	  alert("이미지 파일은 최대 9개까지만 업로드할 수 있습니다.");
+	  return;
+	}
+    
+    // 문제 제목 null 방지
+    if ($("#quizTitle").val().trim() === "") {
+      alert("퀴즈 제목을 입력해주세요.");
+      $("#quizTitle").focus();
+      return;
+    }
+    
+ 	// 필수 입력값 간단 검증
+    let isValid = true;
+
+    $(".slide").each(function (i) {
+      const question = $(this).find("textarea").val().trim();
+      if (question === "") {
+        alert(`${i + 1}번 문제를 입력해주세요.`);
+        $(this).find("textarea").focus();
+        isValid = false;
+        return false;
+      }
+
+      const options = $(this).find(".option-row input[type='text']");
+      for (let j = 0; j < options.length; j++) {
+        if ($(options[j]).val().trim() === "") {
+          alert(`${i + 1}번 문제의 보기 ${j + 1}번 내용을 입력해주세요.`);
+          $(options[j]).focus();
+          isValid = false;
+          return false;
+        }
+      }
+
+      const correct = $(this).find("select[name$='.correctOption']").val();
+      if (!correct) {
+        alert(`${i + 1}번 문제의 정답을 선택해주세요.`);
+        $(this).find("select[name$='.correctOption']").focus();
+        isValid = false;
+        return false;
+      }
+    });
+
+    if (!isValid) return; // 검증 실패 시 전송 중단
+    
     // 각 퀴즈 슬라이드(문제 단위)를 순회하면서 데이터 수집
     $(".slide").each(function (quizIdx) {
       const $slide = $(this);
@@ -269,9 +330,13 @@ $(function () {
       headers: { "Content-Type": "multipart/form-data" }
     })
     .then(res => {
-      alert("퀴즈 등록 완료!");
-      const courseSeq = document.getElementById("courseSeq").value;
-      window.location.href = '/upload/upload_course?seq='+courseSeq;
+      if (res.data.startsWith("success")) {
+	      alert("퀴즈 등록 완료!");
+	      const courseSeq = document.getElementById("courseSeq").value;
+	      window.location.href = '/upload/upload_course?seq='+courseSeq;
+      } else {
+    	  alert("퀴즈 등록 실패"); 
+      }
     })
     .catch(err => {
       console.log("오류", err);

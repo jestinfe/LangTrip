@@ -13,6 +13,13 @@
 <input type="hidden" id="quizListSeq" th:value="${qlDTO.quizListSeq}" />
 <input type="hidden" id="quizCourseSeq" th:value="${qDTO.courseSeq}"/>
 <button type="button" id="backButton" class="back-button"><span aria-hidden="true">&larr;</span></button>
+<!-- /quiz/playQuiz/{quizListSeq}?courseSeq={courseSeq} -->
+<div class="hover-box">
+<button type="button" id="playButton" class="play-button">
+	<span aria-hidden="true">퀴즈 풀기</span>
+</button>
+<div class="tooltip-text">응답 저장 불가</div>
+</div>
 <div class="logo-box text-center mb-4">
   <img th:src="@{/images/quiz/mascot_logo.png}" alt="LangTrip Logo">
 </div>
@@ -25,17 +32,18 @@
            placeholder="퀴즈 제목을 입력해주세요."
            th:value="${qlDTO.title}" />
 
-    <label class="mt-3">언어 분류</label>
+   <!--  <label class="mt-3">언어 분류</label>
     <select id="langCategory" class="form-select">
       <option value="">선택해주세요</option>
       <option value="영어" th:selected="${qlDTO.langCategory == '영어'}">영어</option>
       <option value="일본어" th:selected="${qlDTO.langCategory == '일본어'}">일본어</option>
       <option value="중국어" th:selected="${qlDTO.langCategory == '중국어'}">중국어</option>
-    </select>
+    </select> -->
     
     <div class="type-examples mt-4">
           <div class="example-box mb-2">
             <strong class="example-label">퀴즈 예시</strong>
+            <span class="example-label">💡 이미지 퀴즈는 최대 3개까지 가능합니다 !</span>
             <img src="/images/quiz/text-quiz-ex.png" class="img-thumbnail">
             <img src="/images/quiz/image-quiz-ex.png" class="img-thumbnail">
           </div>
@@ -285,7 +293,7 @@ $(function () {
   // 삭제 버튼
   $("#deleteQuizBtn").click(function () {
     const quizListSeq = $("#quizListSeq").val();
-    const courseSeq = $("quizCourseSeq").value;
+    const courseSeq = $("#quizCourseSeq").val();
     
     if (!confirm("정말 삭제하시겠습니까?")) return;
 
@@ -293,7 +301,7 @@ $(function () {
       .then(res => {
         if (res.data === "delete") {
           alert("삭제 완료");
-          window.location.href = '/upload/upload_course?seq='+courseSeq;
+          window.location.href = '/ui/user_lecture?seq='+courseSeq;
         }
       })
       .catch(err => {
@@ -306,6 +314,14 @@ $(function () {
   $("#backButton").click(function() {
     window.history.back();
   });
+  
+  // 퀴즈 풀기 버튼 → 학습 화면으로 이동
+  $("#playButton").click(function () {
+    const quizListSeq = $("#quizListSeq").val();
+    const courseSeq = $("#quizCourseSeq").val();
+    window.location.href = `/quiz/playQuiz/${quizListSeq}?courseSeq=${courseSeq}`;
+  });
+  
 });
 </script>
 

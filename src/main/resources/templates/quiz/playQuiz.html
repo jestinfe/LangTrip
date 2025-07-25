@@ -60,9 +60,11 @@
 
   // 슬라이드를 보여주는 함수
   function showSlide(index) {
+	  
     slides.forEach((slide, i) => {
-      slide.style.display = i === index ? 'block' : 'none';
-    });
+    slide.style.display = i === index ? 'block' : 'none';
+	});//forEach
+    
     // 슬라이드 변경 시 피드백 관련 상태 초기화
     document.getElementById("submitBtn").textContent = "제출하기";
     document.getElementById("bottomNavbar").classList.remove("correct-feedback", "incorrect-feedback");
@@ -70,14 +72,16 @@
 
     const currentSlide = slides[currentIndex];
     const feedbackMessageContainer = document.getElementById("feedbackMessageContainer");
+   
     if (feedbackMessageContainer) {
         feedbackMessageContainer.innerHTML = ""; // 이전 피드백 메시지 제거
     }
-        currentSlide.querySelectorAll(".option-btn, .card-option").forEach(el => {
-        el.classList.remove("selected-correct", "selected-incorrect", "correct-highlight");
-        el.style.pointerEvents = "auto"; // 다시 선택 가능하게
-    });
-  }
+     currentSlide.querySelectorAll(".option-btn, .card-option").forEach(el => {
+     el.classList.remove("selected-correct", "selected-incorrect", "correct-highlight");
+     el.style.pointerEvents = "auto"; // 다시 선택 가능하게
+    });//forEach
+    
+  }//showSlide
 
   // 진행률 바 업데이트 (응답 수 기준)
   function updateProgress() {
@@ -96,30 +100,33 @@
     selections[quizSeq] = answer;
   }
 
-  // 단일 퀴즈 제출 및 피드백 처리
+  // 단일 퀴즈 : 보기 제출시 피드백 처리
   async function processAnswerFeedback() {
     const currentSlide = slides[currentIndex];
+    //현재 슬라이드에서 quizSeq 가져오기
     const quizSeq = currentSlide.querySelector(".option-btn, .card-option")?.dataset.quiz;
-    const selectedOption = selections[quizSeq];
+   	//해당 퀴즈에 대한 사용자의 선택된 보기 번호 selectOption 가져옴
+    const selectOption = selections[quizSeq];
 
-    if (!selectedOption) {
+    if (!selectOption) {
       alert("보기를 선택해주세요.");
       return;
     }
 
     const quizListSeq = document.getElementById("quizListSeq").value;
     const courseSeq = document.getElementById("courseSeq").value;
+    //DOM 객체 캐싱
     const bottomNavbar = document.getElementById("bottomNavbar");
     const submitBtn = document.getElementById("submitBtn");
 
     try {
-      const response = await axios.post("/submitAnswer", {
-        quizSeq: quizSeq,
-        quizListSeq: quizListSeq,
-        courseSeq: courseSeq,
-        selectOption: selectedOption,
+       const response = await axios.post("/submitAnswer", { 
+	        quizSeq: quizSeq,
+	        quizListSeq: quizListSeq,
+	        courseSeq: courseSeq,
+	        selectOption: selectOption,
       });
-
+	 //서버 응답 결과로 피드백 처리
       const { correct, correctOption, correctContent } = response.data;
       
       console.log('correctOption:', correctOption, 'correctContent:', correctContent);
@@ -152,71 +159,90 @@
 
       // 선택된 보기 및 정답 보기 스타일 적용 및 선택 불가 처리
       currentSlide.querySelectorAll(`[data-quiz='${quizSeq}']`).forEach(el => {
-        el.style.pointerEvents = "none"; // 선택 변경 불가
+        
+    	el.style.pointerEvents = "none"; // 선택 변경 불가
         const optionNumber = parseInt(el.dataset.answer);
 
-        if (optionNumber === selectedOption) {
+        if (optionNumber === selectOption) {
           el.classList.add(correct ? "selected-correct" : "selected-incorrect");
         }
-        if (optionNumber === correctOption) {
+       /*  if (optionNumber === correctOption) {
           el.classList.add("correct-highlight");
-        }
-      });
+        } */
         
-
-      feedbackDisplayed = true;
-      updateProgress(); // 진행률 업데이트
+      });//forEach 
+	      feedbackDisplayed = true; //피드백 표시
+	      updateProgress(); // 진행률 업데이트
+   
     } catch (err) {
-      console.error(`❌ ${quizSeq} 응답 처리 실패`, err);
-      if (err.response) {
-        // 서버 응답이 있는 경우 (예: 4xx, 5xx 에러)
-        console.error("Error Response Data:", err.response.data);
-        console.error("Error Response Status:", err.response.status);
-        console.error("Error Response Headers:", err.response.headers);
-      } else if (err.request) {
-        // 요청이 전송되었지만 응답을 받지 못한 경우 (예: 네트워크 오류)
-        console.error("Error Request:", err.request);
-      } else {
-        // 요청 설정 중 발생한 오류
-        console.error("Error Message:", err.message);
-      }
-      alert("퀴즈 처리 중 오류가 발생했습니다.");
+    	console.error(`${quizSeq} 응답 처리 실패`, err);
+     	alert("오류가 발생했습니다.");
     }
-  }
+  }//processAnswerFeedback
 
+  // 서버로 모든 결과 전송
+  function submitAllQuizResponses() {
+	  
+    const quizListSeq = document.getElementById("quizListSeq").value;
+    const courseSeq = document.getElementById("courseSeq").value;
+	
+    //selections:응답이 저장되어있는 객체
+    //map:QuizResponseDTO 형식의 배열로 변환
+	const responses = Object.entries(selections).map(([quizSeq, selectOption]) => ({
+		quizListSeq,
+		quizSeq,
+		courseSeq,
+		selectOption
+	}));//responses
+	
+	// 응답 insert
+	axios.post("/quizResponse", responses)
+	.then(res => {
+	   	 window.location.href = `/quiz/quizCompleted/${quizListSeq}?courseSeq=${courseSeq}`;
+	})
+	.catch(err => {
+	    console.error("응답 저장 실패", err);
+	    alert("제출하는 도중 오류가 발생하였습니다.");
+	})
+    
+  }//submitAllQuizResponses
+  
   // 제출 버튼 클릭 시 다음 문제로 이동하거나 최종 제출
   function handleSubmit() {
     if (!feedbackDisplayed) {
-      processAnswerFeedback(); // 정답/오답 피드백 처리
+      processAnswerFeedback(); // 단일 퀴즈 : 보기 제출시 피드백 처리
     } else {
       // 피드백이 표시된 상태에서 버튼 클릭 시
       if (currentIndex < slides.length - 1) {
         currentIndex++;
-        showSlide(currentIndex);
+        showSlide(currentIndex); //다음 문제 슬라이드로 이동
       } else {
         submitAllQuizResponses(); // 모든 퀴즈 응답 최종 제출
       }
     }
-  }
-
-  // 서버로 모든 결과 전송 (이전 submitAnswers 함수)
-  function submitAllQuizResponses() {
-    const quizListSeq = document.getElementById("quizListSeq").value;
-    const courseSeq = document.getElementById("courseSeq").value;
-
-    window.location.href = `/quiz/quizCompleted/${quizListSeq}?courseSeq=${courseSeq}`;
-  }
+  }//handleSubmit
 
   // 페이지 로드 시 퀴즈 데이터 불러오기
   document.addEventListener("DOMContentLoaded", () => {
+	console.log("✅ DOMContentLoaded 실행됨");
     const quizListSeq = document.getElementById("quizListSeq").value;
-
+    console.log("📌 quizListSeq:", quizListSeq);
+    
     axios.get(`/playQuizProcess/${quizListSeq}`)
       .then(res => {
         const quizList = res.data.quizList;
+        console.log("🎯 quizList 내용:", quizList);
+        
+        if (!Array.isArray(quizList) || quizList.length === 0) {
+            alert("퀴즈가 존재하지 않거나 불러올 수 없습니다.");
+            console.error("서버 응답:", res.data);
+            return;
+          }
+        
         const container = document.getElementById("quizContainer");
 
         quizList.forEach((quiz, index) => {
+          console.log(`Processing quiz ${index + 1}:`, quiz); // Log the quiz object
           const slide = document.createElement("div");
           slide.className = "quiz-slide";
           slide.style.display = index === 0 ? "block" : "none";
@@ -250,6 +276,7 @@
               <div class="options-container">${optionsHTML}</div>
             </div>
           `;
+          console.log(`Final slide.innerHTML for quiz ${index + 1}:`, slide.innerHTML); // Log final slide HTML
 
           // 보기 클릭 이벤트 처리
           slide.addEventListener("click", e => {
@@ -269,12 +296,13 @@
 
     // 하단 네비게이션 바에 ID 추가
     document.querySelector(".bottom-navbar").id = "bottomNavbar";
+   
     // 제출 버튼 클릭 시 실행
     document.getElementById("submitBtn").addEventListener("click", handleSubmit);
 
     // X 버튼 클릭 시 커스텀 모달 표시
     document.getElementById("exitQuizBtn").addEventListener("click", () => {
-      document.getElementById("exitQuizCustomModal").style.display = "flex";
+    document.getElementById("exitQuizCustomModal").style.display = "flex";
     });
 
     // 모달 닫기 버튼 (X) 클릭 시
@@ -290,6 +318,7 @@
     // 모달 '종료하기' 버튼 클릭 시
     document.getElementById("confirmExitQuiz").addEventListener("click", () => {
       window.history.back();
+      
     });
   });
 </script>
