@@ -228,7 +228,7 @@ public class AuthServiceImpl implements AuthService {
         if (user == null || !passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
             throw new RuntimeException("아이디 또는 비밀번호가 일치하지 않습니다.");
         }
-
+        
         String accessToken = jwtTokenProvider.createAccessToken(user.getUserId(), user.getUserSeq());
         String refreshToken = jwtTokenProvider.createRefreshToken();
         LocalDateTime expiresAt = LocalDateTime.now().plusDays(7);
