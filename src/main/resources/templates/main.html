@@ -276,27 +276,63 @@ body.logged-out .user-state {
                     <h2 class="section-title">최근 수강한 강의</h2>
                     <a href="/mypage/user_course" class="view-all">전체 보기</a>
                 </div>
-                <div class="course-grid" th:if="${!#lists.isEmpty(enrolledCourses)}">
-                    <div th:each="course : ${enrolledCourses}" class="course-card">
-                        <div class="course-thumbnail">
-                            <img th:src="${course.thumbnailPath != null ? course.thumbnailPath : '/images/default_thumbnail.png'}" alt="Course Thumbnail" style="width:100%; height:100%; object-fit: cover;"/>
-                            <div class="course-level" th:text="${course.difficulty}"></div>
-                        </div>
-                        <div class="course-info">
-                            <span class="course-category" th:text="${course.category}"></span>
-                            <h3 class="course-title" th:text="${course.courseTitle}"></h3>
-                            <div class="course-instructor">
-                                <span class="instructor-name" th:text="${course.instructorName}"></span>
-                            </div>
-                            <div class="course-footer">
-                                <a th:href="@{/ui/user_registered_course(seq=${course.courseSeq})}" class="enroll-btn">학습 하기</a>
-                            </div>
-                        </div>
-                    </div>
+                <div class="course-grid" id="enrolled-courses-grid">
+                    <!-- Enrolled courses will be loaded here by JavaScript -->
                 </div>
-                <div th:if="${#lists.isEmpty(enrolledCourses)}" style="text-align: center; color:#666; padding:1.5rem;">
+                <div id="no-enrolled-courses" style="text-align: center; color:#666; padding:1.5rem; display: none;">
                     아직 수강 중인 강의가 없습니다. 새로운 강의를 찾아보세요!
                 </div>
+            </div>
+        </section>
+
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+        <script>
+            // Make fetchEnrolledCourses globally accessible
+            window.fetchEnrolledCourses = function() {
+                axios.get('/api/main/enrolledCourses')
+                    .then(function (response) {
+                        const enrolledCourses = response.data;
+                        const courseGrid = document.getElementById('enrolled-courses-grid');
+                        const noCoursesMessage = document.getElementById('no-enrolled-courses');
+
+                        if (enrolledCourses && enrolledCourses.length > 0) {
+                            courseGrid.innerHTML = ''; // Clear existing content
+                            enrolledCourses.forEach(function(course) {
+                                const courseCard = `
+                                    <div class="course-card">
+                                        <div class="course-thumbnail">
+                                            <img src="${course.thumbnailPath ? course.thumbnailPath : '/images/default_thumbnail.png'}" alt="Course Thumbnail" style="width:100%; height:100%; object-fit: cover;"/>
+                                            <div class="course-level">${course.difficulty}</div>
+                                        </div>
+                                        <div class="course-info">
+                                            <span class="course-category">${course.category}</span>
+                                            <h3 class="course-title">${course.courseTitle}</h3>
+                                            <div class="course-instructor">
+                                                <span class="instructor-name">${course.instructorName}</span>
+                                            </div>
+                                            <div class="course-footer">
+                                                <a href="/ui/user_registered_course?seq=${course.courseSeq}" class="enroll-btn">학습 하기</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `;
+                                courseGrid.insertAdjacentHTML('beforeend', courseCard);
+                            });
+                            noCoursesMessage.style.display = 'none';
+                        } else {
+                            courseGrid.innerHTML = ''; // Ensure grid is empty
+                            noCoursesMessage.style.display = 'block';
+                        }
+                    })
+                    .catch(function (error) {
+                        console.error('Error fetching enrolled courses:', error);
+                        // Optionally display an error message to the user
+                        const courseGrid = document.getElementById('enrolled-courses-grid');
+                        courseGrid.innerHTML = '<p style="text-align: center; color: red;">강의를 불러오는 데 실패했습니다.</p>';
+                    });
+            };
+        </script>
+        <section>
             </div>
             <div th:unless="${loggedIn}" class="guest-section" style="text-align: center; padding: 3rem 0; background-color: #f9f9f9; border-radius: 8px; margin-bottom: 3rem;">
                 <h2 style="font-size: 1.8rem; color: #333; margin-bottom: 1rem;">로그인하고 나만의 학습 로드맵을 시작해보세요!</h2>

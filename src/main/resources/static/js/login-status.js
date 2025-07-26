@@ -23,6 +23,10 @@ document.addEventListener("DOMContentLoaded", async function () {
             if (userNameEl) {
                 userNameEl.textContent = result.nickname || "사용자";
             }
+            // Call fetchEnrolledCourses if it exists
+            if (typeof window.fetchEnrolledCourses === 'function') {
+                window.fetchEnrolledCourses();
+            }
         } else {
             document.body.classList.add("logged-out");
             document.body.classList.remove("logged-in");

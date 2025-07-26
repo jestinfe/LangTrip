@@ -43,9 +43,10 @@
 		resultType="UserCourseDTO">
 		SELECT e.enroll_seq, e.user_seq, c.title AS courseTitle, c.introduction, c.upload_date,
 		c.thumbnail_path, c.thumbnail_name, c.category, c.course_seq,
-		c.difficulty, c.is_public, e.enroll_date
+		c.difficulty, c.is_public, e.enroll_date, u.nickname AS instructorName
 		FROM course_enrollment e
 		JOIN course c ON e.course_seq = c.course_seq
+		JOIN users u ON c.user_seq = u.user_seq
 		WHERE e.user_seq = #{userSeq}
 		ORDER BY e.enroll_date ASC
 		OFFSET #{offset}  ROWS FETCH NEXT #{limit} ROWS ONLY
