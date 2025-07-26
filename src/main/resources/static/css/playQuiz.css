@@ -424,3 +424,23 @@ body {
 .exit-button:hover {
     background-color: #e63946;
 }
+
+#quizInfoBox {
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+#quizInfoBox > div {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* 상태와 제목 사이 간격 */
+}
+
+#quizTitleDisplay {
+  font-weight: 700;
+  font-size: 1.4rem;
+  margin: 0;
+  position: relative;
+  top: 2px;
+}
+

@@ -301,6 +301,26 @@
     	      console.error("진행률 불러오기 실패", err);
     	    });
     	  });
+    	  
+    	  //퀴즈 버튼 완료 처리
+    	  const quizButtons = document.querySelectorAll(".start-quiz-button");
+    	  
+    	  quizButtons.forEach(button => {
+    		  const quizListSeq = button.dataset.quizId;
+		     // const quizCourseSeq = button.dataset.courseId;
+		      
+		      axios.get("/quiz/status", {
+		    	params: { userSeq, quizListSeq }
+		      	}).then(res => {
+		    	  const quizStatus = res.data.status;
+		    	  if(quizStatus == "complete") {
+		    		  button.classList.add("completed");
+		    	  }//end if
+		     	 }).catch(err => {
+		          console.error("퀴즈 상태 확인 실패", err);
+		         });
+    	  })//forEach
+    	  
     	});
 
 
