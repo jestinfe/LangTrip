@@ -216,33 +216,49 @@ body.logged-out .user-state {
             </form>
         </div>
 
-        <!-- 강의 목록 -->
-        <div class="course-grid" id="courseGrid">
-            <div class="course-card" th:each="course : ${courseList}">
-                <div class="course-thumbnail">
-                    <img th:src="${course.thumbnailPath != null ? course.thumbnailPath : '/images/default_thumbnail.png'}" alt="Course Thumbnail" style="width:100%; height:100%; object-fit: cover;"/>
-                    <div class="course-level" th:text="${course.difficulty}"></div>
-                </div>
-                <div class="course-info">
-                    <span class="course-category" th:text="${course.category}"></span>
-                    <h3 class="course-title" th:text="${course.title}"></h3>
-                    <div class="course-instructor">
-                        <span class="instructor-name" th:text="${course.instructorName}"></span>
-                    </div>
-                    <div class="course-stats">
-                        <!-- Add actual stats if available in DTO -->
-                    </div>
-                    <div class="course-footer">
-                        <a th:href="@{/ui/user_lecture(seq=${course.courseSeq})}" class="enroll-btn">강의 보기</a>
-                    </div>
-                </div>
-            </div>
-            <div th:if="${#lists.isEmpty(courseList)}" class="empty-state">
-                <div class="empty-icon">📚</div>
-                <h3>검색 결과가 없습니다</h3>
-                <p>다른 검색어나 필터 조건을 시도해보세요.</p>
-            </div>
-        </div>
+		<!-- 강의 목록 -->
+		<div class="course-grid" id="courseGrid">
+		    <div class="course-card" th:each="course : ${courseList}">
+		        <div class="course-thumbnail">
+		            <img th:src="${course.thumbnailPath != null ? course.thumbnailPath : '/images/default_thumbnail.png'}"
+		                 alt="Course Thumbnail"
+		                 style="width:100%; height:100%; object-fit: cover;" />
+		            <div class="course-level" th:text="${course.difficulty}"></div>
+		        </div>
+		
+		        <div class="course-info">
+		            <span class="course-category" th:text="${course.category}"></span>
+		            <h3 class="course-title" th:text="${course.title}"></h3>
+		
+		            <div class="course-instructor">
+		                <span class="instructor-name" th:text="${course.instructorName}"></span>
+		            </div>
+		
+		            <div class="course-stats">
+		                <!-- 통계 정보 등 필요시 여기에 추가 -->
+		            </div>
+		
+		            <div class="course-footer">
+		                <a th:href="@{/ui/user_lecture(seq=${course.courseSeq})}" class="enroll-btn">강의 보기</a>
+	
+	                <!-- 🔴 테스트용 수강취소 버튼 -->
+                <form th:action="@{/user/course_cancel}" method="post" onsubmit="return confirm('수강 취소하시겠습니까?')" style="margin: 0;">
+                    <input type="hidden" name="courseSeq" th:value="${course.courseSeq}" />
+                    <button type="submit" class="btn-course-cancel">수강 취소</button>
+                </form>
+		                
+		            </div>
+		        </div>
+		    </div>
+		
+		    <!-- 검색 결과 없음 -->
+		    <div th:if="${#lists.isEmpty(courseList)}" class="empty-state">
+		        <div class="empty-icon">📚</div>
+		        <h3>검색 결과가 없습니다</h3>
+		        <p>다른 검색어나 필터 조건을 시도해보세요.</p>
+		    </div>
+		</div>
+
 
         <!-- Pagination -->
         <div class="pagination" id="pagination" th:if="${totalPages > 0}">

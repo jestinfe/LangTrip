@@ -22,4 +22,7 @@ public interface UserCourseMapper {
     int countPublicCourses(Map<String, Object> params);
     List<UserCourseListDisplayDTO> selectNewCourses(@Param("limit") int limit);
     List<UserCourseDTO> selectRecentEnrolledCourses(Map<String, Object> paramMap);
+    
+    
+    int deleteUserCourse(UserCourseDTO dto);
 }
