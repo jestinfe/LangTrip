@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>회원 통계</title>
+  <link rel="icon" href="/images/favicon.ico">
+  
+  <link rel="stylesheet" href="/css/admin_sidebar.css">
+
+  <script src="/js/chart.umd.js"></script>
+  <script src="/js/userStatisticsCharts.js"></script>
+ 
+ <link rel="stylesheet" href="/css/userStatistics.css">
+
+</style>
+
+</head>
+<body>
+  <div th:replace="~{/layout/admin_sidebar :: sidebar}"></div>
+
+
+<!-- 메인 콘텐츠 -->
+<main class="admin-stats-main">
+  <h2 class="admin-stats-title">
+    <i class="fas fa-chart-pie"></i> 관리자 대시보드
+  </h2>
+
+  <!-- ⏰ 시간별 통계 -->
+  <section class="admin-chart-item admin-chart-item--full">
+    <h5 class="admin-chart-title">
+      <i class="fas fa-clock"></i> 시간대별 접속 통계
+    </h5>
+    <canvas id="hourlyAccessChart"></canvas>
+  </section>
+
+  <!-- 📊 주요 통계 -->
+  <button id="export-signup">가입자 수 CSV 다운로드</button>
+  <section class="admin-chart-grid">
+    <div class="admin-chart-item">
+      <h3 class="admin-chart-title">
+        <i class="fas fa-user-plus"></i> 일별 회원 가입 수
+      </h3>
+      <canvas id="signupLineChart"></canvas>
+    </div>
+
+    <div class="admin-chart-item">
+      <h3 class="admin-chart-title">
+        <i class="fas fa-share-square"></i> 유입 경로 통계
+      </h3>
+      <canvas id="pathDonutChart"></canvas>
+    </div>
+
+    <div class="admin-chart-item">
+      <h3 class="admin-chart-title">
+        <i class="fas fa-sign-out-alt"></i> 탈퇴 사유 통계
+      </h3>
+      <canvas id="reasonBarChart"></canvas>
+    </div>
+
+    <div class="admin-chart-item">
+      <h3 class="admin-chart-title">
+        <i class="fas fa-book"></i> 카테고리별 강의 등록 수
+      </h3>
+      <canvas id="courseCategoryChart"></canvas>
+    </div>
+
+    <div class="admin-chart-item">
+      <h3 class="admin-chart-title">
+        <i class="fas fa-signal"></i> 난이도별 강의 등록 수
+      </h3>
+      <canvas id="courseDifficultyChart"></canvas>
+    </div>
+
+    <div class="admin-chart-item">
+      <h3 class="admin-chart-title">
+        <i class="fas fa-bullhorn"></i> 광고별 클릭 횟수
+      </h3>
+      <canvas id="adClickChart"></canvas>
+    </div>
+  </section>
+</main>
+
+
+
+<!-- Font Awesome CDN (최하단에 넣기) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/js/all.min.js"></script>
+  
+</body>
+
+</html>

@@ -3,6 +3,7 @@ package kr.co.sist.e_learning.admin.commuCon;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value; // Value 어노테이션 추가
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -13,14 +14,18 @@ import kr.co.sist.e_learning.community.dto.CommunityPostDTO;
 import kr.co.sist.e_learning.user.auth.UserAuthentication; // UserAuthentication import 추가
 import org.springframework.security.core.Authentication; // Authentication import 추가
 import org.springframework.security.core.context.SecurityContextHolder; // SecurityContextHolder import 추가
+import org.springframework.web.multipart.MultipartFile; // MultipartFile import 추가
 
+import java.io.File; // File import 추가
+import java.io.IOException; // IOException import 추가
 import java.sql.Timestamp; 
 import java.time.LocalDateTime; 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID; // UUID import 추가
 
 @Controller
-@RequestMapping("/admin/dash") // ⭐ 이 부분이 /admin/dash 로 다시 변경되었습니다.
+@RequestMapping("/admin/dash") // ⭐ 이 부분이 /admin/dash 로 되어 있어야 합니다.
 public class AdminCommuController {
 
     @Autowired
@@ -30,6 +35,12 @@ public class AdminCommuController {
     private VoteService voteService;
     
     private static final Logger logger = LoggerFactory.getLogger(AdminCommuController.class);
+
+    @Value("${file.upload-dir.root}") // application.properties의 root 경로 주입
+    private String uploadDirRoot;
+
+    @Value("${upload.path.community}") // application.properties의 community 경로 주입
+    private String uploadPathWeb;
 
     // ⭐ 추가: 현재 로그인된 사용자의 userSeq를 가져오는 헬퍼 메소드
     private Long getCurrentUserSeq() {
@@ -151,12 +162,45 @@ public class AdminCommuController {
         return "admin/dash/admincommuDetail"; 
     }
     
-    // 관리자는 글쓰기 페이지를 볼 수 있지만, 실제 글 작성은 여기서 처리하지 않음 (POST 엔드포인트 제거)
     @GetMapping("/commuSWrite")
     public String showAdminCommunityWritePage(Model model) {
         // ⭐ 추가: 현재 로그인된 사용자 ID를 모델에 추가 (글쓰기 페이지에서도 필요할 수 있음)
         model.addAttribute("currentUserSeq", getCurrentUserSeq());
         return "admin/dash/admincommuWrite"; 
+    }
+    
+    // ⭐ 추가: 관리자용 공지사항 작성 POST 엔드포인트
+    @PostMapping("/community/writeNotice")
+    public String writeNotice(@ModelAttribute CommunityPostDTO dto) {
+        // userId는 폼에서 hidden 필드로 넘어오거나, 관리자 계정의 userId를 직접 설정
+        // 여기서는 폼에서 넘어오는 userId를 사용하거나, 특정 관리자 ID를 직접 설정할 수 있습니다.
+        // 예: dto.setUserId(1001L); // '운영자' 계정의 user_seq가 1001이라고 가정
+        
+        communityPostService.writeNoticeForAdmin(dto);
+        return "redirect:/admin/dash/admincommunity";
+    }
+
+    // ⭐ 추가: 관리자용 이미지 업로드 엔드포인트
+    @PostMapping("/community/uploadImage")
+    @ResponseBody
+    public String uploadImage(@RequestParam("image") MultipartFile imageFile) {
+        // 관리자 권한 확인 로직 추가 (선택 사항, SecurityConfig에서 이미 처리될 수 있음)
+        // if (getCurrentUserSeq() == null || !hasAdminRole()) { return "error: Unauthorized"; }
+
+        try {
+            String fileName = UUID.randomUUID() + "_" + imageFile.getOriginalFilename();
+            File dir = new File(uploadDirRoot + "/community"); // 이미지 저장 경로
+            if (!dir.exists()) {
+                dir.mkdirs();
+            }
+
+            File dest = new File(dir, fileName);
+            imageFile.transferTo(dest);
+            return uploadPathWeb + "/" + fileName; // 웹 접근 가능한 URL 반환
+        } catch (IOException e) {
+            logger.error("관리자 이미지 업로드 중 오류 발생", e);
+            return null;
+        }
     }
     
     // 게시글 삭제 POST 엔드포인트는 유지 (관리자가 삭제는 가능)

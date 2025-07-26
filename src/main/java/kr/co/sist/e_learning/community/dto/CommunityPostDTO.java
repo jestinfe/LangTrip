@@ -31,4 +31,9 @@ public class CommunityPostDTO {
     
     private String communityNotice;
     
+    
+    
+    private String userStatus; 
+    
+    
 }

@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.co.sist.e_learning.admin.course.AdminCourseMapper">
+
+  <select id="selectAdminCourses" parameterType="map" resultType="kr.co.sist.e_learning.admin.course.AdminCourseDTO">
+    SELECT
+      c.COURSE_SEQ AS courseSeq,
+      c.USER_SEQ AS userSeq,
+      c.TITLE AS title,
+      c.INTRODUCTION AS introduction,
+      c.UPLOAD_DATE AS uploadDate,
+      c.IS_PUBLIC AS isPublic,
+      u.NICKNAME AS userName,
+      (SELECT COUNT(*) FROM VIDEO v WHERE v.COURSE_SEQ = c.COURSE_SEQ) AS videoCount,
+      (SELECT COUNT(*) FROM QUIZ q WHERE q.COURSE_SEQ = c.COURSE_SEQ) AS quizCount
+    FROM COURSE c
+    JOIN USERS u ON c.USER_SEQ = u.USER_SEQ
+    <where>
+      <if test="searchType != null and searchKeyword != null and searchKeyword != ''">
+        <choose>
+          <when test="searchType == 'title'">
+            AND c.TITLE LIKE '%' || #{searchKeyword} || '%'
+          </when>
+          <when test="searchType == 'userName'">
+            AND u.NICKNAME LIKE '%' || #{searchKeyword} || '%'
+          </when>
+        </choose>
+      </if>
+      <if test="isPublic != null and isPublic != ''">
+        AND c.IS_PUBLIC = #{isPublic}
+      </if>
+    </where>
+    ORDER BY
+      <choose>
+        <when test="sort == 'uploadDate,asc'">c.UPLOAD_DATE ASC</when>
+        <when test="sort == 'uploadDate,desc'">c.UPLOAD_DATE DESC</when>
+        <when test="sort == 'title,asc'">c.TITLE ASC</when>
+        <when test="sort == 'title,desc'">c.TITLE DESC</when>
+        <otherwise>c.UPLOAD_DATE DESC</otherwise>
+      </choose>
+    OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+  </select>
+
+  <select id="countAdminCourses" parameterType="map" resultType="int">
+    SELECT COUNT(*)
+    FROM COURSE c
+    JOIN USERS u ON c.USER_SEQ = u.USER_SEQ
+    <where>
+      <if test="searchType != null and searchKeyword != null and searchKeyword != ''">
+        <choose>
+          <when test="searchType == 'title'">
+            AND c.TITLE LIKE '%' || #{searchKeyword} || '%'
+          </when>
+          <when test="searchType == 'userName'">
+            AND u.NICKNAME LIKE '%' || #{searchKeyword} || '%'
+          </when>
+        </choose>
+      </if>
+      <if test="isPublic != null and isPublic != ''">
+        AND c.IS_PUBLIC = #{isPublic}
+      </if>
+    </where>
+  </select>
+
+  <resultMap id="adminCourseDetailMap" type="kr.co.sist.e_learning.admin.course.AdminCourseDetailDTO">
+    <id property="courseSeq" column="COURSE_SEQ"/>
+    <result property="userSeq" column="USER_SEQ"/>
+    <result property="title" column="TITLE"/>
+    <result property="introduction" column="INTRODUCTION"/>
+    <result property="uploadDate" column="UPLOAD_DATE"/>
+    <result property="isPublic" column="IS_PUBLIC"/>
+    <result property="category" column="CATEGORY"/>
+    <result property="difficulty" column="DIFFICULTY"/>
+    <result property="thumbnailPath" column="THUMBNAIL_PATH"/>
+    <result property="thumbnailName" column="THUMBNAIL_NAME"/>
+    <result property="userName" column="USER_NAME"/>
+    <collection property="videos" ofType="kr.co.sist.e_learning.video.VideoDTO" select="selectVideosByCourseSeq" column="COURSE_SEQ"/>
+    <collection property="quizzes" ofType="kr.co.sist.e_learning.quiz.QuizListDTO" select="kr.co.sist.e_learning.quiz.QuizMapper.selectQuizListsWithQuizzesByCourseSeq" column="COURSE_SEQ"/>
+  </resultMap>
+
+  <select id="selectAdminCourseDetail" parameterType="String" resultMap="adminCourseDetailMap">
+    SELECT
+      c.COURSE_SEQ,
+      c.USER_SEQ,
+      c.TITLE,
+      c.INTRODUCTION,
+      c.UPLOAD_DATE,
+      c.IS_PUBLIC,
+      c.CATEGORY,
+      c.DIFFICULTY,
+      c.THUMBNAIL_PATH,
+      c.THUMBNAIL_NAME,
+      u.NICKNAME AS USER_NAME
+    FROM COURSE c
+    JOIN USERS u ON c.USER_SEQ = u.USER_SEQ
+    WHERE c.COURSE_SEQ = #{courseSeq}
+  </select>
+
+  <select id="selectVideosByCourseSeq" parameterType="String" resultType="kr.co.sist.e_learning.video.VideoDTO">
+    SELECT
+      VIDEO_SEQ AS videoSeq,
+      COURSE_SEQ AS courseSeq,
+      TITLE,
+      FILE_PATH AS filePath,
+      FILE_NAME AS fileName,
+      UPLOAD_DATE AS uploadDate,
+      DESCRIPTION,
+      IS_COMPLETED AS isCompleted,
+      VIDEO_ORDER AS videoOrder,
+      TYPE
+    FROM VIDEO
+    WHERE COURSE_SEQ = #{courseSeq}
+    ORDER BY VIDEO_ORDER ASC
+  </select>
+
+  <update id="updateCourseVisibility" parameterType="map">
+    UPDATE COURSE
+    SET IS_PUBLIC = #{isPublic}
+    WHERE COURSE_SEQ = #{courseSeq}
+  </update>
+
+  <select id="selectVideoBySeq" parameterType="String" resultType="kr.co.sist.e_learning.video.VideoDTO">
+    SELECT
+      VIDEO_SEQ AS videoSeq,
+      COURSE_SEQ AS courseSeq,
+      TITLE,
+      FILE_PATH AS filePath,
+      FILE_NAME AS fileName,
+      UPLOAD_DATE AS uploadDate,
+      DESCRIPTION,
+      IS_COMPLETED AS isCompleted,
+      VIDEO_ORDER AS videoOrder,
+      TYPE
+    FROM VIDEO
+    WHERE VIDEO_SEQ = #{videoSeq}
+  </select>
+
+  
+
+  
+
+  </mapper>

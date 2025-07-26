@@ -1,4 +1,4 @@
-	package kr.co.sist.e_learning.community.controller;
+package kr.co.sist.e_learning.community.controller;
 
 import kr.co.sist.e_learning.community.dto.CommunityCommentDTO;
 import kr.co.sist.e_learning.community.dto.CommunityPostDTO;
@@ -7,6 +7,8 @@ import kr.co.sist.e_learning.community.service.VoteService;
 import kr.co.sist.e_learning.user.auth.UserAuthentication;
 import kr.co.sist.e_learning.user.auth.UserRepository;
 import kr.co.sist.e_learning.user.auth.UserEntity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
@@ -28,6 +30,7 @@ import java.util.UUID;
 @RequestMapping("/csj")
 public class CommunityPostController {
 
+    private static final Logger logger = LoggerFactory.getLogger(CommunityPostController.class);
 
     @Autowired
     private CommunityPostService communityService;
@@ -178,6 +181,7 @@ public class CommunityPostController {
     @ResponseBody
     public String uploadImage(@RequestParam("image") MultipartFile imageFile) {
         if (getCurrentUserSeq() == null) {
+            logger.warn("이미지 업로드 시도 - 로그인되지 않은 사용자");
             return "error: Not logged in";
         }
 
@@ -186,13 +190,27 @@ public class CommunityPostController {
             File dir = new File(uploadDirRoot + "/community");
             if (!dir.exists()) {
                 dir.mkdirs();
+                logger.info("이미지 업로드 디렉토리 생성: {}", dir.getAbsolutePath());
             }
-
+            
             File dest = new File(dir, fileName);
+            logger.info("uploadDirRoot: {}", uploadDirRoot);
+            logger.info("uploadPathWeb: {}", uploadPathWeb);
+            logger.info("저장된 파일 위치: {}", dest.getAbsolutePath());
+            logger.info("브라우저에 반환되는 URL: {}", uploadPathWeb + "/" + fileName);
+
+            	
+            
+            
             imageFile.transferTo(dest);
+            logger.info("이미지 업로드 성공: {}", dest.getAbsolutePath());
             return uploadPathWeb + "/" + fileName;
         } catch (IOException e) {
-            return null;
+            logger.error("이미지 업로드 중 IO 오류 발생: {}", e.getMessage(), e);
+            return "error: File upload failed due to server error"; // 구체적인 에러 메시지 반환
+        } catch (Exception e) {
+            logger.error("이미지 업로드 중 알 수 없는 오류 발생: {}", e.getMessage(), e);
+            return "error: An unexpected error occurred during upload"; // 일반적인 에러 메시지 반환
         }
     }
 

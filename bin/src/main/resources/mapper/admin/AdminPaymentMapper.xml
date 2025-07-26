@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.co.sist.e_learning.admin.payment.AdminPaymentMapper">
+
+  <!-- Payments -->
+  <sql id="paymentWhereCondition">
+    <where>
+      <if test="searchDTO.searchKeyword != null and searchDTO.searchKeyword != ''">
+        AND u.nickname LIKE '%' || #{searchDTO.searchKeyword} || '%'
+      </if>
+      <if test="searchDTO.startDate != null and searchDTO.startDate != ''">
+        AND p.created_at &gt;= TO_DATE(#{searchDTO.startDate}, 'YYYY-MM-DD')
+      </if>
+      <if test="searchDTO.endDate != null and searchDTO.endDate != ''">
+        AND p.created_at &lt; TO_DATE(#{searchDTO.endDate}, 'YYYY-MM-DD') + 1
+      </if>
+    </where>
+  </sql>
+
+  <select id="countAllPayments" parameterType="map" resultType="int">
+    SELECT COUNT(*)
+    FROM payments p
+    JOIN mile_wallet mw ON p.wallet_seq = mw.wallet_seq
+    JOIN users u ON mw.user_seq = u.user_seq
+    <include refid="paymentWhereCondition"/>
+  </select>
+
+  <select id="selectAllPayments" parameterType="map" resultType="kr.co.sist.e_learning.admin.payment.PaymentDTO">
+    SELECT *
+FROM (
+  SELECT ROWNUM AS rn, inner_query.*
+  FROM (
+    SELECT
+      p.payment_seq,
+      p.wallet_seq,
+      u.nickname,
+      p.payment_amount,
+      p.payment_status,
+      p.created_at,
+      r.reason,
+      r.requested_at AS refundRequestedAt,
+      r.processed_at AS refundProcessedAt
+    FROM payments p
+    JOIN mile_wallet mw ON p.wallet_seq = mw.wallet_seq
+    JOIN users u ON mw.user_seq = u.user_seq
+    LEFT JOIN refund r ON p.payment_seq = r.payment_seq
+    <include refid="paymentWhereCondition"/>
+    ORDER BY p.created_at DESC
+  ) inner_query
+)
+WHERE rn BETWEEN #{pageRequestDTO.offset} + 1 AND #{pageRequestDTO.offset} + #{pageRequestDTO.size}
+    
+  </select>
+
+  <!-- Settlements -->
+  <sql id="settlementWhereCondition">
+    <where>
+      <if test="searchDTO.searchKeyword != null and searchDTO.searchKeyword != ''">
+        AND u.nickname LIKE '%' || #{searchDTO.searchKeyword} || '%'
+      </if>
+      <if test="searchDTO.startDate != null and searchDTO.startDate != ''">
+        AND sr.requested_at &gt;= TO_DATE(#{searchDTO.startDate}, 'YYYY-MM-DD')
+      </if>
+      <if test="searchDTO.endDate != null and searchDTO.endDate != ''">
+        AND sr.requested_at &lt; TO_DATE(#{searchDTO.endDate}, 'YYYY-MM-DD') + 1
+      </if>
+    </where>
+  </sql>
+
+  <select id="countAllSettlements" parameterType="map" resultType="int">
+    SELECT COUNT(*)
+    FROM settlement_request sr
+    JOIN users u ON sr.user_seq = u.user_seq
+    <include refid="settlementWhereCondition"/>
+  </select>
+
+  <select id="selectAllSettlements" parameterType="map" resultType="kr.co.sist.e_learning.admin.payment.SettlementDTO">
+    SELECT *
+    FROM (
+      SELECT
+        ROWNUM AS rn,
+        sr.request_seq,
+        sr.user_seq,
+        sr.wallet_seq,
+        u.nickname,
+        sr.paid_amount,
+        sr.status,
+        sr.requested_at,
+        sr.processed_at,
+        sr.reject_reason
+      FROM settlement_request sr
+      JOIN users u ON sr.user_seq = u.user_seq
+      <include refid="settlementWhereCondition"/>
+      ORDER BY sr.requested_at DESC
+    )
+    WHERE rn BETWEEN #{pageRequestDTO.offset} + 1 AND #{pageRequestDTO.offset} + #{pageRequestDTO.size}
+  </select>
+
+  <select id="selectPaymentDetail" parameterType="string" resultType="kr.co.sist.e_learning.admin.payment.PaymentDTO">
+    SELECT
+      p.payment_seq,
+      p.wallet_seq,
+      u.nickname,
+      p.payment_amount,
+      p.payment_status,
+      p.created_at
+    FROM payments p
+    JOIN mile_wallet mw ON p.wallet_seq = mw.wallet_seq
+    JOIN users u ON mw.user_seq = u.user_seq
+    WHERE p.payment_seq = #{paymentSeq}
+  </select>
+
+  <select id="selectSettlementDetail" parameterType="string" resultType="kr.co.sist.e_learning.admin.payment.SettlementDTO">
+    SELECT
+      sr.request_seq,
+      sr.user_seq,
+      sr.wallet_seq,
+      u.nickname,
+      sr.total_mile,
+      sr.company_fee,
+      sr.paid_amount,
+      sr.status,
+      sr.requested_at,
+      sr.processed_at,
+      sr.reject_reason
+    FROM settlement_request sr
+    JOIN users u ON sr.user_seq = u.user_seq
+    WHERE sr.request_seq = #{requestSeq}
+  </select>
+
+  <!-- Update Status -->
+  <update id="updatePaymentStatus" parameterType="map">
+    UPDATE payments
+    SET payment_status = #{status}
+    WHERE payment_seq = #{paymentSeq}
+  </update>
+
+  <update id="updateSettlementStatus" parameterType="map">
+    UPDATE settlement_request
+    SET status = #{status},
+        reject_reason = #{reason},
+        processed_at = SYSDATE
+    WHERE request_seq = #{requestSeq}
+  </update>
+  
+  <update id="updateRefundStatus" parameterType="map">
+    UPDATE refund
+    SET status = #{status},
+        reject_reason = #{reason},
+        processed_at = SYSDATE
+    WHERE payment_seq = #{paymentSeq}
+  </update>
+  
+  <!-- Wallet Updates -->
+  <update id="updatWalletByRefund" parameterType="map">
+    UPDATE mile_wallet
+    SET donation_available = donation_available - #{amount},
+        total_miles = total_miles - #{amount},
+        updated_at = SYSDATE
+    WHERE wallet_seq = #{walletSeq}
+  </update>
+  
+  <update id="updatWalletBySettlement" parameterType="map">
+    UPDATE mile_wallet
+    SET received_miles = 0,
+        updated_at = SYSDATE
+    WHERE wallet_seq = #{walletSeq}
+  </update>
+
+</mapper>

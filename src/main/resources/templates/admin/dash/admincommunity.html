@@ -3,9 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <title>강의 추천 게시판</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css"/>
   <link rel="stylesheet" th:href="@{/css/common.css}">
-  <link rel="stylesheet" th:href="@{/css/community.css}"> 
+  <link rel="stylesheet" th:href="@{/css/admincommunity.css}"> 
    <link rel="stylesheet" href="/css/admin_sidebar.css">
    
  <script src="/js/login-status.js" defer></script>
@@ -31,11 +32,14 @@ body.logged-out .user-state {
 </style>
 
 <body>
-
-  <div class="container">	
-    <h3 class="board-title">강의 추천 게시판</h3>
     <div th:replace="~{/layout/admin_sidebar :: sidebar}"></div>
 
+  <div class="container">	
+
+  <div class="admin-section-header">
+  <h2><i class="bi bi-chat-dots-fill"></i> 커뮤니티 관리</h2>
+  <p>사용자 커뮤니티 활동을 조회하고 관리합니다.</p>
+</div>
     <div class="header-controls">
       <div class="tab-group">
         <button class="tab-button" data-tab="all" th:classappend="${tab == null || tab == 'all'} ? 'active'">전체글</button>
@@ -133,14 +137,9 @@ body.logged-out .user-state {
     // 탭 버튼 클릭 이벤트
     document.querySelectorAll(".tab-button").forEach(function (btn) {
       btn.addEventListener("click", function () {
-        const tab = this.getAttribute("data-tab");
-        const keyword = document.querySelector("input[name='keyword']").value;
-        const size = document.getElementById("pageSizeInput").value;
-        let url = `/admin/dash/admincommunity?tab=${tab}&page=1&size=${size}`;
-        if (keyword) {
-            url += `&keyword=${keyword}`;
-        }
-        window.location.href = url;
+        document.getElementById("tabInput").value = this.getAttribute("data-tab");
+        document.getElementById("pageInput").value = 1; // 탭 변경 시 1페이지로 초기화
+        document.getElementById("filterForm").submit();
       });
     });
 
