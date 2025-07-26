@@ -1,0 +1,391 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.co.sist.e_learning.mypage.MyPageMapper">
+
+	<!-- 대시보드 요약 정보 조회 -->
+	<select id="selectMyPageSummary"
+	        parameterType="long"
+	        resultType="kr.co.sist.e_learning.mypage.MyPageDTO">
+	  SELECT
+	    u.user_seq AS userSeq,
+	    u.nickname AS nickname,
+	    u.email,
+	    u.profile AS profile,
+	    u.social_id AS socialId,
+	    3 AS completedCourses,
+	    120 AS totalStudyTime,
+	    95.5 AS quizAccuracy,
+	    '실버' AS donationLevel,
+	    (
+	      SELECT NVL(SUM(d.donation_amount), 0)
+	      FROM donations d
+	      JOIN mile_wallet mw ON d.wallet_seq = mw.wallet_seq
+	      WHERE mw.user_seq = u.user_seq
+	    ) AS totalDonation
+	  FROM users u
+	  WHERE u.user_seq = #{userSeq}
+	</select>
+
+
+<!-- 총 후원액 합계 -->
+<select id="selectTotalDonationByUserSeq"
+        parameterType="long"
+        resultType="int">
+  SELECT NVL(SUM(d.donation_amount), 0)
+  FROM donations d
+  JOIN mile_wallet mw ON d.wallet_seq = mw.wallet_seq
+  WHERE mw.user_seq = #{userSeq}
+</select>
+
+
+
+  <!-- 내 정보 조회 -->
+  <select id="selectUserInfo"
+          parameterType="long"
+          resultType="kr.co.sist.e_learning.mypage.MyPageDTO">
+    SELECT 
+      user_seq AS userSeq,
+      email,
+      password,
+      nickname,
+      status,
+      profile,
+      social_id AS socialId,
+      social_provider AS socialProvider
+    FROM users
+    WHERE user_seq = #{userSeq}
+  </select>
+
+  <!-- 프로필 경로 조회 -->
+  <select id="selectProfilePath"
+          parameterType="long"
+          resultType="string">
+    SELECT profile
+    FROM users
+    WHERE user_seq = #{userSeq}
+  </select>
+
+  <!-- 사용자 프로필 경로 업데이트 -->
+  <update id="updateProfile"
+          parameterType="map">
+    UPDATE users
+    SET profile = #{profile}
+    WHERE user_seq = #{userSeq}
+  </update>
+  
+  
+	<!-- 회원 탈퇴 -->
+	<select id="getUserPassword" parameterType="long" resultType="String">
+	    SELECT password FROM users WHERE user_seq = #{userSeq}
+	</select>
+	
+	<!-- 탈퇴 사유 업데이트 -->
+	<update id="updateWithdrawalStatus">
+	    UPDATE users
+	    SET status = '탈퇴',
+	        unsign_path = #{reasonCode}
+	    WHERE user_seq = #{userSeq}
+	</update>
+	
+	<!-- 닉네임 가져오기 -->
+	<select id="getUserNickname" parameterType="long" resultType="String">
+    SELECT nickname FROM users WHERE user_seq = #{userSeq}
+	</select>
+
+<!-- 수강 내역 조회 -->
+<select id="selectLectureHistory"
+        parameterType="long"
+        resultType="kr.co.sist.e_learning.mypage.LectureHistoryDTO">
+  SELECT
+    l.lecture_seq AS lectureSeq,
+    l.lecture_title AS lectureTitle,
+    l.instructor_name AS instructorName,
+    lh.enrollment_date AS enrollmentDate,
+    lh.completion_date AS completionDate,
+    lh.progress AS progress
+  FROM lectures l
+  JOIN lecture_history lh ON l.lecture_seq = lh.lecture_seq
+  WHERE lh.user_seq = #{userSeq}
+</select>
+
+<!-- 내 강의 조회 -->
+<select id="selectMyLectures"
+        parameterType="long"
+        resultType="kr.co.sist.e_learning.mypage.LectureHistoryDTO">
+  SELECT
+    l.lecture_seq AS lectureSeq,
+    l.lecture_title AS lectureTitle,
+    l.instructor_name AS instructorName,
+    l.created_at AS enrollmentDate
+  FROM lectures l
+  WHERE l.instructor_seq = #{userSeq}
+</select>
+
+<!-- 결제 내역 조회 -->
+<select id="selectPaymentHistory"
+        parameterType="long"
+        resultType="kr.co.sist.e_learning.mypage.PaymentsDTO">
+  SELECT
+    payment_seq AS paymentSeq,
+    imp_uid AS impUid,
+    wallet_seq AS walletSeq,
+    method,
+    provider,
+    payment_amount AS paymentAmount,
+    payment_status AS paymentStatus,
+    created_at AS createdAt,
+    currency,
+    channel,
+    name,
+    receipt_url AS receiptUrl,
+    fail_reason AS failReason,
+    ip_address AS ipAddress,
+    device_info AS deviceInfo,
+    user_agent AS userAgent,
+    fee_rate AS feeRate,
+    user_seq AS userSeq,
+    mile_amount AS mileAmount
+  FROM payments
+  WHERE user_seq = #{userSeq}
+  ORDER BY created_at DESC
+</select>
+
+<!-- 환불 가능한 결제 내역 조회 -->
+
+<select id="selectRefundablePayments"
+        parameterType="long"
+        resultType="kr.co.sist.e_learning.mypage.PaymentsDTO">
+  SELECT
+    p.payment_seq AS paymentSeq,
+    p.imp_uid AS impUid,
+    p.wallet_seq AS walletSeq,
+    p.method,
+    p.provider,
+    p.payment_amount AS paymentAmount,
+    p.payment_status AS paymentStatus,
+    p.created_at AS createdAt,
+    p.currency,
+    p.channel,
+    p.name,
+    p.receipt_url AS receiptUrl,
+    p.fail_reason AS failReason,
+    p.ip_address AS ipAddress,
+    p.device_info AS deviceInfo,
+    p.user_agent AS userAgent,
+    p.fee_rate AS feeRate,
+    p.user_seq AS userSeq,
+    p.mile_amount AS mileAmount
+  FROM payments p
+  WHERE p.user_seq = #{userSeq}
+    AND p.payment_status = 'payment_success'
+    AND NOT EXISTS (
+      SELECT 1
+      FROM donations d
+      WHERE d.wallet_seq = p.wallet_seq
+        AND d.created_at > p.created_at
+    )
+  ORDER BY p.created_at DESC
+</select>
+
+
+<!-- 결제 상태 업데이트 -->
+<update id="updatePaymentStatus"
+        parameterType="map">
+  UPDATE payments
+  SET payment_status = #{status}
+  WHERE payment_seq = #{paymentSeq}
+</update>
+
+<!-- 환불 기록 삽입 -->
+<insert id="insertRefund"
+        parameterType="kr.co.sist.e_learning.mypage.RefundDTO">
+  INSERT INTO refund (
+    refund_seq, payment_seq, account_seq, wallet_seq, refund_amount, requested_at, status, reason
+  )
+  VALUES (
+    SYS_GUID(), #{paymentSeq}, #{accountSeq}, #{walletSeq}, #{refundAmount}, SYSTIMESTAMP, #{status}, #{reason}
+  )
+</insert>
+
+<!-- 단일 결제 정보 조회 -->
+<select id="selectPaymentByPaymentSeq"
+        parameterType="string"
+        resultType="kr.co.sist.e_learning.mypage.PaymentsDTO">
+  SELECT
+    payment_seq AS paymentSeq,
+    imp_uid AS impUid,
+    wallet_seq AS walletSeq,
+    method,
+    provider,
+    payment_amount AS paymentAmount,
+    payment_status AS paymentStatus,
+    created_at AS createdAt,
+    currency,
+    channel,
+    name,
+    receipt_url AS receiptUrl,
+    fail_reason AS failReason,
+    ip_address AS ipAddress,
+    device_info AS deviceInfo,
+    user_agent AS userAgent,
+    fee_rate AS feeRate,
+    user_seq AS userSeq,
+    mile_amount AS mileAmount
+  FROM payments
+  WHERE payment_seq = #{paymentSeq}
+</select>
+
+<!-- 환불 내역 조회 -->
+<select id="selectRefundHistory"
+        parameterType="long"
+        resultType="kr.co.sist.e_learning.mypage.RefundDTO">
+  SELECT
+    r.refund_seq AS refundSeq,
+    r.payment_seq AS paymentSeq,
+    r.account_seq AS accountSeq,
+    r.wallet_seq AS walletSeq,
+    r.refund_amount AS refundAmount,
+    r.requested_at AS requestedAt,
+    r.processed_at AS processedAt,
+    r.status,
+    r.reason,
+    r.reject_reason AS rejectReason,
+    p.name AS paymentName -- 결제 상품명 추가
+  FROM refund r
+  JOIN payments p ON r.payment_seq = p.payment_seq
+  WHERE r.wallet_seq IN (SELECT wallet_seq FROM mile_wallet WHERE user_seq = #{userSeq})
+  ORDER BY r.requested_at DESC
+</select>
+
+  <!-- 사용자 계좌 정보 조회 -->
+  <select id="selectUserAccount"
+          parameterType="long"
+          resultType="kr.co.sist.e_learning.mypage.UserAccountDTO">
+    SELECT
+      account_seq AS accountSeq,
+      user_seq AS userSeq,
+      bank_code AS bankCode,
+      account_num AS accountNum,
+      holder_name AS holderName,
+      verified,
+      created_at AS createdAt
+    FROM user_account
+    WHERE user_seq = #{userSeq}
+  </select>
+
+  <!-- 사용자 계좌 정보 삽입 -->
+  <insert id="insertUserAccount"
+          parameterType="kr.co.sist.e_learning.mypage.UserAccountDTO">
+    INSERT INTO user_account (account_seq, user_seq, bank_code, account_num, holder_name)
+    VALUES (SYS_GUID(), #{userSeq}, #{bankCode}, #{accountNum}, #{holderName})
+  </insert>
+
+  <!-- 사용자 계좌 정보 업데이트 -->
+  <update id="updateUserAccount"
+          parameterType="kr.co.sist.e_learning.mypage.UserAccountDTO">
+    UPDATE user_account
+    SET
+      bank_code = #{bankCode},
+      account_num = #{accountNum},
+      holder_name = #{holderName}
+    WHERE user_seq = #{userSeq}
+  </update>
+
+  <!-- 사용자 계좌 정보 삭제 -->
+  <delete id="deleteUserAccount"
+          parameterType="long">
+    DELETE FROM user_account
+    WHERE user_seq = #{userSeq}
+  </delete>
+  
+  <!-- 정산 신청 삽입 -->
+  <insert id="insertSettlementRequest"
+          parameterType="kr.co.sist.e_learning.mypage.SettlementRequestDTO">
+   <selectKey resultType="long" keyProperty="requestSeq" order="BEFORE">
+    SELECT settlement_seq.NEXTVAL FROM DUAL
+  </selectKey>
+    INSERT INTO settlement_request (
+      request_seq, user_seq, wallet_seq, total_mile, status, requested_at, company_fee, paid_amount
+    )
+    VALUES (
+      #{requestSeq}, #{userSeq}, #{walletSeq}, #{totalMile}, #{status}, SYSDATE,#{companyFee, jdbcType=NUMERIC},
+    #{paidAmount, jdbcType=NUMERIC}
+    )
+  </insert>
+
+  <!-- 진행 중인 정산 신청 조회 -->
+  <select id="selectPendingSettlementRequest" parameterType="long" resultType="kr.co.sist.e_learning.mypage.SettlementRequestDTO">
+    SELECT
+        request_seq AS requestSeq,
+        user_seq AS userSeq,
+        wallet_seq AS walletSeq,
+        TOTAL_MILE AS totalMile,
+        status,
+        requested_at AS requestedAt,
+        processed_at AS processedAt,
+        company_fee AS companyFee,
+        PAID_AMOUNT AS paidAmount
+    FROM
+        settlement_request
+    WHERE
+        user_seq = #{userSeq}
+        AND status = 'settlement_requested'
+  </select>
+
+  <!-- 정산 내역 조회 -->
+  <select id="selectSettlementHistory"
+          parameterType="long"
+          resultType="kr.co.sist.e_learning.mypage.SettlementRequestDTO">
+    SELECT
+      request_seq AS requestSeq,
+      user_seq AS userSeq,
+      wallet_seq AS walletSeq,
+      total_mile AS totalMile,
+      status,
+      requested_at AS requestedAt,
+      processed_at AS processedAt,
+      company_fee AS companyFee,
+      paid_amount AS paidAmount,
+      reject_reason AS rejectReason
+    FROM settlement_request
+    WHERE user_seq = #{userSeq}
+    ORDER BY requested_at DESC
+  </select>
+
+  <!-- 정산 상세 내역 조회 -->
+  <select id="selectSettlementDetail"
+          parameterType="long"
+          resultType="kr.co.sist.e_learning.mypage.SettlementRequestDTO">
+    SELECT
+      request_seq AS requestSeq,
+      user_seq AS userSeq,
+      wallet_seq AS walletSeq,
+      total_mile AS totalMile,
+      status,
+      requested_at AS requestedAt,
+      processed_at AS processedAt,
+      company_fee AS companyFee,
+      paid_amount AS paidAmount,
+      reject_reason AS rejectReason
+    FROM settlement_request
+    WHERE request_seq = #{requestSeq}
+  </select>
+  
+  <select id="countRefundByUserSeq" parameterType="long" resultType="int">
+    SELECT COUNT(*)
+FROM refund r
+JOIN mile_wallet w ON r.wallet_seq = w.wallet_seq
+WHERE w.user_seq = #{userSeq}
+</select>
+
+<select id="countSettlementByUserSeq" parameterType="long" resultType="int">
+    SELECT COUNT(*)
+    FROM settlement_request
+    WHERE user_seq = #{userSeq}
+</select>
+  
+
+</mapper>

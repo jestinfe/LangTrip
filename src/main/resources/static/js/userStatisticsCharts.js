@@ -282,38 +282,22 @@ function drawAdClickChart(stats) {
   });
 }
 
-function exportToCSV(data, filename = 'statistics_export.csv') {
-  if (!Array.isArray(data) || data.length === 0) {
-    alert('내보낼 데이터가 없습니다.');
-    return;
-  }
 
-  const csvHeader = Object.keys(data[0]).join(',') + '\n';
-  const csvRows = data.map(obj => Object.values(obj).join(',')).join('\n');
-  const csvContent = csvHeader + csvRows;
+bindExcelButton('export-adclick', '/admin/statistics/excel/ad_click'); 
+bindExcelButton('export-user-summary', '/admin/statistics/excel/user_summary');
 
-  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
+function bindExcelButton(id, endpoint) {
+  const el = document.getElementById(id);
+  if (!el) return;
 
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = filename;
-  a.click();
+  el.addEventListener('click', function (e) {
+    e.preventDefault();
 
-  URL.revokeObjectURL(url);
+    const a = document.createElement('a');
+    a.href = endpoint;
+    a.setAttribute('download', '');  // 다운로드 유도
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  });
 }
-
-document.getElementById('export-signup').addEventListener('click', () => {
-  fetch("/admin/api/user_stats")
-    .then(res => {
-      if (!res.ok) throw new Error("데이터 불러오기 실패");
-      return res.json();
-    })
-    .then(data => {
-      exportToCSV(data.dailySignup, 'daily_signup.csv');
-    })
-    .catch(err => {
-      console.error(err);
-      alert("CSV 다운로드 중 오류 발생");
-    });
-});

@@ -47,7 +47,7 @@
 					<div class="div-2" style="font-size: 32px; border:none; display: flex; width: auto; margin-right: 18px; margin-left: -10px; margin-bottom: 5px; color: #bbbbbb;">
 						>	
 					</div>
-					<div class="div-2" style="font-size: 32px; border:none; display: flex; width: auto; margin-right: 30px; color:#5701d0">
+					<div class="div-2" style="font-size: 32px; border:none; display: flex; width: auto; margin-right: 30px; color:#43a3df">
 						상세 조회 (편집)	
 					</div>
 					
@@ -68,7 +68,7 @@
 
 	            <!-- FAQ ID (수정 불가, 표시만) -->
 	            <div class="detailDivs">
-	                <label for="faq_id" style="color: #5701d0;">FAQ ID</label><br>
+	                <label for="faq_id" style="color: #43a3df;">FAQ ID</label><br>
 	                <input type="text" id="faq_id" name="faq_id" th:value="${faq.faq_id}"
 	                       style="width: 100%; padding: 10px; font-size: 20px; border: 1px solid #ccc; border-radius: 4px; color:#cca9fe" readonly;/>
 	            </div>
@@ -76,28 +76,28 @@
             			
 	            <!-- 제목 -->
 	            <div class="detailDivs">
-	                <label for="faq_title" style="color: #5701d0;">FAQ 제목</label><br>
+	                <label for="faq_title" style="color: #43a3df;">FAQ 제목</label><br>
 	                <input type="text" id="faq_title" name="faq_title" th:value="${faq.faq_title}"
 	                       placeholder="FAQ 제목을 입력하세요" style="width: 100%; padding: 10px; font-size: 20px; border: 1px solid #ccc; border-radius: 4px;" />
 	            </div>
 	
 	            <!-- 내용 -->
 	            <div class="detailDivs">
-	                <label for="faq_content" style="color: #5701d0;">FAQ 내용</label><br>
+	                <label for="faq_content" style="color: #43a3df;">FAQ 내용</label><br>
 	                <textarea id="faq_content" name="faq_content" rows="10" style="width: 100%; padding: 20px; font-size: 18px; border: 1px solid #ccc; border-radius: 4px;"
 	                          th:text="${faq.faq_content}"></textarea> 
 	            </div>
 
             <!-- 조회수 (수정 불가, 표시만) -->
             <div class="detailDivs">
-                <label for="faq_hits" style="color: #5701d0;">조회수</label><br>
+                <label for="faq_hits" style="color: #43a3df;">조회수</label><br>
                 <input type="text" id="faq_hits" name="faq_hits" th:value="${faq.faq_hits}"
                        style="width: 100%; padding: 10px; font-size: 20px; border: 1px solid #ccc; border-radius: 4px; color:#cca9fe" readonly />
             </div>
 
             <!-- 수정일 (수정 불가, 표시만) -->
             <div class="detailDivs">
-                <label for="faq_last_modified_date" style="color: #5701d0;">수정일</label><br>
+                <label for="faq_last_modified_date" style="color: #43a3df;">수정일</label><br>
                 <input type="text" id="faq_last_modified_date" name="faq_last_modified_date" th:value="${#dates.format(faq.faq_last_modified_date, 'yyyy-MM-dd')}"
                        style="width: 100%; padding: 10px; font-size: 20px; border: 1px solid #ccc; border-radius: 4px; color:#cca9fe" readonly />
             </div>
@@ -107,7 +107,7 @@
     <!-- 버튼 공통 스타일 -->
     <style>
         .faqEditButton {
-            background-color: #5701d0;
+            background-color: #43a3df;
             color: white;
             padding: 12px 25px;
             font-size: 18px;

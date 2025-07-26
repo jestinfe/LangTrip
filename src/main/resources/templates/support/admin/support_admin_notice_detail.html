@@ -48,7 +48,7 @@
 					<div class="div-2" style="font-size: 32px; border:none; display: flex; width: auto; margin-right: 18px; margin-left: -10px; margin-bottom: 5px; color: #bbbbbb;">
 						>	
 					</div>
-					<div class="div-2" style="font-size: 32px; border:none; display: flex; width: auto; margin-right: 30px; color:#5701d0">
+					<div class="div-2" style="font-size: 32px; border:none; display: flex; width: auto; margin-right: 30px; color:#43a3df">
 						상세 조회	
 					</div>
 					
@@ -81,16 +81,16 @@
 				.noticeFixButton {
 					width: 60px;
 					height: 30px;
-					color: #5701d0;
-					border: 2px solid #5701d0;
+					color: #43a3df;
+					border: 2px solid #43a3df;
 					background-color: transparent;
 					border-radius: 5px;
 				}
 				.noticeFixButton:hover {
 					width: 60px;
 					height: 30px;
-					color: #5701d0;
-					border: 2px solid #5701d0;
+					color: #43a3df;
+					border: 2px solid #43a3df;
 					background-color: transparent;
 					border-radius: 5px;
 				}
@@ -121,18 +121,18 @@
 							style="display: flex; gap: 10px; border: none; margin-top: -10px; ">
 
 							<div class="detailDivs">
-								<span style="color: #5701d0;">작성자:</span> <span
+								<span style="color: #43a3df;">작성자:</span> <span
 									th:text="${notice.notice_writer}" style="color: #000000">관리자</span>
 							</div>
 
 							<div class="detailDivs">
-								<span style="color: #5701d0;">작성일:</span> <span
+								<span style="color: #43a3df;">작성일:</span> <span
 									th:text="${#dates.format(notice.notice_created_date, 'yyyy-MM-dd')}"
 									style="color: #000000">2025-07-07</span>
 							</div>
 
 							<div class="detailDivs">
-								<span style="color: #5701d0;">수정일:</span> <span
+								<span style="color: #43a3df;">수정일:</span> <span
 									th:text="${#dates.format(notice.notice_last_modified_date, 'yyyy-MM-dd')}"
 									style="color: #000000">2025-07-08</span>
 							</div>
@@ -140,7 +140,7 @@
 						</div>
 
 						<div class="detailDivs" style="margin-top: 0px">
-							<span style="color: #5701d0;">조회수:</span> <span
+							<span style="color: #43a3df;">조회수:</span> <span
 								th:text="${notice.notice_hits}" style="color: #000000">123</span>
 						</div>
 
@@ -229,7 +229,7 @@
 					height: 40px;
 					font-size : 20px;
 					color: white;
-					background-color: #5701d0;
+					background-color: #43a3df;
 					border-radius: 5px;
 					border:none;
 				}
@@ -238,7 +238,7 @@
 					height: 40px;
 					font-size : 20px;
 					color: white;
-					background-color: #5701d0;
+					background-color: #43a3df;
 					border-radius: 5px;
 					border:none;
 					

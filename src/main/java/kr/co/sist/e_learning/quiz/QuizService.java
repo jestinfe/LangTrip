@@ -45,4 +45,8 @@ public interface QuizService {
 
 	 //퀴즈 만든 사용자의 응답 insert 방지용
 	 public Long getQuizOwnerUserSeq(String quizListSeq);
+	 
+	 //강의실에서 퀴즈 완료 처리
+	 public String getQuizStatus(Long userSeq, String quizListSeq);
+	 
 }

@@ -150,7 +150,14 @@ public class QuizServiceImpl implements QuizService {
             System.out.println("⚠️ quizList 비어있음");
         } 
         
-        // 정답 수, 응답 수 조회
+        //퀴즈 제목 가져오기
+        QuizListDTO qlDTO = quizMapper.selectQuizListInfo(quizListSeq);
+        String title = qlDTO.getTitle();
+        		
+        //현재 사용자의 퀴즈 학습 상태 가져오기
+        String status = getQuizStatus(userSeq, quizListSeq);
+        
+        //정답 수, 응답 수 조회
         QuizStatusDTO quizStatus = new QuizStatusDTO();
         quizStatus.setQuizListSeq(quizListSeq);
         quizStatus.setUserSeq(userSeq);
@@ -171,11 +178,11 @@ public class QuizServiceImpl implements QuizService {
         //Map<String, Object> result
         result.put("userSeq", userSeq); //유저별 응답 저장
         result.put("quizListSeq", quizListSeq);
-        if (quizList != null && !quizList.isEmpty()) {
-        	   result.put("quizList", quizList);  // 조건 만족할 때만 넣음
-        	}
+        result.put("quizList", quizList);
         result.put("progress", progress);
         result.put("correctCnt", correctCnt);
+        result.put("quizTitle", title);
+        result.put("status", status);
 
         return result;
     }//getQuizList
@@ -393,8 +400,25 @@ public class QuizServiceImpl implements QuizService {
     }
     
     //퀴즈 수정 폼 -> 학습 화면 이동할때 응답 insert 방지용
+    @Override
     public Long getQuizOwnerUserSeq(String quizListSeq) {
         return quizMapper.findOwnerUserSeq(quizListSeq);
+    }
+    
+    //강의실에서 퀴즈 완료 처리
+    @Override
+    public String getQuizStatus(Long userSeq, String quizListSeq) {
+    	
+    	QuizStatusDTO qsDTO = new QuizStatusDTO();
+    	qsDTO.setUserSeq(userSeq);
+        qsDTO.setQuizListSeq(quizListSeq);
+    	
+    	QuizStatusDTO result = quizMapper.QuizCorrectChk(qsDTO);
+    	
+    	if (result == null || result.getTotalCnt() == 0) {
+    		return "notStarted";
+    	} 
+    	return "complete";
     }
     
 }//class

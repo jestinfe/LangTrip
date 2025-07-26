@@ -88,7 +88,7 @@
 					<div class="div-2" style="font-size: 36px; border:none">
 						전체 피드백 관리
 <!-- 						<span style="opacity : 0.4; font-size: 36px"> > </span> -->
-<!-- 						<span style="color: #5701d0">전체 조회</span> -->
+<!-- 						<span style="color: #43a3df">전체 조회</span> -->
 					</div>
 				</div>
 			</div>
@@ -97,7 +97,7 @@
 <!-- 				style="border-bottom: none; border: 1px solid #cecece !important; margin-left: 28px; margin-bottom: 5px; width: 96%; margin-top: 20px"> -->
 <!-- 				<div class="div-1" style="flex:5; border:none"> -->
 <!-- 					<div class="div-2" style="font-size: 24px; border:none"> -->
-<!-- 						<span style="color: #5701d0">검색 조건</span> -->
+<!-- 						<span style="color: #43a3df">검색 조건</span> -->
 <!-- 					</div> -->
 <!-- 				</div> -->
 <!-- 			</div> -->
@@ -158,13 +158,13 @@
 <div class="notice-cell">
     <th:block th:if="${fb.feedback_style} == '0'">
             <button type="submit"
-                    style="border: none; background-color: transparent; color: #5701d0; border: none; border-radius: 4px; padding: 4px 8px; font-size: 14px;">
+                    style="border: none; background-color: transparent; color: #43a3df; border: none; border-radius: 4px; padding: 4px 8px; font-size: 14px;">
                 익명
             </button>
     </th:block>
     <th:block th:if="${fb.feedback_style} == '1'">
             <button type="submit"
-                    style="border: none; background-color: rgba(204,169,254, 0); color: #5701d0; border: none; border-radius: 4px; padding: 4px 8px; font-size: 14px; font-weight: bold">
+                    style="border: none; background-color: rgba(204,169,254, 0); color: #43a3df; border: none; border-radius: 4px; padding: 4px 8px; font-size: 14px; font-weight: bold">
                 실명
             </button>
     </th:block>
@@ -193,7 +193,7 @@
     </th:block>
     <th:block th:if="${fb.feedback_step} == '2'">
             <button type="submit"
-                    style="border: none; background-color: rgba(204,169,254, 0); color: #5701d0; border: 1px solid #5701d0; border-radius: 4px; padding: 4px 8px; font-size: 14px;">
+                    style="border: none; background-color: rgba(204,169,254, 0); color: #43a3df; border: 1px solid #43a3df; border-radius: 4px; padding: 4px 8px; font-size: 14px;">
                 처리중
             </button>
     </th:block>
@@ -215,7 +215,7 @@
         </a>
     </div>
     <div th:if="${#lists.isEmpty(feedbackList)}"
-         style="padding: 30px; font-size: 30px; color: #5701d0; opacity: 0.5; text-align: center;">
+         style="padding: 30px; font-size: 30px; color: #43a3df; opacity: 0.5; text-align: center;">
          피드백 기록이 존재하지 않습니다.
     </div>
 </div>

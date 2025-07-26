@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>게시글 상세</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+  <link rel="stylesheet" th:href="@{/css/communityDetail.css}">
+   <link rel="stylesheet" href="/css/admin_sidebar.css">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="/js/login-status.js" defer></script>
+  <style>
+    body.logged-in .guest-state { display: none; }
+    body.logged-in .user-state { display: inline-flex; }
+    body.logged-out .guest-state { display: inline-flex; }
+    body.logged-out .user-state { display: none; }
+  </style>
+</head>
+<body class="container mt-5">
+
+<div class="container mt-5">
+  <h3 class="board-title"><strong>강의 추천 게시판</strong></h3>
+   <div th:replace="~{/layout/admin_sidebar :: sidebar}"></div>
+  <div class="post-title" th:text="${post.title}">제목</div>
+  
+  <div class="text-end">
+      <!-- 게시글 삭제 폼 경로 수정 -->
+      <form th:action="@{/admin/dash/community/deletePost}" method="post" onsubmit="return confirm('정말 게시글을 삭제하시겠습니까?');">
+          <input type="hidden" name="postId" th:value="${post.postId}" />
+          <button type="submit" class="btn btn-outline-danger btn-sm">글 삭제</button>
+      </form>
+  </div>
+
+  <div class="post-meta">
+    작성자: <span th:text="${post.nickname}">user</span> | 
+    작성일: <span th:text="${#dates.format(post.createdAt, 'yyyy-MM-dd HH:mm')}">날짜</span> |
+    조회수: <span th:text="${post.views}">0</span>
+  </div>
+
+  <div class="post-content" th:utext="${post.content}">게시글 본문 내용</div>
+
+  <!-- 추천/비추천 버튼 및 신고 버튼 UI 유지, 기능 비활성화 -->
+  <div class="vote-container text-center">	
+    <div class="vote-buttons mb-2">
+      <span id="upVoteCount" class="vote-count text-danger" th:text="${upCount}">0</span>
+     <button class="vote-button"
+        th:attr="data-post-id=${post.postId}, data-type='UP'"
+        onclick="handleVote(this)" disabled> <!-- disabled 추가 -->
+  <i class="bi bi-star-fill"></i><br>개념
+</button>
+
+<button class="vote-button"
+        th:attr="data-post-id=${post.postId}, data-type='DOWN'"
+        onclick="handleVote(this)" disabled> <!-- disabled 추가 -->
+  <i class="bi bi-star"></i><br>비추
+</button>
+
+      <span id="downVoteCount" class="vote-count text-secondary" th:text="${downCount}">0</span>
+    </div>
+
+    <div class="action-buttons d-flex justify-content-center gap-2">
+      <button class="action-btn" data-bs-toggle="modal" data-bs-target="#userReportModal" disabled> <!-- disabled 추가 -->
+        <i class="bi bi-exclamation-triangle"></i> 신고
+      </button>
+    </div>
+  </div>
+
+  <!-- 신고 모달 UI 유지, 기능 비활성화 -->
+  <div class="modal fade" id="userReportModal" tabindex="-1" aria-labelledby="userReportModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content p-3">
+        <div class="modal-header">
+          <h5 class="modal-title" id="userReportModalLabel">게시글 신고</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="닫기"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">신고 사유 (하나만 선택)</label>
+            <div class="form-check"><input class="form-check-input" type="radio" id="reason1" name="reasonChk" value="1" disabled><label class="form-check-label" for="reason1">1. 욕설</label></div> <!-- disabled 추가 -->
+            <div class="form-check"><input class="form-check-input" type="radio" id="reason2" name="reasonChk" value="2" disabled><label class="form-check-label" for="reason2">2. 음란물</label></div> <!-- disabled 추가 -->
+            <div class="form-check"><input class="form-check-input" type="radio" id="reason3" name="reasonChk" value="3" disabled><label class="form-check-label" for="reason3">3. 허위</label></div> <!-- disabled 추가 -->
+            <div class="form-check"><input class="form-check-input" type="radio" id="reason4" name="reasonChk" value="4" disabled><label class="form-check-label" for="reason4">4. 기타</label></div> <!-- disabled 추가 -->
+          </div>
+          <div class="mb-3">
+            <textarea id="reportReason" class="form-control" rows="2" maxlength="20" placeholder="추가 설명 (최대 20자)" readonly></textarea> <!-- readonly 추가 -->
+            <input type="hidden" id="postIdForReport" th:value="${post.postId}" />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">취소</button>
+          <button type="button" class="btn btn-danger" onclick="submitReport()" disabled>신고</button> <!-- disabled 추가 -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 댓글 작성 박스 UI 유지, 기능 비활성화 -->
+  <div class="comment-box">
+    <input type="hidden" id="postId" th:value="${post.postId}" />
+    <div class="mb-3">
+      <textarea class="form-control" id="commentContent" rows="3" placeholder="댓글을 입력하세요..." readonly></textarea> <!-- readonly 추가 -->
+    </div>
+    <div class="text-end">
+      <button type="button" class="btn btn-outline-primary btn-sm" onclick="submitAdminComment()" disabled>댓글 작성</button> <!-- disabled 추가 -->
+    </div>
+  </div>
+
+  <div class="comment-list mt-4">
+    <div th:each="comment : ${commentList}">
+      <div th:if="${comment.parentId == null}" class="comment-item mb-2 border-bottom pb-2">
+        <div class="d-flex justify-content-between align-items-center">
+          <div><strong th:text="${comment.nickname}">닉네임</strong> <span class="comment-meta" th:text="${#dates.format(comment.createdAt, 'yyyy-MM-dd HH:mm')}">날짜</span></div>
+          <div>
+            <button class="btn btn-sm btn-light" type="button" th:onclick="'showReplyForm(' + ${comment.commentId} + ')'" disabled><i class="bi bi-chat-dots"></i></button> <!-- disabled 추가 -->
+            <!-- 댓글 삭제 폼 경로 수정 -->
+            <form th:action="@{/admin/dash/community/deleteComment}" method="post" class="d-inline" onsubmit="return confirm('정말 댓글을 삭제하시겠습니까?');">
+                <input type="hidden" name="commentId" th:value="${comment.commentId}" />
+                <input type="hidden" name="postId" th:value="${post.postId}" />
+                <button type="submit" class="btn btn-sm btn-outline-danger">삭제</button>
+            </form>
+          </div>
+        </div>
+        <div th:text="${comment.content}">댓글 내용</div>
+
+        <div class="ps-4 mt-2" th:each="reply : ${commentList}" th:if="${reply.parentId == comment.commentId}">
+          <div class="comment-item border-start ps-3 mb-2">
+            <div class="d-flex justify-content-between align-items-center">
+              <div><strong th:text="${reply.nickname}">닉네임</strong> <span class="comment-meta" th:text="${#dates.format(reply.createdAt, 'yyyy-MM-dd HH:mm')}">시간</span></div>
+              <div>
+                  <!-- 대댓글 삭제 폼 경로 수정 -->
+                  <form th:action="@{/admin/dash/community/deleteReply}" method="post" class="d-inline" onsubmit="return confirm('정말 대댓글을 삭제하시겠습니까?');">
+                      <input type="hidden" name="replyId" th:value="${reply.commentId}" />
+                      <input type="hidden" name="postId" th:value="${post.postId}" />
+                      <button type="submit" class="btn btn-sm btn-outline-danger">삭제</button>
+                  </form>
+              </div>
+            </div>
+            <div th:text="${reply.content}">대댓글 내용</div>
+          </div>
+        </div>
+
+        <!-- 답글 작성 폼 UI 유지, 기능 비활성화 -->
+        <div class="reply-form d-none mt-2" th:id="'replyForm-' + ${comment.commentId}">
+          <textarea class="form-control mb-1" rows="2" th:id="'replyContent-' + ${comment.commentId}" placeholder="답글을 입력하세요..." readonly></textarea> <!-- readonly 추가 -->
+          <button class="btn btn-primary btn-sm" th:onclick="'submitAdminReply(' + ${comment.commentId} + ')'" disabled>등록</button> <!-- disabled 추가 -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="text-end mt-3">
+    <a href="/admin/dash/admincommunity" class="btn btn-secondary btn-sm">목록으로</a> <!-- ⭐ 경로 수정: /adminDash/ -> /admin/dash/ -->
+  </div>
+</div>
+
+<!-- 모든 JavaScript 함수는 그대로 유지 (버튼이 disabled라 호출되지 않음) -->
+<script>
+function handleVote(btn) {
+  const postId = btn.getAttribute('data-post-id');
+  const type = btn.getAttribute('data-type');
+  vote(postId, type);
+}
+
+function vote(postId, voteType) {
+	  const token = localStorage.getItem('accessToken');
+	  console.log("👉 vote() 호출됨 - postId:", postId, "voteType:", voteType); // 🔍
+
+	  $.ajax({
+	    type: 'POST',
+	    url: '/csj/vote',
+	    contentType: 'application/json',
+	    beforeSend: function(xhr) {
+	      if (token) {
+	        console.log("👉 토큰 존재 - Authorization 헤더 추가"); // 🔍
+	        xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+	      }
+	    },
+	    data: JSON.stringify({ postId: postId, voteType: voteType }),
+	    success: function(res) {
+	      console.log("✅ 서버 응답 도착:", res); // 🔍
+	      $('#upVoteCount').text(res.up);
+	      $('#downVoteCount').text(res.down);
+	      alert("추추~ 완료");
+	    },
+	    error: function(xhr) {
+	      console.error("❌ 서버 에러 응답:", xhr.status, xhr.responseText); // 🔍
+	      if (xhr.status === 409) alert("하루에 한 번만 추천할 수 있습니다.");
+	      else if (xhr.status === 401) alert("로그인이 필요합니다.");
+	      else alert("본인 글은 안돼요~!");
+	    }
+  });
+}
+
+function submitAdminComment() {
+  const postId = $('#postId').val();
+  const content = $('#commentContent').val();
+  if (!content.trim()) return alert("댓글 내용을 입력해주세요.");
+
+  const commentData = { postId2: postId, content: content };
+
+  $.ajax({
+    type: 'POST',
+    url: '/admin/dash/community/writeAdminComment', // ⭐ 경로 수정
+    contentType: 'application/json',
+    data: JSON.stringify(commentData),
+    success: function(comment) {
+      const createdAt = new Date(comment.createdAt).toLocaleString();
+      const html = `
+        <div class="comment-item mb-2 border-bottom pb-2">
+          <div class="d-flex justify-content-between align-items-center">
+            <div><strong>${comment.nickname}</strong> <span class="comment-meta">(${createdAt})</span></div>
+            <div>
+              <button class="btn btn-sm btn-light" onclick="showReplyForm(${comment.commentId})"><i class="bi bi-chat-dots"></i></button>
+              <form action="/admin/dash/community/deleteComment" method="post" class="d-inline" onsubmit="return confirm('정말 댓글을 삭제하시겠습니까?');">
+                  <input type="hidden" name="commentId" value="${comment.commentId}" />
+                  <input type="hidden" name="postId" value="${postId}" />
+                  <button type="submit" class="btn btn-sm btn-outline-danger">삭제</button>
+              </form>
+            </div>
+          </div>
+          <div>${comment.content}</div>
+        </div>`;
+      $(".comment-list").prepend(html);
+      $("#commentContent").val("");
+    },
+    error: function(xhr) {
+      console.error("❌ 관리자 댓글 작성 에러:", xhr.status, xhr.responseText);
+      alert("댓글 작성 중 오류가 발생했습니다.");
+    }
+  });
+}
+
+function showReplyForm(commentId) {
+  document.querySelectorAll('.reply-form').forEach(form => form.classList.add('d-none'));
+  document.getElementById(`replyForm-${commentId}`).classList.remove('d-none');
+}
+
+function submitAdminReply(parentId) {
+  const postId = $('#postId').val();
+  const content = $(`#replyContent-${parentId}`).val();
+  if (!content.trim()) return alert("답글 내용을 입력해주세요.");
+
+  const replyData = { postId2: postId, parentId: parentId, content: content };
+
+  $.ajax({
+    type: 'POST',
+    url: '/admin/dash/community/writeAdminComment', // ⭐ 경로 수정
+    contentType: 'application/json',
+    data: JSON.stringify(replyData),
+    success: function() {
+      location.reload(); 
+    },
+    error: function(xhr) {
+      console.error("❌ 관리자 답글 작성 에러:", xhr.status, xhr.responseText);
+      alert("답글 작성 중 오류가 발생했습니다.");
+    }
+  });
+}
+
+function submitReport() {
+  const postId = $('#postIdForReport').val();
+  const reasonChk = $('input[name="reasonChk"]:checked').val();
+  const reasonText = $('#reportReason').val().trim();
+
+  if (!reasonChk) return alert("신고 사유를 선택해주세요.");
+  if (reasonText.length > 20) return alert("추가 설명은 20자까지 가능합니다.");
+
+  $.ajax({
+    type: 'POST',
+    url: '/csj/report',
+    contentType: 'application/json',
+    data: JSON.stringify({ postId2: postId, reasonChk: reasonChk, reasonText: reasonText }),
+    success: function() {
+      alert("신고가 접수되었습니다.");
+      $('#userReportModal').modal('hide');
+    },
+    error: function(xhr) {
+      if (xhr.status === 409) alert("오늘 이미 신고하셨습니다.");
+      else if (xhr.status === 401) alert("로그인이 필요합니다.");
+      else alert("신고 중 오류가 발생했습니다.");
+    }
+  });
+}
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

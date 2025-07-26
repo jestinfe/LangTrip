@@ -12,6 +12,8 @@
 <form id="quizPlay">
   <input type="hidden" id="quizListSeq" th:value="${quizListSeq}" />
   <input type="hidden" id="courseSeq" th:value="${courseSeq}" />
+  <input type="hidden" id="from" th:value="${from}" />
+
 
   <!-- 상단 진행률 바 -->
   <div class="d-flex justify-content-between align-items-center p-2">
@@ -23,6 +25,14 @@
     </div>
     <div id="progressText" class="me-3">0/5</div>
   </div>
+
+<!-- 퀴즈 정보 영역 -->
+<div class="container my-4 d-flex justify-content-between align-items-center" id="quizInfoBox">
+  <div>
+    <span id="quizStatusDisplay" class="badge bg-secondary"></span>
+    <h4 id="quizTitleDisplay" class="fw-bold mb-1"></h4>
+  </div>
+</div>
 
   <!-- 퀴즈 슬라이드가 삽입될 영역 -->
   <div id="quizContainer"></div>
@@ -185,7 +195,8 @@
 	  
     const quizListSeq = document.getElementById("quizListSeq").value;
     const courseSeq = document.getElementById("courseSeq").value;
-	
+    const from = document.getElementById("from")?.value || "course";
+    
     //selections:응답이 저장되어있는 객체
     //map:QuizResponseDTO 형식의 배열로 변환
 	const responses = Object.entries(selections).map(([quizSeq, selectOption]) => ({
@@ -198,7 +209,13 @@
 	// 응답 insert
 	axios.post("/quizResponse", responses)
 	.then(res => {
-	   	 window.location.href = `/quiz/quizCompleted/${quizListSeq}?courseSeq=${courseSeq}`;
+		 //window.location.href = `/quiz/quizCompleted/${quizListSeq}?courseSeq=${courseSeq}&from=${from}`;
+		 const from = document.getElementById("from")?.value || "course";  // 여기가 핵심
+		    let url = `/quiz/quizCompleted/${quizListSeq}?courseSeq=${courseSeq}`;
+		    if (from === 'modify') {
+		        url += '&from=modify';
+		    }
+		    window.location.href = url;
 	})
 	.catch(err => {
 	    console.error("응답 저장 실패", err);
@@ -231,6 +248,8 @@
     axios.get(`/playQuizProcess/${quizListSeq}`)
       .then(res => {
         const quizList = res.data.quizList;
+        const title = res.data.quizTitle;
+        const status = res.data.status;
         console.log("🎯 quizList 내용:", quizList);
         
         if (!Array.isArray(quizList) || quizList.length === 0) {
@@ -238,6 +257,19 @@
             console.error("서버 응답:", res.data);
             return;
           }
+        
+        // 제목 출력
+        document.getElementById("quizTitleDisplay").textContent = title;
+
+        // 상태 출력
+        const statusEl = document.getElementById("quizStatusDisplay");
+        if (status === "complete") {
+          statusEl.textContent = "학습 완료";
+          statusEl.className = "badge bg-success";
+        } else {
+          statusEl.textContent = "학습 전";
+          statusEl.className = "badge bg-secondary";
+        }
         
         const container = document.getElementById("quizContainer");
 

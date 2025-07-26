@@ -92,7 +92,7 @@
 
 
 .highlighted {
-    background-color: #9a43fe;
+    background-color: #43a3df;
     color: white;
     font-weight: bold;
   }
@@ -100,7 +100,7 @@
 div { border-color: white !important } 
 a {
 	text-decoration: none;
-	color: #5701d0;
+	color: #43a3df;
 	transition: color 0.5s ease;
 }
 
@@ -231,7 +231,7 @@ a:hover {
 .left-content {
 	display: flex;
 	flex-direction: column;
-	color: #5701d0;
+	color: #43a3df;
 }
 
 .left-content>.half-top {
@@ -248,7 +248,7 @@ a:hover {
 	text-align: right;
 	font-weight: bold;
 	font-size: 24px;
-	color: #5701d0;
+	color: #43a3df;
 }
 
 /* 지원센터의 피드백 기능 안에 세로로 2:1 비율로 자식 div 추가 */
@@ -263,14 +263,14 @@ a:hover {
 	margin-bottom: 10px;
 	font-size: 28px;
 	font-weight: bold;
-	color: #9a43fe;
+	color: #43a3df;
 }
 
 .left-inner-content>.half-inner-bottom {
 	flex: 1; /* 1배 비율 */
 	border: 1px solid #a5a5f7; /* 보라색 테두리 */
 	margin-top: -10px;
-	color: #9a43fe;
+	color: #43a3df;
 }
 
 input::placeholder {
@@ -363,7 +363,7 @@ input::placeholder {
 }
 
 .pagination .active-page {
-	background-color: #5701d0;
+	background-color: #43a3df;
 	color: white;
 	font-weight: bold;
 }

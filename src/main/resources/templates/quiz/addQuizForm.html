@@ -242,12 +242,13 @@ $(function () {
 	  return;
 	}
     
-    // 문제 제목 null 방지
-    if ($("#quizTitle").val().trim() === "") {
-      alert("퀴즈 제목을 입력해주세요.");
-      $("#quizTitle").focus();
-      return;
-    }
+	// 문제 제목 null 방지
+	const title = $("#quizTitle").val().trim();
+	if (title === "") {
+	  alert("퀴즈 제목을 입력해주세요.");
+	  $("#quizTitle").focus();
+	  return;
+	}
     
  	// 필수 입력값 간단 검증
     let isValid = true;
@@ -331,22 +332,21 @@ $(function () {
     })
     .then(res => {
       if (res.data.startsWith("success")) {
-	      alert("퀴즈 등록 완료!");
+	      alert("퀴즈가 등록되었습니다.");
 	      const courseSeq = document.getElementById("courseSeq").value;
 	      window.location.href = '/upload/upload_course?seq='+courseSeq;
-      } else {
-    	  alert("퀴즈 등록 실패"); 
-      }
+      } 
     })
     .catch(err => {
       console.log("오류", err);
-      alert("에러 발생");
+      alert("퀴즈 등록에 실패하였습니다."); 
     });
   });
 
   // 뒤로가기 버튼 이벤트 리스너
   $("#backButton").click(function() {
-    window.history.back();
+	  const courseSeq = $("#courseSeq").val();
+	  window.location.href = '/upload/upload_course?seq=' + courseSeq;
   });
 });
 </script>

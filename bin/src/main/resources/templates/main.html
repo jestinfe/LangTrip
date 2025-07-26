@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>LangTrip - 당신의 언어 여행</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- 폰트 & CSS -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+
+    <!-- ✅ JS가 HTML 파싱 이후 실행되도록 defer 사용 -->
+    <script src="/js/login-status.js" defer></script>
+</head>
+<style>
+body.logged-in .guest-state {
+  display: none;
+}
+body.logged-in .user-state {
+  display: inline-flex ;
+}
+body.logged-out .guest-state {
+  display: inline-flex ;
+}
+body.logged-out .user-state {
+  display: none ;
+}
+/* 🎨 배너 스타일 추가 */
+.hero-banner {
+  background: linear-gradient(135deg, #bae6fd 0%, #7dd3fc 50%, #0ea5e9 100%);
+  padding: 4rem 2rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 3rem;
+}
+
+.hero-banner::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"><g fill="none" fill-rule="evenodd"><g fill="%23ffffff" fill-opacity="0.1"><circle cx="30" cy="30" r="4"/></g></g></svg>');
+  animation: float 20s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px) translateX(0px); }
+  25% { transform: translateY(-10px) translateX(5px); }
+  50% { transform: translateY(0px) translateX(-5px); }
+  75% { transform: translateY(10px) translateX(5px); }
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.hero-title {
+  font-size: 3.5rem;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 1rem;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.hero-subtitle {
+  font-size: 1.3rem;
+  color: rgba(255,255,255,0.9);
+  margin-bottom: 2rem;
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+.hero-features {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-bottom: 2.5rem;
+  flex-wrap: wrap;
+}
+
+.feature-badge {
+  background: rgba(255,255,255,0.2);
+  backdrop-filter: blur(10px);
+  padding: 0.8rem 1.5rem;
+  border-radius: 25px;
+  color: white;
+  font-weight: 500;
+  border: 1px solid rgba(255,255,255,0.3);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.feature-badge:hover {
+  transform: translateY(-2px);
+  background: rgba(255,255,255,0.3);
+}
+
+.hero-cta {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.cta-btn {
+  padding: 1rem 2.5rem;
+  border-radius: 50px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.cta-primary {
+  background: white;
+  color: #4facfe;
+}
+
+.cta-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+}
+
+.cta-secondary {
+  background: transparent;
+  color: white;
+  border: 2px solid white;
+}
+
+.cta-secondary:hover {
+  background: white;
+  color: #4facfe;
+}
+
+.floating-elements {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+}
+
+.floating-emoji {
+  position: absolute;
+  font-size: 2rem;
+  animation: bounce 3s ease-in-out infinite;
+}
+
+.floating-emoji:nth-child(1) {
+  top: 20%;
+  left: 10%;
+  animation-delay: 0s;
+}
+
+.floating-emoji:nth-child(2) {
+  top: 60%;
+  right: 15%;
+  animation-delay: 1s;
+}
+
+.floating-emoji:nth-child(3) {
+  bottom: 30%;
+  left: 15%;
+  animation-delay: 2s;
+}
+
+.floating-emoji:nth-child(4) {
+  top: 40%;
+  right: 25%;
+  animation-delay: 1.5s;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-20px) rotate(5deg); }
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .hero-banner {
+    padding: 3rem 1rem;
+  }
+  
+  .hero-title {
+    font-size: 2.5rem;
+  }
+  
+  .hero-subtitle {
+    font-size: 1.1rem;
+  }
+  
+  .hero-features {
+    gap: 1rem;
+  }
+  
+  .feature-badge {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
+  }
+  
+  .hero-cta {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .cta-btn {
+    width: 100%;
+    max-width: 280px;
+    justify-content: center;
+  }
+}
+
+.course-title {
+    text-align: center;
+}
+
+</style>
+
+<body class="logged-out">
+    <!-- ✅ 헤더 -->
+    <div th:replace="~{layout/header :: header}"></div>
+ <section class="hero-banner">
+        <div class="floating-elements">
+            <div class="floating-emoji">🌍</div>
+            <div class="floating-emoji">💬</div>
+            <div class="floating-emoji">✨</div>
+            <div class="floating-emoji">🚀</div>
+        </div>
+        
+        <div class="hero-content">
+            <h1 class="hero-title">언어의 경계를 넘어서</h1>
+            <p class="hero-subtitle">
+                누구나 자유롭게 배우고, 가르치는 새로운 언어 학습 플랫폼
+            </p>
+            
+            <div class="hero-features">
+                <div class="feature-badge">
+                    <span>🆓</span>
+                    무료 학습
+                </div>
+                <div class="feature-badge">
+                    <span>📹</span>
+                    쉬운 업로드
+                </div>
+                <div class="feature-badge">
+                    <span>🌟</span>
+                    자유로운 학습
+                </div>
+            </div>
+            
+            <div class="hero-cta">
+                <a href="/courses" class="cta-btn cta-primary">
+                    <span>🎯</span>
+                    강의 둘러보기
+                </a>
+            </div>
+        </div>
+    </section>
+    <!-- ✅ 메인 콘텐츠 -->
+    <main class="main-content">
+        <!-- 구독한 강사 영상 -->
+        <section class="section">
+            <div th:if="${loggedIn}" class="subscribed-section">
+                <div class="section-header">
+                    <h2 class="section-title">최근 수강한 강의</h2>
+                    <a href="/mypage/user_course" class="view-all">전체 보기</a>
+                </div>
+                <div class="course-grid" th:if="${!#lists.isEmpty(enrolledCourses)}">
+                    <div th:each="course : ${enrolledCourses}" class="course-card">
+                        <div class="course-thumbnail">
+                            <img th:src="${course.thumbnailPath != null ? course.thumbnailPath : '/images/default_thumbnail.png'}" alt="Course Thumbnail" style="width:100%; height:100%; object-fit: cover;"/>
+                            <div class="course-level" th:text="${course.difficulty}"></div>
+                        </div>
+                        <div class="course-info">
+                            <span class="course-category" th:text="${course.category}"></span>
+                            <h3 class="course-title" th:text="${course.courseTitle}"></h3>
+                            <div class="course-instructor">
+                                <span class="instructor-name" th:text="${course.instructorName}"></span>
+                            </div>
+                            <div class="course-footer">
+                                <a th:href="@{/ui/user_registered_course(seq=${course.courseSeq})}" class="enroll-btn">학습 하기</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div th:if="${#lists.isEmpty(enrolledCourses)}" style="text-align: center; color:#666; padding:1.5rem;">
+                    아직 수강 중인 강의가 없습니다. 새로운 강의를 찾아보세요!
+                </div>
+            </div>
+            <div th:unless="${loggedIn}" class="guest-section" style="text-align: center; padding: 3rem 0; background-color: #f9f9f9; border-radius: 8px; margin-bottom: 3rem;">
+                <h2 style="font-size: 1.8rem; color: #333; margin-bottom: 1rem;">로그인하고 나만의 학습 로드맵을 시작해보세요!</h2>
+                <p style="font-size: 1.1rem; color: #666; margin-bottom: 2rem;">다양한 강의를 수강하고, 학습 진도를 관리하며, 나만의 언어 학습 여정을 만들어가세요.</p>
+                <a href="/login" style="display: inline-block; background-color: #007bff; color: white; padding: 0.8rem 2rem; border-radius: 5px; text-decoration: none; font-weight: bold; transition: background-color 0.3s ease;">로그인하기</a>
+                <a href="/courses" style="display: inline-block; background-color: #6c757d; color: white; padding: 0.8rem 2rem; border-radius: 5px; text-decoration: none; font-weight: bold; margin-left: 1rem; transition: background-color 0.3s ease;">강의 둘러보기</a>
+            </div>
+        </section>
+
+        
+
+        <!-- 최신 업로드 -->
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title">따끈따끈한 새 강의</h2>
+                <a href="/courses?sort=uploadDate,desc" class="view-all">전체 보기</a>
+            </div>
+            <div class="course-grid">
+                <div class="course-card" th:each="course : ${newCourses}">
+                    <div class="course-thumbnail">
+                        <img th:src="${course.thumbnailPath != null ? course.thumbnailPath : '/images/default_thumbnail.png'}" alt="Course Thumbnail" style="width:100%; height:100%; object-fit: cover;"/>
+                        <div class="course-level" th:text="${course.difficulty}"></div>
+                    </div>
+                    <div class="course-info">
+                        <span class="course-category" th:text="${course.category}"></span>
+                        <h3 class="course-title" th:text="${course.title}"></h3>
+                        <div class="course-instructor">
+                            <span class="instructor-name" th:text="${course.instructorName}"></span>
+                        </div>
+                        <div class="course-stats">
+                            <!-- Add actual stats if available in DTO -->
+                        </div>
+                        <div class="course-footer">
+                            <a th:href="@{/ui/user_lecture(seq=${course.courseSeq})}" class="enroll-btn">강의 보기</a>
+                        </div>
+                    </div>
+                </div>
+                <div th:if="${#lists.isEmpty(newCourses)}" style="text-align: center; color:#666; padding:1.5rem;">
+                    새로운 강의가 없습니다.
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ✅ 푸터 -->
+    <div th:replace="layout/footer :: footer"></div>
+</body>
+</html>

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title th:text="${videoData.title}">영상 보기</title>
+<link rel="icon" href="http://localhost/images/favicon.ico">
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+<link
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+	rel="stylesheet">
+<link rel="stylesheet" th:href="@{/css/video_frm.css}">
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+	<div class="container">
+		<input type="hidden" id="courseSeq" th:value="${courseSeq}" /> <input
+			type="hidden" id="userSeq" th:value="${userSeq}" /> <input
+			type="hidden" id="videoSeq" th:value="${videoData.videoSeq}" />
+		<!-- 여행 헤더 -->
+		<div class="travel-header">
+			<h1 class="travel-title">🌍 English Travel Adventure</h1>
+			<div class="travel-subtitle">
+				<i class="fas fa-route"></i> <span>언어와 함께 떠나는 특별한 여행</span> <i
+					class="fas fa-globe-americas"></i>
+			</div>
+		</div>
+
+		<div class="row">
+			<!-- 왼쪽: 비디오 및 자막 -->
+			<div class="col-lg-8">
+				<div class="video-container">
+					<h2 class="video-title">
+						<i class="fas fa-play-circle"></i> <span
+							th:text="${videoData.title}">영상 제목</span>
+					</h2>
+					<p class="video-desc" th:text="${videoData.description}">영상 설명</p>
+					<div class="video-wrapper">
+						<video id="videoPlayer" class="video-element" controls>
+							<source th:src="@{${videoData.filePath}}" type="video/mp4" />
+						</video>
+					</div>
+				</div>
+
+				<!-- 자막 및 해석 부분 -->
+				<div class="subtitle-section">
+					<div class="subtitle-header">
+						<div class="subtitle-speed">
+							<i class="fas fa-tachometer-alt"></i> 1x
+						</div>
+						<div class="subtitle-lang">
+							<i class="fas fa-language"></i> 한/A
+						</div>
+					</div>
+					<div class="subtitle-content">
+						<p class="english-text">
+							<i class="fas fa-quote-left"></i> There you go! You're a natural!
+							<i class="fas fa-quote-right"></i>
+						</p>
+						<p class="korean-text">
+							<i class="fas fa-heart"></i> 잘하네! 타고났네요!
+						</p>
+						<div class="vocabulary-note">
+							<i class="fas fa-lightbulb"></i> <strong>natural:</strong> 재능을
+							타고난 사람
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- 오른쪽: 진행 상태 -->
+			<div class="col-lg-4">
+				<div class="learning-sidebar">
+					<h5 class="sidebar-title">
+						<i class="fas fa-compass"></i> 학습 여행지
+					</h5>
+					<div class="current-topic">
+						<i class="fas fa-map-marker-alt"></i> 인사 표현하기
+					</div>
+					<div class="progress-section">
+						<div
+							class="d-flex justify-content-between align-items-center mb-3">
+							<span
+								style="color: var(--primary-blue); font-weight: 600; font-size: 1rem;">여행
+								진행도</span> <span
+								style="color: var(--travel-accent); font-weight: 700; font-size: 1.1rem;"></span>
+						</div>
+						<div class="progress">
+							<div class="progress-bar progress-bar-custom" role="progressbar"
+								style="width: 0%;" aria-valuenow="0" aria-valuemin="0"
+								aria-valuemax="100">0%</div>
+						</div>
+					</div>
+
+					<button class="quiz-button">
+						<i class="fas fa-question-circle"></i> 여행 퀴즈 도전하기
+					</button>
+
+					<div class="quiz-section">
+						<div class="quiz-question">
+							<i class="fas fa-puzzle-piece"></i> 오늘의 여행 미션
+						</div>
+						<div class="quiz-content">
+							<p>
+								<strong>&lt;신기하네&gt;는 영어로?</strong>
+							</p>
+							<p>That's a ___.</p>
+							<hr
+								style="border-color: rgba(255, 179, 71, 0.4); margin: 15px 0;">
+							<p>
+								엄청 신기하네요!<br>That's ______!
+							</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script
+		src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+
+	<script>
+const video = document.getElementById("videoPlayer");
+const userSeq = document.getElementById("userSeq").value;
+const videoSeq = document.getElementById("videoSeq").value;
+const courseSeq = document.getElementById("courseSeq").value;
+let alreadyCompleted = false;
+let allowSave = false; // 저장시작여부
+
+document.addEventListener("DOMContentLoaded", () => {
+	axios.get("/course/stat/get", {
+		  params: { userSeq, videoSeq, courseSeq }
+		}).then(res => {
+		  const stat = res.data;
+
+		  const courseRate = stat && stat.courseRate ? stat.courseRate : 0;
+		  const courseTime = stat && stat.courseTime ? stat.courseTime : 0;
+
+		  const bar = document.querySelector(".progress-bar-custom");
+		  bar.style.width = courseRate + "%";
+		  bar.innerText = courseRate.toFixed(0) + "%";
+
+		  alreadyCompleted = courseRate >= 99.9;
+
+		  video.addEventListener("loadedmetadata", () => {
+		    video.currentTime = alreadyCompleted ? video.duration - 0.1 : courseTime;
+		    allowSave = true;
+
+		    setInterval(() => {
+		      if (!video.duration || !allowSave) return;
+
+		      const currentTime = video.currentTime;
+		      const progress = (currentTime / video.duration) * 100;
+
+		      //실시간 프로그레스바
+		      const bar = document.querySelector(".progress-bar-custom");
+		      bar.style.width = progress.toFixed(2) + "%";
+		      bar.innerText = progress.toFixed(0) + "%";
+		      
+		      if (alreadyCompleted || progress <= 0.1) return;
+		      if (progress >= 99.9) alreadyCompleted = true;
+
+		      axios.post("/course/stat/update", {
+		        userSeq,
+		        videoSeq,
+		        courseSeq,
+		        courseTime: Math.floor(currentTime),
+		        courseRate: progress.toFixed(2),
+		        lastTime: Math.floor(currentTime)
+		      }).then(() => {
+		        console.log(" 저장됨:", progress.toFixed(2));
+		      });
+
+		    }, 100
+		    );
+		  });
+		}).catch(err => {
+		  console.error("진행도 불러오기 실패:", err);
+		});
+});
+
+</script>
+	<script>
+
+
+</script>
+</body>
+</html>
