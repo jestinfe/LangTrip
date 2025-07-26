@@ -210,7 +210,7 @@
 	axios.post("/quizResponse", responses)
 	.then(res => {
 		 //window.location.href = `/quiz/quizCompleted/${quizListSeq}?courseSeq=${courseSeq}&from=${from}`;
-		 const from = document.getElementById("from")?.value || "course";  // 여기가 핵심
+		 const from = document.getElementById("from")?.value || "course";  
 		    let url = `/quiz/quizCompleted/${quizListSeq}?courseSeq=${courseSeq}`;
 		    if (from === 'modify') {
 		        url += '&from=modify';
@@ -274,7 +274,7 @@
         const container = document.getElementById("quizContainer");
 
         quizList.forEach((quiz, index) => {
-          console.log(`Processing quiz ${index + 1}:`, quiz); // Log the quiz object
+          console.log(`Processing quiz ${index + 1}:`, quiz); 
           const slide = document.createElement("div");
           slide.className = "quiz-slide";
           slide.style.display = index === 0 ? "block" : "none";
@@ -308,7 +308,7 @@
               <div class="options-container">${optionsHTML}</div>
             </div>
           `;
-          console.log(`Final slide.innerHTML for quiz ${index + 1}:`, slide.innerHTML); // Log final slide HTML
+          console.log(`Final slide.innerHTML for quiz ${index + 1}:`, slide.innerHTML); 
 
           // 보기 클릭 이벤트 처리
           slide.addEventListener("click", e => {
