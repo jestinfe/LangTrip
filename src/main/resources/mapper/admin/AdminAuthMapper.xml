@@ -39,6 +39,6 @@
     INSERT INTO ADMIN_ROLE (ADMIN_ID, ROLE_CODE)
     VALUES (#{adminId}, #{permissionCode})
   </insert>
-
+  
 
 </mapper>

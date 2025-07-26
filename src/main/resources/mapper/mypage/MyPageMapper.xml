@@ -5,43 +5,6 @@
 
 <mapper namespace="kr.co.sist.e_learning.mypage.MyPageMapper">
 
-	<!-- 대시보드 요약 정보 조회 -->
-	<select id="selectMyPageSummary"
-	        parameterType="long"
-	        resultType="kr.co.sist.e_learning.mypage.MyPageDTO">
-	  SELECT
-	    u.user_seq AS userSeq,
-	    u.nickname AS nickname,
-	    u.email,
-	    u.profile AS profile,
-	    u.social_id AS socialId,
-	    3 AS completedCourses,
-	    120 AS totalStudyTime,
-	    95.5 AS quizAccuracy,
-	    '실버' AS donationLevel,
-	    (
-	      SELECT NVL(SUM(d.donation_amount), 0)
-	      FROM donations d
-	      JOIN mile_wallet mw ON d.wallet_seq = mw.wallet_seq
-	      WHERE mw.user_seq = u.user_seq
-	    ) AS totalDonation
-	  FROM users u
-	  WHERE u.user_seq = #{userSeq}
-	</select>
-
-
-<!-- 총 후원액 합계 -->
-<select id="selectTotalDonationByUserSeq"
-        parameterType="long"
-        resultType="int">
-  SELECT NVL(SUM(d.donation_amount), 0)
-  FROM donations d
-  JOIN mile_wallet mw ON d.wallet_seq = mw.wallet_seq
-  WHERE mw.user_seq = #{userSeq}
-</select>
-
-
-
   <!-- 내 정보 조회 -->
   <select id="selectUserInfo"
           parameterType="long"
