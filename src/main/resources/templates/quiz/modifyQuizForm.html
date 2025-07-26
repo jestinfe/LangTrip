@@ -16,8 +16,9 @@
 <!-- /quiz/playQuiz/{quizListSeq}?courseSeq={courseSeq} -->
 <div class="hover-box">
 <button type="button" id="playButton" class="play-button">
-	<span aria-hidden="true">퀴즈 풀기</span>
+	<span aria-hidden="true">미리보기</span>
 </button>
+<!-- <div class="tooltip-text">응답이 저장되지 않습니다.</div> -->
 <div class="tooltip-text">응답 저장 불가</div>
 </div>
 <div class="logo-box text-center mb-4">
@@ -232,7 +233,63 @@ $(function () {
   $("#submitQuizBtn").click(function () {
     const quizList = [];
     const imageFiles = [];
+    
+ 	// 이미지 퀴즈 개수 제한 검사 -> 3개까지만 가능
+	let imgQuizCount = 0;
+	$(".slide").each(function () {
+	  const type = $(this).find("select[name$='.type']").val();
+	  if (type === "img-quiz") {
+	    imgQuizCount++;
+	  }
+	});
+	if (imgQuizCount > 3) {
+	  alert("이미지 퀴즈는 3개까지 등록 가능합니다.");
+	  return;
+	}
+    
+	// 문제 제목 null 방지
+	const title = $("#quizTitle").val().trim();
+	if (title === "") {
+	  alert("퀴즈 제목을 입력해주세요.");
+	  $("#quizTitle").focus();
+	  return;
+	}
+	
+	//필수 입력값 검증
+	let isValid = true;
 
+	$(".slide").each(function (i) {
+	  const question = $(this).find(".quiz-question").val().trim();
+	  if (question === "") {
+	    alert(`${i + 1}번 문제를 입력해주세요.`);
+	    $(this).find(".quiz-question").focus();
+	    isValid = false;
+	    return false;
+	  }
+	
+	  const options = $(this).find(".option-content");
+	  for (let j = 0; j < options.length; j++) {
+	    if ($(options[j]).val().trim() === "") {
+	      alert(`${i + 1}번 문제의 보기 ${j + 1}번 내용을 입력해주세요.`);
+	      $(options[j]).focus();
+	      isValid = false;
+	      return false;
+	    }
+	  }
+	
+	  const correct = $(this).find(".correct-option").val();
+	  if (!correct) {
+	    alert(`${i + 1}번 문제의 정답을 선택해주세요.`);
+	    $(this).find(".correct-option").focus();
+	    isValid = false;
+	    return false;
+	  }
+	});
+	
+	if (!isValid) return;
+
+	
+	
     $(".slide").each(function (quizIdx) {
       const quiz = existingQuizList[quizIdx];
       const type = $(this).find(".quiz-type").val();
@@ -279,14 +336,14 @@ $(function () {
     })
     .then(res => {
       if (res.data === "success") {
-        alert("수정 완료!");
+        alert("수정 되었습니다.");
         const courseSeq = document.getElementById("quizCourseSeq").value;
-        window.location.href = '/upload/upload_course?seq='+courseSeq;
+        //window.location.href = '/upload/upload_course?seq='+courseSeq;
       }
     })
     .catch(err => {
       console.error("수정 실패", err);
-      alert("에러 발생");
+      alert("수정에 실패하였습니다.");
     });
   });
 
@@ -300,26 +357,28 @@ $(function () {
     axios.post("/deleteQuizList/" + quizListSeq)
       .then(res => {
         if (res.data === "delete") {
-          alert("삭제 완료");
+          alert("삭제 되었습니다.");
           window.location.href = '/ui/user_lecture?seq='+courseSeq;
         }
       })
       .catch(err => {
         console.error("삭제 실패", err);
-        alert("삭제 중 오류 발생");
+        alert("삭제가 실패되었습니다.");
       });
   });
 
+  
   // 뒤로가기 버튼 이벤트 리스너
   $("#backButton").click(function() {
-    window.history.back();
+	  const courseSeq = $("#quizCourseSeq").val();
+	  window.location.href = '/upload/upload_course?seq=' + courseSeq;
   });
   
   // 퀴즈 풀기 버튼 → 학습 화면으로 이동
   $("#playButton").click(function () {
     const quizListSeq = $("#quizListSeq").val();
     const courseSeq = $("#quizCourseSeq").val();
-    window.location.href = `/quiz/playQuiz/${quizListSeq}?courseSeq=${courseSeq}`;
+    window.location.href = `/quiz/playQuiz/${quizListSeq}?courseSeq=${courseSeq}&from=modify`;
   });
   
 });
