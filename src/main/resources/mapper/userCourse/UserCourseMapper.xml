@@ -55,6 +55,29 @@
 		select count(*) from course_enrollment where user_seq = #{userSeq}
 	</select>
 
+    <select id="selectRecentEnrolledCourses" parameterType="map" resultType="UserCourseDTO">
+        SELECT
+            ce.enroll_seq,
+            ce.user_seq,
+            c.course_seq,
+            c.title AS courseTitle,
+            c.introduction,
+            c.thumbnail_path,
+            c.thumbnail_name,
+            c.category,
+            c.difficulty,
+            ce.enroll_date
+        FROM
+            course_enrollment ce
+        JOIN
+            course c ON ce.course_seq = c.course_seq
+        WHERE
+            ce.user_seq = #{userSeq}
+        ORDER BY
+            ce.enroll_date DESC
+        FETCH NEXT #{limit} ROWS ONLY
+    </select>
+
   <resultMap id="userCourseListDisplayMap" type="kr.co.sist.e_learning.usercourse.UserCourseListDisplayDTO">
     <id property="courseSeq" column="COURSE_SEQ"/>
     <result property="title" column="TITLE"/>

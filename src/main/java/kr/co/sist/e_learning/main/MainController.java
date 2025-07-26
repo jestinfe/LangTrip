@@ -15,7 +15,7 @@ public class MainController {
 	@GetMapping("/")
 	public String main(Model model) {
 		model.addAttribute("loggedIn", false); // or true if authenticated
-        model.addAttribute("newCourses", userCourseService.getNewCourses(5)); // Fetch 5 new courses
+        model.addAttribute("newCourses", userCourseService.getNewCourses(6)); // Fetch 5 new courses
 		return "main";
 	}
 	

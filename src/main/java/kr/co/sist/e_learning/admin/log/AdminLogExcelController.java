@@ -81,7 +81,7 @@ public class AdminLogExcelController {
             sheet.autoSizeColumn(i);
         }
 
-        String formattedDateTime = java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd_HH:mm:ss"));
+        String formattedDateTime = java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
         String fileName = "admin_logs_" + formattedDateTime + ".xlsx";
 
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");

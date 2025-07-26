@@ -7,9 +7,20 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" th:href="@{/css/common.css}">
     <link rel="stylesheet" th:href="@{/css/course_list.css}">
-    <script src="/js/login-status.js" defer></script>
 <style>
 /* Pagination Styles */
+body.logged-in .guest-state {
+  display: none;
+}
+body.logged-in .user-state {
+  display: inline-flex ;
+}
+body.logged-out .guest-state {
+  display: inline-flex ;
+}
+body.logged-out .user-state {
+  display: none ;
+}
 .pagination {
     display: flex;
     justify-content: center;
@@ -209,7 +220,7 @@
         <div class="course-grid" id="courseGrid">
             <div class="course-card" th:each="course : ${courseList}">
                 <div class="course-thumbnail">
-                    <img th:src="${(course.thumbnailPath != null and course.thumbnailName != null) ? (course.thumbnailPath + course.thumbnailName) : '/images/default_thumbnail.png'}" alt="Course Thumbnail" style="width:100%; height:100%; object-fit: cover;"/>
+                    <img th:src="${course.thumbnailPath != null ? course.thumbnailPath : '/images/default_thumbnail.png'}" alt="Course Thumbnail" style="width:100%; height:100%; object-fit: cover;"/>
                     <div class="course-level" th:text="${course.difficulty}"></div>
                 </div>
                 <div class="course-info">

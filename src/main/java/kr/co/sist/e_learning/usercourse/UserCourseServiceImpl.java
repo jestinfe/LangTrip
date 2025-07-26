@@ -2,6 +2,7 @@ package kr.co.sist.e_learning.usercourse;
 
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 
 import kr.co.sist.e_learning.pagination.PageResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,5 +61,13 @@ public class UserCourseServiceImpl implements UserCourseService{
 		result = ucm.selectAlreadyEnrollCourse(courseSeq);
 		return result;
 	}
+
+    @Override
+    public List<UserCourseDTO> getRecentEnrolledCourses(long userSeq, int limit) {
+        Map<String, Object> param = new HashMap<>();
+        param.put("userSeq", userSeq);
+        param.put("limit", limit);
+        return ucm.selectRecentEnrolledCourses(param);
+    }
 
 }

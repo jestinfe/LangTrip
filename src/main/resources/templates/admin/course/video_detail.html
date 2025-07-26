@@ -10,12 +10,38 @@
     <style>
         .video-container {
             width: 100%;
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
+            background: #fff;
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,.1);
         }
-        video {
+        .video-wrapper {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 aspect ratio */
+            height: 0;
+            overflow: hidden;
+            background: #000;
+            border-radius: 8px;
+        }
+        .video-wrapper video {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
-            height: auto;
+            height: 100%;
+        }
+        .video-info {
+            margin-top: 1.5rem;
+        }
+        .video-info h2 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .video-info p {
+            font-size: 1rem;
+            color: #666;
         }
     </style>
 </head>
@@ -28,7 +54,7 @@
             <span>/</span>
             <a href="/admin/courses">강의 관리</a>
             <span>/</span>
-            <a th:href="@{/admin/courses/{courseSeq}(courseSeq=${video.courseSeq})}">상세조회</a>
+            <a th:href="@{/admin/courses/{courseSeq}(courseSeq=${video.courseSeq})}">강의 상세</a>
             <span>/</span>
             <span>영상 상세</span>
         </div>
@@ -36,25 +62,25 @@
         <div class="page-header">
             <h1><i class="fas fa-video"></i> 영상 상세</h1>
             <div class="admin-info">
-                <span>영상 제목: <strong th:text="${video.title}"></strong></span>
+                <span>영상 ID: <strong th:text="${video.videoSeq}"></strong></span>
+                <span>업로드일: <strong th:text="${#dates.format(video.uploadDate, 'yyyy-MM-dd')}"></strong></span>
             </div>
         </div>
 
-        <div class="detail-section">
-            <div class="section-header">
-                <i class="fas fa-play-circle"></i> 영상 재생
+        <div class="video-container">
+            <div class="video-wrapper">
+                <video id="videoPlayer" controls>
+                    <source th:src="@{${video.filePath}}" type="video/mp4" />
+                    Your browser does not support the video tag.
+                </video>
             </div>
-            <div class="section-content">
-                <div class="video-container">
-                    <video controls>
-                        <source th:src="@{${video.filePath}}" type="video/mp4">
-                        Your browser does not support the video tag.
-                    </video>
-                </div>
+            <div class="video-info">
+                <h2 th:text="${video.title}">영상 제목</h2>
+                <p th:text="${video.description}">영상 설명</p>
             </div>
         </div>
 
-        <div class="action-buttons" style="margin-top: 20px;">
+        <div class="action-buttons" style="margin-top: 20px; text-align: center;">
             <a th:href="@{/admin/courses/{courseSeq}(courseSeq=${video.courseSeq})}" class="btn btn-outline"><i class="fas fa-arrow-left"></i> 강의 상세로 돌아가기</a>
         </div>
     </div>

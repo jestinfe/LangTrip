@@ -133,9 +133,14 @@ body.logged-out .user-state {
     // 탭 버튼 클릭 이벤트
     document.querySelectorAll(".tab-button").forEach(function (btn) {
       btn.addEventListener("click", function () {
-        document.getElementById("tabInput").value = this.getAttribute("data-tab");
-        document.getElementById("pageInput").value = 1; // 탭 변경 시 1페이지로 초기화
-        document.getElementById("filterForm").submit();
+        const tab = this.getAttribute("data-tab");
+        const keyword = document.querySelector("input[name='keyword']").value;
+        const size = document.getElementById("pageSizeInput").value;
+        let url = `/admin/dash/admincommunity?tab=${tab}&page=1&size=${size}`;
+        if (keyword) {
+            url += `&keyword=${keyword}`;
+        }
+        window.location.href = url;
       });
     });
 

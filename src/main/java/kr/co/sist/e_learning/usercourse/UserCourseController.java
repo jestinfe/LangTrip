@@ -234,7 +234,7 @@ public class UserCourseController {
     @GetMapping("/courses")
     public String listPublicCourses(
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int pageSize,
+            @RequestParam(defaultValue = "12") int pageSize,
             @RequestParam(required = false) String searchType,
             @RequestParam(required = false) String searchKeyword,
             @RequestParam(required = false, defaultValue = "uploadDate,desc") String sort,
