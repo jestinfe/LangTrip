@@ -393,8 +393,8 @@ function createSuggestItem({ title, label, icon, link, hits }) {
     .hover(
       function () {
         $(this).css({
-          backgroundColor: 'rgba(87,1,208, 0.2)',
-          color: 'rgb(87,1,208)'
+          backgroundColor: 'rgba(3,105,161, 0.2)',
+          color: 'rgb(3,105,161)'
         });
       },
       function () {
@@ -427,7 +427,7 @@ function createSuggestItem({ title, label, icon, link, hits }) {
     .text(label)
     .css({
       flex: '0 0 64px',
-      color: '#5701d0',
+      color: '#43a3df',
       fontWeight: 'bold',
 //    fontSize: '16px',
 	  fontSize: label === 'FAQ' ? '22px' : '16px',
@@ -470,8 +470,8 @@ function createSuggestItem({ title, label, icon, link, hits }) {
       flex: '0 0 40px',
       fontSize: '20px',
       fontWeight: 'bold',
-//      color: hits > 100 ? '#5701d0' : '#999',
-      color: "#9f5cfe",
+//      color: hits > 100 ? '#43a3df' : '#999',
+      color: "#43a3df",
       textAlign: 'left',
       display: 'flex',
       alignItems: 'center',
@@ -505,7 +505,7 @@ function highlightKeywordInCells(keyword) {
   const titleCells = document.querySelectorAll('#suggestBox .suggest-title');
   titleCells.forEach(cell => {
     const originalText = cell.textContent;
-    const highlightedText = originalText.replace(regex, '<span style="background-color: #9f5cfe; color: white; font-weight: bold;">$1</span>');
+    const highlightedText = originalText.replace(regex, '<span style="background-color: #5c95fe; color: white; font-weight: bold;">$1</span>');
     cell.innerHTML = highlightedText;
   });
 }
@@ -596,7 +596,7 @@ function highlightKeywordInCells(keyword) {
   const titleCells = document.querySelectorAll('.notice-row .notice-cell:nth-child(2)');
   titleCells.forEach(cell => {
     const originalText = cell.textContent;
-    const highlightedText = originalText.replace(regex, '<span style="background-color: #9a43fe; color: white; font-weight: bold">$1</span>');
+    const highlightedText = originalText.replace(regex, '<span style="background-color: #43a3df; color: white; font-weight: bold">$1</span>');
     cell.innerHTML = highlightedText;
   });
 }
@@ -616,7 +616,7 @@ const supportLink = document.querySelector('.supportActive');
 
 supportLink.style.fontWeight = 'bold';
 supportLink.style.fontSize = '18px';
-supportLink.style.color = '#5701d0';
+supportLink.style.color = '#43a3df';
 
 //---------------------------------------------------------------------------------------------------------------//
 

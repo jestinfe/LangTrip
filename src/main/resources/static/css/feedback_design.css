@@ -28,7 +28,7 @@ input::placeholder {
 input[type="radio"] {
 	width: 24px;
 	height: 24px;
-	accent-color: #5701d0; /* 선택된 색상 지정 (선택사항) */
+	accent-color: #43a3df; /* 선택된 색상 지정 (선택사항) */
 }
 
 label {
@@ -36,7 +36,7 @@ label {
 	display: flex;
 	align-items: center;
 	gap: 10px;
-	color: #5701d0;
+	color: #43a3df;
 }
 
 .loginNoticeClass {
@@ -63,7 +63,7 @@ label {
 	padding: 16px;
 	height: 36px;
 	font-size: 24px;
-	background-color: #5701d0;
+	background-color: #43a3df;
 	color: white !important;
 	border-radius: 6px;
 	text-decoration: none;
@@ -87,13 +87,13 @@ label {
 
 .moreAction {
 	font-size: 40px;
-	color: #5701d0;
+	color: #43a3df;
 	font-weight: bold;
 }
 
 .finishedText {
 	font-size: 25px;
-	color: #5701d0;
+	color: #43a3df;
 	margin-top: 10px;
 	text-shadow: 0 0 3px rgba(white 0.3);
 	margin: 20px;
@@ -105,7 +105,7 @@ div {
 
 a {
 	text-decoration: none;
-	color: #5701d0;
+	color: #43a3df;
 	transition: color 0.5s ease;
 }
 
@@ -254,7 +254,7 @@ a:hover {
 .gradient-text {
 	font-size: 48px;
 	font-weight: bold;
-	background: linear-gradient(240deg, rgb(224, 179, 255), #9a43fe, #300051);
+	background: linear-gradient(240deg, rgb(224, 179, 255), #43a3df, #300051);
 	-webkit-background-clip: text;
 	-webkit-text-fill-color: transparent;
 }
@@ -292,7 +292,7 @@ a:hover {
 .left-content {
 	display: flex;
 	flex-direction: column;
-	color: #5701d0;
+	color: #43a3df;
 }
 
 .left-content>.half-top {
@@ -309,7 +309,7 @@ a:hover {
 	text-align: right;
 	font-weight: bold;
 	font-size: 24px;
-	color: #5701d0;
+	color: #43a3df;
 }
 
 .left-inner-content {
@@ -323,14 +323,14 @@ a:hover {
 	margin-bottom: 10px;
 	font-size: 28px;
 	font-weight: bold;
-	color: #9a43fe;
+	color: #43a3df;
 }
 
 .left-inner-content>.half-inner-bottom {
 	flex: 1;
 	border: 1px solid #a5a5f7;
 	margin-top: -10px;
-	color: #9a43fe;
+	color: #43a3df;
 }
 
 /* ------------------------------------ */
@@ -360,7 +360,7 @@ input::placeholder {
 	padding: 12px 16px;
 	align-items: center;
 	border-bottom: 1px solid #eee;
-	background-color: #5701d0;
+	background-color: #43a3df;
 	color: white;
 	font-weight: bold;
 	position: sticky;
@@ -414,7 +414,7 @@ input::placeholder {
 	padding: 6px 12px;
 	border: 1px solid #ccc;
 	border-radius: 4px;
-	color: #5701d0;
+	color: #43a3df;
 	text-decoration: none;
 	font-size: 14px;
 }
@@ -424,7 +424,7 @@ input::placeholder {
 }
 
 .pagination .active-page {
-	background-color: #5701d0;
+	background-color: #43a3df;
 	color: white;
 	font-weight: bold;
 }
