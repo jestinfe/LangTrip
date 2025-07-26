@@ -585,7 +585,7 @@
                     if (res.data.success) {
                     	 localStorage.setItem("paymentAmount", rsp.paid_amount);
                     	    localStorage.setItem("mileAmount", Math.floor(amount * (1 - FEE_RATE)));
-                    	    window.location.href = '/payment/success?lectureNo=' + lectureNo;
+                    	    window.location.href = '/payment/success?lectureNo=' + lectureNo; // iframe 내에서 페이지 이동
                     } else {
                         alert("결제 검증 실패: " + res.data.message);
                     }
@@ -615,7 +615,7 @@
 
     function closeModal() {
         if (confirm("결제를 취소하시겠습니까?")) {
-        	 window.location.href = "/"; 
+        	 window.parent.postMessage('closeDonationModal', '*'); 
         }
     }
 

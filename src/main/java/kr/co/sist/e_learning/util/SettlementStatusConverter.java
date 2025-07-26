@@ -11,8 +11,8 @@ public class SettlementStatusConverter {
                 return "정산 신청";
             case "settlement_completed":
                 return "정산 성공";
-            case "settlement_failed":
-                return "정산 실패";
+            case "settlement_rejected":
+                return "정산 반려";
             default:
                 return status;
         }

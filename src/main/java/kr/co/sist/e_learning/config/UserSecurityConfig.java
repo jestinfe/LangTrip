@@ -45,7 +45,7 @@ public class UserSecurityConfig {
             			        "/api/auth/email/**",
                                 "/api/auth/nickname/check",
                                 "/api/auth/nickname/find",
-                                "/api/auth/password/**",
+                                "/api/auth/password/forgot",
                                 "/api/auth/signup",
                                 "/api/auth/socialSignup",
                                 "/api/auth/login/**",
@@ -53,6 +53,7 @@ public class UserSecurityConfig {
             			        "/courses/**", "/csj/**", "/support/**"
             			        
             				 ).permitAll()
+                .requestMatchers("/api/auth/password/reset").authenticated()
                 .anyRequest().authenticated()
             )
       
@@ -62,6 +63,7 @@ public class UserSecurityConfig {
                 .successHandler(customOAuth2AuthenticationSuccessHandler)
             )
             .addFilterBefore(jwtAuthenticationFilter(jwtTokenProvider, jwtAuthUtils, authService), UsernamePasswordAuthenticationFilter.class)
+            .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.sameOrigin())) // X-Frame-Options 설정
             .csrf(csrf -> csrf.disable())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
