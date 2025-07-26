@@ -24,6 +24,12 @@
   animation: none !important;
   transform: none !important;
 }
+
+.table {
+  table-layout: fixed;
+  width: 100%;
+  word-break: break-word;
+}
 </style>
 </head>
 <body class="container mt-5">
@@ -41,6 +47,12 @@
 <!-- 필터/검색 영역 -->
 <form th:action="@{/admin/user/user-list}" method="get" class="mb-4">
   <div class="row g-2 justify-content-md-end">
+
+    <div class="col-12 col-md-auto">
+      <select class="form-select" disabled>
+        <option value="">최근가입일순</option>
+      </select>
+    </div>
 
     <div class="col-12 col-md-auto">
       <select name="status" id="status" class="form-select">
@@ -64,7 +76,7 @@
 </form>
 
 <!-- 회원 목록 테이블 -->
-<table class="table table-bordered mt-3">
+<table class="table table-bordered table-hover mt-3">
   <thead class="table-light">
     <tr>
       <th>번호</th>
@@ -74,13 +86,13 @@
       <th>개설한 과목 수</th>
       <th>가입일</th>
       <th>계정 상태</th>
-      <th>상태 최근 조치일</th>
+      <th>계정 조치일</th>
     </tr>
   </thead>
   <tbody>
     <tr th:each="user, stat : ${responseDTO.list}"
     	th:data-user-seq="${user.userSeq}"
-    	class="user-row">
+    	class="user-row" style="cursor: pointer;">
       <td th:text="${(responseDTO.currentPage - 1) * requestDTO.size + stat.index + 1}">번호</td>
       <td th:text="${user.userSeq}">아이디</td>
       <td th:text="${user.nickname}">닉네임</td>
@@ -88,11 +100,7 @@
       <td th:text="${user.openedCourseCnt}">개설 과목</td>
       <td th:text="${#dates.format(user.createdAt, 'yyyy-MM-dd')}">가입일</td>
       <td>
-        <span th:text="${user.status}"
-              th:classappend="${user.status == '정상'} ? 'badge bg-success' :
-								(${user.status == '탈퇴'} ? 'badge bg-secondary' :
-									(${user.status == '영구정지'} ? 'badge bg-danger' :
-										'badge bg-light text-dark'))">
+        <span th:text="${user.status}">
         상태
         </span>
       </td>
@@ -166,7 +174,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="닫기"></button>
       </div>
 
-      <div class="modal-body" style="max-height: 80vh; overflow-y: auto;">
+      <div class="modal-body">
 	      <div class="container-fluid">
 	        <!-- 기본 정보 -->
 	        <section class="mb-5">
@@ -179,7 +187,7 @@
 	              <tr><th>개설한 과목 수</th><td id="detail-opened-count">1</td></tr>
 	              <tr><th>가입일</th><td id="detail-created">2025-06-21</td></tr>
 	              <tr><th>상태</th><td id="detail-status">정상</td></tr>
-	              <tr><th>현재 상태 확정일</th><td id="detail-admin-acted">2024-06-25</td></tr>
+	              <tr><th>계정 조치일</th><td id="detail-admin-acted">2024-06-25</td></tr>
 	            </tbody>
 	          </table>
 	        </section>
@@ -488,7 +496,7 @@ noPenaltyRadio.addEventListener('change', () => {
 		
 		// 값 초기화
 		// 계정 상태 라디오 해제
-		normalRadio.checked = false;
+		normalRadio.checked = true;
 		banRadio.checked = false;
 
 		// 체크박스 해제
@@ -509,6 +517,9 @@ penaltyRadio.addEventListener('change', ()=> {
 
 		// DB에서 불러온 값으로 복원
 		restoreAccountSection(initialStatus, initialReasons, initialCustomTxt);
+		
+		normalRadio.disabled = true;
+		normalRadio.checked = false;
 	}
 });
 
@@ -549,6 +560,12 @@ document.getElementById('confirmApplyBtn').addEventListener('click', async () =>
 		.map((cb) => cb.id.replace("reason", ""));
 	const customReason = document.getElementById("customReason").value.trim();
 
+	// 영구정지 선택 시 체크박스 선택 필수 검증
+	if (status === '영구정지' && reasonCodes.length === 0) {
+		alert("영구정지 상태일 경우, 사유를 최소 1개 이상 선택해야 합니다.");
+		return;
+	}
+
 	try {
 		await axios.post('/admin/user/update-status', {
 	      userSeq,
@@ -562,6 +579,8 @@ document.getElementById('confirmApplyBtn').addEventListener('click', async () =>
 		const modal2 = bootstrap.Modal.getInstance(document.getElementById('confirmModal'));
 		modal2.hide();
 		modal1.hide();
+		
+		window.location.reload();
 	} catch (err) {
 		console.error(err);
 		alert("계정 상태 적용 중 오류가 발생했습니다.");

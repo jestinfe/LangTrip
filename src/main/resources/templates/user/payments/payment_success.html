@@ -130,7 +130,7 @@
                <input type="hidden" name="lectureNo" id="lectureNoInput" th:value="${lectureNo}">
                 <button type="submit" class="btn btn-primary">후원하러 가기</button>
             </form>
-            <a href="/" class="btn btn-secondary">메인으로 돌아가기</a>
+            <button type="button" class="btn btn-secondary" onclick="window.parent.postMessage('closeDonationModal', '*');">확인</button>
         </div>
     </div>
 

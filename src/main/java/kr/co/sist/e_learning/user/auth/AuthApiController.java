@@ -26,6 +26,9 @@ public class AuthApiController {
     private JwtAuthUtils jwtAuthUtils;
 
     @Autowired
+    private JwtTokenProvider jwtTokenProvider;
+
+    @Autowired
     private UserRepository userRepository; // UserRepository 주입
 
     /**
@@ -168,7 +171,13 @@ public class AuthApiController {
                                            HttpServletRequest request,
                                            HttpServletResponse response) {
         try {
-            authService.resetPassword(dto.getUserId(), dto.getNewPassword());
+            String accessToken = jwtAuthUtils.extractTokenFromCookies(request);
+            Long userSeq = jwtTokenProvider.getUserSeq(accessToken);
+
+            UserEntity user = userRepository.findByUserSeq(userSeq)
+                    .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+
+            authService.resetPassword(user.getUserId(), dto.getNewPassword());
 
             // ✅ 쿠키 삭제
             Cookie accessCookie = new Cookie("accessToken", null);

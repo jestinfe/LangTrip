@@ -31,7 +31,7 @@
 
         <!-- 후원 금액 입력 -->
         <div class="amount-section">
-            <div class="section-title">후원 금액</div>
+            <div class="section-title">후원 마일</div>
             <div class="amount-input-group" id="amountInputGroup">
                 <input type="number" id="amountInput" class="amount-input" placeholder="후원할 마일 입력"
                        min="100" th:max="${userMiles}" 
@@ -97,13 +97,18 @@ let currentAmount = 0;  // 초기값을 설정해줍니다.
 
 function updateAmount() {
     const input = document.getElementById('amountInput');
-    const value = parseInt(input.value) || 0;
+    let value = parseInt(input.value) || 0;
+    if (value > maxMiles) {
+        value = maxMiles;
+        input.value = value;
+    }
     currentAmount = value;
     validateAmount();
     updateMessageSection();
     updateSponsorshipButton();
     updatePresetButtons();
 }
+
 
 function validateAmount() {
     const group = document.getElementById('amountInputGroup');
@@ -203,8 +208,7 @@ async function processSponsor() {
         if (res.ok) {
             const result = await res.json();
             alert('후원이 완료되었습니다!');
-            
-            // 성공 페이지로 이동할 URL 생성
+            // 성공 페이지로 이동할 URL 생성 (iframe 내에서)
             const successUrl = new URL('/donation/success', window.location.origin);
             successUrl.searchParams.append('lectureTitle', result.lectureTitle);
             successUrl.searchParams.append('instructorName', result.instructorName);
@@ -212,8 +216,7 @@ async function processSponsor() {
             if (result.message) {
                 successUrl.searchParams.append('message', result.message);
             }
-            
-            window.location.href = successUrl.href;
+            window.location.href = successUrl.href; // iframe 내에서 페이지 이동
         } else {
             const result = await res.json();
             alert(result.message || '후원 실패');
@@ -229,31 +232,25 @@ async function processSponsor() {
 
 function closeModal() {
     if (currentAmount > 0) {
-        if (confirm('작성 중인 후원 내용이 있습니다. 닫을까요?'))  window.location.href = "/"; 
+        if (confirm('작성 중인 후원 내용이 있습니다. 닫을까요?'))  window.parent.postMessage('closeDonationModal', '*'); 
     } else {
-    	 window.location.href = "/"; 
+    	 window.parent.postMessage('closeDonationModal', '*'); 
     }
 }
 
 function chargeMiles() {
     const result = confirm('마일을 충전하시겠습니까?');
     if (result) {
-        // 확인을 누른 경우
-        // URL에서 lectureNo 파라미터 값을 추출
         const urlParams = new URLSearchParams(window.location.search);
         const lectureNo = urlParams.get('lectureNo');
 
         if (lectureNo) {
-            // 세션에 lectureNo 값 저장
             sessionStorage.setItem('lectureNo', lectureNo);
-            
-            // 결제 페이지로 이동
-            window.location.href = '/user/payments?lectureNo=' + lectureNo;
+            window.location.href = '/user/payments?lectureNo=' + lectureNo; // iframe 내에서 페이지 이동
         } else {
             alert("강의 정보를 찾을 수 없습니다.");
         }
     }
-    // 취소를 누르면 아무 일도 일어나지 않음
 }
 
 
