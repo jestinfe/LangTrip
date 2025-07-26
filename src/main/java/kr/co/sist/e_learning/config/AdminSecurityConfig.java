@@ -58,7 +58,7 @@ public class AdminSecurityConfig {
                     .requestMatchers("/admin/login/**", "/admin/signup**").permitAll()
 
                     // 📌 클릭 카운트 API는 인증 없이 허용
-                    .requestMatchers(HttpMethod.POST, "/admin/ad/click/**", "admin/send-code",
+                    .requestMatchers(HttpMethod.POST, "/admin/ad/click/**", "/admin/send-code",
                     		"/admin/verify-code", "/admin/check-id").permitAll()
 
                     // 그 외 /admin/** 경로는 모두 인증 필요
