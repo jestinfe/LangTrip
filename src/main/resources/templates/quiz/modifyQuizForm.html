@@ -5,7 +5,6 @@
   <title>LangTrip | 퀴즈 수정</title>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css">
-  
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <link rel="stylesheet" th:href="@{/css/modifyQuiz.css}">
 </head>
@@ -374,7 +373,7 @@ $(function () {
 	  window.location.href = '/upload/upload_course?seq=' + courseSeq;
   });
   
-  // 퀴즈 풀기 버튼 → 학습 화면으로 이동
+  // 미리보기 버튼 → 학습 화면으로 이동
   $("#playButton").click(function () {
     const quizListSeq = $("#quizListSeq").val();
     const courseSeq = $("#quizCourseSeq").val();

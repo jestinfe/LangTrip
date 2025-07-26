@@ -35,7 +35,7 @@
         if (quizListSeq) {
         location.href = '/quiz/modifyQuizForm/' + quizListSeq + '?courseSeq=' + btn.dataset.course;
         } else {
-          alert("⚠ 수정화면으로 돌아갈 수 없습니다 (quizListSeq 없음)");
+          alert("진입 실패");
         }
       } else {
         const courseSeq = btn.dataset.course;
