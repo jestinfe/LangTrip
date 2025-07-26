@@ -409,6 +409,13 @@ public class AuthServiceImpl implements AuthService {
         user.setPasswordStatus("ACTIVE");
         userRepository.save(user);
     }
+
+    @Override
+    public String getPasswordStatus(Long userSeq) {
+        UserEntity user = userRepository.findByUserSeq(userSeq)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+        return user.getPasswordStatus();
+    }
 }
     
     
