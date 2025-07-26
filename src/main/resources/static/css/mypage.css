@@ -726,18 +726,26 @@ body.mypage .main-content {
 }
 
 /* 반응형 디자인 수정 */
-@media (max-width: 1400px) {
-  
+/* 기존 CSS는 그대로 유지하고, 반응형 부분만 수정 */
+
+/* 반응형 디자인 수정 - 더 빠른 브레이크포인트 */
+@media (max-width: 1750px) {
   .content-area {
     max-width: 100%;
   }
+  
+  /* 광고 영역과의 간격 확보 */
+  body.mypage .main-content {
+    padding-right: 320px; /* 광고 너비 + 여유 공간 */
+  }
 }
 
-@media (max-width: 1200px) {
+@media (max-width: 1750px) {
+  /* 1350px에서 사이드바를 위로 이동 (기존 1200px에서 변경) */
   body.mypage .main-content {
     flex-direction: column;
     padding: 15px;
-    padding-right: 210px; /* 광고 너비(250px) + 최소 간격 */
+    padding-right: 300px; /* 광고 너비 + 여유 공간 */
   }
   
   .sidebar {
@@ -766,23 +774,34 @@ body.mypage .main-content {
   .content-area {
     max-height: none;
     padding: 30px 20px;
-    max-width: calc(100vw - 230px);
+    max-width: calc(100vw - 320px); /* 광고 공간 확보 */
+  }
+}
+
+@media (max-width: 1200px) {
+  body.mypage .main-content {
+    padding-right: 280px; /* 광고 너비 조정 */
+  }
+  
+  .content-area {
+    max-width: calc(100vw - 300px);
   }
 }
 
 @media (max-width: 900px) {
   body.mypage .main-content {
-    padding-right: 230px; /* 광고가 하단으로 이동하므로 공간 줄임 */
+    padding-right: 220px; /* 광고가 하단으로 이동하지만 여전히 공간 필요 */
   }
   
   .content-area {
-    max-width: calc(100vw - 250px);
+    max-width: calc(100vw - 240px);
   }
 }
 
 @media (max-width: 768px) {
   body.mypage .main-content {
     padding-right: 15px; /* 모바일에서는 광고가 하단에 위치하므로 원래대로 */
+    padding-bottom: 200px; /* 하단 광고 공간 확보 */
   }
   
   .content-area {
@@ -836,6 +855,12 @@ body.mypage .main-content {
   
   .right-buttons {
     margin-left: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  body.mypage .main-content {
+    padding-bottom: 180px; /* 작은 화면에서 하단 광고 공간 */
   }
 }
 

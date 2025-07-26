@@ -74,7 +74,7 @@ public class MyPageController {
      * - tab, 광고 배너, fragment 데이터 초기화
      */
     @GetMapping
-    public String mypage(@RequestParam(value = "tab", defaultValue = "dashboard") String tab,
+    public String mypage(@RequestParam(value = "tab", defaultValue = "my_info") String tab,
                          Authentication auth,
                          Model model) {
         long userSeq = getOrInitUserSeq(auth);
@@ -111,16 +111,13 @@ public class MyPageController {
                 model.addAttribute("fundingList", fdSV.getUserFundings(userSeq));
                 model.addAttribute("donationType", "given");
                 break;
-            case "dashboard":
             default:
-                model.addAttribute("myData", mpSV.getMyPageData(userSeq));
                 break;
         }
 
         // 메인 뷰
         return "mypage/mypage_main";
     }
-
     
     @GetMapping("/instroductor_course")
     public String instructorCoursePage() {
@@ -156,13 +153,6 @@ public class MyPageController {
         return "mypage/user_course"; 
     }
     
-    
-    @GetMapping("/dashboard")
-    public String dashboard(Authentication auth, Model model) {
-        long userSeq = getOrInitUserSeq(auth);
-        model.addAttribute("myData", mpSV.getMyPageData(userSeq));
-        return "mypage/dashboard";
-    }
 
     /**
      * 강의 이력 fragment
@@ -256,19 +246,10 @@ public class MyPageController {
         return result;
     }
 
-
-
-//    @GetMapping("/user_course")
-//    public String userCoursePage() {
-//        return "mypage/user_course";
-//    }
-
     @GetMapping("/reset-password")
     public String resetPassword() {
         return "user/login/reset-password";
-    }
-    
-    
+    }    
 
     @GetMapping("/link_account")
     public String linkAccount(Authentication auth, Model model) {
@@ -327,11 +308,6 @@ public class MyPageController {
 
         return result;
     }
-
-
-
-    
-    
 
 
     private String maskAccountNumber(String acct) {

@@ -7,7 +7,6 @@
   <!-- 외부 스크립트 -->
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <script src="/js/chart.umd.js"></script>
-  <script src="/js/dashboardCharts.js"></script>
   <script th:src="@{/js/login-status.js}"></script>
 
   <!-- 공통 스타일 -->
@@ -52,7 +51,7 @@
 
 <!-- ================= 광고 + AJAX 로드 스크립트 ================= -->
 <script th:inline="javascript">
-/*<![CDATA[*/
+
   
   // 1) Thymeleaf 치환된 배너 리스트
   var banners1 = /*[[${bannerList1}]]*/ []; // 1~5번 광고
@@ -171,8 +170,6 @@
         document.getElementById('content-area').innerHTML = html;
         history.replaceState(null, '', '/mypage?tab=' + url.split('/').pop());
         // fragment 후처리
-        if (url.includes('dashboard') && window.drawCharts) 
-          setTimeout(drawCharts, 50);
         if (url.includes('instroductor_course') && window.initInstroductorCourse) 
           setTimeout(initInstroductorCourse, 50);
       })
@@ -197,7 +194,7 @@
   document.addEventListener('DOMContentLoaded', function() {
     renderAds();        // 광고 DOM 만들고
     startAdRotation();  // 슬라이드 시작
-    var init = new URL(location.href).searchParams.get('tab') || 'dashboard';
+    var init = new URL(location.href).searchParams.get('tab') || 'my_info';
     loadContent('/mypage/' + init);
     initSidebarClick();
   });
