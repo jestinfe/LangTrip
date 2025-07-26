@@ -176,5 +176,13 @@
     ORDER BY c.UPLOAD_DATE DESC
     FETCH NEXT #{limit} ROWS ONLY
   </select>
+  
+  <!-- 수강 취소 -->
+  <delete id="deleteUserCourse" parameterType="kr.co.sist.e_learning.usercourse.UserCourseDTO">
+    DELETE FROM user_course
+    WHERE user_seq = #{userSeq}
+      AND course_seq = #{courseSeq}
+	</delete>
+  
 
 </mapper>

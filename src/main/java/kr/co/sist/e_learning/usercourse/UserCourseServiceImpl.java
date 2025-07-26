@@ -69,5 +69,11 @@ public class UserCourseServiceImpl implements UserCourseService{
         param.put("limit", limit);
         return ucm.selectRecentEnrolledCourses(param);
     }
+    
+    @Override
+    public int deleteUserCourse(UserCourseDTO dto) {
+        return ucm.deleteUserCourse(dto);
+    }
+
 
 }
