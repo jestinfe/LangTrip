@@ -131,6 +131,51 @@ public class UserCourseController {
 	        return ResponseEntity.internalServerError().body(Map.of("msg", "서버 오류 발생"));
 	    }
 	}
+	
+	@PostMapping("/user/course_cancel")
+	@ResponseBody
+	public ResponseEntity<?> cancelCourse(
+	        @RequestParam("courseSeq") String courseSeq,
+	        Authentication authentication) {
+
+	    Object principal = authentication.getPrincipal();
+	    Long userSeq = null;
+
+	    if (principal instanceof Long) {
+	        userSeq = (Long) principal;
+	    }
+
+	    try {
+	        // 수강 여부 확인
+	        int alreadyEnrolled = ucs.selectAlreadyEnrollCourse(courseSeq);
+
+	        if (alreadyEnrolled == 0) {
+	            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+	                                 .body(Map.of("msg", "수강 중인 강의가 아닙니다."));
+	        }
+
+	        // 수강 취소 진행
+	        UserCourseDTO dto = new UserCourseDTO();
+	        dto.setCourseSeq(courseSeq);
+	        dto.setUserSeq(userSeq);
+
+	        int deleted = ucs.deleteUserCourse(dto);
+
+	        if (deleted > 0) {
+	            return ResponseEntity.ok(Map.of("msg", "수강이 취소되었습니다."));
+	        } else {
+	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                                 .body(Map.of("msg", "수강 취소 실패"));
+	        }
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ResponseEntity.internalServerError()
+	                             .body(Map.of("msg", "서버 오류 발생"));
+	    }
+	}
+
+	
 //	@PostMapping("/user/course_enroll")
 //	public ResponseEntity<?> registerCourse(@RequestParam("courseSeq") String courseSeq,
 //			Authentication authentication){

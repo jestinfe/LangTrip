@@ -17,4 +17,5 @@ public interface UserCourseService {
     PageResponseDTO<UserCourseListDisplayDTO> getPublicCourses(Map<String, Object> params);
     List<UserCourseListDisplayDTO> getNewCourses(int limit);
     List<UserCourseDTO> getRecentEnrolledCourses(long userSeq, int limit);
+    int deleteUserCourse(UserCourseDTO dto);
 }

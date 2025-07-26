@@ -249,7 +249,7 @@
             align-items: center;
             justify-content: center;
             flex: 1;
-        }
+        }        
 
         .btn-primary {
             background: linear-gradient(135deg, #4a90e2, #357abd);
