@@ -29,6 +29,49 @@
 
 	<div class="container-fluid">
 		<div class="row">
+		
+			<div class="left-panel" id="leftPanel">
+				<div class="side-panel">
+					<h5>🎯 강의 통계</h5>
+					<p class="mb-3">이번 강의의 통계</p>
+					<div
+						style="background: #ddf4ff; padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 2px solid #84d8ff;">
+						<div style="font-size: 14px; color: #1cb0f6; margin-bottom: 5px;">수강생
+							수</div>
+						<div style="font-size: 24px; font-weight: 700; color: #1cb0f6;">
+							<span>👥<span th:text="${courseData.enrollCount}"></span></span>
+						</div>
+					</div>
+					<!-- 					<button class="btn btn-outline-primary btn-sm w-100 mb-2">📈 -->
+					<!-- 						진도 보기</button> -->
+				</div>
+
+				<div class="side-panel">
+					<h5>📋 학습 공지</h5>
+					<p class="mb-3">강사님의 공지 입니다.</p>
+
+
+					<button class="btn btn-outline-primary btn-sm w-100 mb-2"
+						data-bs-toggle="modal" data-bs-target="#noticeViewModal"
+						onclick="loadNotice()">📖 공지 보기</button>
+				</div>
+
+				<div class="side-panel">
+					<h5>💡 학습 도움말</h5>
+					<p class="mb-3">효과적인 학습 방법을 알아보세요.</p>
+					<div
+						style="background: #f0f9ff; padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 2px solid #bae6fd;">
+						<div style="font-size: 12px; color: #0369a1; line-height: 1.4;">
+							💡 <strong>TIP:</strong> 동영상을 시청한 후 바로 퀴즈를 풀어보세요!
+						</div>
+					</div>
+					
+					<button class="btn btn-outline-primary btn-sm w-100"
+						data-bs-toggle="modal" data-bs-target="#learningViewModal" 
+						onclick="loadLearning()">💡
+						학습 가이드 보기</button>
+				</div>
+			</div>
 			<!-- 사이드바 -->
 			<!-- 			<div class="sidebar" id="sidebar"> -->
 			<!-- 				<a href="#" class="active">📚 학습</a> <a href="#">🧠 퀴즈</a> <a -->
@@ -39,10 +82,13 @@
 			<!-- 메인 콘텐츠 -->
 			<div class="main-content">
 				<input type="hidden" id="userSeq" th:value="${userSeq}" />
+				<input type="hidden" id="courseSeq" th:value="${courseData.courseSeq}" />
+				
 				<div class="content-wrapper">
 					<div class="lecture-section">
 						<div class="lecture-header">
 							<a href="/courses" class="btn btn-success">← 뒤로가기</a>
+						</div>
 						<div id="courseDataSector"></div>
 						<div class="course-info">
 							<h2 th:text="${courseData.courseTitle}"></h2>
@@ -213,19 +259,37 @@
         </div>
     </div>
 
-<!-- 		<script> -->
-// 		function goToVideo(button) {
-// 			  const videoSeq = button.dataset.videoseq;
-// 			  const courseSeq = button.dataset.courseseq;
-// 			  const from = "user2"; // 일반 사용자 기준
-// 			  location.href = "/video/watch?videoSeq=" + videoSeq + "&courseSeq=" + courseSeq + "&from=" + from;
-// 			}
-<!-- 	</script> -->
+
 	<!-- 프로필 캐릭터 (챗봇 버튼) -->
 	<div class="profile-icon" onclick="toggleChatbot()">
 		<img src="/images/mascot2.png" alt="마스코트"
 			onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHZpZXdCb3g9IjAgMCA1MCA1MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjUiIGN5PSIyNSIgcj0iMjUiIGZpbGw9IiM0YTkwZTIiLz4KPHN2ZyB3aWR0aD0iMzAiIGhlaWdodD0iMzAiIHZpZXdCb3g9IjAgMCAzMCAzMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMTUiIGN5PSIxNSIgcj0iMTUiIGZpbGw9IndoaXRlIi8+CjxjaXJjbGUgY3g9IjEwIiBjeT0iMTIiIHI9IjIiIGZpbGw9IiMzMzMiLz4KPGNpcmNsZSBjeD0iMjAiIGN5PSIxMiIgcj0iMiIgZmlsbD0iIzMzMyIvPgo8cGF0aCBkPSJNMTAgMjBRMTUgMjUgMjAgMjAiIHN0cm9rZT0iIzMzMyIgc3Ryb2tlLXdpZHRoPSIyIiBmaWxsPSJub25lIi8+Cjwvc3ZnPgo8L3N2Zz4K'">
 	</div>
+
+<div id="noticeViewModal" class="modal fade" tabindex="-1">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content p-4">
+				<h5 class="mb-3">📖 등록된 공지</h5>
+				<div id="noticeDisplay" style="white-space: pre-line;"></div>
+				<div class="text-end mt-3">
+					<!-- 					<button class="btn btn-secondary" data-bs-dismiss="modal">닫기</button> -->
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<div id="learningViewModal" class="modal fade" tabindex="-1">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content p-4">
+				<h5 class="mb-3">💡 등록된 학습가이드</h5>
+				<div id="learningDisplay" style="white-space: pre-line;"></div>
+				<div class="text-end mt-3">
+					<!-- 					<button class="btn btn-secondary" data-bs-dismiss="modal">닫기</button> -->
+				</div>
+			</div>
+		</div>
+	</div>
+	
 
 
 	<script>
@@ -398,31 +462,7 @@ window.addEventListener('message', function(event) {
             
         });
         
-         document.addEventListener("DOMContentLoaded", function () {
-        	  const quizButtons = document.querySelectorAll(".start-quiz-button");
-
-        	  quizButtons.forEach(button => {
-        	    const quizListSeq = button.dataset.quizId;
-
-        	    axios.get("/quiz/status", {
-        	      params: { quizListSeq } 
-        	    })
-        	    .then(res => {
-        	    	console.log("퀴즈 상태 응답:", res.data);
-        	      const quizStatus = res.data.status;
-        	      if (quizStatus === "complete") {
-        	        button.classList.add("completed");
-        	      }
-        	    })
-        	    .catch(err => {
-        	      console.error("퀴즈 상태 확인 실패", err);
-        	    });
-        	  });
-        	}); 
-
-        
-        
-        
+      
         
     </script>
 	<script>
@@ -455,8 +495,70 @@ window.addEventListener('message', function(event) {
     	      console.error("진행률 불러오기 실패", err);
     	    });
     	  });
+    	  
+    	  //퀴즈 버튼 완료 처리
+    		 const quizButtons = document.querySelectorAll(".circle-button");
+     	  quizButtons.forEach(button => {
+     	    const quizListSeq = button.dataset.quizlistseq;
+     	    const courseSeq = button.dataset.courseseq;
+
+     	    if (!quizListSeq) return; 
+     	   console.log("userSeq:", userSeq, "quizListSeq:", quizListSeq);
+     	    axios.get("/quiz/status", {
+     	      params: { userSeq, quizListSeq } 
+     	    })
+     	    .then(res => {
+     	      const quizStatus = res.data.status;
+   	          console.log("전체 응답 확인:", res.data);
+   	          console.log(quizStatus);
+     	      if (quizStatus === "complete") {
+     	        button.classList.add("quiz-completed");
+     	      }
+     	    })
+     	    .catch(err => {
+     	      console.error("퀴즈 상태 확인 실패", err);
+     	    });
+     	  });
+    	  
     	});
 
+    function loadNotice() {
+        const courseSeq = document.getElementById("courseSeq").value;
+
+        // courseSeq를 쿼리 파라미터로 서버에 전달
+        axios.get('/api/notice/latest', { params: { courseSeq: courseSeq } })
+            .then(response => {
+            	
+                const noticeContent = response.data.content; // 서버에서 받은 공지 내용
+                document.getElementById('noticeDisplay').textContent = noticeContent; // 모달에 표시
+
+//                 // Bootstrap 5 모달 수동으로 열기
+                const noticeViewModal = new bootstrap.Modal(document.getElementById('noticeViewModal'));
+                noticeViewModal.show();  // 모달 열기
+            })
+            .catch(error => {
+                console.error(error);
+                alert("공지 불러오기 실패");
+            });
+    }
+    
+    function loadLearning() {
+   	 const courseSeq = document.getElementById("courseSeq").value;
+
+       // courseSeq를 쿼리 파라미터로 서버에 전달
+       axios.get('/api/notice/latestLearning', { params: { courseSeq: courseSeq } })
+           .then(response => {
+               const learningContent = response.data.content; // 서버에서 받은 공지 내용
+               document.getElementById('learningDisplay').textContent = learningContent; // 모달에 표시
+               const learningViewModal = new bootstrap.Modal(document.getElementById('learningViewModal'));
+               learningViewModal.show();  // 모달 열기
+           
+           })
+           .catch(error => {
+               console.error(error);
+               alert("공지 불러오기 실패");
+           });
+   }
 
 </script>
 
