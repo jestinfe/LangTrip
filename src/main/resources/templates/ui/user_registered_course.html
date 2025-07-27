@@ -404,13 +404,17 @@
     	      const courseSeq = button.dataset.courseseq;
 
     	      if (!quizListSeq) return; // 퀴즈가 아닌 버튼은 무시
-
+    	      console.log("userSeq:", userSeq, "quizListSeq:", quizListSeq);
+    	      
     	      axios.get("/quiz/status", {
     	          params: { userSeq, quizListSeq }
+    	     
     	      }).then(res => {
     	          const quizStatus = res.data.status;
+    	          console.log("전체 응답 확인:", res.data);
+    	          console.log(quizStatus);
     	          if (quizStatus === "complete") {
-    	              button.classList.add("completed");
+    	              button.classList.add("quiz-completed");
     	          }
     	      }).catch(err => {
     	          console.error("퀴즈 상태 확인 실패", err);

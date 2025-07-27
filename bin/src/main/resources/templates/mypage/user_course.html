@@ -78,20 +78,40 @@
     </div>
   </div>
 
-  <!-- 페이지네이션 -->
-  <div class="pagination" th:if="${totalCount > limit}">
-    <ul class="pagination-list">
-      <li th:if="${page > 1}">
-        <a th:href="@{/mypage/user_course(page=${page - 1}, limit=${limit})}">이전</a>
-      </li>
-      <li th:each="i : ${#numbers.sequence(1, T(java.lang.Math).ceil(totalCount / (double)limit).intValue())}"
-          th:classappend="${i == page} ? 'active'">
-        <a th:href="@{/mypage/user_course(page=${i}, limit=${limit})}" th:text="${i}">1</a>
-      </li>
-      <li th:if="${page * limit < totalCount}">
-        <a th:href="@{/mypage/user_course(page=${page + 1}, limit=${limit})}">다음</a>
-      </li>
-    </ul>
-  </div>
+
+		<!-- 페이지네이션 -->
+		<div class="pagination" th:if="${totalCount > limit}">
+		  <ul class="pagination-list">
+		    
+		    <!-- 이전 -->
+		    <li th:if="${page > 1}">
+		      <a href="#" th:attr="data-page=${page - 1}">이전</a>
+		    </li>
+		
+		    <!-- 번호 -->
+		    <li th:each="i : ${#numbers.sequence(1, T(java.lang.Math).ceil(totalCount / (double)limit).intValue())}"
+		        th:classappend="${i == page} ? 'active'">
+		      <a href="#" th:attr="data-page=${i}" th:text="${i}">1</a>
+		    </li>
+		
+		    <!-- 다음 -->
+		    <li th:if="${page * limit < totalCount}">
+		      <a href="#" th:attr="data-page=${page + 1}">다음</a>
+		    </li>
+		  </ul>
+		</div>
+		
+     </div>
    </div>
-   </div>
+
+<script>
+  document.addEventListener('click', function(e) {
+    const link = e.target.closest('.pagination-list a');
+    if (link && link.dataset.page) {
+      e.preventDefault();
+      const page = link.dataset.page;
+      loadContent(`/mypage/user_course?page=${page}&limit=${/*[[${limit}]]*/ 6}`);
+    }
+  });
+</script>
+

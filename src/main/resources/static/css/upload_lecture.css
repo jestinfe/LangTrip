@@ -753,14 +753,24 @@ body {
     }
 }
 
-/* 퀴즈 완료 */
+.circle-button.quiz-completed {
+  background-color: #1cb0f6;
+  border: 2px solid #1cb0f6;
+  color: white;
+}
+
+.circle-button.quiz-completed i {
+  color: white !important;
+}
+
+/*  퀴즈 완료 
 .start-quiz-button.completed {
   background: linear-gradient(135deg, #1cb0f6, #1899d6);
 }
 
 .start-quiz-button.completed i {
   color: white !important;
-}
+} */
 
 /* 애니메이션 */
 @keyframes fadeIn {
