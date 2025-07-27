@@ -541,29 +541,6 @@ body.logged-out .user-state {
     margin-top: 10px;
 }
 
-.btn-course-cancel {
-    all: unset; /* ← 기본 스타일 제거 */
-    display: inline-block;
-    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-    color: white;
-    padding: 8px 16px;
-    border-radius: 8px;
-    font-weight: 600;
-    font-size: 14px;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    cursor: pointer;
-    text-align: center;
-}
-
-.btn-course-cancel:hover {
-    transform: translateY(-2px);
-    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-      
-      
 .enroll-btn {
     background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
     color: white;
