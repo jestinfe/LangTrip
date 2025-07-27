@@ -26,6 +26,13 @@ body.logged-out .guest-state {
 body.logged-out .user-state {
   display: none ;
 }
+
+#overlay {
+  position: fixed;  /* 화면 고정 */
+  top: 0; left: 0; right: 0; bottom: 0;  /* 화면 전체 */
+  background-color: rgba(73,110,109, 0.4) !important;
+  z-index: 999;  /* 충분히 위에 표시 */
+}
 </style>
 </head>
 <!-- <body style="background: linear-gradient( to bottom, white, rgba(204,169,254, 0.7), rgba(64,5,147, 0.6)) !important;"> -->
@@ -247,9 +254,9 @@ body.logged-out .user-state {
 			<div class="content-div" style="display: flex; flex-direction: row;">
 				<div class="feedbackNull"></div>
 				<div class="feedbackCmp"
-					style="box-shadow: 0 0 6px rgba(180, 159, 213, 1);">
-					<div class="feedbackCmpTitle" style="color: #b49fd5;">피드백 접수</div>
-					<div class="feedbackCmpContent" style="color: #b49fd5;">
+					style="box-shadow: 0 0 6px rgba(67,163,223, 0.6);">
+					<div class="feedbackCmpTitle" style="color: #a5d1ed;">피드백 접수</div>
+					<div class="feedbackCmpContent" style="color: #a5d1ed;">
 						여러분의 소중한 의견을<br> 직접 전달해주세요.
 					</div>
 				</div>
@@ -259,7 +266,7 @@ body.logged-out .user-state {
 					</div>
 				</div>
 				<div class="feedbackCmp"
-					style="box-shadow: 0 0 6px rgba(154, 67, 254, 0.8);">
+					style="box-shadow: 0 0 6px rgba(67,163,223, 1);">
 					<div class="feedbackCmpTitle" style="color: #43a3df;">피드백 검토</div>
 					<div class="feedbackCmpContent" style="color: #43a3df;">
 						접수된 피드백은<br> 검토와 분석을 거칩니다.
@@ -271,9 +278,9 @@ body.logged-out .user-state {
 					</div>
 				</div>
 				<div class="feedbackCmp"
-					style="box-shadow: 0 0 6px rgba(87, 1, 208, 0.9);">
-					<div class="feedbackCmpTitle" style="color: #43a3df;">피드백 반영</div>
-					<div class="feedbackCmpContent" style="color: #43a3df;">
+					style="box-shadow: 0 0 6px rgba(16,103,156, 1);">
+					<div class="feedbackCmpTitle" style="color: #1672ab;">피드백 반영</div>
+					<div class="feedbackCmpContent" style="color: #1672ab;">
 						함께 만들어 가는<br> 향상된 사용자 경험
 					</div>
 				</div>

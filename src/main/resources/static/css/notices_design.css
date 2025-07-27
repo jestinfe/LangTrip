@@ -53,7 +53,7 @@ a:hover {
 	color: black; /* 텍스트 색상을 검정색으로 */
 	font-weight: bold;
 	flex: 1; /* 제목부분이 1배 비율 */
-	border: 2px solid #a5a5f7; /* 보라색 테두리 */
+	border: 2px solid #7abefa; /* 보라색 테두리 */
 	margin: 5px;
 }
 
@@ -94,7 +94,7 @@ a:hover {
 	color: black; /* 텍스트 색상을 검정색으로 */
 	background-color: white; /* 내용 부분의 배경색 */
 	flex: 2; /* 내용부분이 2배 비율 */
-	border: 2px solid #a5a5f7; /* 보라색 테두리 */
+	border: 2px solid #7abefa; /* 보라색 테두리 */
 	overflow: auto;
 	margin: 5px;
 	position: relative;
@@ -106,7 +106,7 @@ a:hover {
 .center-div {
 	margin: 3px;
 	padding: 3px;
-	border: 2px solid #a5a5f7; /* 보라색 테두리 */
+	border: 2px solid #7abefa; /* 보라색 테두리 */
 	position: absolute;
 	top: 50%;
 	left: 50%;
@@ -126,7 +126,7 @@ a:hover {
 .split-div>.half-div {
 	margin: 3px;
 	padding: 3px;
-	border: 2px solid #a5a5f7; /* 보라색 테두리 */
+	border: 2px solid #7abefa; /* 보라색 테두리 */
 	flex: 1; /* 1:1 비율로 나누기 */
 }
 
@@ -139,14 +139,14 @@ a:hover {
 
 .left-content>.half-top {
 	flex: 2; /* 2배 비율 */
-	border: 1px solid #a5a5f7; /* 보라색 테두리 */
+	border: 1px solid #7abefa; /* 보라색 테두리 */
 	padding: 10px;
 	margin-bottom: 10px;
 }
 
 .left-content>.half-bottom {
 	flex: 1; /* 1배 비율 */
-	border: 1px solid #a5a5f7; /* 보라색 테두리 */
+	border: 1px solid #7abefa; /* 보라색 테두리 */
 	padding: 10px;
 	text-align: right;
 	font-weight: bold;
@@ -162,7 +162,7 @@ a:hover {
 
 .left-inner-content>.half-inner-top {
 	flex: 2; /* 2배 비율 */
-	border: 1px solid #a5a5f7; /* 보라색 테두리 */
+	border: 1px solid #7abefa; /* 보라색 테두리 */
 	margin-bottom: 10px;
 	font-size: 28px;
 	font-weight: bold;
@@ -177,7 +177,7 @@ a:hover {
 }
 
 input::placeholder {
-	color: rgba(87, 1, 208, 0.3); /* 0.5는 50% 투명도 */
+	color: rgba(176,212,237, 0.3) !important;
 }
 
 /* ----------------------------------------------------------------------------------------- */
@@ -222,12 +222,12 @@ input::placeholder {
 	background: #fff;
 	transition: background 0.2s ease;
 	cursor: pointer; /* 클릭 가능한 느낌 부여 */
-	border: 1px solid rgba(53,0,132, 0.2) !important;
+	border: 1px solid rgba(16,122,161, 0.2) !important;
 }
 
 .notice-row:hover {
 /*  	background: #f3e8ff; */
- 	background: #96d5fc; 
+ 	background: rgba(16,122,161, 0.2);
 }
 
 .notice-cell {

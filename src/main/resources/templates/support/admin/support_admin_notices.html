@@ -54,7 +54,7 @@
 				
 				
 					<div class="div-2" style="font-size: 32px; border:none; display: flex; width: auto; margin-right: 20px; margin-left:-20px;">
-						<img th:src="@{/images/symbol_notice.png}" style="width: 54px; height: 54px; "/>
+						<img th:src="@{/images/symbol_notice_admin.png}" style="width: 54px; height: 54px; "/>
 					</div>
 					<div class="div-2" style="font-size: 32px; border:none; display: flex; width: auto; margin-right: 30px;">
 						공지사항 관리	
@@ -62,7 +62,7 @@
 					<div class="div-2" style="font-size: 32px; border:none; display: flex; width: auto; margin-right: 18px; margin-left: -10px; margin-bottom: 5px; color: #bbbbbb;">
 						>	
 					</div>
-					<div class="div-2" style="font-size: 32px; border:none; display: flex; width: auto; color: #43a3df">
+					<div class="div-2" style="font-size: 32px; border:none; display: flex; width: auto; color: #5701d0">
 						전체 조회
 					</div>
 					
@@ -110,7 +110,7 @@
 								        <div class="notice-cell" th:text="${notice.notice_hits}" style="text-align: left; padding-left: 30px"></div>
 										<div class="notice-cell">
 										  <a th:href="@{/admin/support/notice/{id}(id=${notice.notice_id})}">
-										    <button type="button" style="border:none; background-color:#43a3df; cursor:pointer;
+										    <button type="button" style="border:none; background-color:#5701d0; cursor:pointer;
 										            color:white; border-radius:4px; padding:4px 8px; font-size:14px;">
 										        관리
 										    </button>
@@ -185,9 +185,9 @@ $(document).ready(function () {
 
         // 수정일 강조 or '-' 표시
         if (created !== modified) {
-            $row.find('.notice-modified').css('color', '#43a3df');
+            $row.find('.notice-modified').css('color', '#5701d0');
         } else {
-            $row.find('.notice-modified').text('-').css('color', '#43a3df');
+            $row.find('.notice-modified').text('-').css('color', '#5701d0');
         }
     });
 });

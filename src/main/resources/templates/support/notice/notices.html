@@ -11,6 +11,27 @@
 <!-- jquery CDN -->
 <script
 	src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+<style type="text/css">
+		input::placeholder {
+			color: rgba(0,110,178, 0.3); /* 0.5는 50% 투명도 */
+		}
+		.notice-row {
+	display: grid;
+/* 	grid-template-columns: 80px 200px 0.8fr 100px 80px 100px 80px 100px 80px; */
+	grid-template-columns: 120px 500px 150px 180px 80px;
+	padding: 12px 16px;
+	align-items: center;
+	background: #fff;
+	transition: background 0.2s ease;
+	cursor: pointer; /* 클릭 가능한 느낌 부여 */
+	border: 1px solid rgba(16,122,161, 0.2) !important;
+}
+
+.notice-row:hover {
+/*  	background: #f3e8ff; */
+ 	background: rgba(16,122,161, 0.2);
+}
+</style>
 </head>
 <!-- <body style="background: linear-gradient( to bottom, white, rgba(204,169,254, 0.7), rgba(64,5,147, 0.6)) !important;"> -->
 <body>
