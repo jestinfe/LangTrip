@@ -228,6 +228,16 @@ body {
     transition: all 0.3s ease;
 }
 
+/* 퀴즈 완료 */
+.start-quiz-button.completed {
+  background: linear-gradient(135deg, #1cb0f6, #1899d6);
+}
+
+.start-quiz-button.completed i {
+  color: white !important;
+}
+
+
 .circle-button::before {
     content: '';
     position: absolute;

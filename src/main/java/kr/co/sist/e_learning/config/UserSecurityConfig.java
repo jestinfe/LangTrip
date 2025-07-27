@@ -8,6 +8,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 
 import kr.co.sist.e_learning.user.auth.AuthService;
 import kr.co.sist.e_learning.user.auth.JwtAuthUtils;
@@ -17,6 +20,16 @@ import kr.co.sist.e_learning.user.auth.JwtTokenProvider;
 @Configuration
 @Order(2)
 public class UserSecurityConfig {
+
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return (web) -> web.ignoring()
+                .requestMatchers(new AntPathRequestMatcher("/css/**"))
+                .requestMatchers(new AntPathRequestMatcher("/js/**"))
+                .requestMatchers(new AntPathRequestMatcher("/images/**"))
+                .requestMatchers(new AntPathRequestMatcher("/favicon.ico"));
+    }
+
 
     @Autowired
     private CustomOAuth2AuthenticationSuccessHandler customOAuth2AuthenticationSuccessHandler;
@@ -45,14 +58,17 @@ public class UserSecurityConfig {
             			        "/api/auth/email/**",
                                 "/api/auth/nickname/check",
                                 "/api/auth/nickname/find",
-                                "/api/auth/password/**",
+                                "/api/auth/password/forgot",
                                 "/api/auth/signup",
                                 "/api/auth/socialSignup",
                                 "/api/auth/login/**",
+                                "/api/auth/status",
+                                
             			        "/api/auth/token/refresh",
-            			        "/courses/**", "/csj/**", "/support/**"
+            			        "/courses/**", "/csj/**", "/support/**","/courseImg/**"
             			        
             				 ).permitAll()
+                .requestMatchers("/api/auth/password/reset").authenticated()
                 .anyRequest().authenticated()
             )
       
@@ -62,6 +78,7 @@ public class UserSecurityConfig {
                 .successHandler(customOAuth2AuthenticationSuccessHandler)
             )
             .addFilterBefore(jwtAuthenticationFilter(jwtTokenProvider, jwtAuthUtils, authService), UsernamePasswordAuthenticationFilter.class)
+            .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.sameOrigin())) // X-Frame-Options 설정
             .csrf(csrf -> csrf.disable())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 

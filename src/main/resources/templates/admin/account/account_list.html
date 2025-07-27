@@ -90,7 +90,7 @@
         <label for="searchKeyword">검색어</label>
         <input type="text" id="searchKeyword" name="searchKeyword" th:value="${searchKeyword}" placeholder="검색어 입력">
       </div>
-      <div class="form-group">
+      <div class="form-group">	
         <label for="status">상태</label>
         <select id="status" name="status">
           <option value="" th:selected="${status == null or status == ''}">전체</option>

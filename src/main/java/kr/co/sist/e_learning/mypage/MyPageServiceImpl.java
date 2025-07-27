@@ -32,8 +32,7 @@ public class MyPageServiceImpl implements MyPageService {
     // 대시보드 요약 정보
     @Override
     public MyPageDTO getMyPageData(long userSeq) {
-    	  return mpDAO.getUserInfo(userSeq);
-
+        return myPageMapper.selectMyPageSummary(userSeq);
     }
 
     @Override

@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.co.sist.e_learning.usercourse.UserCourseMapper">
+	<insert id="insertUserCourse" parameterType="UserCourseDTO">
+		insert into course_enrollment(
+		enroll_seq,
+		user_seq,
+		course_seq,
+		enroll_date
+		)values(
+		enroll_seq.nextval,
+		#{userSeq},
+		#{courseSeq},
+		sysdate
+		)
+	</insert>
+	<select id="selectUserCoursesByuserSeq" parameterType="Long"
+		resultType="UserCourseDTO">
+		SELECT
+		c.course_seq,
+		c.title as courseTitle,
+		c.category,
+		c.introduction,
+		c.thumbnail_path,
+		c.thumbnail_name,
+		c.difficulty,
+		ce.enroll_date,
+		ce.progress
+		FROM
+		course_enrollment ce
+		JOIN
+		course c ON ce.course_seq = c.course_seq
+		WHERE
+		ce.user_seq = #{userSeq}
+	</select>
+	<select id="selectAlreadyEnrollCourse" parameterType="String" resultType="int">
+	select count(*) from course_enrollment where course_seq = #{courseSeq}
+	</select>
+	<select id="selectUserCourseByPage" parameterType="map"
+		resultType="UserCourseDTO">
+		SELECT e.enroll_seq, e.user_seq, c.title AS courseTitle, c.introduction, c.upload_date,
+		c.thumbnail_path, c.thumbnail_name, c.category, c.course_seq,
+		c.difficulty, c.is_public, e.enroll_date
+		FROM course_enrollment e
+		JOIN course c ON e.course_seq = c.course_seq
+		WHERE e.user_seq = #{userSeq}
+		ORDER BY e.enroll_date ASC
+		OFFSET #{offset}  ROWS FETCH NEXT #{limit} ROWS ONLY
+	</select>
+	<select id="selectUserCourseCount" parameterType="Long"
+		resultType="int">
+		select count(*) from course_enrollment where user_seq = #{userSeq}
+	</select>
+
+    <select id="selectRecentEnrolledCourses" parameterType="map" resultType="UserCourseDTO">
+        SELECT
+            ce.enroll_seq,
+            ce.user_seq,
+            c.course_seq,
+            c.title AS courseTitle,
+            c.introduction,
+            c.thumbnail_path,
+            c.thumbnail_name,
+            c.category,
+            c.difficulty,
+            ce.enroll_date
+        FROM
+            course_enrollment ce
+        JOIN
+            course c ON ce.course_seq = c.course_seq
+        WHERE
+            ce.user_seq = #{userSeq}
+        ORDER BY
+            ce.enroll_date DESC
+        FETCH NEXT #{limit} ROWS ONLY
+    </select>
+
+  <resultMap id="userCourseListDisplayMap" type="kr.co.sist.e_learning.usercourse.UserCourseListDisplayDTO">
+    <id property="courseSeq" column="COURSE_SEQ"/>
+    <result property="title" column="TITLE"/>
+    <result property="introduction" column="INTRODUCTION"/>
+    <result property="uploadDate" column="UPLOAD_DATE"/>
+    <result property="category" column="CATEGORY"/>
+    <result property="difficulty" column="DIFFICULTY"/>
+    <result property="thumbnailPath" column="THUMBNAIL_PATH"/>
+    <result property="thumbnailName" column="THUMBNAIL_NAME"/>
+    <result property="instructorName" column="INSTRUCTOR_NAME"/>
+    <result property="userSeq" column="user_seq"/>
+  </resultMap>
+
+  <select id="selectPublicCourses" parameterType="map" resultMap="userCourseListDisplayMap">
+    SELECT
+      c.COURSE_SEQ,
+      c.TITLE,
+      c.INTRODUCTION,
+      c.UPLOAD_DATE,
+      c.CATEGORY,
+      c.DIFFICULTY,
+      c.THUMBNAIL_PATH,
+      c.THUMBNAIL_NAME,
+      u.NICKNAME AS INSTRUCTOR_NAME,
+      u.user_seq
+    FROM COURSE c
+    JOIN USERS u ON c.USER_SEQ = u.USER_SEQ
+    WHERE c.IS_PUBLIC = 'Y'
+    <if test="category != null and category != ''">
+      AND c.CATEGORY = #{category}
+    </if>
+    <if test="difficulty != null and difficulty != ''">
+      AND c.DIFFICULTY = #{difficulty}
+    </if>
+    <if test="searchKeyword != null and searchKeyword != ''">
+      <choose>
+        <when test="searchType == 'title'">
+          AND c.TITLE LIKE '%' || #{searchKeyword} || '%'
+        </when>
+        <when test="searchType == 'instructorName'">
+          AND u.NICKNAME LIKE '%' || #{searchKeyword} || '%'
+        </when>
+      </choose>
+    </if>
+    ORDER BY
+      <choose>
+        <when test="sort == 'uploadDate,asc'">c.UPLOAD_DATE ASC</when>
+        <when test="sort == 'uploadDate,desc'">c.UPLOAD_DATE DESC</when>
+        <when test="sort == 'title,asc'">c.TITLE ASC</when>
+        <when test="sort == 'title,desc'">c.TITLE DESC</when>
+        <when test="sort == 'difficulty,asc'">DECODE(c.DIFFICULTY, '초급', 1, '중급', 2, '고급', 3) ASC</when>
+        <when test="sort == 'difficulty,desc'">DECODE(c.DIFFICULTY, '초급', 1, '중급', 2, '고급', 3) DESC</when>
+        <otherwise>c.UPLOAD_DATE DESC</otherwise>
+      </choose>
+    OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+  </select>
+
+  <select id="countPublicCourses" parameterType="map" resultType="int">
+    SELECT COUNT(*)
+    FROM COURSE c
+    JOIN USERS u ON c.USER_SEQ = u.USER_SEQ
+    WHERE c.IS_PUBLIC = 'Y'
+    <if test="category != null and category != ''">
+      AND c.CATEGORY = #{category}
+    </if>
+    <if test="difficulty != null and difficulty != ''">
+      AND c.DIFFICULTY = #{difficulty}
+    </if>
+    <if test="searchKeyword != null and searchKeyword != ''">
+      <choose>
+        <when test="searchType == 'title'">
+          AND c.TITLE LIKE '%' || #{searchKeyword} || '%'
+        </when>
+        <when test="searchType == 'instructorName'">
+          AND u.NICKNAME LIKE '%' || #{searchKeyword} || '%'
+        </when>
+      </choose>
+    </if>
+  </select>
+
+  <select id="selectNewCourses" parameterType="int" resultMap="userCourseListDisplayMap">
+    SELECT
+      c.COURSE_SEQ,
+      c.TITLE,
+      c.INTRODUCTION,
+      c.UPLOAD_DATE,
+      c.CATEGORY,
+      c.DIFFICULTY,
+      c.THUMBNAIL_PATH,
+      c.THUMBNAIL_NAME,
+      u.NICKNAME AS INSTRUCTOR_NAME,
+      u.user_seq
+    FROM COURSE c
+    JOIN USERS u ON c.USER_SEQ = u.USER_SEQ
+    WHERE c.IS_PUBLIC = 'Y'
+    ORDER BY c.UPLOAD_DATE DESC
+    FETCH NEXT #{limit} ROWS ONLY
+  </select>
+  
+  <!-- 수강 취소 -->
+  <delete id="deleteUserCourse" parameterType="kr.co.sist.e_learning.usercourse.UserCourseDTO">
+    DELETE FROM user_course
+    WHERE user_seq = #{userSeq}
+      AND course_seq = #{courseSeq}
+	</delete>
+  
+
+</mapper>

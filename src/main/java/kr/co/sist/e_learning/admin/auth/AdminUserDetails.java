@@ -10,13 +10,14 @@ import java.util.stream.Collectors;
 
 public class AdminUserDetails implements UserDetails {
 
-
+	private final AdminAuthDTO admin;
     private final String username;
     private final String password;
     private final Collection<? extends GrantedAuthority> authorities;
     private final String status;
 
     public AdminUserDetails(AdminAuthDTO admin) {
+    	this.admin = admin;
         this.username = admin.getAdminId();
         this.password = admin.getAdminPw();
         this.authorities = admin.getRoles().stream()

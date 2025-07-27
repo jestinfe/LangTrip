@@ -97,7 +97,7 @@ public class CustomOAuth2AuthenticationSuccessHandler implements AuthenticationS
             // Access Token 쿠키
             Cookie accessCookie = new Cookie("accessToken", accessToken);
             accessCookie.setHttpOnly(true);
-            accessCookie.setSecure(true);
+            accessCookie.setSecure(false);
             accessCookie.setPath("/");
             accessCookie.setMaxAge(30 * 60);
             response.addCookie(accessCookie);
@@ -105,7 +105,7 @@ public class CustomOAuth2AuthenticationSuccessHandler implements AuthenticationS
             // Refresh Token 쿠키
             Cookie refreshCookie = new Cookie("refreshToken", refreshToken);
             refreshCookie.setHttpOnly(true);
-            refreshCookie.setSecure(true);
+            refreshCookie.setSecure(false);
             refreshCookie.setPath("/");
             refreshCookie.setMaxAge(7 * 24 * 60 * 60);
             response.addCookie(refreshCookie);

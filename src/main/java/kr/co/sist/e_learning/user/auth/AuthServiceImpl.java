@@ -228,6 +228,10 @@ public class AuthServiceImpl implements AuthService {
         if (user == null || !passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
             throw new RuntimeException("아이디 또는 비밀번호가 일치하지 않습니다.");
         }
+        
+        if (user.getStatus().equals("영구정지")) {
+        	throw new RuntimeException("정지된 계정입니다.");
+        }
 
         String accessToken = jwtTokenProvider.createAccessToken(user.getUserId(), user.getUserSeq());
         String refreshToken = jwtTokenProvider.createRefreshToken();
@@ -292,23 +296,22 @@ public class AuthServiceImpl implements AuthService {
         String refreshToken = jwtAuthUtils.extractRefreshTokenFromCookies(request);
 
         if (refreshToken == null) {
-            return null; // 예외 대신 null 반환
+            return null;
         }
 
-        RefreshTokenEntity token = refreshTokenRepository.findByRefreshToken(refreshToken)
-                .orElseThrow(() -> {
-                    return new RuntimeException("Refresh Token 만료 혹은 없음");
-                });
+        RefreshTokenEntity token = refreshTokenRepository.findByRefreshToken(refreshToken).orElse(null);
 
-        if (token.getExpiresAt().isBefore(LocalDateTime.now())) {
-            refreshTokenRepository.delete(token);
-            throw new RuntimeException("Refresh Token 만료");
+        if (token == null || token.getExpiresAt().isBefore(LocalDateTime.now())) {
+            if (token != null) {
+                refreshTokenRepository.delete(token);
+            }
+            return null;
         }
 
         String userId = token.getUserId();
         UserEntity user = userRepository.findByUserId(userId);
         if (user == null) {
-            throw new RuntimeException("Refresh Token에 해당하는 사용자를 찾을 수 없습니다.");
+            return null;
         }
 
         String newAccessToken = jwtTokenProvider.createAccessToken(user.getUserId(), user.getUserSeq());
@@ -316,7 +319,7 @@ public class AuthServiceImpl implements AuthService {
         try {
             jwtAuthUtils.setAccessTokenCookie(response, newAccessToken);
         } catch (Exception e) {
-            throw new RuntimeException("액세스 토큰 쿠키 설정 실패", e);
+            return null;
         }
         return user.getUserSeq();
     }
@@ -408,6 +411,13 @@ public class AuthServiceImpl implements AuthService {
         user.setPassword(passwordEncoder.encode(newPassword));
         user.setPasswordStatus("ACTIVE");
         userRepository.save(user);
+    }
+
+    @Override
+    public String getPasswordStatus(Long userSeq) {
+        UserEntity user = userRepository.findByUserSeq(userSeq)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+        return user.getPasswordStatus();
     }
 }
     

@@ -2,7 +2,7 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>LangTrip - 당신의 언어 여행</title>
+    <title>LangTrip | 당신의 언어 여행</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- 폰트 & CSS -->
@@ -221,6 +221,13 @@ body.logged-out .user-state {
   }
 }
 
+.course-title {
+    text-align: center;
+}
+.main-content {
+    
+    padding: 0px 0px; 
+}
 
 </style>
 
@@ -268,25 +275,74 @@ body.logged-out .user-state {
     <main class="main-content">
         <!-- 구독한 강사 영상 -->
         <section class="section">
-            <div class="subscribed-section">
+            <div th:if="${loggedIn}" class="subscribed-section">
                 <div class="section-header">
-                    <h2 class="section-title">내가 좋아한 크리에이터의 새 영상</h2>
-                    <a href="/instructors" class="view-all">전체 보기</a>
+                    <h2 class="section-title">최근 수강한 강의</h2>
+                    <a href="/mypage/user_course" class="view-all">전체 보기</a>
                 </div>
-                <div class="instructor-grid">
-                    <div class="instructor-card">
-                        <div class="instructor-avatar">🦜</div>
-                        <div class="instructor-name">후지코</div>
-                        <div class="instructor-subject">일본어 속어</div>
-                        <span class="new-video-count">새 영상 2개</span>
-                    </div>
-                    <div class="instructor-card">
-                        <div class="instructor-avatar">🦜</div>
-                        <div class="instructor-name">Chirpy</div>
-                        <div class="instructor-subject">영국식 영어</div>
-                        <span class="new-video-count">새 영상 1개</span>
-                    </div>
+                <div class="course-grid" id="enrolled-courses-grid">
+                    <!-- Enrolled courses will be loaded here by JavaScript -->
                 </div>
+                <div id="no-enrolled-courses" style="text-align: center; color:#666; padding:1.5rem; display: none;">
+                    아직 수강 중인 강의가 없습니다. 새로운 강의를 찾아보세요!
+                </div>
+            </div>
+        </section>
+
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+        <script>
+            // Make fetchEnrolledCourses globally accessible
+            window.fetchEnrolledCourses = function() {
+                axios.get('/api/main/enrolledCourses')
+                    .then(function (response) {
+                        const enrolledCourses = response.data;
+                        const courseGrid = document.getElementById('enrolled-courses-grid');
+                        const noCoursesMessage = document.getElementById('no-enrolled-courses');
+
+                        if (enrolledCourses && enrolledCourses.length > 0) {
+                            courseGrid.innerHTML = ''; // Clear existing content
+                            enrolledCourses.forEach(function(course) {
+                                const courseCard = `
+                                    <div class="course-card">
+                                        <div class="course-thumbnail">
+                                            <img src="${course.thumbnailPath ? course.thumbnailPath : '/images/default_thumbnail.png'}" alt="Course Thumbnail" style="width:100%; height:100%; object-fit: cover;"/>
+                                            <div class="course-level">${course.difficulty}</div>
+                                        </div>
+                                        <div class="course-info">
+                                            <span class="course-category">${course.category}</span>
+                                            <h3 class="course-title">${course.courseTitle}</h3>
+                                            <div class="course-instructor">
+                                                <span class="instructor-name">${course.instructorName}</span>
+                                            </div>
+                                            <div class="course-footer">
+                                                <a href="/ui/user_registered_course?seq=${course.courseSeq}" class="enroll-btn">학습 하기</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `;
+                                courseGrid.insertAdjacentHTML('beforeend', courseCard);
+                            });
+                            noCoursesMessage.style.display = 'none';
+                        } else {
+                            courseGrid.innerHTML = ''; // Ensure grid is empty
+                            noCoursesMessage.style.display = 'block';
+                        }
+                    })
+                    .catch(function (error) {
+                        console.error('Error fetching enrolled courses:', error);
+                        // Optionally display an error message to the user
+                        const courseGrid = document.getElementById('enrolled-courses-grid');
+                        courseGrid.innerHTML = '<p style="text-align: center; color: red;">강의를 불러오는 데 실패했습니다.</p>';
+                    });
+            };
+        </script>
+        <section>
+            </div>
+            <div th:unless="${loggedIn}" class="guest-section" style="text-align: center; padding: 3rem 0; background-color: #f9f9f9; border-radius: 8px; margin-bottom: 3rem;">
+                <h2 style="font-size: 1.8rem; color: #333; margin-bottom: 1rem;">로그인하고 나만의 학습 로드맵을 시작해보세요!</h2>
+                <p style="font-size: 1.1rem; color: #666; margin-bottom: 2rem;">다양한 강의를 수강하고, 학습 진도를 관리하며, 나만의 언어 학습 여정을 만들어가세요.</p>
+                <a href="/login" style="display: inline-block; background-color: #007bff; color: white; padding: 0.8rem 2rem; border-radius: 5px; text-decoration: none; font-weight: bold; transition: background-color 0.3s ease;">로그인하기</a>
+                <a href="/courses" style="display: inline-block; background-color: #6c757d; color: white; padding: 0.8rem 2rem; border-radius: 5px; text-decoration: none; font-weight: bold; margin-left: 1rem; transition: background-color 0.3s ease;">강의 둘러보기</a>
             </div>
         </section>
 
@@ -301,14 +357,13 @@ body.logged-out .user-state {
             <div class="course-grid">
                 <div class="course-card" th:each="course : ${newCourses}">
                     <div class="course-thumbnail">
-                        <img th:src="${(course.thumbnailPath != null and course.thumbnailName != null) ? (course.thumbnailPath + course.thumbnailName) : '/images/default_thumbnail.png'}" alt="Course Thumbnail" style="width:100%; height:100%; object-fit: cover;"/>
+                        <img th:src="${course.thumbnailPath != null ? course.thumbnailPath : '/images/default_thumbnail.png'}" alt="Course Thumbnail" style="width:100%; height:100%; object-fit: cover;"/>
                         <div class="course-level" th:text="${course.difficulty}"></div>
                     </div>
                     <div class="course-info">
                         <span class="course-category" th:text="${course.category}"></span>
                         <h3 class="course-title" th:text="${course.title}"></h3>
                         <div class="course-instructor">
-                            <div class="instructor-avatar" th:text="${#strings.substring(course.instructorName, 0, 1)}"></div>
                             <span class="instructor-name" th:text="${course.instructorName}"></span>
                         </div>
                         <div class="course-stats">

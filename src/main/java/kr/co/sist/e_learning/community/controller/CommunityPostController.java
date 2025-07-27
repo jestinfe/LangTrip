@@ -1,4 +1,4 @@
-	package kr.co.sist.e_learning.community.controller;
+package kr.co.sist.e_learning.community.controller;
 
 import kr.co.sist.e_learning.community.dto.CommunityCommentDTO;
 import kr.co.sist.e_learning.community.dto.CommunityPostDTO;
@@ -7,6 +7,8 @@ import kr.co.sist.e_learning.community.service.VoteService;
 import kr.co.sist.e_learning.user.auth.UserAuthentication;
 import kr.co.sist.e_learning.user.auth.UserRepository;
 import kr.co.sist.e_learning.user.auth.UserEntity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
@@ -24,10 +26,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+
 @Controller
 @RequestMapping("/csj")
 public class CommunityPostController {
 
+    private static final Logger logger = LoggerFactory.getLogger(CommunityPostController.class);
 
     @Autowired
     private CommunityPostService communityService;
@@ -150,19 +156,25 @@ public class CommunityPostController {
     }
 
     @GetMapping("/community/detail")
-    public String detail(@RequestParam("postId") Long postId, Model model) {
+    public String detail(@RequestParam("postId") Long postId, Model model, RedirectAttributes redirectAttr) {
         Long currentUserSeq = getCurrentUserSeq();
 
         CommunityPostDTO post = communityService.getPostDetail(postId);
+
+        // ✅ 작성자 상태 확인
+        UserEntity writer = userRepository.findByUserSeq(post.getUserId()).orElse(null);
+        if (writer != null && ("탈퇴".equals(writer.getStatus()) || "영구정지".equals(writer.getStatus()))) {
+            redirectAttr.addFlashAttribute("blocked", true);
+            return "redirect:/csj/community?blocked=true";
+        }
+
         communityService.increaseViewCount(postId);
-        
-        // 공지사항일 경우에만 닉네임을 "운영자"로 설정
+
         if (post != null && "Y".equals(post.getCommunityNotice())) {
-            post.setNickname("운영자"); 
+            post.setNickname("운영자");
         }
 
         List<CommunityCommentDTO> comments = communityService.getAllComments(postId);
-        
         int upCount = voteService.getVoteCount(postId.intValue(), "UP");
         int downCount = voteService.getVoteCount(postId.intValue(), "DOWN");
 
@@ -174,10 +186,12 @@ public class CommunityPostController {
         return "csj/communityDetail";
     }
 
+
     @PostMapping("/uploadImage")
     @ResponseBody
     public String uploadImage(@RequestParam("image") MultipartFile imageFile) {
         if (getCurrentUserSeq() == null) {
+            logger.warn("이미지 업로드 시도 - 로그인되지 않은 사용자");
             return "error: Not logged in";
         }
 
@@ -186,13 +200,27 @@ public class CommunityPostController {
             File dir = new File(uploadDirRoot + "/community");
             if (!dir.exists()) {
                 dir.mkdirs();
+                logger.info("이미지 업로드 디렉토리 생성: {}", dir.getAbsolutePath());
             }
-
+            
             File dest = new File(dir, fileName);
+            logger.info("uploadDirRoot: {}", uploadDirRoot);
+            logger.info("uploadPathWeb: {}", uploadPathWeb);
+            logger.info("저장된 파일 위치: {}", dest.getAbsolutePath());
+            logger.info("브라우저에 반환되는 URL: {}", uploadPathWeb + "/" + fileName);
+
+            	
+            
+            
             imageFile.transferTo(dest);
+            logger.info("이미지 업로드 성공: {}", dest.getAbsolutePath());
             return uploadPathWeb + "/" + fileName;
         } catch (IOException e) {
-            return null;
+            logger.error("이미지 업로드 중 IO 오류 발생: {}", e.getMessage(), e);
+            return "error: File upload failed due to server error"; // 구체적인 에러 메시지 반환
+        } catch (Exception e) {
+            logger.error("이미지 업로드 중 알 수 없는 오류 발생: {}", e.getMessage(), e);
+            return "error: An unexpected error occurred during upload"; // 일반적인 에러 메시지 반환
         }
     }
 

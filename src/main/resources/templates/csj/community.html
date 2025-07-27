@@ -31,6 +31,35 @@ body.logged-out .user-state {
 <body>
   <div th:replace="layout/header :: header"></div>
 
+
+
+<!-- 안내 모달 -->
+<div class="modal fade" id="communityNoticeModal" tabindex="-1" aria-labelledby="noticeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content p-3">
+      <div class="modal-header">
+        <h5 class="modal-title" id="noticeModalLabel">📢커뮤니티 이용 안내</h5>
+      </div>
+      <div class="modal-body">
+        커뮤니티를 이용하기 전, 운영정책을 꼭 확인해주세요.<br/>
+        1.불건전한 게시글은 제재될 수 있습니다.<br>
+        2.댓글,대댓글은 삭제 불가능합니다. 악플러 처단!<br>
+        3.강의에 대해서 많이 공유합시다~
+      </div>
+      <div class="modal-footer justify-content-between">
+        <button id="todayCloseBtn" class="btn btn-outline-primary">오늘 하루 그만보기</button>
+        <button id="justCloseBtn" class="btn btn-dark" data-bs-dismiss="modal">닫기</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
   <div class="container">
     <h3 class="board-title">강의 추천 게시판</h3>
 
@@ -173,6 +202,30 @@ body.logged-out .user-state {
       }
     });
   </script>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const todayKey = `communityModalDismissed-${new Date().toISOString().slice(0, 10)}`;
+
+  if (!localStorage.getItem(todayKey)) {
+    const modal = new bootstrap.Modal(document.getElementById('communityNoticeModal'));
+    modal.show();
+
+    document.getElementById('todayCloseBtn').addEventListener('click', function () {
+      localStorage.setItem(todayKey, 'true');
+      modal.hide();
+    });
+  }
+});
+</script>
+<script>
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('blocked') === 'true') {
+    alert("이 게시글은 관리자에 의해 차단된 게시글입니다.");
+  }
+</script>
+
 
   <div th:replace="layout/footer :: footer"></div>
   

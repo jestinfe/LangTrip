@@ -27,6 +27,8 @@ FROM (
 				SELECT r.admin_acted_at
 				FROM report r
 				WHERE r.reported_user_id = u.user_seq
+				ORDER BY r.reported_at DESC
+				FETCH FIRST 1 ROWS ONLY
 			) AS adminActedAt,
 			<!-- 개설한 강의 수 -->
 			(
@@ -174,5 +176,11 @@ UPDATE users
 SET status = #{status}
 WHERE user_seq = #{userSeq}
 </update>
+
+<select id="isReportedUser" parameterType="long" resultType="boolean">
+SELECT CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END
+FROM report
+WHERE reported_user_id = #{userSeq}
+</select>
 
 </mapper>

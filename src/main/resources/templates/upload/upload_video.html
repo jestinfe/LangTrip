@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>비디오 업로드</title>
+    <title>LangTrip | 비디오 업로드</title>
     <style>
         * {
             margin: 0;
@@ -223,7 +223,7 @@
     <div class="container">
         <h2>🎬 비디오 업로드</h2>
         
-        <a th:href="@{/}" class="nav-link">메인</a>
+        <a th:href="@{/upload/upload_course(seq=${courseSeq})}" class="nav-link">← 뒤로가기</a>
         
         <!-- 업로드 메시지 -->
         <div th:if="${msg != null}" th:text="${msg}" class="success-message"></div>

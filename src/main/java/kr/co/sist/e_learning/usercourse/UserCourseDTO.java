@@ -28,4 +28,5 @@ public class UserCourseDTO {
 	private String difficulty;
 	private String thumbnailPath;
 	private String thumbnailName;
+	private String instructorName;
 }

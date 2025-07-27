@@ -55,10 +55,11 @@ public class AdminSecurityConfig {
             .securityMatcher("/admin/**") // /admin/** 경로에만 적용
             .authorizeHttpRequests(auth -> auth
                     // 로그인/가입 페이지는 모두에게 열어두고
-                    .requestMatchers("/admin/login", "/admin/signup").permitAll()
+                    .requestMatchers("/admin/login/**", "/admin/signup**").permitAll()
 
                     // 📌 클릭 카운트 API는 인증 없이 허용
-                    .requestMatchers(HttpMethod.POST, "/admin/ad/click/**").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/admin/ad/click/**", "/admin/send-code",
+                    		"/admin/verify-code", "/admin/check-id").permitAll()
 
                     // 그 외 /admin/** 경로는 모두 인증 필요
                     .anyRequest().authenticated()

@@ -2,7 +2,7 @@
 
 
 .highlighted {
-    background-color: #9a43fe;
+    background-color: #43a3df;
     color: white;
     font-weight: bold;
   }
@@ -10,13 +10,13 @@
 div { border-color: white !important } 
 a {
 	text-decoration: none;
-	color: #5701d0;
+	color: #43a3df;
 	transition: color 0.5s ease;
 }
 
 a:hover {
 	text-decoration: none;
-	color: #cca9fe
+	color: #96d5fc;
 }
 
 .parent-container {
@@ -53,7 +53,7 @@ a:hover {
 	color: black; /* 텍스트 색상을 검정색으로 */
 	font-weight: bold;
 	flex: 1; /* 제목부분이 1배 비율 */
-	border: 2px solid #a5a5f7; /* 보라색 테두리 */
+	border: 2px solid #7abefa; /* 보라색 테두리 */
 	margin: 5px;
 }
 
@@ -94,7 +94,7 @@ a:hover {
 	color: black; /* 텍스트 색상을 검정색으로 */
 	background-color: white; /* 내용 부분의 배경색 */
 	flex: 2; /* 내용부분이 2배 비율 */
-	border: 2px solid #a5a5f7; /* 보라색 테두리 */
+	border: 2px solid #7abefa; /* 보라색 테두리 */
 	overflow: auto;
 	margin: 5px;
 	position: relative;
@@ -106,7 +106,7 @@ a:hover {
 .center-div {
 	margin: 3px;
 	padding: 3px;
-	border: 2px solid #a5a5f7; /* 보라색 테두리 */
+	border: 2px solid #7abefa; /* 보라색 테두리 */
 	position: absolute;
 	top: 50%;
 	left: 50%;
@@ -126,7 +126,7 @@ a:hover {
 .split-div>.half-div {
 	margin: 3px;
 	padding: 3px;
-	border: 2px solid #a5a5f7; /* 보라색 테두리 */
+	border: 2px solid #7abefa; /* 보라색 테두리 */
 	flex: 1; /* 1:1 비율로 나누기 */
 }
 
@@ -134,24 +134,24 @@ a:hover {
 .left-content {
 	display: flex;
 	flex-direction: column;
-	color: #5701d0;
+	color: #43a3df;
 }
 
 .left-content>.half-top {
 	flex: 2; /* 2배 비율 */
-	border: 1px solid #a5a5f7; /* 보라색 테두리 */
+	border: 1px solid #7abefa; /* 보라색 테두리 */
 	padding: 10px;
 	margin-bottom: 10px;
 }
 
 .left-content>.half-bottom {
 	flex: 1; /* 1배 비율 */
-	border: 1px solid #a5a5f7; /* 보라색 테두리 */
+	border: 1px solid #7abefa; /* 보라색 테두리 */
 	padding: 10px;
 	text-align: right;
 	font-weight: bold;
 	font-size: 24px;
-	color: #5701d0;
+	color: #43a3df;
 }
 
 /* 지원센터의 피드백 기능 안에 세로로 2:1 비율로 자식 div 추가 */
@@ -162,22 +162,22 @@ a:hover {
 
 .left-inner-content>.half-inner-top {
 	flex: 2; /* 2배 비율 */
-	border: 1px solid #a5a5f7; /* 보라색 테두리 */
+	border: 1px solid #7abefa; /* 보라색 테두리 */
 	margin-bottom: 10px;
 	font-size: 28px;
 	font-weight: bold;
-	color: #9a43fe;
+	color: #43a3df;
 }
 
 .left-inner-content>.half-inner-bottom {
 	flex: 1; /* 1배 비율 */
-	border: 1px solid #a5a5f7; /* 보라색 테두리 */
+	border: 1px solid #44b2f7; /* 보라색 테두리 */
 	margin-top: -10px;
-	color: #9a43fe;
+	color: #43a3df;
 }
 
 input::placeholder {
-	color: rgba(87, 1, 208, 0.3); /* 0.5는 50% 투명도 */
+	color: rgba(176,212,237, 0.3) !important;
 }
 
 /* ----------------------------------------------------------------------------------------- */
@@ -200,7 +200,7 @@ input::placeholder {
 	padding: 12px 16px;
 	align-items: center;
 	border-bottom: 1px solid #eee;
-	background-color: #5000ad;
+	background-color: #0473b7;
 	color: white;
 	font-weight: bold;
 	position: sticky;
@@ -222,12 +222,12 @@ input::placeholder {
 	background: #fff;
 	transition: background 0.2s ease;
 	cursor: pointer; /* 클릭 가능한 느낌 부여 */
-	border: 1px solid rgba(53,0,132, 0.2) !important;
+	border: 1px solid rgba(16,122,161, 0.2) !important;
 }
 
 .notice-row:hover {
 /*  	background: #f3e8ff; */
- 	background: #dcbdfe; 
+ 	background: rgba(16,122,161, 0.2);
 }
 
 .notice-cell {
@@ -256,7 +256,7 @@ input::placeholder {
 	padding: 6px 12px;
 	border: 1px solid #ccc;
 	border-radius: 4px;
-	color: #5701d0;
+	color: #43a3df;
 	text-decoration: none;
 	font-size: 14px;
 }
@@ -266,7 +266,7 @@ input::placeholder {
 }
 
 .pagination .active-page {
-	background-color: #5701d0;
+	background-color: #43a3df;
 	color: white;
 	font-weight: bold;
 }
@@ -294,7 +294,7 @@ input::placeholder {
 /* ----------------------------------------------------------------------------------------- */
 
 .child-div > div > div > a:hover {
-	color: #bd8ffd !important;
+	color: #96d5fc !important;
 	transition: color 0.5s ease; 
 }
 

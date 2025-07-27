@@ -3,21 +3,38 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<<<<<<< HEAD
+<title>LangTrip | 강의실</title>
+=======
 <title>내 강의실</title>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <!-- Bootstrap JS 로드 -->
 <script
 	src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<<<<<<< HEAD
+=======
+>>>>>>> gyumin
+>>>>>>> dev
 <link rel="stylesheet"
 	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
 <link rel="stylesheet" th:href="@{/css/user_registered_course.css}">
+<style>
+.donation-modal-container { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); justify-content: center; align-items: center; }
+.donation-modal-content { position: relative; background-color: #fefefe; width: 90%; max-width: 520px; height: 90%; max-height: 750px; box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19); border-radius: 10px; overflow: hidden; animation: animatetop 0.4s; }
+@keyframes animatetop { from {transform: translateY(-100px); opacity: 0} to {transform: translateY(0); opacity: 1} }
+</style>
 <link rel="stylesheet"
 	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 </head>
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <body>
+    <div id="donationModalContainer" class="donation-modal-container">
+        <div class="donation-modal-content">
+            <iframe id="donationFrame" style="width: 100%; height: 100%; border: none;"></iframe>
+        </div>
+    </div>
 	<!-- 모바일 메뉴 토글 -->
 	<button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
 		☰</button>
@@ -77,8 +94,7 @@
 				<div class="content-wrapper">
 					<div class="lecture-section">
 						<div class="lecture-header">
-							<a href="javascript:history.back()" class="btn btn-success">←
-								내 강의실</a>
+							<a href="/mypage?tab=user_course" class="btn btn-success">← 뒤로가기</a>
 						</div>
 						<div id="courseDataSector"></div>
 						<div class="course-info">
@@ -96,8 +112,17 @@
 								<div style="margin-top: 20px; font-size: 14px; color: #999;">
 									새로운 강의를 등록해보세요!</div>
 							</div>
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+
+							<div th:if="${videoList != null and !videoList.isEmpty()}">
+								<h3>등록된 강의 목록</h3>
+=======
+>>>>>>> dev
 							<div th:if="${combinedList != null and !combinedList.isEmpty()}">
 								<h3>등록된 강의 영상 목록</h3>
+>>>>>>> gyumin
 								<div class="video-tree">
 									<div th:each="item, stat : ${combinedList}" class="video-node">
 										<button type="button" class="circle-button"
@@ -202,13 +227,23 @@
 	function goToVideo(button) {
 			  const videoSeq = button.dataset.videoseq;
 			  const courseSeq = button.dataset.courseseq;
-			  location.href = "/video/watch?videoSeq=" + videoSeq + "&courseSeq=" + courseSeq;
+			  const from = "user1"; // 일반 유저
+			  location.href = "/video/watch?videoSeq=" + videoSeq + "&courseSeq=" + courseSeq + "&from=" + from;
 			}
 		
 		
 		function goToDonate(courseSeq){
-			location.href = "/user/donation?lectureNo="+ courseSeq;
+			const modalContainer = document.getElementById('donationModalContainer');
+			const iframe = document.getElementById('donationFrame');
+			iframe.src = `/user/donation?lectureNo=${courseSeq}`;
+			modalContainer.style.display = 'flex';
 		}
+
+		window.addEventListener('message', function(event) {
+		    if (event.data === 'closeDonationModal') {
+		        document.getElementById('donationModalContainer').style.display = 'none';
+		    }
+		});
 		//퀴즈
 		const startButtons = document.querySelectorAll(".start-quiz-button");
 		  startButtons.forEach(btn => {
@@ -375,6 +410,26 @@
     	      console.error("진행률 불러오기 실패", err);
     	    });
     	  });
+    	  
+    	  //퀴즈 버튼 완료 처리
+    	  const quizButtons = document.querySelectorAll(".start-quiz-button");
+    	  
+    	  quizButtons.forEach(button => {
+    		  const quizListSeq = button.dataset.quizId;
+		     // const quizCourseSeq = button.dataset.courseId;
+		      
+		      axios.get("/quiz/status", {
+		    	params: { userSeq, quizListSeq }
+		      	}).then(res => {
+		    	  const quizStatus = res.data.status;
+		    	  if(quizStatus == "complete") {
+		    		  button.classList.add("completed");
+		    	  }//end if
+		     	 }).catch(err => {
+		          console.error("퀴즈 상태 확인 실패", err);
+		         });
+    	  })//forEach
+    	  
     	});
     
     

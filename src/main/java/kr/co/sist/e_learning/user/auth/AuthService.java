@@ -35,6 +35,8 @@ public interface AuthService {
 
     void resetPassword(String userId, String newPassword);
     
+    String getPasswordStatus(Long userSeq);
+    
     
 
 }

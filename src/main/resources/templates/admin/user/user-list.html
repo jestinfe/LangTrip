@@ -24,9 +24,235 @@
   animation: none !important;
   transform: none !important;
 }
+
+.table {
+  table-layout: fixed;
+  width: 100%;
+  word-break: break-word;
+}
+
+/* 각 열 너비 설정 */
+.table th:nth-child(1), .table td:nth-child(1) { width: 5%; }
+.table th:nth-child(2), .table td:nth-child(2) { width: 13%; }
+.table th:nth-child(3), .table td:nth-child(3) { width: 13%; }
+.table th:nth-child(4), .table td:nth-child(4) { width: 17%; }
+.table th:nth-child(5), .table td:nth-child(5) { width: 17%; }
+.table th:nth-child(6), .table td:nth-child(6) { width: 12%; }
+.table th:nth-child(7), .table td:nth-child(7) { width: 11%; }
+.table th:nth-child(8), .table td:nth-child(8) { width: 12%; }
+
+:root {
+  --purple-accent: #6366f1;
+  --purple-accent-dark: #4f46e5;
+  --border-gray: #d1d5db;
+  --text-dark: #374151;
+}
+
+/* 제목 강조선 */
+h3 {
+  border-left: 4px solid var(--purple-accent);
+  padding-left: 12px;
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+/* 버튼 스타일 */
+.btn-primary {
+  background-color: var(--purple-accent);
+  border-color: var(--purple-accent);
+  font-weight: 500;
+}
+.btn-primary:hover {
+  background-color: var(--purple-accent-dark);
+  border-color: var(--purple-accent-dark);
+}
+
+/* input/select 포커스 시 강조 */
+.form-control:focus, .form-select:focus {
+  border-color: var(--purple-accent);
+  box-shadow: 0 0 0 0.2rem rgba(99, 102, 241, 0.15);
+}
+
+/* 밑줄 강조 링크 */
+.text-decoration-underline {
+  color: var(--purple-accent);
+}
+.text-decoration-underline:hover {
+  color: var(--purple-accent-dark);
+}
+
+/* 페이지네이션 강조 */
+.pagination .page-item.active .page-link {
+  background-color: var(--purple-accent);
+  border-color: var(--purple-accent);
+  color: #fff;
+}
+
+/* 아래부터는 팀 전용 중 일부 */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #f5f7fa;
+  /* display: flex; */
+}
+
+.sidebar {
+  width: 280px;
+  height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 2rem 0;
+  box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
+  position: fixed;
+  left: 0;
+  top: 0;
+  overflow-y: auto;
+  transition: all 0.3s ease;
+}
+
+.sidebar h2 {
+  color: white;
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 2rem;
+  padding: 0 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.sidebar h2 i {
+  font-size: 1.8rem;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 0.5rem;
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+}
+
+.sidebar a {
+  display: flex;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  color: rgba(255, 255, 255, 0.9);
+  text-decoration: none;
+  transition: all 0.3s ease;
+  margin: 0.2rem 1rem;
+  border-radius: 12px;
+  font-weight: 500;
+  position: relative;
+  overflow: hidden;
+}
+
+.sidebar a::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  transition: left 0.5s;
+}
+
+.sidebar a:hover::before {
+  left: 100%;
+}
+
+.sidebar a:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  transform: translateX(5px);
+  backdrop-filter: blur(10px);
+}
+
+.sidebar a.active {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  backdrop-filter: blur(10px);
+}
+
+.sidebar a i {
+  font-size: 1.2rem;
+  margin-right: 1rem;
+  width: 24px;
+  text-align: center;
+  transition: transform 0.3s ease;
+}
+
+.sidebar a:hover i {
+  transform: scale(1.1);
+}
+
+/* 메인 콘텐츠 영역 */
+.main-content,
+.main {
+  margin-left: 280px;
+  padding: 2rem;
+  flex: 1;
+  min-height: 100vh;
+  background-color: #f8f9fa;
+}
+
+.demo-content {
+  background: white;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.demo-content h1 {
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+.demo-content p {
+  color: #666;
+  line-height: 1.6;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 100%;
+    height: auto;
+    position: relative;
+  }
+
+  .main-content,
+  .main {
+    margin-left: 0;
+  }
+}
+
+/* 스크롤바 스타일링 */
+.sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
 </style>
 </head>
 <body class="container mt-5">
+<div th:replace="~{/layout/admin_sidebar :: sidebar}"></div>
+
+<div class="main-content">
 <h3>회원 목록</h3>
 <hr>
 <!-- 초기화 버튼 -->
@@ -41,6 +267,12 @@
 <!-- 필터/검색 영역 -->
 <form th:action="@{/admin/user/user-list}" method="get" class="mb-4">
   <div class="row g-2 justify-content-md-end">
+
+    <div class="col-12 col-md-auto">
+      <select class="form-select" disabled>
+        <option value="">최근가입일순</option>
+      </select>
+    </div>
 
     <div class="col-12 col-md-auto">
       <select name="status" id="status" class="form-select">
@@ -64,7 +296,7 @@
 </form>
 
 <!-- 회원 목록 테이블 -->
-<table class="table table-bordered mt-3">
+<table class="table table-bordered table-hover mt-3">
   <thead class="table-light">
     <tr>
       <th>번호</th>
@@ -74,13 +306,13 @@
       <th>개설한 과목 수</th>
       <th>가입일</th>
       <th>계정 상태</th>
-      <th>상태 최근 조치일</th>
+      <th>계정 조치일</th>
     </tr>
   </thead>
   <tbody>
     <tr th:each="user, stat : ${responseDTO.list}"
     	th:data-user-seq="${user.userSeq}"
-    	class="user-row">
+    	class="user-row" style="cursor: pointer;">
       <td th:text="${(responseDTO.currentPage - 1) * requestDTO.size + stat.index + 1}">번호</td>
       <td th:text="${user.userSeq}">아이디</td>
       <td th:text="${user.nickname}">닉네임</td>
@@ -88,11 +320,7 @@
       <td th:text="${user.openedCourseCnt}">개설 과목</td>
       <td th:text="${#dates.format(user.createdAt, 'yyyy-MM-dd')}">가입일</td>
       <td>
-        <span th:text="${user.status}"
-              th:classappend="${user.status == '정상'} ? 'badge bg-success' :
-								(${user.status == '탈퇴'} ? 'badge bg-secondary' :
-									(${user.status == '영구정지'} ? 'badge bg-danger' :
-										'badge bg-light text-dark'))">
+        <span th:text="${user.status}">
         상태
         </span>
       </td>
@@ -166,7 +394,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="닫기"></button>
       </div>
 
-      <div class="modal-body" style="max-height: 80vh; overflow-y: auto;">
+      <div class="modal-body">
 	      <div class="container-fluid">
 	        <!-- 기본 정보 -->
 	        <section class="mb-5">
@@ -179,7 +407,7 @@
 	              <tr><th>개설한 과목 수</th><td id="detail-opened-count">1</td></tr>
 	              <tr><th>가입일</th><td id="detail-created">2025-06-21</td></tr>
 	              <tr><th>상태</th><td id="detail-status">정상</td></tr>
-	              <tr><th>현재 상태 확정일</th><td id="detail-admin-acted">2024-06-25</td></tr>
+	              <tr><th>계정 조치일</th><td id="detail-admin-acted">2024-06-25</td></tr>
 	            </tbody>
 	          </table>
 	        </section>
@@ -188,9 +416,6 @@
 	        <section class="mb-5">
 	          <h6><strong>수강 중인 과목</strong></h6>
 	          <table class="table table-bordered" id="detail-active-courses">
-	            <thead>
-	              <tr><th>과목명</th></tr>
-	            </thead>
 	            <tbody>
 	              <tr><td><a href="#">Content</a></td></tr>
 	            </tbody>
@@ -199,11 +424,8 @@
 	
 	        <!-- 강사 활동 + 계정 상태 -->
 	        <section>
-	          <h6><strong>강사 활동</strong></h6>
+	          <h6><strong>강사 활동 중인 과목</strong></h6>
 	          <table class="table table-bordered" id="detail-opened-courses">
-	            <thead>
-	              <tr><th>과목명</th></tr>
-	            </thead>
 	            <tbody>
 	              <tr><td><a href="#">Content</a></td></tr>
 	              <tr><td><a href="#">Content</a></td></tr>
@@ -301,6 +523,7 @@
   	       </div>
 	    </div>
     </div>
+</div>
 </div>
 
 <!-- bootstrap bundle CDN -->
@@ -413,18 +636,28 @@ document.querySelectorAll('.user-row').forEach((row) => {
 			// 수강 중 과목
 			const tbody1 = document.querySelector('#detail-active-courses tbody');
 			tbody1.innerHTML = "";
-			data.courseTitles?.forEach((title) => {
-				const row = `<tr><td><a href="#">${title}</a></td></tr>`;
+			if (data.courseTitles && data.courseTitles.length > 0) {
+				data.courseTitles.forEach((title) => {
+					const row = `<tr><td><a href="#">${title}</a></td></tr>`;
+					tbody1.insertAdjacentHTML("beforeend", row);
+				});
+			} else {
+				const row = `<tr><td class="text-center text-muted">수강 중인 과목이 존재하지 않습니다.</td></tr>`;
 				tbody1.insertAdjacentHTML("beforeend", row);
-			});
+			}
 
 			// 개설 과목
 			const tbody2 = document.querySelector('#detail-opened-courses tbody');
 			tbody2.innerHTML = "";
-			data.openedCourses?.forEach((title) => {
-				const row = `<tr><td><a href="#">${title}</a></td></tr>`;
-				tbody2.insertAdjacentHTML('beforeend', row);
-			});
+			if (data.openedCourses && data.openedCourses.length > 0) {
+				data.openedCourses.forEach((title) => {
+					const row = `<tr><td><a href="#">${title}</a></td></tr>`;
+					tbody2.insertAdjacentHTML('beforeend', row);
+				});
+			} else {
+				const row = `<tr><td class="text-center text-muted">개설한 과목이 존재하지 않습니다.</td></tr>`;
+				tbody2.insertAdjacentHTML("beforeend", row);
+			}
 			
 			// 계정 조치 섹션 값 반영
 			const adminReason = data.adminCheckedReason?.split(',').map((e) => e.trim()) || [];
@@ -434,6 +667,20 @@ document.querySelectorAll('.user-row').forEach((row) => {
 			// 계정 조치 영역 복원: DB값으로 UI 초기 상태 설정
 			restoreAccountSection(initialStatus, initialReasons, initialCustomTxt);
 			
+			
+			// ✅ [수정된 부분] 신고자이면서 탈퇴가 아닌 경우만 활성화
+			const accountSection = document.querySelector('#userDetailModal section.mt-5');
+			if (!data.reportedTarget || data.status === '탈퇴') {
+			  accountSection.querySelectorAll('input, button').forEach(el => {
+			    el.disabled = true;
+			  });
+			  accountSection.classList.add('opacity-50');
+			} else {
+			  accountSection.querySelectorAll('input, button').forEach(el => {
+			    el.disabled = false;
+			  });
+			  accountSection.classList.remove('opacity-50');
+			}
 			// 탈퇴가 아닌 경우에만 라디오 상태 설정 및 활성화 여부 조정
 			if (initialStatus !== '탈퇴') {
 				const isPenalty = initialReasons.length > 0;
@@ -441,6 +688,7 @@ document.querySelectorAll('.user-row').forEach((row) => {
 				noPenaltyRadio.checked = !isPenalty;
 				setInputsDisabled(!isPenalty);
 			}
+
 
 			// 모달 띄우기
 			const modal = new bootstrap.Modal(document.getElementById('userDetailModal'));
@@ -488,7 +736,7 @@ noPenaltyRadio.addEventListener('change', () => {
 		
 		// 값 초기화
 		// 계정 상태 라디오 해제
-		normalRadio.checked = false;
+		normalRadio.checked = true;
 		banRadio.checked = false;
 
 		// 체크박스 해제
@@ -509,6 +757,9 @@ penaltyRadio.addEventListener('change', ()=> {
 
 		// DB에서 불러온 값으로 복원
 		restoreAccountSection(initialStatus, initialReasons, initialCustomTxt);
+		
+		normalRadio.disabled = true;
+		normalRadio.checked = false;
 	}
 });
 
@@ -549,6 +800,12 @@ document.getElementById('confirmApplyBtn').addEventListener('click', async () =>
 		.map((cb) => cb.id.replace("reason", ""));
 	const customReason = document.getElementById("customReason").value.trim();
 
+	// 영구정지 선택 시 체크박스 선택 필수 검증
+	if (status === '영구정지' && reasonCodes.length === 0) {
+		alert("영구정지 상태일 경우, 사유를 최소 1개 이상 선택해야 합니다.");
+		return;
+	}
+
 	try {
 		await axios.post('/admin/user/update-status', {
 	      userSeq,
@@ -562,6 +819,8 @@ document.getElementById('confirmApplyBtn').addEventListener('click', async () =>
 		const modal2 = bootstrap.Modal.getInstance(document.getElementById('confirmModal'));
 		modal2.hide();
 		modal1.hide();
+		
+		window.location.reload();
 	} catch (err) {
 		console.error(err);
 		alert("계정 상태 적용 중 오류가 발생했습니다.");

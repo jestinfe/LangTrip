@@ -47,21 +47,11 @@ public class QuizController {
     }
     
 
-    // 강의실 : 퀴즈 시작 전 title/language modal창 전용
-//    @GetMapping("")
-//    @ResponseBody
-//    public QuizListDTO QuizModal(@RequestParam String quizListSeq, Long userSeq) {
-//    	
-//    	System.out.println("QuizModal 컨트롤러 진입");
-//    	
-//        return quizService.getQuizListInfo(quizListSeq, userSeq);
-//    }
     
     // 퀴즈 등록 폼 
     @GetMapping("/quiz/addQuizForm")
     public String showAddQuizForm(@RequestParam("seq") String courseSeq, 
     		Model model) {
-    	
     	
     	model.addAttribute("courseSeq", courseSeq);
     	
@@ -104,18 +94,12 @@ public class QuizController {
     // 퀴즈 학습 페이지
     @GetMapping("/quiz/playQuiz/{quizListSeq}")
     public String showPlayQuiz(@PathVariable String quizListSeq, Model model,
-    		@RequestParam String courseSeq, Authentication authentication) {
-    	
-    	
-    	//userSeq 받아오기 : 로그인한 사용자 정보
-    	//Long userSeq = getUserSeq(authentication);
-    	//quizListSeq 받아오기
-    	//QuizListDTO qlDTO = new QuizListDTO();
-    	//qlDTO.getQuizListSeq();
-    	//ownerUserSeq = quizListSeq.get
+    		@RequestParam String courseSeq, Authentication authentication,
+    		@RequestParam(required = false) String from) {
     	
         model.addAttribute("quizListSeq", quizListSeq);
         model.addAttribute("courseSeq", courseSeq);
+        model.addAttribute("from", from != null ? from : "course"); //기본값은 course
         return "quiz/playQuiz"; 
     }
     
@@ -126,10 +110,8 @@ public class QuizController {
     		Authentication authentication
     		) {
     	
-    	
     	//userSeq 받아오기
     	Long userSeq = getUserSeq(authentication);
-    	
     	
     	//Map<String, Object> result=quizService.getQuizList(quizListSeq,userSeq);
     	Map<String,Object> result = new HashMap<>();
@@ -183,7 +165,8 @@ public class QuizController {
     //퀴즈 학습완료 화면으로 이동
     @GetMapping("/quiz/quizCompleted/{quizListSeq}")
     public String quizCompleted(@PathVariable String quizListSeq, Model model
-    		,Authentication authentication, @RequestParam("courseSeq") String courseSeq) {
+    		,Authentication authentication, @RequestParam("courseSeq") String courseSeq,
+    		@RequestParam(value = "from", required = false) String from) {
     	
     	
     	//userSeq 받아오기
@@ -191,11 +174,13 @@ public class QuizController {
     	
     	QuizListDTO qDTO = new QuizListDTO();
     	qDTO.setCourseSeq(courseSeq);
+    	qDTO.setQuizListSeq(quizListSeq);
     	
     	Map<String, Object> quizStats = quizService.getQuizCompletionStats(userSeq, quizListSeq);
     	model.addAttribute("courseSeq", courseSeq);
         model.addAllAttributes(quizStats);
         model.addAttribute("qDTO", qDTO);
+        model.addAttribute("from",from);
        
         return "quiz/quizCompleted"; 
     }
@@ -220,7 +205,7 @@ public class QuizController {
     	Long user=qlDTO.getUserSeq();
     	//본인 확인
     	if(!loginUserSeq.equals(user)) {
-    		return "redirect:/ui/instroductor_course?userSeq="+loginUserSeq;
+    		return "redirect:/";
     	}
     	
         QuizListDTO qDTO = new QuizListDTO();
@@ -229,6 +214,7 @@ public class QuizController {
     	model.addAttribute("qlDTO", qlDTO);
     	model.addAttribute("qDTO", qDTO);
     	model.addAttribute("loginUserSeq", loginUserSeq);
+    	model.addAttribute("from", "modify");
     	
         return "quiz/modifyQuizForm";
     	} catch (Exception e) {
@@ -256,7 +242,7 @@ public class QuizController {
     	
     	//퀴즈 작성자인지 확인
     	if(!loginUserSeq.equals(user)) {
-    		return "redirect:/ui/instroductor_course?userSeq="+loginUserSeq;
+    		return "unauthorized";
     	}
     	
         try {
@@ -301,6 +287,22 @@ public class QuizController {
 
         return quizService.processSubmitAnswer(qrDTO);
     } 
+    
+    //퀴즈 완료 상태 처리
+    @GetMapping("/quiz/status")
+    @ResponseBody
+    public Map<String, Object> getQuizStatus(@RequestParam String quizListSeq, Authentication authentication) {
+        
+    	 Long userSeq = getUserSeq(authentication);
+    	
+    	 String status = quizService.getQuizStatus(userSeq, quizListSeq);
+    	 
+    	 Map<String, Object> statusRes = new HashMap<>();
+    	 statusRes.put("status", status);
+    	    
+    	 return statusRes;
+    }
+    
     
 }//class
 

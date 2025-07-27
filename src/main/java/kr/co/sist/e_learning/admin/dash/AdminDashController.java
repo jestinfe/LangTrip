@@ -1,5 +1,6 @@
 package kr.co.sist.e_learning.admin.dash;
 
+import java.io.IOException;
 import java.util.HashMap;
 
 import java.util.Map;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import jakarta.servlet.http.HttpServletResponse;
 import kr.co.sist.e_learning.admin.log.AdminLogService;
 
 @Controller

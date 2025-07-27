@@ -273,9 +273,7 @@ WHERE quiz_seq IN (
 )
 </update>
 
-
-  
-
+<!-- 규민이가 추가한거 -->
 <resultMap id="quizListWithDetailsMap" type="kr.co.sist.e_learning.quiz.QuizListDTO">
     <id property="quizListSeq" column="QUIZ_LIST_SEQ"/>
     <result property="courseSeq" column="COURSE_SEQ"/>
@@ -356,6 +354,8 @@ WHERE quiz_seq IN (
     FROM QUIZ_LIST ql
     WHERE ql.QUIZ_LIST_SEQ = #{quizListSeq}
   </select>
+
+<!-- 퀴즈를 만든 유저인지 확인 --> 
 <select id="findOwnerUserSeq" resultType="Long">
 SELECT user_seq
 FROM quiz_list

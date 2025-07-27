@@ -16,7 +16,7 @@
     body.logged-out .user-state { display: none; }
   </style>
 </head>
-<body class="container mt-5">
+<body >
 <div th:replace="layout/header :: header"></div>
 
 <div class="container mt-5">
@@ -167,7 +167,7 @@ function vote(postId, voteType) {
 	    contentType: 'application/json',
 	    beforeSend: function(xhr) {
 	      if (token) {
-	        console.log("� 토큰 존재 - Authorization 헤더 추가"); // 🔍
+	        console.log("  토큰 존재 - Authorization 헤더 추가"); // 🔍
 	        xhr.setRequestHeader('Authorization', 'Bearer ' + token);
 	      }
 	    },
@@ -185,7 +185,7 @@ function vote(postId, voteType) {
 	      else alert("본인 글은 안돼요~!");
 	    }
 	  });
-	}
+	}	
 
 
 function submitComment() {
@@ -275,4 +275,3 @@ function submitReport() {
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
-�

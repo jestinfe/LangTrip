@@ -2,7 +2,7 @@
 #overlay {
   position: fixed;  /* 화면 고정 */
   top: 0; left: 0; right: 0; bottom: 0;  /* 화면 전체 */
-  background-color: rgba(88,73,110, 0.7); /* 반투명 회색 */
+  background-color: rgba(73,110,109, 0.7) !important;
   z-index: 999;  /* 충분히 위에 표시 */
 }
 #keywordInput, #suggestBox {
@@ -15,10 +15,10 @@ div {	border-color: white !important }
  
  a{
  text-decoration: none;
- color: #5701d0; 
+ color: #006eb2; 
  transition: color 0.5s ease;
  }
- a:hover { text-decoration: none; color: #cca9fe }
+ a:hover { text-decoration: none; color: #a0dcfd }
  
 @keyframes glowColor {
   0%   { color: #777777; }
@@ -67,13 +67,13 @@ div {	border-color: white !important }
 	color: black; /* 텍스트 색상을 검정색으로 */
 	font-weight: bold;
 /* 	flex: 1; /* 제목부분이 1배 비율 */ 
-	border: 2px solid #a5a5f7; /* 보라색 테두리 */
+	border: 2px solid #a0dcfd; /* 보라색 테두리 */
 	margin: 5px;
 }
 
 .title-div>div {
 	margin: 2px;
-	border: 2px solid #ccccf9; /* 보라색 테두리 */
+	border: 2px solid #a0dcfd; /* 보라색 테두리 */
 	justify-content: center;
 	align-items: center;
 	align-content: center;
@@ -168,7 +168,7 @@ div {	border-color: white !important }
 .left-content {
 	display: flex;
 	flex-direction: column;
-	color: #5701d0;
+	color: #006eb2;
 }
 
 .left-content>.half-top {
@@ -185,7 +185,7 @@ div {	border-color: white !important }
 	text-align: right;
 	font-weight: bold;
 	font-size: 24px;
-	color: #5701d0;
+	color: #006eb2;
 }
 
 /* 지원센터의 피드백 기능 안에 세로로 2:1 비율로 자식 div 추가 */
@@ -200,18 +200,18 @@ div {	border-color: white !important }
 	margin-bottom: 10px;
 	font-size: 28px;
 	font-weight: bold;
-	color: #9a43fe;
+	color: #43a3df;
 }
 
 .left-inner-content>.half-inner-bottom {
 	flex: 1; /* 1배 비율 */
 	border: 1px solid #a5a5f7; /* 보라색 테두리 */
 	margin-top: -10px;
-	color: #9a43fe;
+	color: #43a3df;
 }
 
 input::placeholder {
-	color: rgba(87, 1, 208, 0.3); /* 0.5는 50% 투명도 */
+	color: rgba(0,110,178, 0.3); /* 0.5는 50% 투명도 */
 }
 
 .suggestBoxCss { 
@@ -220,7 +220,7 @@ input::placeholder {
 		    left: 0;
 		    width: 100%;
 		    background: #ffffff;
-		    border: 3px solid #5701d0 !important;
+		    border: 3px solid #006eb2 !important;
 		    border-top: none;
 		    border-radius: 0 0 8px 8px;
 		    box-shadow: 0px 4px 8px rgba(0,0,0,0.1);
@@ -228,7 +228,7 @@ input::placeholder {
 		    overflow-y: auto;
 		    z-index: 1000;
 		    font-size: 24px;
-		    color: #5701d0;
+		    color: #006eb2;
 		    
 }
 
@@ -252,8 +252,8 @@ input::placeholder {
 }
 
 .suggestBottomIn:hover{
-	color: rgb(87,1,208);
-	background-color: rgba(171,112,254, 0.3);
+	color: rgb(1,111,208);
+	background-color: rgba(0,110,178, 0.3);
 /*  	box-shadow: 0 0 5px rgba(87,1,208, 0.8);  */
 	transition: color 0.4s ease, backgroud-color 0.4s ease; 
 }
@@ -299,7 +299,7 @@ align-items: center;
 }
 
 .card > div { 
-margin-top: 15px; font-size: 24px; color: #5701d0;
+margin-top: 15px; font-size: 24px; color: #006eb2;
 
 }
 
@@ -426,7 +426,7 @@ margin-top: 15px; font-size: 24px; color: #5701d0;
 				.gradient-text {
 				  font-size: 48px;
 				  font-weight: bold;
-				  background: linear-gradient(240deg,rgb(224, 179, 255), #9a43fe, #300051);
+				  background: linear-gradient(240deg,rgb(0,110,178), #43a3df, #300051);
 				  -webkit-background-clip: text;
 				  -webkit-text-fill-color: transparent;
 				  
@@ -486,7 +486,7 @@ margin-top: 15px; font-size: 24px; color: #5701d0;
 	  
 	}
 	.slide:hover{
-		background-color: rgba(154,67,254, 0.2);
+		background-color: rgba(0,110,178, 0.2);
 	}
 	
 	@keyframes scroll-up {
@@ -498,7 +498,7 @@ margin-top: 15px; font-size: 24px; color: #5701d0;
   .faqToolLeft > .faqToolLeftTitle {
 	font-size: 32px;
 	font-weight: bold;
-	color: #9a43fe;
+	color: #43a3df;
 	
   }
   .faqToolLeft > .faqToolLeftInfo {
@@ -510,7 +510,7 @@ margin-top: 15px; font-size: 24px; color: #5701d0;
   border:1px solid red !important;
   font-size: 36px;
 /*   font-weight: bold; */
-  color: #9a43fe;
+  color: #43a3df;
   width: 40px;
   }
   
@@ -518,7 +518,7 @@ margin-top: 15px; font-size: 24px; color: #5701d0;
 /*   border:1px solid red !important; */
   font-size: 36px;
 /*   font-weight: bold;  */
-  color: #9a43fe;
+  color: #43a3df;
   width: 40px;
   }
   
@@ -526,7 +526,7 @@ margin-top: 15px; font-size: 24px; color: #5701d0;
   width :60px;;
 /*   border: 1px solid tranparent !important; */
 /*   border: 1px solid red !important; */
-  color: #9a43fe;
+  color: #43a3df;
   font-size: 30px;
   margin-left: 40px;
   margin-right: -20px;
@@ -537,9 +537,9 @@ margin-top: 15px; font-size: 24px; color: #5701d0;
 /*   border: 1px solid tranparent !important; */
 /*   border: 1px solid red !important; */
   margin-left: 40px;
-  border: 1px solid #9a43fe !important;
+  border: 1px solid #43a3df !important;
   border-radius: 8px; 
-  color: #9a43fe;
+  color: #43a3df;
   height: 100%;
   font-size: 20px;
   
@@ -558,10 +558,10 @@ margin-top: 15px; font-size: 24px; color: #5701d0;
 /*   border: 1px solid red !important; */
   font-size: 30px;
   margin-left: 36px;
-   color: #9a43fe;
+   color: #43a3df;
   }
   
   .suggestItem.hovered {
-  background-color: rgba(87,1,208, 0.2);
+  background-color: rgba(0,110,178, 0.2);
   color: rgb(87,1,208);
 }

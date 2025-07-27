@@ -288,7 +288,8 @@ public class VideoController {
 	//업로드폼 버튼 -> 비디오 폼으로
 	@GetMapping("/video/watch")
 	public String showVideo(@RequestParam("videoSeq") String videoSeq, 
-			@RequestParam("courseSeq") String courseSeq, Model model, Authentication authentication) {
+			@RequestParam("courseSeq") String courseSeq, Model model, Authentication authentication,
+			@RequestParam(required = false) String from) {
 		
 		Object principal = authentication.getPrincipal();
 		Long userSeq = null;
@@ -300,9 +301,8 @@ public class VideoController {
 		VideoDTO vDTO = vs.showVideo(videoSeq);
 		model.addAttribute("userSeq", userSeq);
 		model.addAttribute("courseSeq", courseSeq);
-		
 		model.addAttribute("videoData", vDTO);
-		
+		model.addAttribute("from",from != null ? from : "user");
 		
 		return "video/video_frm";
 	}

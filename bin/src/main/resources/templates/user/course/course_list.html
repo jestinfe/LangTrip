@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LangTrip - 강의 목록</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <link rel="stylesheet" th:href="@{/css/course_list.css}">
+<style>
+/* Pagination Styles */
+body.logged-in .guest-state {
+  display: none;
+}
+body.logged-in .user-state {
+  display: inline-flex ;
+}
+body.logged-out .guest-state {
+  display: inline-flex ;
+}
+body.logged-out .user-state {
+  display: none ;
+}
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin: 40px 0 20px 0;
+    padding: 20px 0;
+    border-top: 1px solid #e5e7eb;
+}
+
+.pagination a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    height: 40px;
+    padding: 0 12px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #6b7280;
+    text-decoration: none;
+    background-color: #ffffff;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    transition: all 0.2s ease-in-out;
+}
+
+.pagination a:hover {
+    background-color: #f9fafb;
+    border-color: #9ca3af;
+    color: #374151;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.pagination a.active {
+    background-color: #3b82f6;
+    border-color: #3b82f6;
+    color: #ffffff;
+    font-weight: 600;
+    cursor: default;
+}
+
+.pagination a.active:hover {
+    background-color: #2563eb;
+    border-color: #2563eb;
+    transform: none;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+}
+
+/* Previous/Next buttons styling */
+.pagination a:first-child,
+.pagination a:last-child {
+    font-weight: 500;
+    padding: 0 16px;
+}
+
+.pagination a:first-child:before {
+    margin-right: 6px;
+}
+
+.pagination a:last-child:after {
+    margin-left: 6px;
+}
+
+/* Disabled state for previous/next buttons */
+.pagination a:first-child:only-of-type,
+.pagination a:last-child:only-of-type {
+    opacity: 1;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .pagination {
+        gap: 4px;
+        margin: 30px 0 15px 0;
+        padding: 15px 10px;
+    }
+    
+    .pagination a {
+        min-width: 36px;
+        height: 36px;
+        padding: 0 8px;
+        font-size: 13px;
+    }
+    
+    .pagination a:first-child,
+    .pagination a:last-child {
+        padding: 0 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .pagination {
+        gap: 2px;
+        flex-wrap: wrap;
+    }
+    
+    .pagination a {
+        min-width: 32px;
+        height: 32px;
+        padding: 0 6px;
+        font-size: 12px;
+    }
+    
+    .pagination a:first-child,
+    .pagination a:last-child {
+        padding: 0 10px;
+        font-size: 12px;
+    }
+}
+
+/* Optional: Add ellipsis styling if you plan to implement it later */
+.pagination .ellipsis {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    height: 40px;
+    color: #9ca3af;
+    font-weight: 500;
+}
+
+/* Focus states for accessibility */
+.pagination a:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+}
+.course-title {
+    text-align: center;
+}
+
+</style>
+</head>
+<body class="logged-out">
+    <!-- Header -->
+    <div th:replace="~{layout/header :: header}"></div>
+
+    <main class="main-container">
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">전체 강의</h1>
+            </div>
+        </div>
+
+        <div class="search-filter-section">
+            <form id="filterForm" th:action="@{/courses}" method="get">
+                <div class="search-container">
+                    <input type="text" class="search-input" placeholder="원하는 강의를 검색해보세요..." id="searchKeyword" name="searchKeyword" th:value="${searchKeyword}" />
+                    <input type="hidden" name="searchType" value="title" /> <!-- Default search by title -->
+                    <span class="search-icon" onclick="document.getElementById('filterForm').submit()">🔍</span>
+                </div>
+                
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label class="filter-label">카테고리</label>
+                        <select class="filter-select" id="categoryFilter" name="category">
+                            <option value="" th:selected="${category == null or category == ''}">전체 카테고리</option>
+                            <option value="영어" th:selected="${category == '영어'}">영어</option>
+                            <option value="일본어" th:selected="${category == '일본어'}">일본어</option>
+                            <option value="중국어" th:selected="${category == '중국어'}">중국어</option>
+                            <!-- Add more categories as needed based on your DB -->
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label class="filter-label">난이도</label>
+                        <select class="filter-select" id="difficultyFilter" name="difficulty">
+                            <option value="" th:selected="${difficulty == null or difficulty == ''}">전체 난이도</option>
+                            <option value="초급" th:selected="${difficulty == '초급'}">초급</option>
+                            <option value="중급" th:selected="${difficulty == '중급'}">중급</option>
+                            <option value="고급" th:selected="${difficulty == '고급'}">고급</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label class="filter-label">정렬</label>
+                        <select class="filter-select" id="sortFilter" name="sort">
+                            <option value="uploadDate,desc" th:selected="${sort == 'uploadDate,desc'}">최신순</option>
+                            <option value="uploadDate,asc" th:selected="${sort == 'uploadDate,asc'}">오래된순</option>
+                            <option value="title,asc" th:selected="${sort == 'title,asc'}">제목 오름차순</option>
+                            <option value="title,desc" th:selected="${sort == 'title,desc'}">제목 내림차순</option>
+                            <option value="difficulty,asc" th:selected="${sort == 'difficulty,asc'}">난이도 낮은순</option>
+                            <option value="difficulty,desc" th:selected="${sort == 'difficulty,desc'}">난이도 높은순</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-buttons">
+                        <button type="submit" class="filter-btn">검색</button>
+                        <button type="button" class="clear-filters" onclick="clearFilters()">초기화</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+<!-- 강의 목록 -->
+<div class="course-grid" id="courseGrid">
+    <div class="course-card" th:each="course : ${courseList}">
+        <div class="course-thumbnail">
+            <img th:src="${course.thumbnailPath != null ? course.thumbnailPath : '/images/default_thumbnail.png'}"
+                 alt="Course Thumbnail"
+                 style="width:100%; height:100%; object-fit: cover;" />
+            <div class="course-level" th:text="${course.difficulty}"></div>
+        </div>
+        <div class="course-info">
+            <span class="course-category" th:text="${course.category}"></span>
+            <h3 class="course-title" th:text="${course.title}"></h3>
+            <div class="course-instructor">
+                <span class="instructor-name" th:text="${course.instructorName}"></span>
+            </div>
+            <div class="course-stats">
+            </div>
+
+<div class="course-footer d-flex gap-2 mt-3">
+    <a th:href="@{/ui/user_lecture(seq=${course.courseSeq})}" class="btn btn-outline-primary btn-sm">강의 보기</a>
+</div>
+
+
+        </div>
+    </div>
+
+    <!-- 검색 결과 없음 -->
+    <div th:if="${#lists.isEmpty(courseList)}" class="empty-state">
+        <div class="empty-icon">📚</div>
+        <h3>검색 결과가 없습니다</h3>
+        <p>다른 검색어나 필터 조건을 시도해보세요.</p>
+    </div>
+</div>
+
+        <!-- Pagination -->
+        <div class="pagination" id="pagination" th:if="${totalPages > 0}">
+            <a th:if="${currentPage > 1}" th:href="@{/courses(page=${currentPage - 1}, pageSize=${pageSize}, searchType=${searchType}, searchKeyword=${searchKeyword}, sort=${sort}, category=${category}, difficulty=${difficulty})}">이전</a>
+            <th:block th:each="pageNum : ${#numbers.sequence(startPage, endPage)}">
+                <a th:href="@{/courses(page=${pageNum}, pageSize=${pageSize}, searchType=${searchType}, searchKeyword=${searchKeyword}, sort=${sort}, category=${category}, difficulty=${difficulty})}" 
+                   th:text="${pageNum}" 
+                   th:classappend="${pageNum == currentPage ? 'active' : ''}"></a>
+            </th:block>
+            <a th:if="${currentPage < totalPages}" th:href="@{/courses(page=${currentPage + 1}, pageSize=${pageSize}, searchType=${searchType}, searchKeyword=${searchKeyword}, sort=${sort}, category=${category}, difficulty=${difficulty})}">다음</a>
+        </div>
+          <div th:replace="layout/footer :: footer"></div>
+        
+    </main>
+    
+    <script>
+        function clearFilters() {
+            document.getElementById('searchKeyword').value = '';
+            document.getElementById('categoryFilter').value = '';
+            document.getElementById('difficultyFilter').value = '';
+            document.getElementById('sortFilter').value = 'uploadDate,desc'; // Reset to default sort
+            document.getElementById('filterForm').submit();
+        }
+    </script>
+</body>
+</html>

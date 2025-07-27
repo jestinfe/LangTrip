@@ -11,6 +11,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
@@ -51,9 +53,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 userSeq = authService.reissueAccessToken(request, response);
             }
 
-            if (userSeq != null) {
-                SecurityContextHolder.getContext().setAuthentication(new UserAuthentication(userSeq, null));
-            }
+            if (userSeq != null) {                String passwordStatus = authService.getPasswordStatus(userSeq);                String servletPath = request.getServletPath();                List<String> allowedPaths = Arrays.asList("/reset-password", "/api/auth/password/reset", "/user/logout", "/css/", "/js/", "/api/auth/user/current-id");                if ("TEMP".equals(passwordStatus) && !allowedPaths.stream().anyMatch(servletPath::startsWith)) {                    if (servletPath.startsWith("/api/")) {                        response.setContentType("application/json;charset=UTF-8");                        response.setStatus(HttpServletResponse.SC_FORBIDDEN);                        response.getWriter().write("{\"message\":\"비밀번호를 변경해야 합니다.\"}");                    } else {                        response.sendRedirect("/reset-password");                    }                    return;                }                SecurityContextHolder.getContext().setAuthentication(new UserAuthentication(userSeq, null));            }
 
         } catch (ExpiredJwtException e) {
             jwtAuthUtils.deleteAccessTokenCookie(response);
