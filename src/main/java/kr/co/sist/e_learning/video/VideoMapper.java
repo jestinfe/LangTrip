@@ -15,4 +15,12 @@ public interface VideoMapper {
 	public VideoDTO showVideo(String videoSeq);
 	
 	public List<VideoDTO>showVideoByCourseSeq(String courseSeq);
+	
+	public Integer getMaxVideoOrder(String courseSeq);
+	
+	public VideoDTO getVideoBySeq(int videoSeq);
+	
+	public void modifyVideo(VideoDTO vDTO);
+	
+	public void deleteVideo(int videoSeq);
 }

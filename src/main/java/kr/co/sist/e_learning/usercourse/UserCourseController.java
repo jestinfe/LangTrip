@@ -1,5 +1,7 @@
 package kr.co.sist.e_learning.usercourse;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import jakarta.servlet.http.HttpSession;
 import kr.co.sist.e_learning.admin.account.AdminAccountController;
+import kr.co.sist.e_learning.course.CombineDTO;
 import kr.co.sist.e_learning.course.CourseDTO;
 import kr.co.sist.e_learning.course.CourseService;
 import kr.co.sist.e_learning.pagination.PageResponseDTO;
@@ -60,14 +63,34 @@ public class UserCourseController {
 		}
 		
 		
+		
+		
 		CourseDTO cDTO = cs.selectCourseData(courseSeq);
-		
-		
 		List<VideoDTO> videoList = vs.searchVideoByCourseSeq(courseSeq);
 //		List<QuizListDTO> quizList = qs.searchQuizByCourseSeq(courseSeq);
-		List<QuizListDTO> quizSeq = qs.searchQuizSeqByCoursSEq(courseSeq);
+//		List<QuizListDTO> quizSeq = qs.searchQuizSeqByCoursSEq(courseSeq);
 		List<QuizListDTO> quizList = qs.searchDistinctQuizLists(courseSeq);
+		 List<CombineDTO> combinedList = new ArrayList<CombineDTO>();
+		    System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+		    // videoList를 CombinedItem으로 변환하여 추가
+		    for (VideoDTO video : videoList) {
+		    	System.out.println("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb");
+		        combinedList.add(new CombineDTO("video", video.getVideoSeq(), video.getCourseSeq(), video.getUploadDate()));
+		    }
+		    
+		    // quizList를 CombinedItem으로 변환하여 추가
+		    for (QuizListDTO quiz : quizList) {
+		    	System.out.println("quizasddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd");
+		        combinedList.add(new CombineDTO("quiz", quiz.getQuizListSeq(), courseSeq, quiz.getUploadDate()));
+		    }
+		    System.out.println(combinedList.toString());
+		    // createdAt 기준으로 정렬
+		    combinedList.sort(Comparator.comparing(CombineDTO::getUploadDate));
+		    System.out.println(combinedList.toString());
+		    // 모델에 combinedList 전달
+		    model.addAttribute("combinedList", combinedList);
 		
+		model.addAttribute("userSeq", userSeq);
 		model.addAttribute("courseData", cDTO);
 		model.addAttribute("videoList", videoList);
 		model.addAttribute("quizList", quizList);
@@ -95,6 +118,9 @@ public class UserCourseController {
 	    try {
 	        // 강의를 만든 사람의 userSeq 조회
 	        CourseDTO cDTO = cs.selectUserSeqByCourseSeq(courseSeq);
+	        Map<String, Object> userData = new HashMap<String, Object>();
+	        userData.put("userSeq", userSeq);
+	        userData.put("courseSeq", courseSeq);
 	        
 	        if (cDTO.getUserSeq() == null) {
 	            return ResponseEntity.badRequest().body(Map.of("msg", "강의 정보가 없습니다."));
@@ -107,7 +133,7 @@ public class UserCourseController {
 
 	        // 2. 이미 수강 중인지 확인
 //	        boolean alreadyEnrolled = ucs.checkUserAlreadyEnrolled(courseSeq, userSeq); // 추가 필요
-	        int alreadyEnrolled = ucs.selectAlreadyEnrollCourse(courseSeq);
+	        int alreadyEnrolled = ucs.selectAlreadyEnrollCourse(userData);
 	        if (alreadyEnrolled > 0) {
 	            return ResponseEntity.badRequest().body(Map.of("msg", "이미 수강 중인 강의입니다."));
 	        }
@@ -146,8 +172,11 @@ public class UserCourseController {
 	    }
 
 	    try {
+	    	 Map<String, Object> userData = new HashMap<String, Object>();
+		        userData.put("userSeq", userSeq);
+		        userData.put("courseSeq", courseSeq);
 	        // 수강 여부 확인
-	        int alreadyEnrolled = ucs.selectAlreadyEnrollCourse(courseSeq);
+	        int alreadyEnrolled = ucs.selectAlreadyEnrollCourse(userData);
 
 	        if (alreadyEnrolled == 0) {
 	            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -264,9 +293,27 @@ public class UserCourseController {
 		CourseDTO cDTO = cs.selectCourseData(courseSeq);
 		List<VideoDTO> videoList = vs.searchVideoByCourseSeq(courseSeq);
 //		List<QuizListDTO> quizList = qs.searchQuizByCourseSeq(courseSeq);
-		List<QuizListDTO> quizSeq = qs.searchQuizSeqByCoursSEq(courseSeq);
+//		List<QuizListDTO> quizSeq = qs.searchQuizSeqByCoursSEq(courseSeq);
 		List<QuizListDTO> quizList = qs.searchDistinctQuizLists(courseSeq);
-		
+		 List<CombineDTO> combinedList = new ArrayList<CombineDTO>();
+		    System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+		    // videoList를 CombinedItem으로 변환하여 추가
+		    for (VideoDTO video : videoList) {
+		    	System.out.println("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb");
+		        combinedList.add(new CombineDTO("video", video.getVideoSeq(), video.getCourseSeq(), video.getUploadDate()));
+		    }
+		    
+		    // quizList를 CombinedItem으로 변환하여 추가
+		    for (QuizListDTO quiz : quizList) {
+		    	System.out.println("quizasddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd");
+		        combinedList.add(new CombineDTO("quiz", quiz.getQuizListSeq(), courseSeq, quiz.getUploadDate()));
+		    }
+		    System.out.println(combinedList.toString());
+		    // createdAt 기준으로 정렬
+		    combinedList.sort(Comparator.comparing(CombineDTO::getUploadDate));
+		    System.out.println(combinedList.toString());
+		    // 모델에 combinedList 전달
+		    model.addAttribute("combinedList", combinedList);
 		
 		model.addAttribute("userSeq", userSeq);
 		model.addAttribute("courseData", cDTO);

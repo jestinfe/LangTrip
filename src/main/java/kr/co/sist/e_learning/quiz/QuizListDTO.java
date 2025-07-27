@@ -26,6 +26,8 @@ public class QuizListDTO {
 	 //퀴즈묶음
 	 private List<QuizDTO> quiz = new ArrayList<>();
 	 
+	 private int videoOrder;
+	 
 //	 //switch case로 langCategory 값 한국어로 매핑
 //	 public String getLangCategoryKorean() {
 //		 	String language = null;

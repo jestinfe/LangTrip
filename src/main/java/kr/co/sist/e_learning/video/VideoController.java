@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import kr.co.sist.e_learning.course.CourseService;
 import kr.co.sist.e_learning.course.CourseStatDTO;
@@ -55,6 +56,48 @@ public class VideoController {
 		return "ui/upload_frm";
 	}
 	
+	@GetMapping("/upload/modify_video_form")
+	public String showModifyForm(@RequestParam("videoSeq") int videoSeq, Model model) {
+	    VideoDTO video = vs.getVideoBySeq(videoSeq);
+	    model.addAttribute("video", video);
+	    return "upload/modify_video";
+	}
+	
+	@PostMapping("/upload/modify_video")
+	public String modifyVideo(@RequestParam(value = "upfile", required = false) MultipartFile upfile,
+	                          @ModelAttribute VideoDTO vDTO,
+	                          RedirectAttributes redirectAttributes) throws Exception {
+
+	    // 파일이 새로 업로드되었으면 저장
+	    if (upfile != null && !upfile.isEmpty()) {
+	        String originalName = upfile.getOriginalFilename();
+	        String fileExt = originalName.substring(originalName.lastIndexOf(".") + 1);
+	        String uuid = UUID.randomUUID().toString();
+	        String securityFileName = uuid + "." + fileExt;
+
+	        Path path = Paths.get(courseVideoPath, securityFileName);
+	        Files.createDirectories(path.getParent());
+	        upfile.transferTo(path.toFile());
+
+	        // 새로운 파일 정보로 대체
+	        vDTO.setFileName(securityFileName);
+	        vDTO.setFilePath("/courseVideo/" + securityFileName);
+	    }
+
+	    vDTO.setUploadDate(new Date());  // 날짜 갱신
+	    vs.modifyVideo(vDTO);            // DB update 처리
+
+	    redirectAttributes.addFlashAttribute("msg", "비디오 수정 완료");
+	    return "redirect:/upload/upload_course?seq=" + vDTO.getCourseSeq();
+	}
+	
+	
+	@PostMapping("/upload/delete_video")
+	public String deleteVideo(@RequestParam("videoSeq") int videoSeq,
+	                          @RequestParam("courseSeq") String courseSeq) {
+	    vs.deleteVideo(videoSeq); // 삭제 로직 수행
+	    return "redirect:/upload/upload_course?seq=" + courseSeq;
+	}
 	
 	
 	@PostMapping("/upload/upload_video")
@@ -143,7 +186,7 @@ public class VideoController {
 			}
 			
 			
-			
+			int videoOrder = vs.getMaxVideoOrder(vDTO.getCourseSeq());
 			VideoDTO newDTO = new VideoDTO();
 			newDTO.setDescription(vDTO.getDescription());
 			newDTO.setTitle(vDTO.getTitle());
@@ -152,16 +195,16 @@ public class VideoController {
 			newDTO.setFilePath("/courseVideo/"+securityFileName);
 			newDTO.setIsCompleted("N");
 			newDTO.setUploadDate(new Date());
-			newDTO.setVideoOrder(videoCnt);
+			
+			newDTO.setVideoOrder(videoOrder);
 			newDTO.setType("video");
+			
 			if(newDTO.getCourseSeq() != null && newDTO.getFileName() != null) {
 				vs.addVideo(newDTO);
 			}else {
 				result.put("msg", "시발련아");
 			}
-			
-			videoCnt++;
-			
+						
 			if(cs.updateVideoCount(vDTO.getCourseSeq()) == 1) {
 			};
 			dtoList.add(newDTO);

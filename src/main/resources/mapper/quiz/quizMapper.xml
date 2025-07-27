@@ -157,7 +157,7 @@ and course_seq=#{courseSeq}
 </select>
 
 <select id="selectDistinctQuizLists" parameterType="String" resultType="kr.co.sist.e_learning.quiz.QuizListDTO">
-    SELECT DISTINCT quiz_list_seq 
+    SELECT DISTINCT quiz_list_seq, upload_date 
     FROM quiz 
     WHERE is_delete = 'N'
     AND course_seq = #{courseSeq}
