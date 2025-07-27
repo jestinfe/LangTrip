@@ -204,7 +204,7 @@ public class QuizController {
     	Long user=qlDTO.getUserSeq();
     	//본인 확인
     	if(!loginUserSeq.equals(user)) {
-    		return "redirect:/ui/instroductor_course?userSeq="+loginUserSeq;
+    		return "redirect:/";
     	}
     	
         QuizListDTO qDTO = new QuizListDTO();
@@ -241,7 +241,7 @@ public class QuizController {
     	
     	//퀴즈 작성자인지 확인
     	if(!loginUserSeq.equals(user)) {
-    		return "redirect:/ui/instroductor_course?seq="+loginUserSeq;
+    		return "unauthorized";
     	}
     	
         try {

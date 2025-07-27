@@ -18,6 +18,7 @@
 </head>
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <body>
+
 	<!-- 모바일 메뉴 토글 -->
 	<button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
 		☰</button>
@@ -310,9 +311,31 @@ window.addEventListener('message', function(event) {
             panels.forEach((panel, index) => {
                 panel.style.animationDelay = `${index * 0.1}s`;
             });
+            
         });
         
-        
+      /*   document.addEventListener("DOMContentLoaded", function () {
+        	  const quizButtons = document.querySelectorAll(".start-quiz-button");
+
+        	  quizButtons.forEach(button => {
+        	    const quizListSeq = button.dataset.quizId;
+
+        	    axios.get("/quiz/status", {
+        	      params: { quizListSeq } 
+        	    })
+        	    .then(res => {
+        	    	console.log("퀴즈 상태 응답:", res.data);
+        	      const quizStatus = res.data.status;
+        	      if (quizStatus === "complete") {
+        	        button.classList.add("completed");
+        	      }
+        	    })
+        	    .catch(err => {
+        	      console.error("퀴즈 상태 확인 실패", err);
+        	    });
+        	  });
+        	}); */
+
         
         
     </script>
