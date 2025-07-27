@@ -224,7 +224,7 @@ public class CourseController {
 
 		}
 		cDTO.setThumbnailName(thumbNail);
-		cDTO.setThumbnailPath("/upload/img/"+thumbNail);
+		cDTO.setThumbnailPath("/courseImg/"+thumbNail);
 		
 		
 		int result = cs.modifyCourse(cDTO);
