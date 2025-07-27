@@ -26,6 +26,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+
 @Controller
 @RequestMapping("/csj")
 public class CommunityPostController {
@@ -153,19 +156,25 @@ public class CommunityPostController {
     }
 
     @GetMapping("/community/detail")
-    public String detail(@RequestParam("postId") Long postId, Model model) {
+    public String detail(@RequestParam("postId") Long postId, Model model, RedirectAttributes redirectAttr) {
         Long currentUserSeq = getCurrentUserSeq();
 
         CommunityPostDTO post = communityService.getPostDetail(postId);
+
+        // ✅ 작성자 상태 확인
+        UserEntity writer = userRepository.findByUserSeq(post.getUserId()).orElse(null);
+        if (writer != null && ("탈퇴".equals(writer.getStatus()) || "영구정지".equals(writer.getStatus()))) {
+            redirectAttr.addFlashAttribute("blocked", true);
+            return "redirect:/csj/community?blocked=true";
+        }
+
         communityService.increaseViewCount(postId);
-        
-        // 공지사항일 경우에만 닉네임을 "운영자"로 설정
+
         if (post != null && "Y".equals(post.getCommunityNotice())) {
-            post.setNickname("운영자"); 
+            post.setNickname("운영자");
         }
 
         List<CommunityCommentDTO> comments = communityService.getAllComments(postId);
-        
         int upCount = voteService.getVoteCount(postId.intValue(), "UP");
         int downCount = voteService.getVoteCount(postId.intValue(), "DOWN");
 
@@ -176,6 +185,7 @@ public class CommunityPostController {
         model.addAttribute("currentUserSeq", currentUserSeq);
         return "csj/communityDetail";
     }
+
 
     @PostMapping("/uploadImage")
     @ResponseBody

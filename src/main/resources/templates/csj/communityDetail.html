@@ -16,7 +16,7 @@
     body.logged-out .user-state { display: none; }
   </style>
 </head>
-<body class="container mt-5">
+<body >
 <div th:replace="layout/header :: header"></div>
 
 <div class="container mt-5">
@@ -185,7 +185,7 @@ function vote(postId, voteType) {
 	      else alert("본인 글은 안돼요~!");
 	    }
 	  });
-	}
+	}	
 
 
 function submitComment() {
