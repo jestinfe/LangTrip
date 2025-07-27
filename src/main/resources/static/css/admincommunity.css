@@ -13,37 +13,89 @@ body {
   color: #495057; 
   background: #f8f9fa;
   min-height: 100vh;
-  display: flex;
+  display: flex; /* body에 flex 속성 추가 */
   margin: 0;
   padding: 0;
 }
 
-.container {
+.table-card-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); /* ⭐ 파란색 그라데이션 배경 추가 */
+    color: white; /* ⭐ 글씨색을 흰색으로 변경 */
+    padding: 15px 25px;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: -25px -25px 0 -25px;
+}
+
+/* 메인 콘텐츠 래퍼 스타일 */
+.container { /* ⭐ .container로 사용자 HTML에 맞춤 */
   flex-grow: 1;
-  padding: 20px;
-  margin-left: 250px;
-  background: #f8f9fa;
-  max-width: none;
+  padding: 40px 16px; /* ⭐ 좌우 패딩을 16px로 줄여 가로 폭 확장 */
+  margin-left: 280px; /* 사이드바 너비만큼 여백 */
+  background: #f8f9fa; /* 배경색 유지 */
+  max-width: none; /* ⭐ max-width 제한 해제 */
+  width: 100%; /* ⭐ 부모 요소의 전체 너비를 차지하도록 설정 */
+  /* padding-top: 40px;  상단 여백은 padding 속성에 포함됨 */
 }
 
-/* 게시판 제목 스타일 */
-.board-title {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 20px;
-  border-radius: 8px;
-  margin-bottom: 20px;
-  font-size: 20px;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
+/* ⭐ .main-content는 현재 HTML에서 사용되지 않으므로 제거 */
+/* .main-content { margin-left: 280px; padding: 2rem; flex: 1; display: flex; flex-direction: column; min-height: 100vh; } */
+
+
+/* ⭐ 모든 카드 요소에 적용될 기본 스타일 (이전과 동일하게 유지) */
+.card {
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    padding: 25px;
+    margin-bottom: 30px;
+    width: 100%; /* 카드도 부모의 전체 너비를 차지하도록 */
+    max-width: none; /* 카드도 max-width 제한 해제 */
 }
 
-.board-title::before {
-  content: '💬';
-  margin-right: 12px;
-  font-size: 24px;
+/* ⭐ 메인 타이틀/설명 영역 스타일 (admin-section-header와 page-header의 조합) */
+.admin-section-header { /* ⭐ 사용자 HTML에 맞춰 이 클래스에 스타일 적용 */
+  background: #fff; 
+  padding: 2rem; 
+  border-radius: 16px; 
+  box-shadow: 0 8px 32px rgba(0,0,0,.1); 
+  margin-bottom: 30px;  
+  margin-top: 10px;
+  width: 100%;
+  max-width: none; /* ⭐ max-width 제한 해제 */
 }
+
+.admin-section-header .page-header { /* ⭐ .page-header 자체의 기존 스타일 제거 또는 조정 */
+    background: none; /* 배경 제거 */
+    padding: 0; /* 패딩 제거 */
+    border-radius: 0; /* 테두리 반경 제거 */
+    box-shadow: none; /* 그림자 제거 */
+    margin-bottom: 0; /* 마진 제거 */
+    margin-top: 0; /* 마진 제거 */
+}
+
+.admin-section-header h1 { 
+    color: #333; 
+    font-size: 2rem; 
+    margin-bottom: .5rem; 
+    display: flex;
+    align-items: center;
+}
+.admin-section-header h1 i { /* 아이콘 스타일 */
+    margin-right: 15px;
+    color: #6a0dad; /* 보라색 계열 아이콘 */
+    font-size: 32px;
+}
+.admin-section-header p { 
+    color: #666; 
+    font-size: 1.1rem; 
+}
+
 
 /* 헤더 컨트롤 영역 */
 .header-controls {
@@ -57,6 +109,9 @@ body {
   align-items: center;
   flex-wrap: wrap;
   gap: 15px;
+  margin-top: 20px;
+  max-width: none; /* ⭐ max-width 제한 해제 */
+  width: 100%; /* ⭐ 부모 요소의 전체 너비를 차지하도록 설정 */
 }
 
 /* 탭 그룹 */
@@ -222,6 +277,10 @@ body {
   overflow: hidden;
   margin-bottom: 30px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  margin-top: 10px;
+  margin-bottom: 40px;
+  max-width: none; /* ⭐ max-width 제한 해제 */
+  width: 100%; /* ⭐ 부모 요소의 전체 너비를 차지하도록 설정 */
 }
 
 .table {
@@ -256,10 +315,10 @@ body {
 }
 
 .title-column {
-  text-align: left !important;
+  text-align: center !important; /* ⭐ 사용자 요청에 따라 중앙 정렬 유지 */
   font-weight: 500;
   color: #212529;
-  max-width: 300px;
+  max-width: none; /* ⭐ 최대 너비 제한 해제 */
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -267,9 +326,15 @@ body {
 
 /* 페이지네이션 */
 .pagination-container {
+  max-width: none; /* ⭐ max-width 제한 해제 */
+  width: 100%; /* ⭐ 부모 요소의 전체 너비를 차지하도록 설정 */
   display: flex;
   justify-content: center;
   margin-top: 30px;
+  margin: 0 auto;  
+  padding: 2rem;
+  margin-top: 30px;
+  margin-bottom: 40px;
 }
 
 .pagination {
@@ -320,8 +385,10 @@ body {
 
 /* 반응형 디자인 */
 @media (max-width: 992px) {
-  .container {
+  .container { /* ⭐ .container로 사용자 HTML에 맞춤 */
     margin-left: 0;
+    padding: 2rem; /* 패딩 조정 */
+    padding-top: 40px;  /* 상단 여백 유지 */
   }
 }
 
@@ -335,7 +402,6 @@ body {
   .search-form {
     flex-direction: column;
     align-items: stretch;
-    gap: 10px;
   }
 
   .search-form input[type="text"] {
@@ -354,38 +420,11 @@ body {
   }
 
   .title-column {
-    max-width: 200px;
+    max-width: none; /* 모바일에서도 최대 너비 제한 해제 */
   }
   
-  
- .admin-section-header {
-  background: white;
-  border-radius: 16px;
-  padding: 30px;
-  margin-top: 20px;
-  margin-left: 500px; /* 👈 사이드바 너비에 맞게 조정 */
-  margin-bottom: 30px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.admin-section-header h2 {
-  font-size: 26px;
-  font-weight: 700;
-  color: #212529;
-  margin: 0;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.admin-section-header p {
-  font-size: 14px;
-  color: #6c757d;
-  margin: 0;
-}
-  
-  
+  .admin-section-header { /* ⭐ 모바일에서 마진 제거 */
+    margin-left: 0 !important; /* 기존 500px 마진 제거 */
+    width: 100%;
+  }
 }
