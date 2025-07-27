@@ -4,7 +4,7 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="kr.co.sist.e_learning.usercourse.UserCourseMapper">
-	<insert id="insertUserCourse" parameterType="UserCourseDTO">
+	<insert id="insertUserCourse" parameterType="kr.co.sist.e_learning.usercourse.UserCourseDTO">
 		insert into course_enrollment(
 		enroll_seq,
 		user_seq,
@@ -18,7 +18,7 @@
 		)
 	</insert>
 	<select id="selectUserCoursesByuserSeq" parameterType="Long"
-		resultType="UserCourseDTO">
+		resultType="kr.co.sist.e_learning.usercourse.UserCourseDTO">
 		SELECT
 		c.course_seq,
 		c.title as courseTitle,
@@ -40,7 +40,7 @@
 	select count(*) from course_enrollment where course_seq = #{courseSeq} and user_seq = #{userSeq}
 	</select>
 	<select id="selectUserCourseByPage" parameterType="map"
-		resultType="UserCourseDTO">
+		resultType="kr.co.sist.e_learning.usercourse.UserCourseDTO">
 		SELECT e.enroll_seq, e.user_seq, c.title AS courseTitle, c.introduction, c.upload_date,
 		c.thumbnail_path, c.thumbnail_name, c.category, c.course_seq,
 		c.difficulty, c.is_public, e.enroll_date, u.nickname AS instructorName
@@ -56,7 +56,7 @@
 		select count(*) from course_enrollment where user_seq = #{userSeq}
 	</select>
 
-    <select id="selectRecentEnrolledCourses" parameterType="map" resultType="UserCourseDTO">
+    <select id="selectRecentEnrolledCourses" parameterType="map" resultType="kr.co.sist.e_learning.usercourse.UserCourseDTO">
         SELECT
             ce.enroll_seq,
             ce.user_seq,
@@ -182,7 +182,7 @@
   delete from course_enrollment where course_seq = #{courseSeq} and user_seq = #{userSeq}
   </delete>
   
-  <select id="getCoursesByPage" parameterType="map" resultType="UserCourseDTO">
+  <select id="getCoursesByPage" parameterType="map" resultType="kr.co.sist.e_learning.usercourse.UserCourseDTO">
     SELECT * 
     FROM course_enrollment
     WHERE user_seq = #{userSeq}
