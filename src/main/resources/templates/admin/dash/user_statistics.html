@@ -80,9 +80,6 @@
       align-items: center;
       justify-content: center;
     }
-    .admin-chart-item--full {
-      grid-column: 1 / -1; /* Spans all columns */
-    }
     .admin-chart-title {
       font-size: 1.5rem;
       color: #333;
@@ -98,6 +95,24 @@
       max-width: 100%;
       height: auto;
     }
+    
+/* [1] 시간대별 접속 통계 전용 max-width 제한 */
+#hourlyAccessChart {
+  max-width: 600px; /* 또는 700px 등 적절한 값 */
+  margin: 0 auto;
+}
+
+/* [2] 섹션 자체 가운데 정렬 */
+#hourlyAccessChartContainer {
+  display: flex;
+  justify-content: center;
+}
+
+/* 필요 시 높이 제한도 */
+#hourlyAccessChart {
+  height: 300px !important; /* 필요 시 명시적 높이 제한 */
+}
+
   </style>
 
 </head>
@@ -117,12 +132,14 @@
     <div class="table-container">
 
   <!-- ⏰ 시간별 통계 -->
-  <section class="admin-chart-item admin-chart-item--full">
-    <h5 class="admin-chart-title">
-      <i class="fas fa-clock"></i> 시간대별 접속 통계
-    </h5>
+<section class="admin-chart-item admin-chart-item--full">
+  <h5 class="admin-chart-title">
+    <i class="fas fa-clock"></i> 시간대별 접속 통계
+  </h5>
+  <div id="hourlyAccessChartContainer">
     <canvas id="hourlyAccessChart"></canvas>
-  </section>
+  </div>
+</section>
 
   <!-- 📊 주요 통계 -->
 <section class="admin-chart-grid">

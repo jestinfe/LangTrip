@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 public class AdminStatsExcelController {
@@ -34,6 +36,16 @@ public class AdminStatsExcelController {
     public void exportUserSummaryExcel(HttpServletResponse response, Authentication auth) throws IOException {
         getOrInitAdminId(auth);
 
+     // 탈퇴 사유 코드 → 문자열 매핑
+        Map<String, String> reasonMap = new HashMap<>();
+        reasonMap.put("1", "흥미 감소");
+        reasonMap.put("2", "진행 어려움");
+        reasonMap.put("3", "콘텐츠 불만족");
+        reasonMap.put("4", "기술 문제");
+        reasonMap.put("5", "개인 사정");
+        reasonMap.put("6", "기타");
+
+        
         List<AdminDashDTO> signupPathStats = dashboardService.getSignupPathStats();
         List<AdminDashDTO> signupStats = dashboardService.getDailySignupStats();
         List<AdminDashDTO> unsignStats = dashboardService.getUnsignReasonStats();
@@ -65,7 +77,8 @@ public class AdminStatsExcelController {
             }
             if (i < unsignStats.size()) {
                 AdminDashDTO dto = unsignStats.get(i);
-                row.createCell(4).setCellValue(dto.getUnsignPath());
+                String readableReason = reasonMap.getOrDefault(dto.getUnsignPath(), dto.getUnsignPath());
+                row.createCell(4).setCellValue(readableReason);
                 row.createCell(5).setCellValue(dto.getUnsignCount());
             }
         }
