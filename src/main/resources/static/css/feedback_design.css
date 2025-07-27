@@ -53,7 +53,7 @@ label {
 	margin-left: 20px;
 	font-size: 20px;
 	font-weight: normal;
-	color: #8e3efe;
+	color: #43a3df;
 	text-shadow: 0 0 3px rgba(white 0.3);
 }
 
@@ -82,7 +82,7 @@ label {
 }
 
 .spanNormal {
-	color: #b785fd;
+	color: #addbfa;
 }
 
 .moreAction {
@@ -111,7 +111,7 @@ a {
 
 a:hover {
 	text-decoration: none;
-	color: #cca9fe;
+	color: #c6e3f5;
 }
 
 /* ------------------------------------ */
@@ -143,7 +143,7 @@ a:hover {
 }
 
 .child-div>div>div>a:hover {
-	color: #bd8ffd !important;
+	color: #c6e3f5	 !important;
 	transition: color 0.5s ease;
 }
 
@@ -254,7 +254,7 @@ a:hover {
 .gradient-text {
 	font-size: 48px;
 	font-weight: bold;
-	background: linear-gradient(240deg, rgb(224, 179, 255), #43a3df, #300051);
+	background: linear-gradient(240deg, rgb(67,163,223), #43a3df, #300051);
 	-webkit-background-clip: text;
 	-webkit-text-fill-color: transparent;
 }
@@ -337,8 +337,9 @@ a:hover {
 /* 인풋 placeholder 스타일 */
 /* ------------------------------------ */
 input::placeholder {
-	color: rgba(87, 1, 208, 0.3);
+	color: rgba(176,212,237, 0.3) !important;
 }
+
 
 /* ------------------------------------ */
 /* 공지사항 테이블 구조 */
@@ -505,6 +506,6 @@ input::placeholder {
 @keyframes glowColor {
 	from { color:#777777;}
 
-to {color: #bd8ffd;}
+to {color: #43a3df;}
 
 }

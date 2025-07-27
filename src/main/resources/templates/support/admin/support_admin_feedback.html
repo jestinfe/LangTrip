@@ -41,7 +41,7 @@
 				
 				
 					<div class="div-2" style="font-size: 32px; border:none; display: flex; width: auto; margin-right: 20px; margin-left:-20px;">
-						<img th:src="@{/images/symbol_feedback.png}" style="width: 54px; height: 54px; "/>
+						<img th:src="@{/images/symbol_feedback_admin.png}" style="width: 54px; height: 54px; "/>
 					</div>
 					<div class="div-2" style="font-size: 32px; border:none; display: flex; width: auto; margin-right: 30px;">
 						피드백 관리	
@@ -49,7 +49,7 @@
 					<div class="div-2" style="font-size: 32px; border:none; display: flex; width: auto; margin-right: 18px; margin-left: -10px; margin-bottom: 5px; color: #bbbbbb;">
 						>	
 					</div>
-					<div class="div-2" style="font-size: 32px; border:none; display: flex; width: auto; color: #43a3df">
+					<div class="div-2" style="font-size: 32px; border:none; display: flex; width: auto; color: #5701d0">
 						누적 피드백 현황
 					</div>
 					
@@ -199,7 +199,7 @@
 				
 				
 					<div class="div-2" style="font-size: 32px; border:none; display: flex; width: auto; margin-right: 20px; margin-left:-20px;">
-						<img th:src="@{/images/symbol_feedback.png}" style="width: 54px; height: 54px; "/>
+						<img th:src="@{/images/symbol_feedback_admin.png}" style="width: 54px; height: 54px; "/>
 					</div>
 					<div class="div-2" style="font-size: 32px; border:none; display: flex; width: auto; margin-right: 30px;">
 						피드백 관리	
@@ -207,7 +207,7 @@
 					<div class="div-2" style="font-size: 32px; border:none; display: flex; width: auto; margin-right: 18px; margin-left: -10px; margin-bottom: 5px; color: #bbbbbb;">
 						>	
 					</div>
-					<div class="div-2" style="font-size: 32px; border:none; display: flex; width: auto; color: #43a3df">
+					<div class="div-2" style="font-size: 32px; border:none; display: flex; width: auto; color: #5701d0">
 						새로운 피드백
 					</div>
 					
@@ -220,11 +220,11 @@
 			<div style="border-top: 1px solid #bbbbbb !important; margin-top:-25px; margin-bottom: 40px;"></div>													
 																
 																<div th:if="${#lists.isEmpty(newFeedbackList)}"
-																	style="padding: 30px; font-size: 30px; color: #43a3df; opacity: 0.5; text-align: center; margin-top: -50px;">
+																	style="padding: 30px; font-size: 30px; color: #5701d0; opacity: 0.5; text-align: center; margin-top: -50px;">
 																	접수된 피드백이 없습니다.</div>
 																	
 																<div th:unless="${#lists.isEmpty(newFeedbackList)}"
-																	style="padding: 30px; font-size: 30px; color: #43a3df; text-align: center;">
+																	style="padding: 30px; font-size: 30px; color: #5701d0; text-align: center;">
 																	
 																	
 																	
@@ -245,12 +245,12 @@
 																		<div class="notice-cell">
 																			<th:block th:if="${fbNew.feedback_style} == '0'">
 																				<button type="submit"
-																					style="border: none; background-color: transparent; color: #43a3df; border: none; border-radius: 4px; padding: 4px 8px; font-size: 14px;">
+																					style="border: none; background-color: transparent; color: #5701d0; border: none; border-radius: 4px; padding: 4px 8px; font-size: 14px;">
 																					익명</button>
 																			</th:block>
 																			<th:block th:if="${fbNew.feedback_style} == '1'">
 																				<button type="submit"
-																					style="border: none; background-color: rgba(204, 169, 254, 0); color: #43a3df; border: none; border-radius: 4px; padding: 4px 8px; font-size: 14px; font-weight: bold">
+																					style="border: none; background-color: rgba(204, 169, 254, 0); color: #5701d0; border: none; border-radius: 4px; padding: 4px 8px; font-size: 14px; font-weight: bold">
 																					실명</button>
 																			</th:block>
 																		</div>
@@ -276,7 +276,7 @@
 																			</th:block>
 																			<th:block th:if="${fbNew.feedback_step} == '2'">
 																				<button type="submit"
-																					style="border: none; background-color: rgba(204, 169, 254, 0); color: #43a3df; border: 1px solid #43a3df; border-radius: 4px; padding: 4px 8px; font-size: 14px;">
+																					style="border: none; background-color: rgba(204, 169, 254, 0); color: #5701d0; border: 1px solid #5701d0; border-radius: 4px; padding: 4px 8px; font-size: 14px;">
 																					처리중</button>
 																			</th:block>
 																			<th:block th:if="${fbNew.feedback_step} == '3'">
@@ -362,7 +362,7 @@
 				
 				
 					<div class="div-2" style="font-size: 32px; border:none; display: flex; width: auto; margin-right: 20px; margin-left:-20px;">
-						<img th:src="@{/images/symbol_feedback.png}" style="width: 54px; height: 54px; "/>
+						<img th:src="@{/images/symbol_feedback_admin.png}" style="width: 54px; height: 54px; "/>
 					</div>
 					<div class="div-2" style="font-size: 32px; border:none; display: flex; width: auto; margin-right: 30px;">
 						피드백 관리	
@@ -370,7 +370,7 @@
 					<div class="div-2" style="font-size: 32px; border:none; display: flex; width: auto; margin-right: 18px; margin-left: -10px; margin-bottom: 5px; color: #bbbbbb;">
 						>	
 					</div>
-					<div class="div-2" style="font-size: 32px; border:none; display: flex; width: auto; color: #43a3df">
+					<div class="div-2" style="font-size: 32px; border:none; display: flex; width: auto; color: #5701d0">
 						진행중인 피드백
 					</div>
 					
@@ -385,12 +385,12 @@
 						
 										
 									<div th:if="${#lists.isEmpty(newFeedbackList)}"
-											style="padding: 30px; font-size: 30px; color: #43a3df; opacity: 0.5; text-align: center; margin-top: -50px;">
+											style="padding: 30px; font-size: 30px; color: #5701d0; opacity: 0.5; text-align: center; margin-top: -50px;">
 											진행중인 피드백이 없습니다.</div>
 										
 										
 									<div th:unless="${#lists.isEmpty(niceFeedbackList)}"
-											style="padding: 30px; font-size: 30px; color: #43a3df; text-align: center;">
+											style="padding: 30px; font-size: 30px; color: #5701d0; text-align: center;">
 										<div th:replace="/support/admin/feedbackHeader :: feedbackHeader"></div>
 						
 						
@@ -411,12 +411,12 @@
 												<div class="notice-cell">
 													<th:block th:if="${fbNice.feedback_style} == '0'">
 														<button type="submit"
-															style="border: none; background-color: transparent; color: #43a3df; border: none; border-radius: 4px; padding: 4px 8px; font-size: 14px;">
+															style="border: none; background-color: transparent; color: #5701d0; border: none; border-radius: 4px; padding: 4px 8px; font-size: 14px;">
 															익명</button>
 													</th:block>
 													<th:block th:if="${fbNice.feedback_style} == '1'">
 														<button type="submit"
-															style="border: none; background-color: rgba(204, 169, 254, 0); color: #43a3df; border: none; border-radius: 4px; padding: 4px 8px; font-size: 14px; font-weight: bold">
+															style="border: none; background-color: rgba(204, 169, 254, 0); color: #5701d0; border: none; border-radius: 4px; padding: 4px 8px; font-size: 14px; font-weight: bold">
 															실명</button>
 													</th:block>
 												</div>
@@ -442,7 +442,7 @@
 													</th:block>
 													<th:block th:if="${fbNice.feedback_step} == '2'">
 														<button type="submit"
-															style="border: none; background-color: rgba(204, 169, 254, 0); color: #43a3df; border: 1px solid #43a3df; border-radius: 4px; padding: 4px 8px; font-size: 14px;">
+															style="border: none; background-color: rgba(204, 169, 254, 0); color: #5701d0; border: 1px solid #5701d0; border-radius: 4px; padding: 4px 8px; font-size: 14px;">
 															처리중</button>
 													</th:block>
 													<th:block th:if="${fbNice.feedback_step} == '3'">
@@ -549,7 +549,7 @@
 				
 				
 					<div class="div-2" style="font-size: 32px; border:none; display: flex; width: auto; margin-right: 20px; margin-left:-20px;">
-						<img th:src="@{/images/symbol_feedback.png}" style="width: 54px; height: 54px; "/>
+						<img th:src="@{/images/symbol_feedback_admin.png}" style="width: 54px; height: 54px; "/>
 					</div>
 					<div class="div-2" style="font-size: 32px; border:none; display: flex; width: auto; margin-right: 30px;">
 						피드백 관리	
@@ -557,7 +557,7 @@
 					<div class="div-2" style="font-size: 32px; border:none; display: flex; width: auto; margin-right: 18px; margin-left: -10px; margin-bottom: 5px; color: #bbbbbb;">
 						>	
 					</div>
-					<div class="div-2" style="font-size: 32px; border:none; display: flex; width: auto; color: #43a3df">
+					<div class="div-2" style="font-size: 32px; border:none; display: flex; width: auto; color: #5701d0">
 						전체 피드백 기록
 					</div>
 					

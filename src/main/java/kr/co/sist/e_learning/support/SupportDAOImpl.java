@@ -30,6 +30,7 @@ public class SupportDAOImpl implements SupportDAO {
 //		return DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "scott", "tiger");
 //		return DriverManager.getConnection("jdbc:oracle:thin:@192.168.10.98:1521:orcl", "c##under", "dog");
 		return DriverManager.getConnection("jdbc:oracle:thin:@211.63.89.162:1521:orcl", "c##under", "dog");
+//		return DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "c##under", "dog");
 	}// getConnection
 
 	// ---------------------------------------------------------------------------------------------------------------------------------------------------
@@ -87,7 +88,6 @@ public class SupportDAOImpl implements SupportDAO {
 				resultList.add(dto);
 			} // end while
 
-
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} // end catch
@@ -119,7 +119,6 @@ public class SupportDAOImpl implements SupportDAO {
 				dto.setNotice_status(rs.getString("notice_status"));
 				resultList.add(dto);
 			} // end while
-
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -262,7 +261,6 @@ public class SupportDAOImpl implements SupportDAO {
 					resultList.add(dto);
 				} // end while
 			}
-
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -436,7 +434,6 @@ public class SupportDAOImpl implements SupportDAO {
 				resultList.add(dto);
 			}
 
-
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -580,7 +577,6 @@ public class SupportDAOImpl implements SupportDAO {
 				}
 			}
 
-
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -605,7 +601,6 @@ public class SupportDAOImpl implements SupportDAO {
 
 				resultList.add(dto);
 			}
-
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -640,7 +635,6 @@ public class SupportDAOImpl implements SupportDAO {
 				resultList.add(dto);
 			} // end while
 
-
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} // end catch
@@ -671,7 +665,6 @@ public class SupportDAOImpl implements SupportDAO {
 				dto.setFeedback_type(rs.getString("feedback_type"));
 				resultList.add(dto);
 			} // end while
-
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -993,7 +986,6 @@ public class SupportDAOImpl implements SupportDAO {
 				dto.setFaq_status(rs.getString("faq_status"));
 				resultList.add(dto);
 			}
-
 
 		} catch (SQLException e) {
 			e.printStackTrace();

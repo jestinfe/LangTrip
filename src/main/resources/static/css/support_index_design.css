@@ -2,7 +2,7 @@
 #overlay {
   position: fixed;  /* 화면 고정 */
   top: 0; left: 0; right: 0; bottom: 0;  /* 화면 전체 */
-  background-color: rgba(88,73,110, 0.7); /* 반투명 회색 */
+  background-color: rgba(73,110,109, 0.7) !important;
   z-index: 999;  /* 충분히 위에 표시 */
 }
 #keywordInput, #suggestBox {
