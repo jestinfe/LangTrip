@@ -73,17 +73,7 @@
         )
         <where>
           <if test="status != null and status != ''">
-            <choose>
-              <when test="status == 'ACTIVE'">
-                status = 'Y'
-              </when>
-              <when test="status == 'INACTIVE'">
-                status = 'N'
-              </when>
-              <when test="status == 'PENDING'">
-                status = 'PENDING'
-              </when>
-            </choose>
+            AND status = #{status}
           </if>
           <if test="searchType != null and searchKeyword != null and searchKeyword != ''">
             <choose>

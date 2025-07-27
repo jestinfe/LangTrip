@@ -15,7 +15,7 @@
       c.IS_PUBLIC AS isPublic,
       u.NICKNAME AS userName,
       (SELECT COUNT(*) FROM VIDEO v WHERE v.COURSE_SEQ = c.COURSE_SEQ) AS videoCount,
-      (SELECT COUNT(*) FROM QUIZ q WHERE q.COURSE_SEQ = c.COURSE_SEQ) AS quizCount
+      (SELECT COUNT(DISTINCT ql.quiz_list_seq) FROM quiz_list ql WHERE ql.course_seq = c.course_seq) AS quizCount
     FROM COURSE c
     JOIN USERS u ON c.USER_SEQ = u.USER_SEQ
     <where>
