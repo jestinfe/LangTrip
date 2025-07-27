@@ -377,7 +377,7 @@
     OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
 </select>
 
- <insert id="insertNoticePost" parameterType="CommunityPostDTO">
+ <insert id="insertNoticePost" parameterType="kr.co.sist.e_learning.community.dto.CommunityPostDTO">
     INSERT INTO community_post (
         post_id,
         user_id,
