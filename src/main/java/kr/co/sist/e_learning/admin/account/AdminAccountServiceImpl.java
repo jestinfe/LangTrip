@@ -18,7 +18,6 @@ public class AdminAccountServiceImpl implements AdminAccountService {
     @Autowired
     private AdminAccountDAO dao;
     
-
     @Autowired
     private EmailService emailService;
 
