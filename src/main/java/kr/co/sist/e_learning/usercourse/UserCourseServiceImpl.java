@@ -56,9 +56,9 @@ public class UserCourseServiceImpl implements UserCourseService{
     }
 
 	@Override
-	public int selectAlreadyEnrollCourse(String courseSeq) {
+	public int selectAlreadyEnrollCourse(Map<String, Object> paramMap) {
 		int result = 0;
-		result = ucm.selectAlreadyEnrollCourse(courseSeq);
+		result = ucm.selectAlreadyEnrollCourse(paramMap);
 		return result;
 	}
 

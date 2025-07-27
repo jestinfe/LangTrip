@@ -33,6 +33,32 @@ public class VideoServiceImpl implements VideoService{
 	public List<VideoDTO> searchVideoByCourseSeq(String courseSeq) {
 		return videoMapper.showVideoByCourseSeq(courseSeq);
 	}
+
+	@Override
+	public int getMaxVideoOrder(String courseSeq) {
+		Integer result = videoMapper.getMaxVideoOrder(courseSeq);
+		int videoOrderValue = (result != null ? result : 0)+1;
+		return videoOrderValue;
+	}
+
+	@Override
+	public VideoDTO getVideoBySeq(int videoSeq) {
+		VideoDTO vDTO = new VideoDTO();
+		vDTO= videoMapper.getVideoBySeq(videoSeq);
+		
+		return vDTO;
+	}
+
+	@Override
+	public void modifyVideo(VideoDTO vDTO) {
+		videoMapper.modifyVideo(vDTO);
+		
+	}
+
+	@Override
+	public void deleteVideo(int videoSeq) {
+		videoMapper.deleteVideo(videoSeq);
+	}
 	
 	
 	

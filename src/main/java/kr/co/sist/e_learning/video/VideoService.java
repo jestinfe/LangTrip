@@ -9,4 +9,12 @@ public interface VideoService {
 	public List<VideoDTO> searchVideo();
 	public VideoDTO showVideo(String videoSeq);
 	public List<VideoDTO> searchVideoByCourseSeq(String courseSeq);
+	
+	public int getMaxVideoOrder(String courseSeq);
+	
+public VideoDTO getVideoBySeq(int videoSeq);
+	
+	public void modifyVideo(VideoDTO vDTO);
+
+	public void deleteVideo(int videoSeq);
 }

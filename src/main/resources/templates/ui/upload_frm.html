@@ -3,7 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<<<<<<< HEAD
 <title>LangTrip | 내 강의실</title>
+=======
+<title>내 강의실</title>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+>>>>>>> gyumin
 <link rel="stylesheet"
 	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
 <link rel="stylesheet" th:href="@{/css/upload_lecture.css}">
@@ -27,16 +32,17 @@
 			<div class="left-panel" id="leftPanel">
 				<div class="side-panel">
 					<h5>🎯 강의 통계</h5>
-					<p class="mb-3">이번 강의의 통계</p>
+					<p class="mb-3">등록한 수강생 수</p>
 					<div
 						style="background: #ddf4ff; padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 2px solid #84d8ff;">
-						<div style="font-size: 14px; color: #1cb0f6; margin-bottom: 5px;">수강생 수</div>
+						<div style="font-size: 14px; color: #1cb0f6; margin-bottom: 5px;">수강생
+							수</div>
 						<div style="font-size: 24px; font-weight: 700; color: #1cb0f6;">
-								<span>👥<span th:text="${courseData.enrollCount}"></span></span>
+							<span>👥<span th:text="${courseData.enrollCount}"></span></span>
 						</div>
 					</div>
-					<!-- 					<button class="btn btn-outline-primary btn-sm w-100 mb-2">📈 -->
-					<!-- 						진도 보기</button> -->
+					<!-- 										<button class="btn btn-outline-primary btn-sm w-100 mb-2">📈 -->
+					<!-- 											진도 보기</button> -->
 				</div>
 
 				<div class="side-panel">
@@ -60,20 +66,29 @@
 							💡 <strong>TIP:</strong> 동영상을 시청한 후 바로 퀴즈를 풀어보세요!
 						</div>
 					</div>
-					<button class="btn btn-outline-primary btn-sm w-100">📚 학습
-						가이드</button>
+					<button class="btn btn-outline-primary btn-sm w-100"
+						data-bs-toggle="modal" data-bs-target="#learningWriteModal">💡
+						학습 가이드 작성</button>
+					<button class="btn btn-outline-primary btn-sm w-100"
+						data-bs-toggle="modal" data-bs-target="#learningViewModal" 
+						onclick="loadLearning()">💡
+						학습 가이드 보기</button>
 				</div>
 			</div>
 			<!-- 메인 콘텐츠 -->
+
 			<div class="main-content">
 				<div class="content-wrapper">
 					<div class="lecture-section">
 						<div class="lecture-header">
 							<a href=" /mypage?tab=instroductor_course" class="btn btn-success">← 뒤로가기</a>
 						</div>
+						<input type="hidden" id="courseSeq"
+							th:value="${courseData.courseSeq}" />
 						<div id="courseDataSector"></div>
 						<div class="course-info">
 							<h2 th:text="${courseData.courseTitle}"></h2>
+
 							<div class="course-meta">
 								<span th:text="|강의번호: ${courseData.courseSeq}|"> </span> <span
 									th:text="|등록일: ${#dates.format(courseData.uploadDate, 'yyyy년 M월 d일 HH:mm')}|"></span>
@@ -81,44 +96,36 @@
 							</div>
 						</div>
 						<div class="video-section">
-							<div th:if="${videoList.isEmpty() && quizList.isEmpty()}"
-								class="lecture-empty">
+							<div th:if="${combinedList.isEmpty()}" class="lecture-empty">
+								<!-- 							<div th:if="${videoList.isEmpty() && quizList.isEmpty()}" -->
 								등록된 강의가 없습니다.
 								<div style="margin-top: 20px; font-size: 14px; color: #999;">
 									새로운 강의를 등록해보세요!</div>
-								<!-- 								<div> -->
-								<!-- 									<h1 th:text="${courseData.courseTitle}"></h1> -->
-								<!-- 								</div> -->
 							</div>
+<<<<<<< HEAD
 
 							<div th:if="${videoList != null and !videoList.isEmpty()}">
 								<h3>등록된 강의 목록</h3>
+=======
+							<div th:if="${combinedList != null and !combinedList.isEmpty()}">
+								<h3>등록된 강의 영상 목록</h3>
+>>>>>>> gyumin
 								<div class="video-tree">
-									<div th:each="video, stat : ${videoList}" class="video-node"
-										th:classappend="inactive">
-
+									<div th:each="item, stat : ${combinedList}" class="video-node">
 										<button type="button" class="circle-button"
-											th:data-videoseq="${video.videoSeq}"
-											th:data-courseseq="${video.courseSeq}"
-											onclick="goToVideo(this)">
+											th:data-videoseq="${item.type == 'video' ? item.videoSeq : ''}"
+											th:data-quizListseq="${item.type == 'quiz' ? item.quizListSeq : ''}"
+											th:data-courseseq="${item.courseSeq}"
+											onclick="goToVideoOrQuiz(this)">
 											<i class="fa-solid"
-												th:classappend="${video.type == 'video' ? 'fa-star' : 'fa-book'}"></i>
+												th:classappend="${item.type == 'video' ? 'fa-star' : 'fa-book'}"></i>
 										</button>
+										<!-- 						                th:data-quizListseq="${item.type == 'quiz' ? item.quizListSeq : ''}" -->
 									</div>
 								</div>
 							</div>
-							<div th:if="${quizList != null and !quizList.isEmpty()}">
-								<div class="video-tree">
-									<div th:each="quiz : ${quizList}" class="video-node inactive">
-										<button type="button" class="start-quiz-button"
-											th:id="|quiz-btn-${quiz.quizListSeq}|"
-											th:data-quiz-id="${quiz.quizListSeq}"
-											th:data-course-id="${courseData.courseSeq}">
-											<i class="fa-solid fa-book"></i>
-										</button>
-									</div>
-								</div>
-							</div>
+
+
 
 
 
@@ -205,39 +212,33 @@
 
 	<script>
 		
-		 // 모달 "퀴즈 수정" 버튼
-		  const modifyButtons = document.querySelectorAll(".start-quiz-button");
-		  modifyButtons.forEach(btn => {
-		    btn.addEventListener("click", function () {
-		      const quizListSeq = this.dataset.quizId;
-		      const courseSeq = this.dataset.courseId;
-		      modifyQuiz(quizListSeq, courseSeq);
-		    });
-		  });
-		  
-		//퀴즈 수정 화면으로 이동
-		  function modifyQuiz(quizListSeq, courseSeq) {
-			  location.href = "/quiz/modifyQuizForm/" + quizListSeq + "?courseSeq=" + courseSeq;
-		}
-// 		//퀴즈
-// 		const startButtons = document.querySelectorAll(".start-quiz-button");
-// 		  startButtons.forEach(btn => {
-// 		    btn.addEventListener("click", function () {
-// 		      const quizListSeq = this.dataset.quizId;
-// 		      startQuiz(quizListSeq);
-// 		    });
-// 		  });
-// 		//퀴즈 시작시 학습 화면으로 이동
-// 		  function startQuiz(quizListSeq) {
-// 		    location.href = "/quiz/playQuiz/" + quizListSeq;
-// 		  }
 		
-		function goToVideo(button) {
-			  const videoSeq = button.dataset.videoseq;
-			  const courseSeq = button.dataset.courseseq;
-			  const from = "uploader"; //강의실 주인 기준
-			  location.href = "/video/watch?videoSeq=" + videoSeq + "&courseSeq=" + courseSeq +"&from=" + from;
-			}
+// 		function goToVideo(button) {
+// 			  const videoSeq = button.dataset.videoseq;
+// 			  const courseSeq = button.dataset.courseseq;
+// 			  const from = "uploader"; //강의실 주인 기준
+// 			  location.href = "/video/watch?videoSeq=" + videoSeq + "&courseSeq=" + courseSeq +"&from=" + from;
+// 			}
+	function goToVideoOrQuiz(button) {
+    const videoSeq = button.dataset.videoseq;  // videoSeq 값
+    const quizSeq = button.dataset.quizlistseq;  // quizSeq 값
+    const courseSeq = button.dataset.courseseq;
+
+    console.log("videoSeq : " + videoSeq);
+    console.log("quizSeq : " + quizSeq);
+
+    if (quizSeq) {
+        // 퀴즈 수정 페이지로 이동
+        console.log("퀴즈 수정 페이지로 이동");
+        location.href = "/quiz/modifyQuizForm/" + quizSeq + "?courseSeq=" + courseSeq;
+    } else if (videoSeq) {
+        // 영상 페이지로 이동
+        console.log("영상 페이지로 이동");
+//         location.href = "/video/watch?videoSeq=" + videoSeq + "&courseSeq=" + courseSeq;
+        location.href ="/upload/modify_video_form?videoSeq="+videoSeq;
+    }
+}
+
 		
 		
 		
@@ -316,28 +317,7 @@
             }
         });
 
-        // 사이드바 링크 활성화
-        document.querySelectorAll('.sidebar a').forEach(link => {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
-                document.querySelectorAll('.sidebar a').forEach(a => a.classList.remove('active'));
-                this.classList.add('active');
-                
-                // 모바일에서 메뉴 클릭 시 사이드바 닫기
-                if (window.innerWidth <= 768) {
-                    toggleMobileMenu();
-                }
-            });
-        });
-
-        // 윈도우 리사이즈 시 사이드바 상태 초기화
-        window.addEventListener('resize', function() {
-            if (window.innerWidth > 768) {
-                document.getElementById('sidebar').classList.remove('active');
-                document.querySelector('.mobile-overlay').classList.remove('active');
-            }
-        });
-
+   
         // 페이지 로드 시 애니메이션
         document.addEventListener('DOMContentLoaded', function() {
             const panels = document.querySelectorAll('.side-panel');
@@ -377,5 +357,126 @@
 			</div>
 		</div>
 	</div>
+
+	<div id="learningWriteModal" class="modal fade" tabindex="-1">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content p-4">
+				<h5 class="mb-3">💡 학습 가이드 작성</h5>
+				<textarea id="learningContent" class="form-control" rows="6"
+					placeholder="학습 가이드를 입력하세요..."></textarea>
+				<div class="text-end mt-3">
+					<button class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+					<button class="btn btn-primary" onclick="saveLearning()">저장</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- 공지 보기 모달 -->
+	<div id="learningViewModal" class="modal fade" tabindex="-1">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content p-4">
+				<h5 class="mb-3">💡 학습 가이드 보기</h5>
+				<div id="learningDisplay" style="white-space: pre-line;"></div>
+				<div class="text-end mt-3">
+					<button class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<script>
+	function saveNotice() {
+	    const noticeContent = document.getElementById("noticeContent").value.trim();
+	    const courseSeq = document.getElementById("courseSeq").value;  // hidden input에서 courseSeq 가져오기
+
+	    if (!noticeContent) {
+	        alert("공지 내용을 입력하세요!");
+	        return;
+	    }
+
+	    const courseNotice = {
+	        courseSeq: courseSeq,   // courseSeq 추가
+	        content: noticeContent  // 공지 내용
+	    };
+
+	    // 서버로 공지 내용과 courseSeq를 보내기
+	    axios.post('/api/notice/save', courseNotice)
+	        .then(response => {
+	            // 저장 성공 후 알림
+	            console.log(courseNotice);
+	            alert("공지 저장 성공");
+	            document.getElementById('noticeContent').value = ''; // 내용 초기화
+	            $('#noticeWriteModal').modal('hide'); // 모달 닫기
+	        })
+	        .catch(error => {
+	        	 console.error('오류:', error);
+// 	            alert("공지 저장 실패");
+	        });
+	}
+
+	// 공지 보기 함수
+function loadNotice() {
+	 const courseSeq = document.getElementById("courseSeq").value;
+
+    // courseSeq를 쿼리 파라미터로 서버에 전달
+    axios.get('/api/notice/latest', { params: { courseSeq: courseSeq } })
+        .then(response => {
+            const noticeContent = response.data.content; // 서버에서 받은 공지 내용
+            document.getElementById('noticeDisplay').textContent = noticeContent; // 모달에 표시
+        })
+        .catch(error => {
+            console.error(error);
+            alert("공지 불러오기 실패");
+        });
+}
+	</script>
+	<script>
+	function saveLearning() {
+	    const learningContent = document.getElementById("learningContent").value.trim();
+	    const courseSeq = document.getElementById("courseSeq").value;  // hidden input에서 courseSeq 가져오기
+
+	    if (!learningContent) {
+	        alert("학습가이드 내용을 입력하세요!");
+	        return;
+	    }
+
+	    const courseLearning = {
+	        courseSeq: courseSeq,   // courseSeq 추가
+	        content: learningContent  // 공지 내용
+	    };
+
+	    // 서버로 공지 내용과 courseSeq를 보내기
+	    axios.post('/api/notice/saveLearning', courseLearning)
+	        .then(response => {
+	            // 저장 성공 후 알림
+	            console.log(courseLearning);
+	            alert("학습가이드 저장 성공");
+	            document.getElementById('learningContent').value = ''; // 내용 초기화
+	            $('#learningWriteModal').modal('hide'); // 모달 닫기
+	        })
+	        .catch(error => {
+	        	 console.error('오류:', error);
+// 	            alert("공지 저장 실패");
+	        });
+	}
+
+	// 공지 보기 함수
+function loadLearning() {
+	 const courseSeq = document.getElementById("courseSeq").value;
+
+    // courseSeq를 쿼리 파라미터로 서버에 전달
+    axios.get('/api/notice/latestLearning', { params: { courseSeq: courseSeq } })
+        .then(response => {
+            const learningContent = response.data.content; // 서버에서 받은 공지 내용
+            document.getElementById('learningDisplay').textContent = learningContent; // 모달에 표시
+        })
+        .catch(error => {
+            console.error(error);
+            alert("공지 불러오기 실패");
+        });
+}
+	</script>
+	
 </body>
 </html>

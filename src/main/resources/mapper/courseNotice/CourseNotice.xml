@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+  <mapper
+   namespace="kr.co.sist.e_learning.course.NoticeMapper"> 
+   <insert id="saveNotice" parameterType="CourseNoticeDTO">
+    INSERT INTO course_notice (notice_seq, course_seq, content, reg_date, type)
+    VALUES (notice_seq.NEXTVAL, #{courseSeq}, #{content}, SYSDATE, #{type})
+</insert>
+
+<select id="getLatestNotice" resultType="CourseNoticeDTO" parameterType="String">
+    SELECT content
+    FROM course_notice
+    WHERE course_seq = #{courseSeq} AND type = 'NOTICE'
+    ORDER BY reg_date DESC
+    FETCH FIRST 1 ROWS ONLY
+</select>
+
+<select id="getLatestLearning" resultType="CourseNoticeDTO" parameterType="String">
+    SELECT content
+    FROM course_notice
+    WHERE course_seq = #{courseSeq} AND type = 'LEARNING'
+    ORDER BY reg_date DESC
+    FETCH FIRST 1 ROWS ONLY
+</select>
+
+    
+    
+  </mapper>
