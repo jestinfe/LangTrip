@@ -9,6 +9,15 @@ body {
     min-height: 100vh;
 }
 
+dl, ol, ul {
+    margin-top: 0;
+    margin-bottom: 0rem;
+}
+
+ol, ul {
+    padding-left: 0rem;
+}
+
 /* 게시판 제목 */
 .board-title {
     font-size: 32px;
