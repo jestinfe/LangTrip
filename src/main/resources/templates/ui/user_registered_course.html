@@ -4,6 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>LangTrip | 강의실</title>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Bootstrap JS 로드 -->
+<script
+	src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <link rel="stylesheet"
 	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
 <link rel="stylesheet" th:href="@{/css/user_registered_course.css}">
@@ -32,16 +37,53 @@
 
 	<div class="container-fluid">
 		<div class="row">
-			<!-- 사이드바 -->
-			<!-- 			<div class="sidebar" id="sidebar"> -->
-			<!-- 				<a href="#" class="active">📚 학습</a> <a href="#">🧠 퀴즈</a> <a -->
-			<!-- 					href="#">👤 마이페이지</a> <a href="#">📂 더 보기</a> <a href="#">🏫 내 -->
-			<!-- 					강의실</a> -->
-			<!-- 			</div> -->
 
-			<!-- 메인 콘텐츠 -->
+
+			<div class="left-panel" id="leftPanel">
+				<div class="side-panel">
+					<h5>🎯 강의 통계</h5>
+					<p class="mb-3">이번 강의의 통계</p>
+					<div
+						style="background: #ddf4ff; padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 2px solid #84d8ff;">
+						<div style="font-size: 14px; color: #1cb0f6; margin-bottom: 5px;">수강생
+							수</div>
+						<div style="font-size: 24px; font-weight: 700; color: #1cb0f6;">
+							<span>👥<span th:text="${courseData.enrollCount}"></span></span>
+						</div>
+					</div>
+					<!-- 					<button class="btn btn-outline-primary btn-sm w-100 mb-2">📈 -->
+					<!-- 						진도 보기</button> -->
+				</div>
+
+				<div class="side-panel">
+					<h5>📋 학습 공지</h5>
+					<p class="mb-3">강사님의 공지 입니다.</p>
+
+
+					<button class="btn btn-outline-primary btn-sm w-100 mb-2"
+						data-bs-toggle="modal" data-bs-target="#noticeViewModal"
+						onclick="loadNotice()">📖 공지 보기</button>
+				</div>
+
+				<div class="side-panel">
+					<h5>💡 학습 도움말</h5>
+					<p class="mb-3">효과적인 학습 방법을 알아보세요.</p>
+					<div
+						style="background: #f0f9ff; padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 2px solid #bae6fd;">
+						<div style="font-size: 12px; color: #0369a1; line-height: 1.4;">
+							💡 <strong>TIP:</strong> 동영상을 시청한 후 바로 퀴즈를 풀어보세요!
+						</div>
+					</div>
+					
+					<button class="btn btn-outline-primary btn-sm w-100"
+						data-bs-toggle="modal" data-bs-target="#learningViewModal" 
+						onclick="loadLearning()">💡
+						학습 가이드 보기</button>
+				</div>
+			</div>
 			<div class="main-content">
-				<input type="hidden" id="userSeq" th:value="${userSeq}" />
+				<input type="hidden" id="userSeq" th:value="${userSeq}" /> <input
+					type="hidden" id="courseSeq" th:value="${courseData.courseSeq}" />
 				<div class="content-wrapper">
 					<div class="lecture-section">
 						<div class="lecture-header">
@@ -57,43 +99,34 @@
 							</div>
 						</div>
 						<div class="video-section">
-							<div th:if="${videoList.isEmpty()}" class="lecture-empty">
+							<div th:if="${combinedList.isEmpty()}" class="lecture-empty">
+								<!-- 							<div th:if="${videoList.isEmpty() && quizList.isEmpty()}" -->
 								등록된 강의가 없습니다.
 								<div style="margin-top: 20px; font-size: 14px; color: #999;">
-									강사님이 강의를 아직 등록하지 않았습니다.</div>
-								<!-- 								<div> -->
-								<!-- 									<h1 th:text="${courseData.courseTitle}"></h1> -->
-								<!-- 								</div> -->
+									새로운 강의를 등록해보세요!</div>
 							</div>
 
-							<div th:if="${videoList != null and !videoList.isEmpty()}">
-								<h3>등록된 강의 목록</h3>
+							<div th:if="${combinedList != null and !combinedList.isEmpty()}">
+								<h3>등록된 강의 영상 목록</h3>
 								<div class="video-tree">
-									<div th:each="video, stat : ${videoList}" class="video-node"
-										th:classappend="inactive">
-
+									<div th:each="item, stat : ${combinedList}" class="video-node">
 										<button type="button" class="circle-button"
-											th:data-videoseq="${video.videoSeq}"
-											th:data-courseseq="${video.courseSeq}"
-											onclick="goToVideo(this)">
+											th:data-videoseq="${item.type == 'video' ? item.videoSeq : ''}"
+											th:data-quizListseq="${item.type == 'quiz' ? item.quizListSeq : ''}"
+											th:data-courseseq="${item.courseSeq}"
+											onclick="goToVideoOrQuiz(this)">
 											<i class="fa-solid"
-												th:classappend="${video.type == 'video' ? 'fa-star' : 'fa-book'}"></i>
+												th:classappend="${item.type == 'video' ? 'fa-star' : 'fa-book'}"></i>
 										</button>
+										<!-- 						                th:data-quizListseq="${item.type == 'quiz' ? item.quizListSeq : ''}" -->
 									</div>
 								</div>
 							</div>
-							<div th:if="${quizList != null and !quizList.isEmpty()}">
-								<div class="video-tree">
-									<div th:each="quiz : ${quizList}" class="video-node inactive">
-										<button type="button" class="start-quiz-button"
-											th:id="|quiz-btn-${quiz.quizListSeq}|"
-											th:data-quiz-id="${quiz.quizListSeq}"
-											th:data-course-id="${courseData.courseSeq}">
-											<i class="fa-solid fa-book"></i>
-										</button>
-									</div>
-								</div>
-							</div>
+
+
+
+
+
 						</div>
 
 						<!-- 우측 설명 패널 -->
@@ -158,7 +191,25 @@
 
 
 	<script>
-		function goToVideo(button) {
+	function goToVideoOrQuiz(button){
+		const videoSeq = button.dataset.videoseq;  // videoSeq 값
+	    const quizSeq = button.dataset.quizlistseq;  // quizSeq 값
+	    const courseSeq = button.dataset.courseseq;
+
+	    console.log("videoSeq : " + videoSeq);
+	    console.log("quizSeq : " + quizSeq);
+
+	    if (quizSeq) {
+	        // 퀴즈 수정 페이지로 이동
+	        console.log("퀴즈 수정 페이지로 이동");
+	        location.href = "/quiz/playQuiz/" + quizSeq+"?courseSeq=" + courseSeq;
+	    } else if (videoSeq) {
+	        // 영상 페이지로 이동
+	        console.log("영상 페이지로 이동");
+	        location.href = "/video/watch?videoSeq=" + videoSeq + "&courseSeq=" + courseSeq;
+	    }
+	}
+	function goToVideo(button) {
 			  const videoSeq = button.dataset.videoseq;
 			  const courseSeq = button.dataset.courseseq;
 			  const from = "user1"; // 일반 유저
@@ -290,6 +341,30 @@
         
         
     </script>
+	<div id="noticeViewModal" class="modal fade" tabindex="-1">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content p-4">
+				<h5 class="mb-3">📖 등록된 공지</h5>
+				<div id="noticeDisplay" style="white-space: pre-line;"></div>
+				<div class="text-end mt-3">
+					<!-- 					<button class="btn btn-secondary" data-bs-dismiss="modal">닫기</button> -->
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<div id="learningViewModal" class="modal fade" tabindex="-1">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content p-4">
+				<h5 class="mb-3">💡 등록된 학습가이드</h5>
+				<div id="learningDisplay" style="white-space: pre-line;"></div>
+				<div class="text-end mt-3">
+					<!-- 					<button class="btn btn-secondary" data-bs-dismiss="modal">닫기</button> -->
+				</div>
+			</div>
+		</div>
+	</div>
+	
 	<script>
     document.addEventListener("DOMContentLoaded", () => {
     	  const userSeq = document.getElementById("userSeq").value;
@@ -322,26 +397,70 @@
     	  });
     	  
     	  //퀴즈 버튼 완료 처리
-    	  const quizButtons = document.querySelectorAll(".start-quiz-button");
-    	  
+    	  const quizButtons = document.querySelectorAll(".circle-button");
+
     	  quizButtons.forEach(button => {
-    		  const quizListSeq = button.dataset.quizId;
-		     // const quizCourseSeq = button.dataset.courseId;
-		      
-		      axios.get("/quiz/status", {
-		    	params: { userSeq, quizListSeq }
-		      	}).then(res => {
-		    	  const quizStatus = res.data.status;
-		    	  if(quizStatus == "complete") {
-		    		  button.classList.add("completed");
-		    	  }//end if
-		     	 }).catch(err => {
-		          console.error("퀴즈 상태 확인 실패", err);
-		         });
-    	  })//forEach
+    	      const quizListSeq = button.dataset.quizlistseq; 
+    	      const courseSeq = button.dataset.courseseq;
+
+    	      if (!quizListSeq) return; // 퀴즈가 아닌 버튼은 무시
+    	      console.log("userSeq:", userSeq, "quizListSeq:", quizListSeq);
+    	      
+    	      axios.get("/quiz/status", {
+    	          params: { userSeq, quizListSeq }
+    	     
+    	      }).then(res => {
+    	          const quizStatus = res.data.status;
+    	          console.log("전체 응답 확인:", res.data);
+    	          console.log(quizStatus);
+    	          if (quizStatus === "complete") {
+    	              button.classList.add("quiz-completed");
+    	          }
+    	      }).catch(err => {
+    	          console.error("퀴즈 상태 확인 실패", err);
+    	      });
+    	  });
     	  
     	});
+    
+    
+    function loadNotice() {
+        const courseSeq = document.getElementById("courseSeq").value;
 
+        // courseSeq를 쿼리 파라미터로 서버에 전달
+        axios.get('/api/notice/latest', { params: { courseSeq: courseSeq } })
+            .then(response => {
+            	
+                const noticeContent = response.data.content; // 서버에서 받은 공지 내용
+                document.getElementById('noticeDisplay').textContent = noticeContent; // 모달에 표시
+
+//                 // Bootstrap 5 모달 수동으로 열기
+                const noticeViewModal = new bootstrap.Modal(document.getElementById('noticeViewModal'));
+                noticeViewModal.show();  // 모달 열기
+            })
+            .catch(error => {
+                console.error(error);
+                alert("공지 불러오기 실패");
+            });
+    }
+    function loadLearning() {
+   	 const courseSeq = document.getElementById("courseSeq").value;
+
+       // courseSeq를 쿼리 파라미터로 서버에 전달
+       axios.get('/api/notice/latestLearning', { params: { courseSeq: courseSeq } })
+           .then(response => {
+               const learningContent = response.data.content; // 서버에서 받은 공지 내용
+               document.getElementById('learningDisplay').textContent = learningContent; // 모달에 표시
+               const learningViewModal = new bootstrap.Modal(document.getElementById('learningViewModal'));
+               learningViewModal.show();  // 모달 열기
+           
+           })
+           .catch(error => {
+               console.error(error);
+               alert("공지 불러오기 실패");
+           });
+   }
+    
 
 </script>
 
