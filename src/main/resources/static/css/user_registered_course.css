@@ -1,4 +1,3 @@
-@charset "UTF-8";
 * {
     margin: 0;
     padding: 0;
@@ -16,17 +15,13 @@ body {
     padding: 0;
 }
 
-
 .row {
     margin: 0;
 }
 
-
-/* 메인 콘텐츠 */
+/* 메인 콘텐츠 레이아웃 */
 .main-content {
-    margin-left: 250px;
     min-height: 100vh;
-    max-width: calc(100vw - 250px);
     width: 100%;
     overflow-x: hidden;
 }
@@ -36,12 +31,29 @@ body {
     min-height: 100vh;
 }
 
+/* 왼쪽 사이드 패널 */
+.left-panel {
+    width: 350px;
+    padding: 30px 25px;
+    background: white;
+    border-right: 2px solid #e5e5e5;
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    z-index: 999;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+}
+
 /* 듀오링고 스타일 메인 레이아웃 */
 .lecture-section {
     flex: 1;
     padding: 30px 40px;
     background: #f0f4f8;
-    max-width: calc(100% - 400px); /* 오른쪽 패널 공간 확보 */
+    margin-left: 350px; /* 왼쪽 패널 공간 */
+    margin-right: 350px; /* 오른쪽 패널 공간 */
+    max-width: calc(100% - 700px); /* 양쪽 패널 공간 확보 */
 }
 
 .lecture-header {
@@ -153,18 +165,6 @@ body {
     padding: 0 20px;
 }
 
-/* .video-tree::before { */
-/*     content: ''; */
-/*     position: absolute; */
-/*     top: 30px; */
-/*     bottom: 30px; */
-/*     left: 50%; */
-/*     width: 4px; */
-/*     background: linear-gradient(to bottom, #e5e5e5 0%, #e5e5e5 100%); */
-/*     transform: translateX(-50%); */
-/*     border-radius: 2px; */
-/* } */
-
 .video-node {
     position: relative;
     z-index: 2;
@@ -196,6 +196,7 @@ body {
     background: white;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
+
 .start-quiz-button {
     width: 80px;
     height: 80px;
@@ -227,7 +228,6 @@ body {
     transition: all 0.3s ease;
 }
 
-
 .circle-button::before {
     content: '';
     position: absolute;
@@ -244,45 +244,20 @@ body {
     transition: all 0.3s ease;
 }
 
-   /* 완료된 강의 (파란 배경, 흰 아이콘) */
-.circle-button.completed {
-  background: linear-gradient(135deg, #1cb0f6, #1899d6);
+.video-node.active .circle-button {
+    background: linear-gradient(135deg, #1cb0f6, #1899d6);
+    border-color: #1899d6;
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(88, 204, 2, 0.3);
 }
 
-.circle-button.completed i {
-  color: white !important;
+.video-node.active .circle-button::before {
+    border-color: #1cb0f6;
+    animation: pulse 2s infinite;
 }
 
-/* 미완료된 강의 (회색 아이콘) */
-.circle-button:not(.completed) i {
-  color: gray;
-}
-
-/* .video-node.active .circle-button.completed { */
-/*     background: linear-gradient(135deg, #1cb0f6, #1899d6) !important; */
-/*     border-color: #1899d6; */
-/*     transform: scale(1.1); */
-/*     box-shadow: 0 6px 20px rgba(88, 204, 2, 0.3); */
-/* } */
-
-/* .video-node.active .circle-button.completed::before { */
-/*     border-color: #1cb0f6; */
-/*     animation: pulse 2s infinite; */
-/* } */
-
-/* .video-node.active .circle-button.completed i { */
-/*     color: white; */
-/* } */
-
-.video-node.active .circle-button.completed,
-.video-node.inactive .circle-button.completed {
-  background: linear-gradient(135deg, #1cb0f6, #1899d6) !important;
-  border-color: #1899d6 !important;
-}
-
-.video-node.active .circle-button.completed i,
-.video-node.inactive .circle-button.completed i {
-  color: white !important;
+.video-node.active .circle-button i {
+    color: white;
 }
 
 .video-node.inactive .circle-button {
@@ -319,7 +294,7 @@ body {
 
 /* 듀오링고 스타일 우측 패널 */
 .right-panel {
-    width: 400px;
+    width: 350px;
     padding: 30px 25px;
     background: white;
     border-left: 2px solid #e5e5e5;
@@ -657,19 +632,33 @@ body {
 }
 
 /* 모바일 반응형 */
-@media (max-width: 1200px) {
-    .main-content {
-        margin-left: 0;
-        max-width: 100vw;
-    }
-    
-    .content-wrapper {
-        flex-direction: column;
+@media (max-width: 1400px) {
+    .left-panel, .right-panel {
+        width: 300px;
     }
     
     .lecture-section {
+        margin-left: 300px;
+        margin-right: 300px;
+        max-width: calc(100% - 600px);
+    }
+}
+
+@media (max-width: 1200px) {
+    .lecture-section {
+        margin-left: 0;
+        margin-right: 0;
         max-width: 100%;
         padding: 80px 20px 20px;
+    }
+    
+    .left-panel {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+    }
+    
+    .left-panel.active {
+        transform: translateX(0);
     }
     
     .right-panel {
@@ -682,8 +671,6 @@ body {
         border-top: 2px solid #e5e5e5;
         box-shadow: none;
     }
-
- 
 
     .mobile-menu-toggle {
         display: block;
@@ -725,7 +712,7 @@ body {
         padding: 80px 15px 20px;
     }
 
-    .right-panel {
+    .left-panel, .right-panel {
         padding: 20px 15px;
     }
 
@@ -764,10 +751,6 @@ body {
         flex-direction: column;
         gap: 10px;
     }
-
-    
-    
-    
 }
 
 /* 애니메이션 */

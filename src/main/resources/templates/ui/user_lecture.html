@@ -6,10 +6,10 @@
 <title>내 강의실</title>
 <link rel="stylesheet"
 	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
-<link rel="stylesheet" th:href="@{/css/upload_lecture.css}">
+<link rel="stylesheet" th:href="@{/css/user_registered_course.css}">
 <link rel="stylesheet"
 	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-	
+
 </head>
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <body>
@@ -23,138 +23,214 @@
 	<div class="container-fluid">
 		<div class="row">
 			<!-- 사이드바 -->
-<!-- 			<div class="sidebar" id="sidebar"> -->
-<!-- 				<a href="#" class="active">📚 학습</a> <a href="#">🧠 퀴즈</a> <a -->
-<!-- 					href="#">👤 마이페이지</a> <a href="#">📂 더 보기</a> <a href="#">🏫 내 -->
-<!-- 					강의실</a> -->
-<!-- 			</div> -->
+			<!-- 			<div class="sidebar" id="sidebar"> -->
+			<!-- 				<a href="#" class="active">📚 학습</a> <a href="#">🧠 퀴즈</a> <a -->
+			<!-- 					href="#">👤 마이페이지</a> <a href="#">📂 더 보기</a> <a href="#">🏫 내 -->
+			<!-- 					강의실</a> -->
+			<!-- 			</div> -->
 
 			<!-- 메인 콘텐츠 -->
 			<div class="main-content">
+				<input type="hidden" id="userSeq" th:value="${userSeq}" />
 				<div class="content-wrapper">
 					<div class="lecture-section">
 						<div class="lecture-header">
-							<a href="javascript:history.back()" class="btn btn-success">← 내 강의실</a>
+							<a href="javascript:history.back()" class="btn btn-success">←
+								내 강의실</a>
 						</div>
-							<div id="courseDataSector"></div>
+						<div id="courseDataSector"></div>
 						<div class="course-info">
 							<h2 th:text="${courseData.courseTitle}"></h2>
 							<div class="course-meta">
-								<span th:text="|강의번호: ${courseData.courseSeq}|"> </span>
-								<span th:text="|등록일: ${#dates.format(courseData.uploadDate, 'yyyy년 M월 d일 HH:mm')}|"></span>
-								<span>강의수: 5개</span>
+								<span th:text="|강의번호: ${courseData.courseSeq}|"> </span> <span
+									th:text="|등록일: ${#dates.format(courseData.uploadDate, 'yyyy년 M월 d일 HH:mm')}|"></span>
+								<span th:text="|컨텐츠 수 : ${courseData.contentCount}|"></span>
 							</div>
 						</div>
 						<div class="video-section">
-							<div th:if="${videoList.isEmpty()}" class="lecture-empty">
+							<div th:if="${combinedList.isEmpty()}" class="lecture-empty">
+								<!-- 							<div th:if="${videoList.isEmpty() && quizList.isEmpty()}" -->
 								등록된 강의가 없습니다.
 								<div style="margin-top: 20px; font-size: 14px; color: #999;">
-									강사님이 강의를 아직 등록하지 않았습니다.</div>
-<!-- 								<div> -->
-<!-- 									<h1 th:text="${courseData.courseTitle}"></h1> -->
-<!-- 								</div> -->
+									새로운 강의를 등록해보세요!</div>
 							</div>
-							
-							<div th:if="${videoList != null and !videoList.isEmpty()}">
+							<div th:if="${combinedList != null and !combinedList.isEmpty()}">
 								<h3>등록된 강의 영상 목록</h3>
 								<div class="video-tree">
-									<div th:each="video, stat : ${videoList}" class="video-node"
-										th:classappend="inactive">
-
+									<div th:each="item, stat : ${combinedList}" class="video-node">
 										<button type="button" class="circle-button"
-											th:data-videoseq="${video.videoSeq}"
-											th:data-courseseq="${video.courseSeq}" onclick="goToVideo(this)">
+											th:data-videoseq="${item.type == 'video' ? item.videoSeq : ''}"
+											th:data-quizListseq="${item.type == 'quiz' ? item.quizListSeq : ''}"
+											th:data-courseseq="${item.courseSeq}"
+											onclick="goToVideoOrQuiz(this)">
 											<i class="fa-solid"
-												th:classappend="${video.type == 'video' ? 'fa-star' : 'fa-book'}"></i>
+												th:classappend="${item.type == 'video' ? 'fa-star' : 'fa-book'}"></i>
 										</button>
+										<!-- 						                th:data-quizListseq="${item.type == 'quiz' ? item.quizListSeq : ''}" -->
 									</div>
 								</div>
 							</div>
-							<div th:if="${quizList != null and !quizList.isEmpty()}">
-							  <div class="video-tree">
-							    <div th:each="quiz : ${quizList}" class="video-node inactive">
-							      <button type="button" class="start-quiz-button"
-							             th:id="|quiz-btn-${quiz.quizListSeq}|"
-           								th:data-quiz-id="${quiz.quizListSeq}"
-           								th:data-course-id="${courseData.courseSeq}">
-							        <i class="fa-solid fa-book"></i>
-							      </button>
-							    </div>
-							  </div>
-							</div>
+
+
+							<!-- 							<div th:if="${videoList != null and !videoList.isEmpty()}"> -->
+							<!-- 								<h3>등록된 강의 영상 목록</h3> -->
+							<!-- 								<div class="video-tree"> -->
+							<!-- 									<div th:each="video, stat : ${videoList}" class="video-node" -->
+							<!-- 										th:classappend="inactive"> -->
+
+							<!-- 										<button type="button" class="circle-button" -->
+							<!-- 											th:data-videoseq="${video.videoSeq}" -->
+							<!-- 											th:data-courseseq="${video.courseSeq}" -->
+							<!-- 											onclick="goToVideo(this)"> -->
+							<!-- 											<i class="fa-solid" -->
+							<!-- 												th:classappend="${video.type == 'video' ? 'fa-star' : 'fa-book'}"></i> -->
+							<!-- 										</button> -->
+							<!-- 									</div> -->
+							<!-- 								</div> -->
+							<!-- 							</div> -->
+							<!-- 							<div th:if="${quizList != null and !quizList.isEmpty()}"> -->
+							<!-- 								<div class="video-tree"> -->
+							<!-- 									<div th:each="quiz : ${quizList}" class="video-node inactive"> -->
+							<!-- 										<button type="button" class="start-quiz-button" -->
+							<!-- 											th:id="|quiz-btn-${quiz.quizListSeq}|" -->
+							<!-- 											th:data-quiz-id="${quiz.quizListSeq}" -->
+							<!-- 											th:data-course-id="${courseData.courseSeq}"> -->
+							<!-- 											<i class="fa-solid fa-book"></i> -->
+							<!-- 										</button> -->
+							<!-- 									</div> -->
+							<!-- 								</div> -->
+							<!-- 							</div> -->
+
+
+
 						</div>
+						<!-- 						<div class="video-section"> -->
+						<!-- 							<div th:if="${videoList.isEmpty()}" class="lecture-empty"> -->
+						<!-- 								등록된 강의가 없습니다. -->
+						<!-- 								<div style="margin-top: 20px; font-size: 14px; color: #999;"> -->
+						<!-- 									강사님이 강의를 아직 등록하지 않았습니다.</div> -->
+						<!-- 																<div> -->
+						<!-- 																	<h1 th:text="${courseData.courseTitle}"></h1> -->
+						<!-- 																</div> -->
+						<!-- 							</div> -->
+
+						<!-- 							<div th:if="${videoList != null and !videoList.isEmpty()}"> -->
+						<!-- 								<h3>등록된 강의 영상 목록</h3> -->
+						<!-- 								<div class="video-tree"> -->
+						<!-- 									<div th:each="video, stat : ${videoList}" class="video-node" -->
+						<!-- 										th:classappend="inactive"> -->
+
+						<!-- 										<button type="button" class="circle-button" -->
+						<!-- 											th:data-videoseq="${video.videoSeq}" -->
+						<!-- 											th:data-courseseq="${video.courseSeq}" -->
+						<!-- 											onclick="goToVideo(this)"> -->
+						<!-- 											<i class="fa-solid" -->
+						<!-- 												th:classappend="${video.type == 'video' ? 'fa-star' : 'fa-book'}"></i> -->
+						<!-- 										</button> -->
+						<!-- 									</div> -->
+						<!-- 								</div> -->
+						<!-- 							</div> -->
+						<!-- 							<div th:if="${quizList != null and !quizList.isEmpty()}"> -->
+						<!-- 								<div class="video-tree"> -->
+						<!-- 									<div th:each="quiz : ${quizList}" class="video-node inactive"> -->
+						<!-- 										<button type="button" class="start-quiz-button" -->
+						<!-- 											th:id="|quiz-btn-${quiz.quizListSeq}|" -->
+						<!-- 											th:data-quiz-id="${quiz.quizListSeq}" -->
+						<!-- 											th:data-course-id="${courseData.courseSeq}"> -->
+						<!-- 											<i class="fa-solid fa-book"></i> -->
+						<!-- 										</button> -->
+						<!-- 									</div> -->
+						<!-- 								</div> -->
+						<!-- 							</div> -->
+						<!-- 						</div> -->
 
 						<!-- 우측 설명 패널 -->
-					<div class="right-panel">
-						<div class="side-panel">
-							<h5>📖 강의 설명</h5>
-							<a 
-  								 th:text="${courseData.introduction}"></a>
-							
+						<div class="right-panel">
+							<div class="side-panel">
+								<h5>📖 강의 설명</h5>
+								<a th:text="${courseData.introduction}"></a>
+
+							</div>
+
+							<div class="side-panel">
+								<h5>📊 강의 수강하기</h5>
+								<p class="mb-3">강의를 수강해보세요.</p>
+								<a class="btn btn-outline-primary btn-sm w-100 mb-2"
+									th:onclick="goToRegisterCourse([[${courseData.courseSeq}]])">
+									수강하기</a>
+							</div>
+
+							<div class="side-panel">
+								<h5>💖 후원하기</h5>
+								<p class="mb-3">강사님께 후원해보세요.</p>
+								<a class="btn btn-outline-primary btn-sm w-100 mb-2"
+									th:onclick="goToDonate([[${courseData.courseSeq}]])"> 후원하기</a>
+							</div>
+
+							<!-- 						<div class="side-panel"> -->
+							<!-- 							<h5>⚙️ 강의 설정</h5> -->
+							<!-- 							<p class="mb-3">강의 설정을 변경하세요.</p> -->
+							<!-- 							<button class="btn btn-outline-primary btn-sm mb-2">✏️ 강의 수정</button> -->
+							<!-- 							<button class="btn btn-outline-secondary btn-sm">🗑️ 강의 삭제</button> -->
+							<!-- 						</div> -->
 						</div>
-						
-						<div class="side-panel">
-							<h5>📊 강의 수강하기</h5>
-							<p class="mb-3">강의를 수강해보세요.</p>
-							<a class="btn btn-outline-primary btn-sm w-100 mb-2" th:onclick="goToRegisterCourse([[${courseData.courseSeq}]])">
-							 수강하기</a>							
-						</div>
-						<div class="side-panel">
-							<h5>💖 후원하기</h5>
-							<p class="mb-3">강사님께 후원해보세요.</p>
-							<a class="btn btn-outline-primary btn-sm w-100 mb-2" th:onclick="goToDonate([[${courseData.courseSeq}]])">
-							 후원하기</a>
-						</div>
-						
-<!-- 						<div class="side-panel"> -->
-<!-- 							<h5>⚙️ 강의 설정</h5> -->
-<!-- 							<p class="mb-3">강의 설정을 변경하세요.</p> -->
-<!-- 							<button class="btn btn-outline-primary btn-sm mb-2">✏️ 강의 수정</button> -->
-<!-- 							<button class="btn btn-outline-secondary btn-sm">🗑️ 강의 삭제</button> -->
-<!-- 						</div> -->
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- 챗봇 모달 -->
+		<div class="chatbot-modal" id="chatbotModal">
+			<div class="chatbot-container">
+				<div class="chatbot-header">
+					<h4>🤖 학습 도우미</h4>
+					<button class="chatbot-close" onclick="toggleChatbot()">×</button>
+				</div>
+				<div class="chatbot-messages" id="chatbotMessages">
+					<div class="message bot">안녕하세요! 학습 도우미입니다. 무엇을 도와드릴까요?</div>
+				</div>
+				<div class="chatbot-input">
+					<div class="chatbot-input-group">
+						<input type="text" id="chatbotInput" placeholder="메시지를 입력하세요..."
+							onkeypress="handleChatbotEnter(event)">
+						<button class="chatbot-send" onclick="sendChatbotMessage()">전송</button>
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
-								<!-- 챗봇 모달 -->
-								<div class="chatbot-modal" id="chatbotModal">
-									<div class="chatbot-container">
-										<div class="chatbot-header">
-											<h4>🤖 학습 도우미</h4>
-											<button class="chatbot-close" onclick="toggleChatbot()">×</button>
-										</div>
-										<div class="chatbot-messages" id="chatbotMessages">
-											<div class="message bot">안녕하세요! 학습 도우미입니다. 무엇을 도와드릴까요?
-											</div>
-										</div>
-										<div class="chatbot-input">
-											<div class="chatbot-input-group">
-												<input type="text" id="chatbotInput"
-													placeholder="메시지를 입력하세요..."
-													onkeypress="handleChatbotEnter(event)">
-												<button class="chatbot-send" onclick="sendChatbotMessage()">전송</button>
-											</div>
-										</div>
-									</div>
-								</div>
-							</div>
-				
-
-		<!-- 프로필 캐릭터 (챗봇 버튼) -->
-		<div class="profile-icon" onclick="toggleChatbot()">
-			<img src="/images/mascot2.png" alt="마스코트"
-				onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHZpZXdCb3g9IjAgMCA1MCA1MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjUiIGN5PSIyNSIgcj0iMjUiIGZpbGw9IiM0YTkwZTIiLz4KPHN2ZyB3aWR0aD0iMzAiIGhlaWdodD0iMzAiIHZpZXdCb3g9IjAgMCAzMCAzMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMTUiIGN5PSIxNSIgcj0iMTUiIGZpbGw9IndoaXRlIi8+CjxjaXJjbGUgY3g9IjEwIiBjeT0iMTIiIHI9IjIiIGZpbGw9IiMzMzMiLz4KPGNpcmNsZSBjeD0iMjAiIGN5PSIxMiIgcj0iMiIgZmlsbD0iIzMzMyIvPgo8cGF0aCBkPSJNMTAgMjBRMTUgMjUgMjAgMjAiIHN0cm9rZT0iIzMzMyIgc3Ryb2tlLXdpZHRoPSIyIiBmaWxsPSJub25lIi8+Cjwvc3ZnPgo8L3N2Zz4K'">
-		</div>
 
 
-		<script>
-		function goToVideo(button) {
-			  const videoSeq = button.dataset.videoseq;
-			  const courseSeq = button.dataset.courseseq;
-			  location.href = "/video/watch?videoSeq=" + videoSeq + "&courseSeq=" + courseSeq;
-			}
+	<!-- 프로필 캐릭터 (챗봇 버튼) -->
+	<div class="profile-icon" onclick="toggleChatbot()">
+		<img src="/images/mascot2.png" alt="마스코트"
+			onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHZpZXdCb3g9IjAgMCA1MCA1MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjUiIGN5PSIyNSIgcj0iMjUiIGZpbGw9IiM0YTkwZTIiLz4KPHN2ZyB3aWR0aD0iMzAiIGhlaWdodD0iMzAiIHZpZXdCb3g9IjAgMCAzMCAzMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMTUiIGN5PSIxNSIgcj0iMTUiIGZpbGw9IndoaXRlIi8+CjxjaXJjbGUgY3g9IjEwIiBjeT0iMTIiIHI9IjIiIGZpbGw9IiMzMzMiLz4KPGNpcmNsZSBjeD0iMjAiIGN5PSIxMiIgcj0iMiIgZmlsbD0iIzMzMyIvPgo8cGF0aCBkPSJNMTAgMjBRMTUgMjUgMjAgMjAiIHN0cm9rZT0iIzMzMyIgc3Ryb2tlLXdpZHRoPSIyIiBmaWxsPSJub25lIi8+Cjwvc3ZnPgo8L3N2Zz4K'">
+	</div>
+
+
+	<script>
+	function goToVideoOrQuiz(button){
+		const videoSeq = button.dataset.videoseq;  // videoSeq 값
+	    const quizSeq = button.dataset.quizlistseq;  // quizSeq 값
+	    const courseSeq = button.dataset.courseseq;
+
+	    console.log("videoSeq : " + videoSeq);
+	    console.log("quizSeq : " + quizSeq);
+
+	    if (quizSeq) {
+	        // 퀴즈 수정 페이지로 이동
+	        console.log("퀴즈 수정 페이지로 이동");
+	        location.href = "/quiz/playQuiz/" + quizSeq+"?courseSeq=" + courseSeq;
+	    } else if (videoSeq) {
+	        // 영상 페이지로 이동
+	        console.log("영상 페이지로 이동");
+	        location.href = "/video/watch?videoSeq=" + videoSeq + "&courseSeq=" + courseSeq;
+	    }
+	}
 		
+		
+		function goToDonate(courseSeq){
+			location.href = "/user/donation?lectureNo="+ courseSeq;
+		}
 		
 		function goToRegisterCourse(courseSeq) {
 			  console.log(courseSeq);
@@ -180,23 +256,6 @@
 			    console.error(err);
 			  });
 			}
-		
-		function goToDonate(courseSeq){
-			location.href = "/user/donation?lectureNo="+ courseSeq;
-		}
-		//퀴즈
-		const startButtons = document.querySelectorAll(".start-quiz-button");
-		  startButtons.forEach(btn => {
-		    btn.addEventListener("click", function () {
-		      const quizListSeq = this.dataset.quizId;
-		      const quizCourseSeq = this.dataset.courseId;
-		      startQuiz(quizListSeq, quizCourseSeq);
-		    });
-		  });
-		//퀴즈 시작시 학습 화면으로 이동
-		  function startQuiz(quizListSeq, courseSeq) {
-		    location.href = "/quiz/playQuiz/" + quizListSeq+"?courseSeq=" + courseSeq;
-		  }
 		
         function toggleMobileMenu() {
             const sidebar = document.getElementById('sidebar');
@@ -294,7 +353,42 @@
         
         
         
+        
     </script>
-		
+	<script>
+    document.addEventListener("DOMContentLoaded", () => {
+    	  const userSeq = document.getElementById("userSeq").value;
+    	  const buttons = document.querySelectorAll(".circle-button");
+
+    	  buttons.forEach(button => {
+    	    const videoSeq = button.dataset.videoseq;
+    	    const courseSeq = button.dataset.courseseq;
+			
+    	    axios.get("/course/stat/get", {
+    	      params: { userSeq, videoSeq, courseSeq }
+    	    }).then(res => {
+    	      const progress = res.data.courseRate || 0;
+//     	      const icon = button.querySelector("i");
+
+//     	      if (!icon) {
+//     	        console.warn("i 태그 없음 - 해당 버튼:", button);
+//     	        return;
+//     	      }
+
+    	      if (progress >= 99.9) {
+		        button.classList.add("completed");
+		        console.log("button 상태 확인", button.classList);
+		      } else {
+		        button.classList.remove("completed");
+		      }
+    	    }).catch(err => {
+    	      console.error("진행률 불러오기 실패", err);
+    	    });
+    	  });
+    	});
+
+
+</script>
+
 </body>
 </html>

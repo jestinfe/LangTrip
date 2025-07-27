@@ -206,7 +206,8 @@ public class QuizController {
     		  @PathVariable String quizListSeq,
     		  @RequestParam String courseSeq) {
     	
-    	
+    	System.out.println(quizListSeq);
+    	System.out.println(courseSeq);
     	try {
     	Long loginUserSeq = getUserSeq(authentication);
     	// DB에서 정보 불러오기

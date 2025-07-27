@@ -15,7 +15,8 @@ import lombok.ToString;
 
 public class CourseNoticeDTO {
 	private int noticeSeq;
-    private int courseSeq;
+    private String courseSeq;
     private String content;
     private Date regDate;
+    private String type;
 }
