@@ -18,4 +18,10 @@ public interface UserCourseService {
     List<UserCourseListDisplayDTO> getNewCourses(int limit);
     List<UserCourseDTO> getRecentEnrolledCourses(long userSeq, int limit);
     int deleteUserCourse(UserCourseDTO dto);
+    
+    public void deleteRegisterCourse(Map<String, Object> map);
+
+    public UserCourseDTO getCoursesBypage(Map<String, Object> map);
+    
+    public int getTotalCourses(Long userSeq);
 }

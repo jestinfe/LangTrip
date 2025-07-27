@@ -177,5 +177,25 @@
     ORDER BY c.UPLOAD_DATE DESC
     FETCH NEXT #{limit} ROWS ONLY
   </select>
+  
+  <delete id="deleteRegisterCourse" parameterType="map">
+  delete from course_enrollment where course_seq = #{courseSeq} and user_seq = #{userSeq}
+  </delete>
+  
+  <select id="getCoursesByPage" parameterType="map" resultType="UserCourseDTO">
+    SELECT * 
+    FROM course_enrollment
+    WHERE user_seq = #{userSeq}
+    ORDER BY enroll_date DESC
+    LIMIT #{limit} OFFSET #{offset}
+</select>
+
+ <select id="getTotalCourses" resultType="int" parameterType="Long">
+        SELECT COUNT(*) 
+        FROM course_enrollment
+        WHERE user_seq = #{userSeq}
+    </select>
+  
+  
 
 </mapper>

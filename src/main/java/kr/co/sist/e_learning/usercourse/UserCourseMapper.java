@@ -25,4 +25,11 @@ public interface UserCourseMapper {
     
     
     int deleteUserCourse(UserCourseDTO dto);
+    
+    public void deleteRegisterCourse(Map<String, Object> map);
+
+    public UserCourseDTO getCoursesBypage(Map<String, Object> map);
+    
+    public int getTotalCourses(Long userSeq);
+
 }
