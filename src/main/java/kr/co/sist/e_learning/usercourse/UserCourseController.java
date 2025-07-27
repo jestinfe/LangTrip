@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import jakarta.servlet.http.HttpSession;
 import kr.co.sist.e_learning.admin.account.AdminAccountController;
@@ -275,6 +276,75 @@ public class UserCourseController {
 		result.put("courses", list);
 		return result;
 	}
+	
+	@GetMapping("/ui/user_delete_course")
+	@ResponseBody
+	public Map<String, String> goToDeleteCourse(@RequestParam("seq") String courseSeq, Authentication authentication) {
+	    Map<String, String> response = new HashMap<>();
+
+	    try {
+	        // 인증된 사용자 정보를 가져옴
+	        Object principal = authentication.getPrincipal();
+	        Long userSeq = null;
+	        if (principal instanceof Long) {
+	            userSeq = (Long) principal;
+	        }
+
+	        // 강의 삭제를 위한 Map 생성
+	        Map<String, Object> map = new HashMap<>();
+	        map.put("courseSeq", courseSeq);
+	        map.put("userSeq", userSeq);
+	        System.out.println("courseSeq: =" +courseSeq);
+	        System.out.println("courseSeq: =" +userSeq);
+	        // 강의 삭제 처리
+	        ucs.deleteRegisterCourse(map);  // 삭제 성공
+
+	        // 성공 메시지 설정
+	        response.put("message", "강의가 성공적으로 삭제되었습니다.");
+	    } catch (Exception e) {
+	        // 삭제 실패 메시지 설정
+	    	
+	    	System.out.println("디비 오류: " + e.getMessage());
+	        response.put("message", "강의 삭제에 실패했습니다. 오류가 발생했습니다.");
+	    }
+
+	    // JSON 형태로 반환
+	    return response;  // JSON 형식으로 응답
+	}
+	
+	@GetMapping("/user/user_pagination")
+	public String showUserCourses(
+	        @RequestParam(defaultValue = "1") int page, 
+	        @RequestParam(defaultValue = "4") int limit, 
+	        Model model, Authentication authentication) {
+
+	    // 인증된 사용자 정보
+		  Object principal = authentication.getPrincipal();
+	        Long userSeq = null;
+	        if (principal instanceof Long) {
+	            userSeq = (Long) principal;
+	        }
+
+	     Map<String, Object> map = new HashMap<String, Object>();
+	     map.put("page", page);
+	     map.put("limit", limit);
+	     map.put("userSeq", userSeq);
+	    // 전체 강의 개수와 페이징된 강의 목록 조회
+	    int totalCourses = ucs.getTotalCourses(userSeq);  // 총 강의 개수
+	    UserCourseDTO courses = ucs.getCoursesBypage(map);  // 해당 페이지의 강의 목록
+
+	    int totalPages = (int) Math.ceil((double) totalCourses / limit);  // 전체 페이지 수 계산
+
+	    // 모델에 데이터 추가
+	    model.addAttribute("courses", courses);
+	    model.addAttribute("totalPages", totalPages);
+	    model.addAttribute("currentPage", page);
+	    model.addAttribute("limit", limit);
+
+	    return "mypage/user_course";  // Thymeleaf에서 해당 페이지 렌더링
+	}
+
+	
 	
 	@GetMapping("/ui/user_registered_course")
 	public String goToRegisterdCourse(@RequestParam("seq") String courseSeq, Model model,

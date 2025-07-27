@@ -65,7 +65,7 @@ public class CourseController {
 	@GetMapping("/ui/my_lecture")
 	    public ResponseEntity<?> instroductorPage(Authentication authentication,
 			@RequestParam(defaultValue = "1") int page,
-			@RequestParam(defaultValue = "12") int limit) {
+			@RequestParam(defaultValue = "4") int limit) {
 		
 		Object principal = authentication.getPrincipal();
 		Long userSeq = null;

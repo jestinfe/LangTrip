@@ -75,5 +75,21 @@ public class UserCourseServiceImpl implements UserCourseService{
         return ucm.deleteUserCourse(dto);
     }
 
+	@Override
+	public void deleteRegisterCourse(Map<String, Object> map) {
+		ucm.deleteRegisterCourse(map);
+	}
+
+	@Override
+	public UserCourseDTO getCoursesBypage(Map<String, Object> map) {
+		
+		return ucm.getCoursesBypage(map);
+	}
+
+	@Override
+	public int getTotalCourses(Long userSeq) {
+		return ucm.getTotalCourses(userSeq);
+	}
+
 
 }
