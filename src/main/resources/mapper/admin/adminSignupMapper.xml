@@ -5,7 +5,7 @@
 
 <mapper namespace="kr.co.sist.e_learning.admin.signup.AdminSignupDAO">
 
-  <insert id="insertSignupRequest" parameterType="AdminSignupDTO">
+  <insert id="insertSignupRequest" parameterType="kr.co.sist.e_learning.admin.signup.AdminSignupDTO">
   INSERT INTO ADMIN_SIGNUP_REQUEST (
     REQUEST_ID, ADMIN_ID, ADMIN_NAME, EMAIL, PHONE, PASSWORD_HASH,
     DEPT, INLINE, STATUS, REQUEST_DATE
@@ -30,7 +30,7 @@
 
 
   <!-- 인증 유효성 검사 -->
-  <select id="selectValidVerification" parameterType="map" resultType="EmailVerificationDTO">
+  <select id="selectValidVerification" parameterType="map" resultType="kr.co.sist.e_learning.admin.signup.EmailVerificationDTO">
     SELECT * FROM EMAIL_VERIFICATION_ADMIN
     WHERE EMAIL = #{email}
       AND CODE = #{code}
