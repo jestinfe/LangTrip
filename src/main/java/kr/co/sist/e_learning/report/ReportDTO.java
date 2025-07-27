@@ -37,6 +37,16 @@ public class ReportDTO {
 	private int postId2;
 	private int courseId;
 	
+	////////////////////
+	private int dynamicReportedUserId;
+	/////////////////
+	
+	public int getEffectiveReportedUserId() {
+	    return reportedUserId != 0 ? reportedUserId : dynamicReportedUserId;
+	}
+
+	
+	
 	public String getReporterReasons() {
 		if (reporterCheckedReason == null || reporterCheckedReason.isEmpty()) {
 			return "";
