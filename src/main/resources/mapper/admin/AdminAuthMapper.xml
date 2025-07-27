@@ -26,7 +26,7 @@
   </select>
 
   <!-- 관리자 회원가입 -->
-  <insert id="insertAdmin" parameterType="AdminSignupDTO">
+  <insert id="insertAdmin" parameterType="kr.co.sist.e_learning.admin.signup.AdminSignupDTO">
     INSERT INTO ADMINS (
       ADMIN_ID, PASSWORD, ADMIN_NAME, EXTENSION, EMAIL, PHONE, STATUS, REG_DATE
     ) VALUES (
