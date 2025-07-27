@@ -40,7 +40,7 @@
 	</select>
 
 
-	<insert id="insertVideo" parameterType="kr.co.sist.e_learning.course.VideoDTO">
+	<insert id="insertVideo" parameterType="kr.co.sist.e_learning.video.VideoDTO">
 		INSERT INTO video (
 		video_seq,
 		course_seq,
