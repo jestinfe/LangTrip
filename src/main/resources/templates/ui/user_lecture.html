@@ -42,13 +42,7 @@
 				<div class="content-wrapper">
 					<div class="lecture-section">
 						<div class="lecture-header">
-<<<<<<< HEAD
 							<a href="/courses" class="btn btn-success">← 뒤로가기</a>
-=======
-							<a href="javascript:history.back()" class="btn btn-success">←
-								내 강의실</a>
->>>>>>> gyumin
-						</div>
 						<div id="courseDataSector"></div>
 						<div class="course-info">
 							<h2 th:text="${courseData.courseTitle}"></h2>
@@ -65,14 +59,10 @@
 								<div style="margin-top: 20px; font-size: 14px; color: #999;">
 									새로운 강의를 등록해보세요!</div>
 							</div>
-<<<<<<< HEAD
-							
-							<div th:if="${videoList != null and !videoList.isEmpty()}">
-								<h3>등록된 강의 목록</h3>
-=======
+
+
 							<div th:if="${combinedList != null and !combinedList.isEmpty()}">
-								<h3>등록된 강의 영상 목록</h3>
->>>>>>> gyumin
+								<h3>등록된 강의 목록</h3>
 								<div class="video-tree">
 									<div th:each="item, stat : ${combinedList}" class="video-node">
 										<button type="button" class="circle-button"
@@ -217,21 +207,20 @@
 	</div>
 
 
-<<<<<<< HEAD
 		<div id="donationModalContainer" class="donation-modal-container">
         <div class="donation-modal-content">
             <iframe id="donationFrame" style="width: 100%; height: 100%; border: none;"></iframe>
         </div>
     </div>
 
-		<script>
-		function goToVideo(button) {
-			  const videoSeq = button.dataset.videoseq;
-			  const courseSeq = button.dataset.courseseq;
-			  const from = "user2"; // 일반 사용자 기준
-			  location.href = "/video/watch?videoSeq=" + videoSeq + "&courseSeq=" + courseSeq + "&from=" + from;
-			}
-	</script>
+<!-- 		<script> -->
+// 		function goToVideo(button) {
+// 			  const videoSeq = button.dataset.videoseq;
+// 			  const courseSeq = button.dataset.courseseq;
+// 			  const from = "user2"; // 일반 사용자 기준
+// 			  location.href = "/video/watch?videoSeq=" + videoSeq + "&courseSeq=" + courseSeq + "&from=" + from;
+// 			}
+<!-- 	</script> -->
 	<!-- 프로필 캐릭터 (챗봇 버튼) -->
 	<div class="profile-icon" onclick="toggleChatbot()">
 		<img src="/images/mascot2.png" alt="마스코트"
@@ -409,7 +398,7 @@ window.addEventListener('message', function(event) {
             
         });
         
-      /*   document.addEventListener("DOMContentLoaded", function () {
+         document.addEventListener("DOMContentLoaded", function () {
         	  const quizButtons = document.querySelectorAll(".start-quiz-button");
 
         	  quizButtons.forEach(button => {
@@ -429,8 +418,9 @@ window.addEventListener('message', function(event) {
         	      console.error("퀴즈 상태 확인 실패", err);
         	    });
         	  });
-        	}); */
+        	}); 
 
+        
         
         
         
@@ -455,7 +445,7 @@ window.addEventListener('message', function(event) {
 //     	        return;
 //     	      }
 
-    	      if (progress >= 99.9) {
+    	      if (progress >= 99) {
 		        button.classList.add("completed");
 		        console.log("button 상태 확인", button.classList);
 		      } else {

@@ -221,6 +221,15 @@ body {
     border: 3px solid transparent;
     transition: all 0.3s ease;
 }
+.circle-button.completed {
+  background: linear-gradient(135deg, #1cb0f6, #1899d6);
+  border-color: #1899d6;
+  color: white;
+}
+
+.circle-button.completed i {
+  color: white !important;
+}
 
 .start-quiz-button i {
     font-size: 28px;

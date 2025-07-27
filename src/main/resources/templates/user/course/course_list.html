@@ -242,10 +242,10 @@ body.logged-out .user-state {
 		                <a th:href="@{/ui/user_lecture(seq=${course.courseSeq})}" class="enroll-btn">강의 보기</a>
 	
 	                <!-- 🔴 테스트용 수강취소 버튼 -->
-                <form th:action="@{/user/course_cancel}" method="post" onsubmit="return confirm('수강 취소하시겠습니까?')" style="margin: 0;">
-                    <input type="hidden" name="courseSeq" th:value="${course.courseSeq}" />
-                    <button type="submit" class="btn-course-cancel">수강 취소</button>
-                </form>
+<!--                 <form th:action="@{/user/course_cancel}" method="post" onsubmit="return confirm('수강 취소하시겠습니까?')" style="margin: 0;"> -->
+<!--                     <input type="hidden" name="courseSeq" th:value="${course.courseSeq}" /> -->
+<!-- <!--                     <button type="submit" class="btn-course-cancel">수강 취소</button> -->
+<!--                 </form> -->
 		                
 		            </div>
 		        </div>

@@ -3,16 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<<<<<<< HEAD
 <title>LangTrip | 강의실</title>
-=======
-<title>내 강의실</title>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <!-- Bootstrap JS 로드 -->
 <script
 	src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
->>>>>>> gyumin
 <link rel="stylesheet"
 	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
 <link rel="stylesheet" th:href="@{/css/user_registered_course.css}">
@@ -109,14 +105,9 @@
 								<div style="margin-top: 20px; font-size: 14px; color: #999;">
 									새로운 강의를 등록해보세요!</div>
 							</div>
-<<<<<<< HEAD
 
-							<div th:if="${videoList != null and !videoList.isEmpty()}">
-								<h3>등록된 강의 목록</h3>
-=======
 							<div th:if="${combinedList != null and !combinedList.isEmpty()}">
 								<h3>등록된 강의 영상 목록</h3>
->>>>>>> gyumin
 								<div class="video-tree">
 									<div th:each="item, stat : ${combinedList}" class="video-node">
 										<button type="button" class="circle-button"
@@ -406,23 +397,25 @@
     	  });
     	  
     	  //퀴즈 버튼 완료 처리
-    	  const quizButtons = document.querySelectorAll(".start-quiz-button");
-    	  
+    	  const quizButtons = document.querySelectorAll(".circle-button");
+
     	  quizButtons.forEach(button => {
-    		  const quizListSeq = button.dataset.quizId;
-		     // const quizCourseSeq = button.dataset.courseId;
-		      
-		      axios.get("/quiz/status", {
-		    	params: { userSeq, quizListSeq }
-		      	}).then(res => {
-		    	  const quizStatus = res.data.status;
-		    	  if(quizStatus == "complete") {
-		    		  button.classList.add("completed");
-		    	  }//end if
-		     	 }).catch(err => {
-		          console.error("퀴즈 상태 확인 실패", err);
-		         });
-    	  })//forEach
+    	      const quizListSeq = button.dataset.quizlistseq; 
+    	      const courseSeq = button.dataset.courseseq;
+
+    	      if (!quizListSeq) return; // 퀴즈가 아닌 버튼은 무시
+
+    	      axios.get("/quiz/status", {
+    	          params: { userSeq, quizListSeq }
+    	      }).then(res => {
+    	          const quizStatus = res.data.status;
+    	          if (quizStatus === "complete") {
+    	              button.classList.add("completed");
+    	          }
+    	      }).catch(err => {
+    	          console.error("퀴즈 상태 확인 실패", err);
+    	      });
+    	  });
     	  
     	});
     
