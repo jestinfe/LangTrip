@@ -114,11 +114,9 @@
           <div>
             <button class="btn btn-sm btn-light" type="button" th:onclick="'showReplyForm(' + ${comment.commentId} + ')'" disabled><i class="bi bi-chat-dots"></i></button> <!-- disabled 추가 -->
             <!-- 댓글 삭제 폼 경로 수정 -->
-            <form th:action="@{/admin/dash/community/deleteComment}" method="post" class="d-inline" onsubmit="return confirm('정말 댓글을 삭제하시겠습니까?');">
-                <input type="hidden" name="commentId" th:value="${comment.commentId}" />
-                <input type="hidden" name="postId" th:value="${post.postId}" />
-                <button type="submit" class="btn btn-sm btn-outline-danger">삭제</button>
-            </form>
+            <button type="button" class="btn btn-sm btn-outline-danger"
+        th:attr="data-comment-id=${comment.commentId}, data-post-id=${post.postId}"
+        onclick="deleteAdminComment(this)">삭제</button>
           </div>
         </div>
         <div th:text="${comment.content}">댓글 내용</div>
@@ -129,11 +127,10 @@
               <div><strong th:text="${reply.nickname}">닉네임</strong> <span class="comment-meta" th:text="${#dates.format(reply.createdAt, 'yyyy-MM-dd HH:mm')}">시간</span></div>
               <div>
                   <!-- 대댓글 삭제 폼 경로 수정 -->
-                  <form th:action="@{/admin/dash/community/deleteReply}" method="post" class="d-inline" onsubmit="return confirm('정말 대댓글을 삭제하시겠습니까?');">
-                      <input type="hidden" name="replyId" th:value="${reply.commentId}" />
-                      <input type="hidden" name="postId" th:value="${post.postId}" />
-                      <button type="submit" class="btn btn-sm btn-outline-danger">삭제</button>
-                  </form>
+                 <button type="button" class="btn btn-sm btn-outline-danger"
+        th:attr="data-reply-id=${reply.commentId}, data-post-id=${post.postId}"
+        onclick="deleteAdminReply(this)">삭제</button>
+
               </div>
             </div>
             <div th:text="${reply.content}">대댓글 내용</div>
@@ -282,6 +279,48 @@ function submitReport() {
     }
   });
 }
+</script>
+
+<script>
+function deleteAdminComment(btn) {
+	  if (!confirm("정말 댓글을 삭제하시겠습니까?")) return;
+
+	  const commentId = btn.getAttribute("data-comment-id");
+	  const postId = btn.getAttribute("data-post-id");
+
+	  $.ajax({
+	    type: "POST",
+	    url: "/admin/dash/community/deleteComment",
+	    data: { commentId, postId },
+	    success: function () {
+	      // DOM 제거 (화면 깜빡임 없이 처리)
+	      $(btn).closest(".comment-item").remove();
+	    },
+	    error: function () {
+	      alert("댓글 삭제 실패");
+	    }
+	  });
+	}
+
+	function deleteAdminReply(btn) {
+	  if (!confirm("정말 대댓글을 삭제하시겠습니까?")) return;
+
+	  const replyId = btn.getAttribute("data-reply-id");
+	  const postId = btn.getAttribute("data-post-id");
+
+	  $.ajax({
+	    type: "POST",
+	    url: "/admin/dash/community/deleteReply",
+	    data: { replyId, postId },
+	    success: function () {
+	      $(btn).closest(".comment-item").remove();
+	    },
+	    error: function () {
+	      alert("대댓글 삭제 실패");
+	    }
+	  });
+	}
+
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"></script>

@@ -17,6 +17,7 @@
       max-width: 1200px;
       margin: 0 auto;
       padding: 20px;
+       z-index: 100;
     }
 
     /* 게시판 제목 스타일 */
@@ -53,6 +54,7 @@
       border: 1px solid rgba(148, 163, 184, 0.2);
       box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
       flex-wrap: wrap;
+      
     }
 
     /* 탭 그룹 */
@@ -152,7 +154,7 @@
 
  .dropdown-menu {
   position: absolute;
-  z-index: 1001;
+   z-index: 1060;
   top: calc(100% + 5px);
   right: 0;
   z-index: 100;
@@ -209,10 +211,12 @@
   margin-bottom: 30px;
     padding: 0 12px;
     overflow: visible !important;
+     z-index: 100; 
+     position: relative;
 }
 .dropdown {
   position: relative;
-  z-index: 20; /* 부모에 높게 설정 */
+  z-index: 1050; /* 부모에 높게 설정 */
 }
 
 
@@ -316,6 +320,9 @@
         flex-direction: column;
         gap: 20px;
         align-items: stretch;
+        z-index: 200;        /* ✅ 드롭다운보다 낮으면 안 보이니까 올려줘야 해 */
+  position: relative;
+  margin-bottom: 70px;
       }
 
       .search-form {
