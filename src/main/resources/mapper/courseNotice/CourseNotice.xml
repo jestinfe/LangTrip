@@ -6,7 +6,7 @@
   
   <mapper
    namespace="kr.co.sist.e_learning.course.NoticeMapper"> 
-   <insert id="saveNotice" parameterType="CourseNoticeDTO">
+   <insert id="saveNotice" parameterType="kr.co.sist.e_learning.course.CourseNoticeDTO">
     INSERT INTO course_notice (notice_seq, course_seq, content, reg_date, type)
     VALUES (notice_seq.NEXTVAL, #{courseSeq}, #{content}, SYSDATE, #{type})
 </insert>
