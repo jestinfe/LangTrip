@@ -336,8 +336,12 @@ $(function () {
     .then(res => {
       if (res.data === "success") {
         alert("수정 되었습니다.");
-        const courseSeq = document.getElementById("quizCourseSeq").value;
+        location.reload();
+        //const courseSeq = document.getElementById("quizCourseSeq").value;
         //window.location.href = '/upload/upload_course?seq='+courseSeq;
+      } else if (res.data === "unauthorized") {
+    	    alert("접근 권한이 없습니다.");
+    	    window.location.href = '/';
       }
     })
     .catch(err => {
@@ -357,8 +361,11 @@ $(function () {
       .then(res => {
         if (res.data === "delete") {
           alert("삭제 되었습니다.");
-          window.location.href = '/ui/user_lecture?seq='+courseSeq;
-        }
+          window.location.href = '/upload/upload_course?seq='+courseSeq;
+        } else if (res.data === "accessfailed") {
+            alert("접근 권한이 없습니다.");
+            window.location.href = '/';  
+          }
       })
       .catch(err => {
         console.error("삭제 실패", err);
