@@ -1,11 +1,3 @@
-<!--
-	정제균.
-	
-	일반사용자 신고 기능을 제공하는 모달.
-	
-	반응형 완.
--->
-
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
@@ -23,127 +15,117 @@
 </style>
 </head>
 <body>
-<!-- 사용자 신고 트리거 -->
-<button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#userReportModal">
-  사용자 신고하기
-</button>
+<!-- 공통 신고 모달 -->
+<div class="modal fade" id="reportModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content p-4">
+      <h5 class="mb-3">신고</h5>
 
-<!-- 사용자 신고 모달 -->
-<div class="modal fade" id="userReportModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="userReportModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-md modal-fullscreen-sm-down">
-    <div class="modal-content border-0 rounded-3">
-      <div class="modal-header bg-light">
-        <h5 class="modal-title fw-bold" id="userReportModalLabel">신고하기</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="닫기"></button>
+      <!-- 숨겨진 필드 -->
+      <input type="hidden" id="contentType">
+      <input type="hidden" id="contentId">
+      <input type="hidden" id="reporterId">
+      <input type="hidden" id="reportedUserId">
+
+      <!-- 체크박스 -->
+      <div class="mb-2">신고 사유 <small class="text-muted">(복수 선택 가능)</small></div>
+      <div class="form-check"><input class="form-check-input" type="checkbox" value="1" id="reason1"><label for="reason1">1. 욕설</label></div>
+      <div class="form-check"><input class="form-check-input" type="checkbox" value="2" id="reason2"><label for="reason2">2. 음란물</label></div>
+      <div class="form-check"><input class="form-check-input" type="checkbox" value="3" id="reason3"><label for="reason3">3. 허위</label></div>
+      <div class="form-check"><input class="form-check-input" type="checkbox" value="4" id="reason4"><label for="reason4">4. 기타</label></div>
+
+      <!-- 기타 설명 -->
+      <div class="mt-2">
+        <textarea id="customReason" class="form-control" placeholder="추가 설명 (최대 20자)" maxlength="20" disabled></textarea>
       </div>
-      <div class="modal-body px-4">
 
-        <!-- 제목 -->
-        <div class="row mb-3">
-          <div class="col-3 fw-bold">제목</div>
-          <div class="col-9 border-start ps-3">풀스택</div>
-        </div>
-        <hr>
-
-        <!-- 닉네임 -->
-        <div class="row mb-3">
-          <div class="col-3 fw-bold">닉네임</div>
-          <div class="col-9 border-start ps-3">정제균</div>
-        </div>
-        <hr>
-
-        <!-- 신고 사유 -->
-        <div class="mb-3">
-          <label class="form-label fw-bold">사유</label><br>
-          <div class="form-check form-check-inline">
-            <input class="form-check-input" type="checkbox" id="reason1" value="욕설">
-            <label class="form-check-label" for="reason1">욕설</label>
-          </div>
-          <div class="form-check form-check-inline">
-            <input class="form-check-input" type="checkbox" id="reason2" value="음란물">
-            <label class="form-check-label" for="reason2">음란물</label>
-          </div>
-          <div class="form-check form-check-inline">
-            <input class="form-check-input" type="checkbox" id="reason3" value="허위">
-            <label class="form-check-label" for="reason3">허위</label>
-          </div>
-          <div class="form-check form-check-inline">
-            <input class="form-check-input" type="checkbox" id="reason4" value="기타">
-            <label class="form-check-label" for="reason4">기타</label>
-          </div>
-          <input type="text" class="form-control mt-2" id="customReason" maxlength="20" placeholder="직접 입력(최대 20자)" disabled>
-        </div>
-
-        <!-- 신고 버튼 -->
-        <div class="text-end">
-          <button type="button" class="btn btn-primary" id="reportSubmitBtn">신고하기</button>
-        </div>
-
+      <!-- 버튼 -->
+      <div class="mt-4 d-flex justify-content-end gap-2">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+        <button class="btn btn-danger" id="submitReportBtn">신고</button>
       </div>
     </div>
   </div>
 </div>
+<!--
+예: 게시글
+<button class="btn btn-outline-danger open-report-modal"
+        data-type="post"
+        data-content-id="56"
+        data-reporter-id="400"
+        data-reported-user-id="202"
+        data-bs-toggle="modal"
+        data-bs-target="#reportModal">신고</button>
 
-<!-- 의사 재확인 모달 -->
-<div class="modal fade" id="reportConfirmModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-hidden="true" aria-labelledby="reportConfirmModalLabel">
-  <div class="modal-dialog modal-dialog-centered modal-sm">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="reportConfirmModalLabel">신고 확인</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="닫기"></button>
-      </div>
-      <div class="modal-body">
-        신고를 정말 제출하시겠습니까?
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
-        <button type="button" class="btn btn-primary" id="reportConfirmBtn">확인</button>
-      </div>
-    </div>
-  </div>
-</div>
+예: 강의
+<button class="btn btn-outline-danger open-report-modal"
+        data-type="course"
+        data-content-id="1101"
+        data-reporter-id="400"
+        data-reported-user-id="300"
+        data-bs-toggle="modal"
+        data-bs-target="#reportModal">신고</button>
+-->
 
-<!-- 스크립트 -->
 <script>
-const reasonEtc = document.getElementById("reason4");
-const customReasonInput = document.getElementById("customReason");
+document.addEventListener('DOMContentLoaded', () => {
+  const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+  const customReason = document.getElementById('customReason');
 
-reasonEtc.addEventListener("change", () => {
-  if (reasonEtc.checked) {
-    customReasonInput.disabled = false;
-    customReasonInput.focus();
-  } else {
-    customReasonInput.disabled = true;
-    customReasonInput.value = "";
-  }
-});
+  // 신고 모달 열릴 때 data-* 값 주입
+  document.querySelectorAll('.open-report-modal').forEach(button => {
+    button.addEventListener('click', () => {
+      document.getElementById('contentType').value = button.dataset.type;
+      document.getElementById('contentId').value = button.dataset.contentId;
+      document.getElementById('reporterId').value = button.dataset.reporterId;
+      document.getElementById('reportedUserId').value = button.dataset.reportedUserId;
 
-document.getElementById("reportSubmitBtn").addEventListener("click", () => {
-  // 기타 체크 시 입력이 없으면 강제 해제
-  if (reasonEtc.checked && customReasonInput.value.trim() === "") {
-    reasonEtc.checked = false;
-    customReasonInput.disabled = true;
-    customReasonInput.value = "";
-  }
-
-  // 의사 재확인 모달 띄우기
-  const confirmModal = new bootstrap.Modal(document.getElementById('reportConfirmModal'), {
-    backdrop: false,
-    keyboard: false
+      // 초기화
+      checkboxes.forEach(cb => cb.checked = false);
+      customReason.value = '';
+      customReason.disabled = true;
+    });
   });
-  confirmModal.show();
-});
 
-document.getElementById("reportConfirmBtn").addEventListener("click", () => {
-  // 신고 확인 후 모달 닫기
-  const userReportModal = bootstrap.Modal.getInstance(document.getElementById('userReportModal'));
-  const reportConfirmModal = bootstrap.Modal.getInstance(document.getElementById('reportConfirmModal'));
+  // 기타 선택 시 텍스트박스 활성화
+  document.getElementById('reason4').addEventListener('change', (e) => {
+    customReason.disabled = !e.target.checked;
+    if (!e.target.checked) customReason.value = '';
+  });
 
-  reportConfirmModal.hide();
-  userReportModal.hide();
+  // 신고 버튼 클릭
+  document.getElementById('submitReportBtn').addEventListener('click', async () => {
+    const selected = Array.from(checkboxes)
+      .filter(cb => cb.checked)
+      .map(cb => parseInt(cb.value));
 
-  // TODO: 실제 서버 처리 또는 fetch 요청
-  console.log("✅ 신고 완료됨");
+    if (selected.length === 0) {
+      alert("하나 이상의 신고 사유를 선택해주세요.");
+      return;
+    }
+
+    const data = {
+      reporterId: parseInt(document.getElementById('reporterId').value),
+      reportedUserId: parseInt(document.getElementById('reportedUserId').value),
+      reporterCheckedReason: selected,
+      reporterCustomReasonTxt: document.getElementById('customReason').value || '',
+    };
+
+    const type = document.getElementById('contentType').value;
+    const id = document.getElementById('contentId').value;
+
+    // 대상에 맞게 postId2 또는 courseId 전송
+    if (type === 'post') data.postId2 = parseInt(id);
+    else if (type === 'course') data.courseId = parseInt(id);
+
+    try {
+      await axios.post(`/report/${type}/${id}`, data);
+      alert("신고가 접수되었습니다.");
+      document.querySelector('#reportModal .btn-secondary').click();
+    } catch (err) {
+      alert(err.response?.data || "신고 처리 중 오류 발생");
+    }
+  });
 });
 </script>
 <!-- bootstrap bundle CDN -->

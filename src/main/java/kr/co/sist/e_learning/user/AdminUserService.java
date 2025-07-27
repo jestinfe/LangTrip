@@ -40,6 +40,9 @@ public class AdminUserService {
 		List<String> openedCourses = adminUserMapper.selectOpenedCourses(userSeq);
 		user.setOpenedCourses(openedCourses);
 		
+	    boolean isReported = adminUserMapper.isReportedUser(userSeq);
+	    user.setReportedTarget(isReported);
+		
 		return user;
 	}
 	

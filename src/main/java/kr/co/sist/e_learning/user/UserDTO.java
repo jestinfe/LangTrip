@@ -37,4 +37,5 @@ public class UserDTO {
 	private List<String> courseTitles;
 	private List<String> openedCourses;
 	private Long reportId;
+	private boolean reportedTarget;
 }

@@ -416,9 +416,6 @@ body {
 	        <section class="mb-5">
 	          <h6><strong>수강 중인 과목</strong></h6>
 	          <table class="table table-bordered" id="detail-active-courses">
-	            <thead>
-	              <tr><th>과목명</th></tr>
-	            </thead>
 	            <tbody>
 	              <tr><td><a href="#">Content</a></td></tr>
 	            </tbody>
@@ -427,11 +424,8 @@ body {
 	
 	        <!-- 강사 활동 + 계정 상태 -->
 	        <section>
-	          <h6><strong>강사 활동</strong></h6>
+	          <h6><strong>강사 활동 중인 과목</strong></h6>
 	          <table class="table table-bordered" id="detail-opened-courses">
-	            <thead>
-	              <tr><th>과목명</th></tr>
-	            </thead>
 	            <tbody>
 	              <tr><td><a href="#">Content</a></td></tr>
 	              <tr><td><a href="#">Content</a></td></tr>
@@ -642,18 +636,28 @@ document.querySelectorAll('.user-row').forEach((row) => {
 			// 수강 중 과목
 			const tbody1 = document.querySelector('#detail-active-courses tbody');
 			tbody1.innerHTML = "";
-			data.courseTitles?.forEach((title) => {
-				const row = `<tr><td><a href="#">${title}</a></td></tr>`;
+			if (data.courseTitles && data.courseTitles.length > 0) {
+				data.courseTitles.forEach((title) => {
+					const row = `<tr><td><a href="#">${title}</a></td></tr>`;
+					tbody1.insertAdjacentHTML("beforeend", row);
+				});
+			} else {
+				const row = `<tr><td class="text-center text-muted">수강 중인 과목이 존재하지 않습니다.</td></tr>`;
 				tbody1.insertAdjacentHTML("beforeend", row);
-			});
+			}
 
 			// 개설 과목
 			const tbody2 = document.querySelector('#detail-opened-courses tbody');
 			tbody2.innerHTML = "";
-			data.openedCourses?.forEach((title) => {
-				const row = `<tr><td><a href="#">${title}</a></td></tr>`;
-				tbody2.insertAdjacentHTML('beforeend', row);
-			});
+			if (data.openedCourses && data.openedCourses.length > 0) {
+				data.openedCourses.forEach((title) => {
+					const row = `<tr><td><a href="#">${title}</a></td></tr>`;
+					tbody2.insertAdjacentHTML('beforeend', row);
+				});
+			} else {
+				const row = `<tr><td class="text-center text-muted">개설한 과목이 존재하지 않습니다.</td></tr>`;
+				tbody2.insertAdjacentHTML("beforeend", row);
+			}
 			
 			// 계정 조치 섹션 값 반영
 			const adminReason = data.adminCheckedReason?.split(',').map((e) => e.trim()) || [];
@@ -663,6 +667,20 @@ document.querySelectorAll('.user-row').forEach((row) => {
 			// 계정 조치 영역 복원: DB값으로 UI 초기 상태 설정
 			restoreAccountSection(initialStatus, initialReasons, initialCustomTxt);
 			
+			
+			// ✅ [수정된 부분] 신고자이면서 탈퇴가 아닌 경우만 활성화
+			const accountSection = document.querySelector('#userDetailModal section.mt-5');
+			if (!data.reportedTarget || data.status === '탈퇴') {
+			  accountSection.querySelectorAll('input, button').forEach(el => {
+			    el.disabled = true;
+			  });
+			  accountSection.classList.add('opacity-50');
+			} else {
+			  accountSection.querySelectorAll('input, button').forEach(el => {
+			    el.disabled = false;
+			  });
+			  accountSection.classList.remove('opacity-50');
+			}
 			// 탈퇴가 아닌 경우에만 라디오 상태 설정 및 활성화 여부 조정
 			if (initialStatus !== '탈퇴') {
 				const isPenalty = initialReasons.length > 0;
@@ -670,6 +688,7 @@ document.querySelectorAll('.user-row').forEach((row) => {
 				noPenaltyRadio.checked = !isPenalty;
 				setInputsDisabled(!isPenalty);
 			}
+
 
 			// 모달 띄우기
 			const modal = new bootstrap.Modal(document.getElementById('userDetailModal'));
