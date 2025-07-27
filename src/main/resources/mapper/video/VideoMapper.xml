@@ -59,12 +59,12 @@
 	</delete>
 
 	<select id="showVideo" parameterType="String"
-		resultType="VideoDTO">
+		resultType="kr.co.sist.e_learning.video.VideoDTO">
 		select * from video where video_seq=#{videoSeq}
 	</select>
 
 	<select id="showVideoByCourseSeq" parameterType="String"
-		resultType="VideoDTO">
+		resultType="kr.co.sist.e_learning.video.VideoDTO">
 		select * from video where course_seq=#{courseSeq}
 
 	</select>
