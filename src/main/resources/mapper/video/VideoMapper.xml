@@ -5,7 +5,7 @@
 
 <mapper namespace="kr.co.sist.e_learning.video.VideoMapper">
 
-	<insert id="insertVideo" parameterType="VideoDTO">
+	<insert id="insertVideo" parameterType="kr.co.sist.e_learning.video.VideoDTO">
 		INSERT INTO video (
 		video_seq,
 		course_seq,
@@ -28,12 +28,12 @@
 		#{videoOrder}
 		)
 	</insert>
-	<select id="selectVideo" resultType="VideoDTO">
+	<select id="selectVideo" resultType="kr.co.sist.e_learning.video.VideoDTO">
 		select * from video order by
 		video_seq asc
 	</select>
 
-	<select id="getVideoBySeq" resultType="VideoDTO"
+	<select id="getVideoBySeq" resultType="kr.co.sist.e_learning.video.VideoDTO"
 		parameterType="int">
 		SELECT *
 		FROM video
@@ -41,7 +41,7 @@
 	</select>
 
 	<update id="modifyVideo"
-		parameterType="VideoDTO">
+		parameterType="kr.co.sist.e_learning.video.VideoDTO">
 		UPDATE video
 		SET
 		title = #{title},
