@@ -18,6 +18,8 @@
 </head>
 <body >
 <div th:replace="layout/header :: header"></div>
+<input type="hidden" id="CURRENT_USER_SEQ" th:value="${currentUserSeq}" />
+<input type="hidden" id="POST_USER_ID" th:value="${post.userId}" />
 
 <div class="container mt-5">
   <h3 class="board-title"><strong>강의 추천 게시판</strong></h3>
@@ -145,6 +147,9 @@
 <!-- Script -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+const CURRENT_USER_SEQ = parseInt(document.getElementById("CURRENT_USER_SEQ").value);
+const POST_USER_ID = parseInt(document.getElementById("POST_USER_ID").value);
+
 // ⭐ 추가: 로그인 페이지로 리다이렉트하는 함수
 function redirectToLogin() {
     alert("로그인이 필요합니다.");
@@ -252,20 +257,26 @@ function submitReport() {
 
   if (!reasonChk) return alert("신고 사유를 선택해주세요.");
   if (reasonText.length > 20) return alert("추가 설명은 20자까지 가능합니다.");
+  
+  const data = {
+  	reporterId: CURRENT_USER_SEQ,
+    reportedUserId: POST_USER_ID,
+    reporterCheckedReason: [parseInt(reasonChk)],
+    reporterCustomReasonTxt: reasonChk === '4' ? reasonText : '',
+  }
 
   $.ajax({
     type: 'POST',
-    url: '/csj/report',
+    url: `/report/post/${postId}`,
     contentType: 'application/json',
-    data: JSON.stringify({ postId2: postId, reasonChk: reasonChk, reasonText: reasonText }),
+    data: JSON.stringify(data),
     success: function() {
       alert("신고가 접수되었습니다.");
       $('#userReportModal').modal('hide');
     },
     error: function(xhr) {
-      console.error("❌ 신고 에러:", xhr.status, xhr.responseText); // ⭐ 추가: 에러 로깅
-      if (xhr.status === 409) alert("오늘 이미 신고하셨습니다.");
-      else if (xhr.status === 401) redirectToLogin(); // ⭐ 수정: 로그인 필요 시 리다이렉트
+      if (xhr.status === 400) alert(xhr.responseText);
+      else if (xhr.status === 401) redirectToLogin();
       else alert("신고 중 오류가 발생했습니다.");
     }
   });
