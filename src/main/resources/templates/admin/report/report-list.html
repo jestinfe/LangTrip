@@ -508,7 +508,8 @@ searchBtn.addEventListener('click', (e) => {
 document.querySelectorAll('.report-row').forEach((row) => {
 	row.addEventListener('click', (e) => {
 		const data = e.currentTarget.dataset;
-			    
+		console.log(data);
+		 
 		// 모달 내부 텍스트 채우기
     	document.getElementById('modal-reason').innerText = data.reporterReasons;
 		document.getElementById('modal-date').innerText = data.reportedAt;

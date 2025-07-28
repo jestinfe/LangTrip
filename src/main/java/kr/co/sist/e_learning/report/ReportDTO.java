@@ -39,12 +39,12 @@ public class ReportDTO {
 	
 	////////////////////
 	private int dynamicReportedUserId;
-	/////////////////
+
 	
 	public int getEffectiveReportedUserId() {
 	    return reportedUserId != 0 ? reportedUserId : dynamicReportedUserId;
 	}
-
+	/////////////////
 	
 	
 	public String getReporterReasons() {

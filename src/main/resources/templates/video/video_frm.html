@@ -76,21 +76,26 @@
 
 
 					<div class="quiz-section">
-						<div class="quiz-question">
-							<i class="fas fa-puzzle-piece"></i> 오늘의 여행 미션
-						</div>
-						<div class="quiz-content">
-							<p>
-								<strong>&lt;신기하네&gt;는 영어로?</strong>
-							</p>
-							<p>That's a ___.</p>
-							<hr
-								style="border-color: rgba(255, 179, 71, 0.4); margin: 15px 0;">
-							<p>
-								엄청 신기하네요!<br>That's ______!
-							</p>
-						</div>
-					</div>
+  <div class="quiz-question">
+    <i class="fas fa-puzzle-piece"></i> 오늘의 여행 학습 가이드
+  </div>
+  <div class="quiz-content">
+    <p>
+      <strong>학습 가이드</strong>
+    </p>
+
+    <!-- 공지 내용 출력 -->
+    <div th:if="${cnDTO != null}">
+      <p th:utext="${cnDTO.content}">학습가이드를 불러올 수 없습니다.</p>
+    </div>
+    <div th:unless="${cnDTO != null}">
+      <p>📭 등록된 학습가이드가 없습니다.</p>
+    </div>
+
+    <hr style="border-color: rgba(255, 179, 71, 0.4); margin: 15px 0;">
+    <p><br></p>
+  </div>
+</div>
 				</div>
 			</div>
 		</div>

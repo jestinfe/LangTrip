@@ -110,14 +110,14 @@ function appendLectureForm(course) {
           ${course.courseTitle}
         </div>
         <div class="lecture-meta">
-          <div class="lecture-count">컨텐츠 수 : ${course.contentCount}</div>
+          <div class="lecture-count"></div>
           <div class="lecture-stats">
             <div class="stat-item">
-              <span class="stat-icon">👥</span><span>1,234명</span>
+              <span class="stat-icon"></span><span></span>
             </div>
-            <div class="stat-item">
-              <span class="stat-icon">⭐</span><span>4.8</span>
-            </div>
+			            <div class="stat-item">
+          <span class="stat-icon"></span><span></span>
+           </div>
           </div>
         </div>
         <div class="lecture-description">${course.introduction || '강의 설명이 없습니다.'}</div>
