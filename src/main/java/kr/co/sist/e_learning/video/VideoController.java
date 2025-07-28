@@ -26,8 +26,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import kr.co.sist.e_learning.course.CourseNoticeDTO;
 import kr.co.sist.e_learning.course.CourseService;
 import kr.co.sist.e_learning.course.CourseStatDTO;
+import kr.co.sist.e_learning.course.NoticeService;
 
 
 @Controller
@@ -41,6 +43,9 @@ public class VideoController {
 	
 	@Autowired
 	private CourseService cs;
+	
+	@Autowired
+	private NoticeService ns;
 	
 	@GetMapping("/upload/upload_video")
 	public String showUploadForm(@RequestParam("seq") String courseSeq, Model model) {
@@ -297,8 +302,11 @@ public class VideoController {
 			userSeq = (Long) principal;
 		}
 		
+		CourseNoticeDTO cnDTO = ns.getLatestLearning(courseSeq);
+		
 		
 		VideoDTO vDTO = vs.showVideo(videoSeq);
+		model.addAttribute("cnDTO", cnDTO);
 		model.addAttribute("userSeq", userSeq);
 		model.addAttribute("courseSeq", courseSeq);
 		model.addAttribute("videoData", vDTO);
