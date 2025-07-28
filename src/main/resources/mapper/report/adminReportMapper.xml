@@ -28,49 +28,56 @@
                 select="selectAdminReasons"/>
 </resultMap>
 
-<select id="selectReports" resultType="kr.co.sist.e_learning.report.ReportDTO">
-SELECT 
-    r.report_id,
-    r.reported_at,
-    r.reporter_id,
-    r.reported_user_id,
-    r.post_id2,
-    r.course_id,
-    r.reason_text,
-    r.action_status,
-    r.admin_new_status,
-    r.admin_reason,
-    r.admin_acted_at,
-    
-    -- 조인으로 가져올 것
-    cp.user_id AS dynamic_reported_user_id,
-    cp.title AS title,
-    '게시글' AS content_type
-
-FROM report r
-LEFT JOIN community_post cp
-    ON r.post_id2 = cp.post_id
-
-WHERE 1=1
-<if test="reporterId != null and reporterId != ''">
-  AND r.reporter_id = #{reporterId}
-</if>
-<if test="reportedUserId != null and reportedUserId != ''">
-  AND (r.reported_user_id = #{reportedUserId} OR cp.user_id = #{reportedUserId})
-</if>
-<if test="contentType == '게시글'">
-  AND r.post_id2 IS NOT NULL
-</if>
-<if test="contentType == '강의'">
-  AND r.course_id IS NOT NULL
-</if>
-<if test="actionStatus != null and actionStatus != ''">
-  AND r.action_status = #{actionStatus}
-</if>
-
-ORDER BY r.reported_at DESC
+<select id="selectReports" parameterType="kr.co.sist.e_learning.pagination.UsrAndRptPageRequestDTO" resultMap="ReportResultMap">
+SELECT * FROM (
+	SELECT ROWNUM rnum, A.* FROM (
+		SELECT
+			r.report_id,
+			r.reported_at,
+			r.reporter_id,
+			r.reason_text,
+			r.admin_reason,
+			r.action_status,
+			r.post_id2,
+			r.course_id,
+			r.admin_acted_at,
+			u.status AS reported_user_status,
+			u.nickname,
+			p.title,
+			u.user_seq AS reported_user_id,
+			CASE
+				WHEN r.course_id IS NOT NULL THEN '강의'
+				WHEN r.post_id2 IS NOT NULL THEN '게시글'
+			END AS content_type
+		FROM report r
+		LEFT JOIN community_post p ON r.post_id2 = p.post_id
+		LEFT JOIN course c ON r.course_id = c.course_seq
+		LEFT JOIN users u ON u.user_seq = r.reported_user_id
+		<where>
+		<if test="reporterId != null and reporterId != ''">
+		r.reporter_id LIKE '%' || #{reporterId} || '%'
+		</if>
+		<if test="reportedUserId != null and reportedUserId != ''">
+		AND TO_CHAR(r.reported_user_id) LIKE '%' || #{reportedUserId} || '%'
+		</if>
+		<if test="contentType != null and contentType != ''">
+		AND CASE
+			WHEN r.course_id IS NOT NULL THEN '강의'
+			WHEN r.post_id2 IS NOT NULL THEN '게시글'
+		END = #{contentType}
+		</if>
+		<if test="actionStatus != null and actionStatus != ''">
+		AND r.action_status = #{actionStatus}
+		</if>
+		</where>
+<![CDATA[
+		ORDER BY r.reported_at DESC
+	) A
+	WHERE ROWNUM <= #{endRow}
+)
+WHERE rnum >= #{startRow}
+]]>
 </select>
-
 
 <select id="countReports" parameterType="kr.co.sist.e_learning.pagination.UsrAndRptPageRequestDTO" resultType="Integer">
 SELECT COUNT(*) FROM report r
