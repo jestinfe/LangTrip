@@ -65,7 +65,11 @@
                         <h4><span th:text="${iterStat.count}"></span>. <span th:text="${quiz.question}"></span></h4>
                         <ul class="quiz-options">
                             <li th:each="option, optStat : ${quiz.options}" th:class="${option.optionOrder == quiz.correctOption ? 'correct-answer' : ''}">
-                                <span th:text="${optStat.count}"></span>) <span th:text="${option.content}"></span>
+                                <span th:text="${optStat.count}"></span>) 
+                                <span th:text="${option.content}"></span>
+                                <div th:if="${option.imageName != null}">
+                                    <img th:src="@{/quiz/{imageName}(imageName=${option.imageName})}" alt="Option Image" style="max-width: 200px; max-height: 200px;"/>
+                                </div>
                             </li>
                         </ul>
                     </div>

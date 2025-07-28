@@ -26,7 +26,7 @@ body.mypage {
   background: linear-gradient(135deg, #87CEEB 0%, #87CEFA 50%, #B0E0E6 100%);
   background-size: 400% 400%;
   animation: gradientShift 15s ease infinite;
-  min-height: 100vh;
+  min-height: auto; 
   position: relative;
   overflow-x: hidden;
 }

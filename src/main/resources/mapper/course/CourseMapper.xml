@@ -4,7 +4,7 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="kr.co.sist.e_learning.course.CourseMapper">
-	<insert id="insertCourse" parameterType="CourseDTO">
+	<insert id="insertCourse" parameterType="kr.co.sist.e_learning.course.CourseDTO">
 		<selectKey keyProperty="courseSeq" resultType="String"
 			order="BEFORE">
 			SELECT 'course_seq' || LPAD(course_seq.NEXTVAL, 3, '0') FROM dual
@@ -34,13 +34,13 @@
 		)
 	</insert>
 	<select id="selectUserSeqByCourseSeq" parameterType="String"
-		resultType="CourseDTO">
+		resultType="kr.co.sist.e_learning.course.CourseDTO">
 		select user_seq from course where course_seq=#{courseSeq}
 
 	</select>
 
 
-	<insert id="insertVideo" parameterType="VideoDTO">
+	<insert id="insertVideo" parameterType="kr.co.sist.e_learning.video.VideoDTO">
 		INSERT INTO video (
 		video_seq,
 		course_seq,
@@ -63,7 +63,7 @@
 		#{videoOrder}
 		)
 	</insert>
-	<select id="searchCourseById" resultType="CourseDTO"
+	<select id="searchCourseById" resultType="kr.co.sist.e_learning.course.CourseDTO"
 		parameterType="Long">
 		select title as courseTitle, introduction, upload_date, user_seq,
 		thumbnail_path, thumbnail_name, enroll_count, category, course_seq,
@@ -71,7 +71,7 @@
 		from course
 		where user_seq = #{userSeq}
 	</select>
-	<select id="searchCourseByCourseId" resultType="CourseDTO"
+	<select id="searchCourseByCourseId" resultType="kr.co.sist.e_learning.course.CourseDTO"
 		parameterType="String">
 		select course_seq, title as courseTitle, introduction,
 		upload_date, user_seq, thumbnail_path, thumbnail_name, enroll_count,
@@ -80,7 +80,7 @@
 		#{courseSeq}
 	</select>
 	<select id="searchCourseByPage" parameterType="map"
-		resultType="CourseDTO">
+		resultType="kr.co.sist.e_learning.course.CourseDTO">
 		SELECT title as courseTitle, introduction, upload_date, user_seq,
 		thumbnail_path, thumbnail_name, category, course_seq, difficulty,
 		is_public, enroll_count
@@ -93,7 +93,7 @@
 		resultType="int">
 		select count(*) from course where user_seq = #{userSeq} AND is_public = 'Y'
 	</select>
-	<update id="updateCourseByCourseSeq" parameterType="CourseDTO">
+	<update id="updateCourseByCourseSeq" parameterType="kr.co.sist.e_learning.course.CourseDTO">
 		update course
 		set
 		category=#{category},
@@ -124,7 +124,7 @@
 		update course set quiz_count = quiz_count+1 where course_seq=#{courseSeq}
 	</update>
 
-	<insert id="insertCourseStat" parameterType="CourseStatDTO">
+	<insert id="insertCourseStat" parameterType="kr.co.sist.e_learning.course.CourseStatDTO">
 		INSERT INTO COURSE_STAT (
 		course_seq, user_seq, video_seq,
 		course_time, course_rate,
@@ -137,7 +137,7 @@
 		)
 	</insert>
 	<!-- 업데이트 -->
-	<update id="updateCourseStat" parameterType="CourseStatDTO">
+	<update id="updateCourseStat" parameterType="kr.co.sist.e_learning.course.CourseStatDTO">
 		UPDATE COURSE_STAT
 		SET course_time = #{courseTime}, course_rate = #{courseRate},
 		last_time = #{lastTime},
@@ -146,7 +146,7 @@
 	</update>
 
 	<!-- 조회 -->
-	<select id="selectCourseStat" resultType="CourseStatDTO"
+	<select id="selectCourseStat" resultType="kr.co.sist.e_learning.course.CourseStatDTO"
 		parameterType="map">
 		SELECT *
 		FROM COURSE_STAT

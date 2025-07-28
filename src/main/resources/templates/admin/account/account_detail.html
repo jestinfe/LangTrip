@@ -406,16 +406,16 @@
           <div th:if="${mode == 'account'}">
             <button type="button" id="editBtn" class="btn btn-secondary"><i class="fas fa-edit"></i> 수정하기</button>
             <button type="reset" id="cancelBtn" class="btn btn-outline" style="display: none;"><i class="fas fa-times"></i> 취소</button>
-            <button type="submit" id="saveBtn" class="btn btn-primary" style="display: none;"><i class="fas fa-save"></i> 저장</button>
+            <button type="button" id="saveBtn" class="btn btn-primary" style="display: none;" onclick="confirmSave()"><i class="fas fa-save"></i> 저장</button>
           </div>
         </div>
       </form>
       
       <!-- 가입신청 상세 보기 모드 (승인/거절 버튼) -->
       <div th:if="${mode == 'signup'}" class="action-buttons" style="margin-top: 1rem;">
-        <form th:action="@{/admin/accounts/{id}/status(id=${admin.requestId})}" method="post" style="display: inline;">
+        <form id="approveForm" th:action="@{/admin/accounts/{id}/status(id=${admin.requestId})}" method="post" style="display: inline;">
             <input type="hidden" name="status" value="APPROVED">
-            <button type="submit" class="btn btn-primary"><i class="fas fa-check"></i> 승인</button>
+            <button type="button" class="btn btn-primary" onclick="confirmAction('approve')"><i class="fas fa-check"></i> 승인</button>
         </form>
         <button type="button" class="btn btn-secondary" id="showRejectReasonBtn"><i class="fas fa-times"></i> 거절</button>
       </div>
@@ -427,7 +427,7 @@
             <label for="rejectReason" style="font-weight: 600; color: #333;">거절 사유 입력</label>
             <textarea name="reason" id="rejectReason" rows="4" style="width:100%;padding:10px;border-radius:8px;border:1px solid #ccc;" required></textarea>
             <div style="margin-top: 0.5rem; text-align: right;">
-                <button type="submit" class="btn btn-secondary"><i class="fas fa-paper-plane"></i> 제출</button>
+                <button type="button" class="btn btn-secondary" onclick="confirmAction('reject')"><i class="fas fa-paper-plane"></i> 제출</button>
             </div>
         </form>
       </div>
@@ -436,6 +436,24 @@
 </div>
 
 <script th:inline="javascript">
+function confirmAction(action) {
+    if (action === 'approve') {
+        if (confirm('정말로 승인하시겠습니까?')) {
+            document.getElementById('approveForm').submit();
+        }
+    } else if (action === 'reject') {
+        if (confirm('정말로 거절하시겠습니까?')) {
+            document.getElementById('rejectForm').submit();
+        }
+    }
+}
+
+function confirmSave() {
+    if (confirm('정말로 변경사항을 저장하시겠습니까?')) {
+        document.getElementById('adminForm').submit();
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function () {
     const mode = /*[[${mode}]]*/ 'account';
 

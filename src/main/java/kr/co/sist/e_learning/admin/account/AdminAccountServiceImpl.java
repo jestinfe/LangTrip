@@ -1,7 +1,6 @@
 package kr.co.sist.e_learning.admin.account;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.javamail.JavaMailSender;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,9 +18,6 @@ public class AdminAccountServiceImpl implements AdminAccountService {
     @Autowired
     private AdminAccountDAO dao;
     
-    @Autowired
-    private JavaMailSender mailSender;
-
     @Autowired
     private EmailService emailService;
 

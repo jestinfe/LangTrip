@@ -155,13 +155,13 @@ WHERE rn BETWEEN #{pageRequestDTO.offset} + 1 AND #{pageRequestDTO.offset} + #{p
   </update>
   
   <!-- Wallet Updates -->
-  <update id="updatWalletByRefund" parameterType="map">
+   <update id="updatWalletByRefund" parameterType="map">
     UPDATE mile_wallet
-    SET donation_available = donation_available - #{amount},
-        total_miles = total_miles - #{amount},
+    SET donation_available = donation_available - #{amount} * 0.9,
+        total_miles = total_miles - #{amount} * 0.9,
         updated_at = SYSDATE
     WHERE wallet_seq = #{walletSeq}
-  </update>
+</update>
   
   <update id="updatWalletBySettlement" parameterType="map">
     UPDATE mile_wallet

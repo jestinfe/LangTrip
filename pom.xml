@@ -84,10 +84,10 @@
 
     <!-- Oracle JDBC -->
     <dependency>
-        <groupId>com.oracle.database.jdbc</groupId>
-        <artifactId>ojdbc11</artifactId>
-        <version>23.3.0.23.09</version>
-    </dependency>
+    <groupId>com.oracle.database.jdbc</groupId>
+    <artifactId>ojdbc8</artifactId>
+    <version>19.8.0.0</version> <!-- 또는 필요한 버전 -->
+</dependency>
 
     <!-- JWT -->
     <dependency>

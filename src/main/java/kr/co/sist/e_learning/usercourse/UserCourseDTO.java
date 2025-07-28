@@ -29,4 +29,5 @@ public class UserCourseDTO {
 	private String thumbnailPath;
 	private String thumbnailName;
 	private String instructorName;
+	
 }

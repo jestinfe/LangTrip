@@ -1,6 +1,8 @@
 package kr.co.sist.e_learning.course;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -63,7 +65,7 @@ public class CourseController {
 	@GetMapping("/ui/my_lecture")
 	    public ResponseEntity<?> instroductorPage(Authentication authentication,
 			@RequestParam(defaultValue = "1") int page,
-			@RequestParam(defaultValue = "12") int limit) {
+			@RequestParam(defaultValue = "4") int limit) {
 		
 		Object principal = authentication.getPrincipal();
 		Long userSeq = null;
@@ -155,28 +157,32 @@ public class CourseController {
 	}
 	
 	
+	
 	@GetMapping("/upload/upload_course")
 	public String showCourseForm(@RequestParam("seq") String courseSeq, Model model) {
-		
+	    // 예시로 videoList와 quizList 가져오기
 		CourseDTO cDTO = cs.selectCourseData(courseSeq);
 		List<VideoDTO> videoList = vs.searchVideoByCourseSeq(courseSeq);
-		QuizListDTO qlDTO = new QuizListDTO();
-		
-		
-//		List<QuizListDTO> quizList = qs.searchQuizByCourseSeq(courseSeq);
 		List<QuizListDTO> quizList = qs.searchDistinctQuizLists(courseSeq);
-		
-		
-			if(videoList.isEmpty()) {
-			}else {
-			for(VideoDTO vDTO : videoList) {
-				
-				}
-			}
-		model.addAttribute("courseData", cDTO);
-		model.addAttribute("quizList", quizList);
-		model.addAttribute("videoList", videoList);
-		return "ui/upload_frm";
+	    
+	    // 비디오와 퀴즈 리스트를 하나로 합치기
+	    List<CombineDTO> combinedList = new ArrayList<CombineDTO>();
+	    // videoList를 CombinedItem으로 변환하여 추가
+	    for (VideoDTO video : videoList) {
+	        combinedList.add(new CombineDTO("video", video.getVideoSeq(), video.getCourseSeq(), video.getUploadDate()));
+	    }
+	    
+	    // quizList를 CombinedItem으로 변환하여 추가
+	    for (QuizListDTO quiz : quizList) {
+	        combinedList.add(new CombineDTO("quiz", quiz.getQuizListSeq(), courseSeq, quiz.getUploadDate()));
+	    }
+	    // createdAt 기준으로 정렬
+	    combinedList.sort(Comparator.comparing(CombineDTO::getUploadDate));
+	    // 모델에 combinedList 전달
+	    model.addAttribute("combinedList", combinedList);
+	    model.addAttribute("courseData", cDTO);
+	    model.addAttribute("videoList", videoList);
+	    return "ui/upload_frm";
 	}
 		
 	@GetMapping("/upload/upload_update")
@@ -218,7 +224,7 @@ public class CourseController {
 
 		}
 		cDTO.setThumbnailName(thumbNail);
-		cDTO.setThumbnailPath("/upload/img/"+thumbNail);
+		cDTO.setThumbnailPath("/courseImg/"+thumbNail);
 		
 		
 		int result = cs.modifyCourse(cDTO);

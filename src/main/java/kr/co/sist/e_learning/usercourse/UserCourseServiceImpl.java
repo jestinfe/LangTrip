@@ -56,9 +56,9 @@ public class UserCourseServiceImpl implements UserCourseService{
     }
 
 	@Override
-	public int selectAlreadyEnrollCourse(String courseSeq) {
+	public int selectAlreadyEnrollCourse(Map<String, Object> paramMap) {
 		int result = 0;
-		result = ucm.selectAlreadyEnrollCourse(courseSeq);
+		result = ucm.selectAlreadyEnrollCourse(paramMap);
 		return result;
 	}
 
@@ -74,6 +74,22 @@ public class UserCourseServiceImpl implements UserCourseService{
     public int deleteUserCourse(UserCourseDTO dto) {
         return ucm.deleteUserCourse(dto);
     }
+
+	@Override
+	public void deleteRegisterCourse(Map<String, Object> map) {
+		ucm.deleteRegisterCourse(map);
+	}
+
+	@Override
+	public UserCourseDTO getCoursesBypage(Map<String, Object> map) {
+		
+		return ucm.getCoursesBypage(map);
+	}
+
+	@Override
+	public int getTotalCourses(Long userSeq) {
+		return ucm.getTotalCourses(userSeq);
+	}
 
 
 }

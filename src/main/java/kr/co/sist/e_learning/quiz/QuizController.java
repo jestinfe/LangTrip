@@ -191,7 +191,8 @@ public class QuizController {
     		  @PathVariable String quizListSeq,
     		  @RequestParam String courseSeq) {
     	
-    	
+    	System.out.println(quizListSeq);
+    	System.out.println(courseSeq);
     	try {
     	Long loginUserSeq = getUserSeq(authentication);
     	// DB에서 정보 불러오기
@@ -204,7 +205,7 @@ public class QuizController {
     	Long user=qlDTO.getUserSeq();
     	//본인 확인
     	if(!loginUserSeq.equals(user)) {
-    		return "redirect:/ui/instroductor_course?userSeq="+loginUserSeq;
+    		return "redirect:/";
     	}
     	
         QuizListDTO qDTO = new QuizListDTO();
@@ -241,7 +242,7 @@ public class QuizController {
     	
     	//퀴즈 작성자인지 확인
     	if(!loginUserSeq.equals(user)) {
-    		return "redirect:/ui/instroductor_course?seq="+loginUserSeq;
+    		return "unauthorized";
     	}
     	
         try {

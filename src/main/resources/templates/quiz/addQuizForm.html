@@ -335,7 +335,11 @@ $(function () {
 	      alert("퀴즈가 등록되었습니다.");
 	      const courseSeq = document.getElementById("courseSeq").value;
 	      window.location.href = '/upload/upload_course?seq='+courseSeq;
-      } 
+      
+	     
+      } else {
+    	  alert("퀴즈 등록 실패"); 
+      }
     })
     .catch(err => {
       console.log("오류", err);
