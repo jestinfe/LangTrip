@@ -31,7 +31,7 @@ public class AdminUserService {
 	// 회원 상세 조회(모달용)
 	public UserDTO getUserDetail(long userSeq) {
 		UserDTO user = adminUserMapper.selectUserDetail(userSeq);
-		
+
 		// 수강 중 과목
 		List<String> activeCourses = adminUserMapper.selectActiveCourses(userSeq);
 		user.setCourseTitles(activeCourses);

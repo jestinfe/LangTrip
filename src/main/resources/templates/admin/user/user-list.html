@@ -574,7 +574,7 @@ function restoreAccountSection(status, reasons, customTxt) {
 
 		return; // 탈퇴인 경우 더 이상 진행하지 않음
 	}
-
+	
 	// 계정 상태 라디오 설정
 	switch (status) {
 		case '정상':
@@ -669,6 +669,9 @@ document.querySelectorAll('.user-row').forEach((row) => {
 			// 계정 조치 영역 복원: DB값으로 UI 초기 상태 설정
 			restoreAccountSection(initialStatus, initialReasons, initialCustomTxt);
 
+			// 계정 조치 섹션 전체 DOM 영역
+			const accountActionSection = document.querySelector('#userDetailModal section.mt-5');
+
 			// 모달 띄우기
 			const modal = new bootstrap.Modal(document.getElementById('userDetailModal'));
 			modal.show();
@@ -757,6 +760,12 @@ reasonEtc.addEventListener('change', () => {
 
 // 적용 버튼 클릭 시 검증
 document.getElementById('applyBtn').addEventListener('click', () => {
+	// 무제재 / 제재 중 하나 선택 필수
+	if (!noPenaltyRadio.checked && !penaltyRadio.checked) {
+		alert("무제재 또는 제재 중 하나를 선택해야 합니다.");
+		return;
+	}
+
 	if (penaltyRadio.checked && reasonEtc.checked && customReasonInput.value.trim() === "") {
 		reasonEtc.checked = false;
 		customReasonInput.disabled = true;
