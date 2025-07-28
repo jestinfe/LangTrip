@@ -24,7 +24,7 @@
 <body>
 <div class="write-container">
     <h3 class="page-title">관리자 -공지사항 작성</h3>
-    <div th:replace="~{/layout/admin_sidebar :: sidebar}"></div>
+    <div th:replace="~{layout/admin_sidebar :: sidebar}"></div>
     <form th:action="@{/admin/dash/community/writeNotice}" method="post" enctype="multipart/form-data"> <!-- ⭐ 경로 수정 -->
         <div class="mb-3">
             <label for="title" class="form-label">제목</label>
