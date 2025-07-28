@@ -45,23 +45,11 @@ public class AdminUserService {
 	
 	@Transactional
 	public void updateUserStatus(UserDTO dto) {
-		// 비즈니스 규칙 검증: 영구정지 시 사유는 필수
-		if ("영구정지".equals(dto.getStatus())) {
-			if (dto.getAdminCheckedReasonList() == null || dto.getAdminCheckedReasonList().isEmpty()) {
-				throw new IllegalArgumentException("영구정지일 경우 사유를 최소 1개 이상 선택해야 합니다.");
-			}
-		}
-		
 		Long reportId = adminUserMapper.selectLatestReportId(dto.getUserSeq());
 		if (reportId != null) {
 			dto.setReportId(reportId);
 			
 			adminUserMapper.updateReport(dto);
-			adminUserMapper.deleteReasonByReportId(dto);
-			
-			if (dto.getAdminCheckedReasonList() != null && !dto.getAdminCheckedReasonList().isEmpty()) {
-				adminUserMapper.insertReasons(dto);
-			}
 		}
 			
 		// 신고 이력 없는 회원은 users 테이블만 update

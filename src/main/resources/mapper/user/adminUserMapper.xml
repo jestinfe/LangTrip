@@ -94,13 +94,6 @@ SELECT
 		FETCH FIRST 1 ROWS ONLY
 	) AS adminActedAt,
 	(
-		SELECT r.admin_reason
-		FROM report r
-		WHERE r.reported_user_id = u.user_seq
-		ORDER BY r.reported_at DESC
-		FETCH FIRST 1 ROWS ONLY
-	) AS adminCustomReasonTxt,
-	(
 		SELECT COUNT(*)
 		FROM course
 		WHERE user_seq = u.user_seq AND flag = 'T'
@@ -109,18 +102,7 @@ SELECT
 		SELECT COUNT(*)
 		FROM course
 		WHERE user_seq = u.user_seq AND flag = 'S'
-	) AS activeCourseCnt,
-	(
-		SELECT LISTAGG(rra.reason_chk, ',') WITHIN GROUP (ORDER BY rra.reason_chk)
-		FROM report r
-		JOIN report_reason_admin rra ON r.report_id = rra.report_id
-		WHERE r.reported_user_id = u.user_seq
-		AND r.reported_at = (
-			SELECT MAX(r2.reported_at)
-			FROM report r2
-			WHERE r2.reported_user_id = u.user_seq
-		)
-	) AS adminCheckedReason
+	) AS activeCourseCnt
 FROM users u
 WHERE u.user_seq = #{userSeq}
 </select>
@@ -151,24 +133,9 @@ FETCH FIRST 1 ROWS ONLY
 <!-- report 테이블 update -->
 <update id="updateReport" parameterType="kr.co.sist.e_learning.user.UserDTO">
 UPDATE report
-SET admin_acted_at = SYSDATE,
-	admin_reason = #{adminCustomReasonTxt}
+SET admin_acted_at = SYSDATE
 WHERE report_id = #{reportId}
 </update>
-
-<!-- 기존 사유 삭제 -->
-<delete id="deleteReasonByReportId" parameterType="kr.co.sist.e_learning.user.UserDTO">
-DELETE FROM report_reason_admin
-WHERE report_id = #{reportId}
-</delete>
-
-<!-- 새로운 사유 insert -->
-<insert id="insertReasons" parameterType="kr.co.sist.e_learning.user.UserDTO">
-<foreach collection="adminCheckedReasonList" item="code">
-INSERT INTO report_reason_admin (report_id, reason_chk)
-VALUES (#{reportId}, #{code})
-</foreach>
-</insert>
 
 <!-- users 상태 update -->
 <update id="updateUserStatus" parameterType="kr.co.sist.e_learning.user.UserDTO">
