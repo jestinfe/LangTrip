@@ -32,14 +32,14 @@ INSERT INTO report (
     post_id2,
     course_id,
     reporter_id,
-    reporter_custom_reason_txt,
+    reason_text,
     reported_at,
     reported_user_id,
     action_status
 ) VALUES (
     #{reportId},
     #{postId2},
-    #{courseId},
+    #{courseId, jdbcType=INTEGER},
     #{reporterId},
     #{reporterCustomReasonTxt},
     #{reportedAt},

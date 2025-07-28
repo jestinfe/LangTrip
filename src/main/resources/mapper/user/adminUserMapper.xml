@@ -177,10 +177,4 @@ SET status = #{status}
 WHERE user_seq = #{userSeq}
 </update>
 
-<select id="isReportedUser" parameterType="long" resultType="boolean">
-SELECT CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END
-FROM report
-WHERE reported_user_id = #{userSeq}
-</select>
-
 </mapper>

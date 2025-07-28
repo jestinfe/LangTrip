@@ -34,8 +34,8 @@ public class ReportDTO {
 	private String actionStatus;
 	private String reportedUserStatus;
 	
-	private int postId2;
-	private int courseId;
+	private Integer postId2;
+	private Integer courseId;
 	
 	public String getReporterReasons() {
 		if (reporterCheckedReason == null || reporterCheckedReason.isEmpty()) {

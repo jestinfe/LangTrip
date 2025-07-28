@@ -28,6 +28,4 @@ public interface AdminUserMapper {
 	public void insertReasons(UserDTO dto);
 	
 	public void updateUserStatus(UserDTO dto);
-	
-	public boolean isReportedUser(@Param("userSeq") long userSeq);
 }

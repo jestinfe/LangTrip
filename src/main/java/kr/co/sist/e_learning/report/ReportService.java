@@ -28,8 +28,10 @@ public class ReportService {
         // 신고 대상 ID 지정
         if (type.equals("post")) {
             dto.setPostId2(contentId);
+            dto.setCourseId(null);
         } else if (type.equals("course")) {
             dto.setCourseId(contentId);
+            dto.setPostId2(null);
         }
 
         dto.setActionStatus("미처리");

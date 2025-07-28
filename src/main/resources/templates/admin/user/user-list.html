@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>회원 목록</title>
+<title>LangTrip | 회원관리</title>
 <!-- bootstrap CSS CDN -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"
 	integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
@@ -348,7 +348,7 @@ body {
       	page=${responseDTO.currentPage - 1},
       	userSeq=${requestDTO.userSeq},
       	status=${requestDTO.status}
-      )}"><</a>
+      )}">＜</a>
     </li>
     
     <!-- 페이지 번호 목록 -->
@@ -368,7 +368,7 @@ body {
       	page=${responseDTO.currentPage + 1},
       	userSeq=${requestDTO.userSeq},
       	status=${requestDTO.status}
-      )}">></a>
+      )}">＞</a>
     </li>
     
     <!-- 마지막 페이지 -->
@@ -447,7 +447,7 @@ body {
 				      <label class="form-check-label" for="noPenalty">무제재</label>
 				    </div>
 				    <div class="form-check form-check-inline">
-				      <input class="form-check-input" type="radio" name="penaltyType" id="penalty" value="제재" checked>
+				      <input class="form-check-input" type="radio" name="penaltyType" id="penalty" value="제재">
 				      <label class="form-check-label" for="penalty">제재</label>
 				    </div>
 				  </div>
@@ -666,29 +666,6 @@ document.querySelectorAll('.user-row').forEach((row) => {
 			
 			// 계정 조치 영역 복원: DB값으로 UI 초기 상태 설정
 			restoreAccountSection(initialStatus, initialReasons, initialCustomTxt);
-			
-			
-			// ✅ [수정된 부분] 신고자이면서 탈퇴가 아닌 경우만 활성화
-			const accountSection = document.querySelector('#userDetailModal section.mt-5');
-			if (!data.reportedTarget || data.status === '탈퇴') {
-			  accountSection.querySelectorAll('input, button').forEach(el => {
-			    el.disabled = true;
-			  });
-			  accountSection.classList.add('opacity-50');
-			} else {
-			  accountSection.querySelectorAll('input, button').forEach(el => {
-			    el.disabled = false;
-			  });
-			  accountSection.classList.remove('opacity-50');
-			}
-			// 탈퇴가 아닌 경우에만 라디오 상태 설정 및 활성화 여부 조정
-			if (initialStatus !== '탈퇴') {
-				const isPenalty = initialReasons.length > 0;
-				penaltyRadio.checked = isPenalty;
-				noPenaltyRadio.checked = !isPenalty;
-				setInputsDisabled(!isPenalty);
-			}
-
 
 			// 모달 띄우기
 			const modal = new bootstrap.Modal(document.getElementById('userDetailModal'));
