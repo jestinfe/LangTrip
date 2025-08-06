@@ -28,11 +28,11 @@
 - ORM : MyBatis
 
 ### Frontend
-- Markup: HTML5  
-- Style: CSS3  
-- Language: JavaScript  
-- Framework: Bootstrap  
-- Library: Axios
+- Markup : HTML5  
+- Style : CSS3  
+- Language : JavaScript  
+- Framework : Bootstrap  
+- Library : Axios
 
 ### Infra & DevOps
 - Git, GitHub
