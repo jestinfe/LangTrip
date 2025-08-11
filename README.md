@@ -32,7 +32,8 @@
 - Markup : HTML5  
 - Style : CSS3  
 - Language : JavaScript  
-- Framework : Bootstrap  
+- Framework : Bootstrap
+- Template : Thymeleaf  
 - Library : Axios
 
 ### Infra & DevOps
